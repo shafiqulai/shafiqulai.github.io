@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>Technical Blog</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="Technical Blog" />
+	<meta name="author" content="Md Shafiqul Islam" />
+	<link rel="icon" href="img/favicon.ico" type="image/x-icon">
+
+	<!-- css -->
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />    
+	<link rel="stylesheet" type="text/css" href="css/font-awesome.css" />
+	<link rel="stylesheet" type="text/css" href="css/style.css" />
+
+	<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+	<div id="wrapper">
+		<!-- start header -->
+		<header>
+			<div class="navbar navbar-default navbar-static-top">
+				<div class="container">
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle" data-toggle="collapse"
+							data-target=".navbar-collapse">
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+						<a class="navbar-brand" href="index.html"><img src="img/logo.png" alt="logo" class="navbar-logo" /></a>
+					</div>
+					<div class="navbar-collapse collapse ">
+						<ul class="nav navbar-nav">
+							<li class="active"><a href="index.html">Home</a></li>
+							<li><a href="about.html">About</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</header>
+		<!-- end header -->
+
+		<section id="featured">
+			<div class="container">
+				<div id="top-blg-container" class="row">
+					<!-- Top Blog post will be dynamically generated here -->
+				</div>
+			</div>
+		</section>
+
+		<section class="blog-title">
+			<div class="container title">
+				<div class="col-md-12">
+					<h2>Recent Blog Posts</h2>
+				</div>
+			</div>
+		</section>
+
+		<section id="content">
+			<div class="container">
+				<div class="row">
+					<!-- blog posts -->
+					<div class="col-md-9">
+						<div id="postContainer" class="row">
+							<!-- Blog posts will be dynamically generated here -->
+						</div>
+						<div class="load-more">
+							<a href="#" id="loadMoreLink" class="btn btn-o btn-lg">Load More</a>
+						</div>
+					</div>
+
+					<!-- Categories -->
+					<div class="col-md-3 categories">
+						<h3>Categories</h3>
+						<ul id="categoryList">
+							<!-- Categories will be generated dynamically with JavaScript -->
+						</ul>
+					</div>
+
+				</div>
+			</div>
+		</section>
+		
+		<section class="footer-section">
+			<div class="container footer">
+				<div class="row footer">
+					<div class="col-md-6">
+						<div class="copyright">
+							<p>
+								<span>Copyright &copy; 2024 AI World | All right reserved. By Md Shafiqul Islam</span>
+							</p>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<ul class="social-network">
+							<li>
+								<a target="_blank" href="mailto:mdshafiqul.islam603@gmail.com" data-placement="top" title="Gmail">
+									<img src="img/contact/gmail.png" alt="Gmail">
+									<span class="icon-label">Gmail</span>
+								</a>
+							</li>
+							<li>
+								<a target="_blank" href="https://www.linkedin.com/in/shafiqul-islam-sumon/" data-placement="top" title="LinkedIn">
+									<img src="img/contact/linkedin.png" alt="LinkedIn">
+									<span class="icon-label">LinkedIn</span>
+								</a>
+							</li>
+							<li>
+								<a target="_blank" href="https://github.com/shafiqulislamsumon" data-placement="top" title="GitHub">
+									<img src="img/contact/github.png" alt="GitHub">
+									<span class="icon-label">GitHub</span>
+								</a>
+							</li>
+							<li>
+								<a target="_blank" href="https://leetcode.com/u/shafiqul/" data-placement="top" title="LeetCode">
+									<img src="img/contact/leetcode.png" alt="LeetCode">
+									<span class="icon-label">LeetCode</span>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</section>
+
+	</div> <!-- end wrapper -->
+
+	<a href="#" class="scrollup"><i class="fa fa-angle-up active"></i></a>
+	<!-- javascript -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script type="text/javascript" src="js/jquery-3.7.1.min.js"></script>
+	<script type="text/javascript" src="js/imagesloaded.pkgd.min.js"></script>
+	<script type="text/javascript" src="js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="js/smooth-scroll.polyfills.min.js"></script>
+	<script type="text/javascript" src="js/main.js"></script>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			// Initialize SmoothScroll specifically for the scroll-up link
+			var scrollUp = new SmoothScroll('.scrollup', {
+				speed: 800,  // The speed of the scroll in milliseconds
+				easing: 'easeInOutCubic' // Easing pattern to use
+			});
+		});
+
+	</script>
+
+</body>
+
+</html>

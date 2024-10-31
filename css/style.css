@@ -1,0 +1,1201 @@
+/* @import url('http://fonts.googleapis.com/css?family=Noto+Serif:400,400italic,700|Open+Sans:400,600,700'); 
+@import url('font-awesome.css');  
+@import url('animate.css'); */
+
+body {
+	font-family: 'Open Sans', Arial, sans-serif;
+	font-size: 14px;
+	font-weight: 300;
+	line-height: 1.6em;
+	color: #656565;
+}
+
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-family: 'Open Sans', Arial, sans-serif;
+	font-weight: 700;
+	line-height: 1.1em;
+	color: #333;
+	margin-bottom: 20px;
+}
+
+.container {
+	padding: 0 20px 0 20px;
+	position: relative;
+	color: #000;
+	width: 70%;
+}
+
+#wrapper {
+	width: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+.row,
+.row-fluid {
+	margin-bottom: 30px;
+}
+
+.row .row,
+.row-fluid .row-fluid {
+	margin-bottom: 30px;
+}
+
+.row.nomargin,
+.row-fluid.nomargin {
+	margin-bottom: 0;
+}
+
+
+p {
+	color: #555;
+}
+
+h2 {
+	font-size: 22px;
+}
+
+/*  Header
+==================================== */
+
+header .navbar {
+	margin-bottom: 0;
+}
+
+.navbar-default {
+	border: none;
+}
+
+.navbar-brand {
+	text-transform: uppercase;
+	font-size: 24px;
+	font-weight: 700;
+	line-height: 1em;
+	letter-spacing: -1px;
+	padding: 0 0 0 12px;
+}
+
+.navbar-default .navbar-brand {
+	color: #61B331;
+}
+
+.navbar-logo {
+	height: 64px; /* Set the desired fixed height */
+	width: auto; /* Maintain the aspect ratio */
+}
+
+header .navbar-collapse ul.navbar-nav {
+	float: right;
+	margin-right: 0;
+}
+
+header .navbar-default {
+	background-color: #fff;
+}
+
+header .nav li a:hover,
+header .nav li a:focus,
+header .nav li.active a,
+header .nav li.active a:hover,
+header .nav li a.dropdown-toggle:hover,
+header .nav li a.dropdown-toggle:focus,
+header .nav li.active ul.dropdown-menu li a:hover,
+header .nav li.active ul.dropdown-menu li.active a {
+	-webkit-transition: all .3s ease;
+	-moz-transition: all .3s ease;
+	-ms-transition: all .3s ease;
+	-o-transition: all .3s ease;
+	transition: all .3s ease;
+}
+
+
+header .navbar-default .navbar-nav>.open>a,
+header .navbar-default .navbar-nav>.open>a:hover,
+header .navbar-default .navbar-nav>.open>a:focus {
+	-webkit-transition: all .3s ease;
+	-moz-transition: all .3s ease;
+	-ms-transition: all .3s ease;
+	-o-transition: all .3s ease;
+	transition: all .3s ease;
+}
+
+
+header .navbar {
+	min-height: 70px;
+	padding: 18px 0;
+}
+
+header .navbar-nav>li {
+	padding-bottom: 12px;
+	padding-top: 12px;
+}
+
+header .navbar-nav>li>a {
+	padding-bottom: 6px;
+	padding-top: 5px;
+	margin-left: 2px;
+	line-height: 30px;
+	font-weight: 700;
+	-webkit-transition: all .3s ease;
+	-moz-transition: all .3s ease;
+	-ms-transition: all .3s ease;
+	-o-transition: all .3s ease;
+	transition: all .3s ease;
+}
+
+
+.dropdown-menu li a:hover {
+	color: #fff !important;
+}
+
+header .nav .caret {
+	border-bottom-color: #f5f5f5;
+	border-top-color: #f5f5f5;
+}
+
+.navbar-default .navbar-nav>.active>a,
+.navbar-default .navbar-nav>.active>a:hover,
+.navbar-default .navbar-nav>.active>a:focus {
+	background-color: #fff;
+}
+
+.navbar-default .navbar-nav>.open>a,
+.navbar-default .navbar-nav>.open>a:hover,
+.navbar-default .navbar-nav>.open>a:focus {
+	background-color: #fff;
+}
+
+.about-logo {
+	padding: 10px 25px 25px;
+	background-color: #E6E6E6;
+	margin-bottom: 30px;
+}
+
+.dropdown-menu {
+	box-shadow: none;
+	border-radius: 0;
+	border: none;
+}
+
+h3,
+.h3 {
+	font-size: 20px;
+}
+
+.dropdown-menu li:last-child {
+	padding-bottom: 0 !important;
+	margin-bottom: 0;
+}
+
+header .nav li .dropdown-menu {
+	padding: 0;
+}
+
+header .nav li .dropdown-menu li a {
+	line-height: 28px;
+	padding: 3px 12px;
+}
+
+label {
+	display: inline-block;
+	max-width: 100%;
+	margin-bottom: 5px;
+	font-weight: bold;
+	color: #555;
+}
+
+/* --- menu --- */
+
+header .navigation {
+	float: right;
+}
+
+header ul.nav li {
+	border: none;
+	margin: 0;
+}
+
+header ul.nav li a {
+	font-size: 12px;
+	border: none;
+	font-weight: 700;
+	text-transform: uppercase;
+}
+
+header ul.nav li ul li a {
+	font-size: 12px;
+	border: none;
+	font-weight: 300;
+	text-transform: uppercase;
+}
+
+
+.navbar .nav>li>a {
+	color: #111;
+	text-shadow: none;
+	border: 1px solid rgba(255, 255, 255, 0) !important;
+}
+
+.navbar .nav a:hover {
+	background: none;
+}
+
+.navbar .nav>.active>a,
+.navbar .nav>.active>a:hover {
+	background: none;
+	font-weight: 700;
+}
+
+.navbar .nav>.active>a:active,
+.navbar .nav>.active>a:focus {
+	background: none;
+	outline: 0;
+	font-weight: 700;
+}
+
+.navbar .nav li .dropdown-menu {
+	z-index: 2000;
+}
+
+header ul.nav li ul {
+	margin-top: 1px;
+}
+
+header ul.nav li ul li ul {
+	margin: 1px 0 0 1px;
+}
+
+.dropdown-menu .dropdown i {
+	position: absolute;
+	right: 0;
+	margin-top: 3px;
+	padding-left: 20px;
+}
+
+.navbar .nav>li>.dropdown-menu:before {
+	display: inline-block;
+	border-right: none;
+	border-bottom: none;
+	border-left: none;
+	border-bottom-color: none;
+	content: none;
+}
+
+.navbar-default .navbar-nav>.active>a,
+.navbar-default .navbar-nav>.active>a:hover,
+.navbar-default .navbar-nav>.active>a:focus {
+	color: #FFF;
+
+	background-color: #358ccb;
+}
+
+
+ul.nav li.dropdown a {
+	z-index: 1000;
+	display: block;
+}
+
+select.selectmenu {
+	display: none;
+}
+
+.pageTitle {
+	color: #fff;
+	margin: 30px 0 3px;
+	display: inline-block;
+}
+
+/* ====================================  Start of Home page Featured Section =========================== */
+
+#featured .container {
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+}
+
+#top-blg-container {
+	display: flex;
+    flex-wrap: nowrap;
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+	margin-bottom: 10px;
+	/* Forces removal of the bottom margin */
+	align-items: stretch; /* Ensure both columns take the same height */
+}
+
+.top-blg-img-container {
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+	display: flex;
+    align-items: stretch; /* Stretch the image container to full height */
+}
+
+.top-blg-img-container img {
+	/* Make the image width responsive to the container size */
+	width: 100%;
+	height: auto;
+	/* Maintain the aspect ratio of the image */
+	display: inline-block;
+	/* Remove any extra space below the image */
+	margin: 0 auto;     /* Centers the image horizontally */
+	justify-content: center;
+	align-items: center;
+	object-fit: cover; 
+}
+
+.top-blg-desc-container {
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    justify-content: center; /* Center items vertically */
+    padding-left: 20px;
+    padding-right: 0 !important;
+	gap: 10px; /* Ensure consistent spacing between child elements */
+}
+
+.top-blg-desc-container .date {
+	display: inline-block;
+    color: #000000; /* Ensures the date text is black */
+    font-style: italic;
+    line-height: 1.2em; /* Maintain a comfortable line height */
+    overflow: hidden; /* Prevents text overflow */
+    text-overflow: ellipsis; /* Adds ellipsis if overflow occurs */
+    white-space: nowrap; /* Prevents the date from wrapping to the next line */
+    font-size: 14px; /* Font size for the date */
+    margin: 0 0 10px 0; /* Space around the date */
+    display: block; /* Ensures block layout */
+}
+
+.top-blg-desc-container h2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2; /* Limits the text to 2 lines */
+    line-height: 1.2em; /* Line height for headers */
+    text-overflow: ellipsis; /* Adds ellipsis for overflow */
+    font-size: 18px; /* Font size for headers */
+    margin-top: 0; /* Remove top margin */
+}
+
+.top-blg-desc-container p {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5; /* Limits the text to 5 lines */
+    line-height: 1.4em; /* A comfortable line height */
+    text-overflow: ellipsis; /* Adds ellipsis for overflow */
+    text-align: justify;
+    font-size: 16px;
+}
+
+/* ====================================  end of Home page Featured Section =========================== */
+
+
+/* ====================================  Start of About page =========================== */
+
+#about-featured .container {
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+}
+
+#intr-container {
+	display: flex;
+    flex-wrap: nowrap;
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+	margin-bottom: 10px;
+	/* Forces removal of the bottom margin */
+	align-items: stretch; /* Ensure both columns take the same height */
+}
+
+.intr-img-container {
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+	display: flex;
+    align-items: stretch; /* Stretch the image container to full height */
+}
+
+.intr-img-container img {
+	/* Make the image width responsive to the container size */
+	width: 100%;
+	height: auto;
+	/* Maintain the aspect ratio of the image */
+	display: inline-block;
+	/* Remove any extra space below the image */
+	margin: 0 auto;     /* Centers the image horizontally */
+	justify-content: center;
+	align-items: center;
+	object-fit: cover; 
+}
+
+.intr-desc-container {
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    justify-content: center; /* Center items vertically */
+    padding-left: 20px;
+    padding-right: 0 !important;
+	gap: 10px; /* Ensure consistent spacing between child elements */
+}
+
+.intr-desc-container h2 {
+    overflow: hidden;
+    line-height: 1.2em;
+    text-overflow: ellipsis;
+    font-size: 30px;
+	font-weight: 500;
+    margin-top: 0; /* Remove top margin */
+}
+
+.intr-desc-container p {
+    overflow: hidden;
+    line-height: 1.4em; /* A comfortable line height */
+    text-overflow: ellipsis; /* Adds ellipsis for overflow */
+    text-align: justify;
+    font-size: 16px;
+}
+
+
+/* ====================================  End of About page =========================== */
+
+
+/* ====================================== Start Blog Details ==================================== */
+
+.container.blg-title-container {
+	width: 100%;
+	padding: 0 0 0 0;
+	background: #358ccb;
+	border-top: 5px solid #A71F4A;
+	display: block;
+}
+
+.blg-title{
+	color: #fff;
+	padding: 0 0 0 0;
+	font-weight: 400;
+	text-align: center;
+}
+
+.blg-main-header {
+    display: inline-block;
+	text-align: left;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    background-color: #ebf4fa;
+    border-bottom: 5px solid #358ccb;
+    box-sizing: border-box;
+}
+
+.blg-main-header h2 {
+	padding: 0;
+	margin: 10px;
+}
+
+.blg-sub-header {
+    display: inline-block;
+	text-align: left;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    background-color: #e6f0e6;
+	border-left: 5px solid #006400;
+    box-sizing: border-box;
+}
+
+.blg-sub-header h2 {
+	padding: 0;
+	margin: 10px;
+}
+
+.blg-paragraph p {
+	overflow: hidden;
+	display: block;
+	color: #000;
+	line-height: 1.5em;
+	text-align: justify;
+	font-size: 18px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.blg-center-txt {
+	text-align: center;
+}
+
+.blg-img-container {
+	width: 100%;
+	margin: 20px auto; /* Centers the container */
+	text-align: center;
+	/* Centers inline or inline-block elements horizontally */
+}
+.blg-img-container img {
+	/* Make the image width responsive to the container size */
+	max-width: 100%;
+	height: auto;
+	/* Maintain the aspect ratio of the image */
+	display: inline-block;
+	/* Remove any extra space below the image */
+	margin: 0 auto;     /* Centers the image horizontally */
+}
+.blg-img-container h3 {
+	padding: 0;
+}
+
+.blg-code-container {
+	width: 70%;
+	margin: 20px auto; /* Centering it horizontally */
+	display: block; /* Ensures the div is treated as a block-level element */
+	overflow: hidden; /* Adds overflow handling to prevent content from expanding the div */
+}
+
+.blg-table-container {
+	width: 70%;
+	margin: 20px auto; /* Centering it horizontally */
+	display: block; /* Ensures the div is treated as a block-level element */
+	overflow: hidden; /* Adds overflow handling to prevent content from expanding the div */
+}
+
+.blg-toc-container {
+	width: 70%;
+	margin: 0 auto; /* Centering it horizontally */
+	margin-top: 20px;
+	margin-bottom: 20px;
+	/* max-width: 420px; */
+	background-color: #ebf4fa;
+	font-size: 18px; /* Increase the font size */
+	padding: 2em;
+	box-shadow: 1px 2px 4px #0003;
+	display: block;
+	overflow: hidden;
+}
+.blg-toc-ul {
+	-webkit-padding-start: 1.5em;
+	padding-inline-start: 1.5em;
+	font-weight: 400;
+}
+.blg-toc-ul ::marker {
+	color: #48b;
+}
+.blg-toc-ol ::marker {
+	color: #48b;
+}
+.blg-toc-li {
+	position: relative;
+	-webkit-padding-start: 0.5em;
+	padding-inline-start: 0.5em;
+	padding-top: 1.5em;
+	color: black;
+	border-bottom: 1px solid rgba(25, 49, 68, 0.133);
+	cursor: default;
+	transition: color 0.4s;
+}
+.blg-toc-li:hover {
+	color: #358ccb;
+}
+.blg-toc-li:hover::marker {
+	font-weight: 700;
+}
+.blg-toc-li:hover::after {
+	opacity: 1;
+	transition-delay: 0.2s;
+}
+
+.blg-li {
+	position: relative;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	font-size: 18px;
+	color: black;
+	cursor: default;
+	padding-inline-start: 0.5em;
+}
+
+.blg-hr {
+	height: 2px; /* Set the thickness of the line */
+	border-width: 0; /* Remove the default border */
+	color: #bdc3c7; /* Set the line color */
+	background-color: #bdc3c7 /* Same as the color for consistent appearance */
+}
+
+.blg-slide-counter {
+	text-align: center;
+	margin-top: 10px;
+	margin-bottom: 20px;
+	font-size: 18px;
+	color: #333;
+	font-weight: bold;
+}
+
+.blg-ref-li {
+	font-size: 16px; /* Increases the text size */
+	padding: 10px; /* Adds padding around the text within each item */
+	border-radius: 5px; /* Optional: rounds the corners of each item */
+}
+
+.blg-ref-ul ::marker {
+	color: #48b;
+}
+
+
+/* ====================================== End Blog Details ==================================== */
+
+/* ====================================== Start of Contacts ==================================== */
+
+#contact-section .container {
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+}
+
+#contact-section {
+	margin-bottom: 50px;
+}
+
+.container.contact-main-header {
+	width: 100%;
+	display: block;
+	text-align: left;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background-color: #358ccb;
+    border-top: 5px solid #A71F4A;
+    box-sizing: border-box;
+}
+
+.contact-main-header h2 {
+	padding: 0;
+	margin: 10px;
+	color: #fff;
+	font-weight: 500;
+	font-size: 24px;
+	text-align: center;
+}
+
+
+/* Contact List Styles */
+
+.contact-list {
+    list-style: disc;
+    padding-left: 40px;
+    margin: 0;
+    font-size: 2.0rem; /* Increase text size */
+}
+
+/* Custom marker styling */
+.contact-list li::marker {
+    font-size: 2.2rem; /* Increase marker size */
+    color: #0073e6; /* Change marker color */
+}
+
+/* Individual Contact Item */
+.contact-item {
+    display: list-item;
+    position: relative;
+    padding-left: 10px;
+    margin-bottom: 30px;
+}
+
+/* Icon Styles */
+.contact-icon {
+    width: 36px; /* Increase icon size */
+    height: 36px;
+    margin-right: 10px;
+}
+
+/* Align content horizontally */
+.contact-item > * {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* Title Styles */
+.contact-title {
+    font-weight: bold;
+    margin-right: 5px;
+    color: #555;
+    font-size: 2.0rem; /* Match text size */
+}
+
+/* Link Styles */
+.contact-link {
+    text-decoration: none;
+    color: #0073e6;
+    font-size: 2.0rem; /* Match text size */
+    transition: color 0.3s;
+}
+
+/* ====================================== End of Contacts ==================================== */
+
+
+/*====== blog posts */
+#content .container {
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+}
+
+
+/*============== categories============*/
+
+/* Style for the categories container */
+.categories {
+	padding-left: 30px;
+	/* max-width: 200px; */
+	/* Adjust this width based on your design */
+}
+
+/* Style for the "categories" title */
+.categories h3 {
+	font-size: 1.5em;
+	margin-bottom: 20px;
+	margin-top: 15px;
+	padding: 10px 10px;
+	color: #fff;
+	background-color: #006400;
+}
+
+/* Style for the unordered list that holds the categories */
+.categories ul {
+	list-style-type: none;
+	padding: 0;
+}
+
+/* Style for each tag link */
+.categories ul li {
+	margin: 8px 0;
+}
+
+.categories ul li a {
+	color: #358ccb;
+	/* Default text color */
+	text-decoration: none;
+	font-size: 1.1em;
+	padding: 8px 12px;
+	display: block;
+	/* Makes the anchor take full width */
+	width: 100%;
+	/* Ensures full width of the container */
+	border-radius: 4px;
+	/* Rounded corners */
+	transition: color 0.3s ease, background-color 0.3s ease;
+	/* Smooth transition for color and background */
+}
+
+/* Hover effect for changing text and background color */
+.categories ul li a:hover {
+	color: #006400;
+	/* Changes text color to white */
+	background-color: #e6f0e6;
+	/* Changes background to blue */
+}
+
+/*  ================= End of categories ==================================== */
+
+
+/*  Each Blog Post ==================================== */
+a img {
+	transition: opacity 0.3s ease-in-out;
+}
+
+a:hover img {
+	opacity: 0.8;
+}
+
+.blog-post {
+	flex-basis: calc(33.33% - 20px);
+	/* Each item takes roughly 1/3 of the container width, minus the gap */
+	margin-bottom: 20px;
+	/* Ensures 20px gap between rows */
+	/* background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px; */
+	box-sizing: border-box;
+	padding: 15px;
+	position: relative;
+	transition: left 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+.blog-post .image-container {
+	display: flex;
+	/* Use flexbox for centering if needed */
+	justify-content: center;
+	/* Center horizontally */
+	align-items: center;
+	/* Center vertically */
+	width: 100%;
+	/* Container takes full width of its parent */
+	overflow: hidden;
+	/* Hides parts of the image that might overflow */
+}
+
+.blog-post .image-container img {
+	width: 100%;
+	/* Resize image to take the full width of the container */
+	height: auto;
+	/* Height adjusts automatically to maintain aspect ratio */
+	max-width: 1000px;
+	/* Optional max-width if you want to limit the size */
+	border-bottom: 5px solid #358ccb;
+}
+
+
+.blog-post .date {
+	color: #000000;
+	/* Ensures the date text is black */
+	font-style: italic;
+	line-height: 1.2em;
+	/* Line height should be enough to fit the text size */
+	height: 1.2em;
+	/* Fixed height to ensure each date occupies exactly one line */
+	overflow: hidden;
+	/* Prevents text from spilling over in unexpected scenarios */
+	text-overflow: ellipsis;
+	/* Adds ellipsis if any overflow, which should be unnecessary but is a safeguard */
+	font-size: 14px;
+	/* Ensure your font size fits well within the line height */
+	margin: 0 0 10px 0;
+	/* Manages spacing around the date text */
+	display: block;
+	/* Block display to respect the height property */
+}
+
+.blog-post h2 {
+	overflow: hidden;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+	/* Limits the text to 2 lines for headers */
+	line-height: 1.2em;
+	/* Line height for headers */
+	max-height: 3.6em;
+	/* 2 lines at 1.2em each for headers */
+	height: 3.6em;
+	/* Fixed height to ensure uniform title block size */
+	text-overflow: ellipsis;
+	/* text-align: justify; */
+	font-size: 18px;
+	/* Font size for headers */
+}
+
+.blog-post p {
+	overflow: hidden;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 5;
+	/* Limits the text to 5 lines for paragraphs */
+	line-height: 1.4em;
+	/* A comfortable line height for reading */
+	height: 7em;
+	/* 5 lines at 1.4em each */
+	max-height: 7em;
+	/* 5 lines at 1.4em each for paragraphs */
+	text-overflow: ellipsis;
+	text-align: justify;
+	font-size: 16px;
+	/* Typically smaller font size for paragraphs */
+}
+
+
+
+/*  end of Each Blog Post ==================================== */
+
+.title-page {
+	display: inline-flex;
+	margin-bottom: -20px;
+}
+
+p.main-header {
+	font-size: 27px;
+	font-family: 'Raleway';
+	font-weight: 500;
+}
+
+p.main-header:after {
+	content: " ";
+	font-size: 27px;
+	font-family: 'Raleway';
+	font-weight: 500;
+}
+
+p.sub-header {
+	font-size: 27px;
+	font-family: 'Raleway';
+	font-weight: 100;
+	margin-left: 10px;
+}
+
+p.sub-header:before {
+	content: " ||| ";
+	font-size: 27px;
+	font-family: 'Raleway';
+	font-weight: 300;
+}
+
+.btn {
+	border-radius: 10;
+}
+
+.btn-o {
+	border: 1px solid #3A4F52;
+	color: #3A4F52;
+}
+
+.btn-o:hover {
+	background: #3A4F52;
+	color: white;
+}
+
+.btn.btn-o-white {
+	border: 1px solid white;
+	color: white;
+	background: transparent;
+
+}
+
+.btn.btn-o-white:hover {
+	background: white !important;
+	color: #6a6a6a;
+}
+
+.load-more {
+	display: flex;
+	justify-content: center;
+	/* Horizontally centers the content */
+	align-items: center;
+	/* Vertically centers the content */
+	height: 100px;
+	/* Optional: to demonstrate vertical centering */
+}
+
+/* Title
+==================================== */
+.container.title {
+	background: #358ccb;
+	border-top: 5px solid #A71F4A;
+}
+
+section.blog-title {
+	/* background: #A71F4A; */
+	padding: 0 0 0 0;
+	border-top: 5px solid #fff;
+	text-align: center;
+}
+
+section.blog-title h2 {
+	color: #fff;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	text-align: center;
+	/* font-weight: 400; */
+}
+
+/* Footer
+==================================== */
+
+/* Start Content ==================================== */
+
+#content {
+	position: relative;
+	background: #fff;
+	border-top: 4px solid #fff;
+}
+
+/* end Content ==================================== */
+
+/* Bottom ==================================== */
+
+#bottom {
+	background: #fcfcfc;
+	padding: 50px 0 0;
+
+}
+
+/* --- start button --- */
+.btn {
+	text-align: center;
+	background: #358ccb;
+	color: #fff;
+	border-color: #358ccb;
+}
+
+.btn-theme {
+	color: #fff;
+}
+
+.btn-theme:hover {
+	color: #eee;
+}
+
+/* --- end button --- */
+
+/* ---start social network --- */
+.social-network {
+    list-style: none; /* Removes default list-style */
+    padding: 0; /* Removes default padding */
+    margin: 0; /* Removes default margin */
+    display: flex; /* Aligns items in a row */
+    align-items: center; /* Centers items vertically */
+    justify-content: center; /* Centers items horizontally, adjust if needed */
+}
+
+.social-network li {
+    margin: 10px;  /* Add margin around each icon for spacing */
+    position: relative; /* Needed for absolute positioning of the labels */
+}
+
+.social-network li:last-child {
+    margin-right: 0; /* Removes margin from the last item */
+}
+
+.social-network li a img {
+    width: 42px;
+    height: 42px;
+    display: inline-block;
+	vertical-align: middle;
+    background-color: white; /* Adds a white background */
+    border-radius: 50%; /* Makes the background circular */
+    padding: 2px; /* Adds some space between the icon and its background */
+    border: 2px solid white; /* Optionally adds a white border for more definition */
+}
+
+.social-network li a {
+    position: relative; /* Establishes a positioning context for span */
+    display: inline-block; /* Necessary for positioning the child elements */
+	text-align: center; /* Centers the contents of the anchor */
+    position: relative; /* For positioning the label absolutely relative to the anchor */
+}
+
+.icon-label {
+    position: absolute;
+    top: -40px;  /* Position the label above the icon */
+    left: 50%;
+    transform: translateX(-50%);  /* Centers the label horizontally relative to the icon */
+    display: none;  /* Keeps the label hidden until hovered */
+    color: white;
+    background-color: rgba(0, 0, 0, 0.7);  /* Semi-transparent background for visibility */
+    padding: 5px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.social-network li a:hover .icon-label {
+    display: block; /* Show on hover */
+}
+
+/* ---end social network --- */
+
+.container.footer {
+	background: #358ccb;
+	border-top: 5px solid #A71F4A;
+	margin-bottom: 20px;
+}
+
+.footer .row {
+    margin-bottom: 0 !important; /* Removes bottom margin */
+}
+
+.row.footer {
+    display: flex;
+    align-items: center; /* Vertical alignment */
+    justify-content: center; /* Horizontal alignment, if needed */
+}
+
+.copyright p{
+	text-align: left;
+	font-size: 16px;
+	color: #fff;
+	margin-bottom: 0 !important; /* Removes bottom margin */
+}
+
+ul.social-network {
+	float: right;
+}
+
+/* start scroll to top */
+.scrollup {
+	position: fixed;
+	width: 32px;
+	height: 32px;
+	bottom: 0px;
+	right: 20px;
+	background: #222;
+
+}
+
+a.scrollup {
+	outline: 0;
+	text-align: center;
+}
+
+a.scrollup:hover,
+a.scrollup:active,
+a.scrollup:focus {
+	opacity: 1;
+	text-decoration: none;
+}
+
+a.scrollup i {
+	margin-top: 10px;
+	color: #fff;
+}
+
+a.scrollup i:hover {
+	text-decoration: none;
+}
+
+/* end scroll to top */
+
+.aligncenter {
+	text-align: center;
+}
+
+.aligncenter span {
+	margin-left: 0;
+}
+
+
+@media (max-width: 767px) {
+
+	body {
+		padding-right: 0;
+		padding-left: 0;
+	}
+
+	.navbar-brand {
+		margin-top: 10px;
+		border-bottom: none;
+	}
+
+	.navbar-header {
+		margin-top: 0;
+		border-bottom: none;
+	}
+
+	.navbar-nav {
+		border-top: none;
+		float: none;
+		width: 100%;
+	}
+
+	.navbar .nav>.active>a,
+	.navbar .nav>.active>a:hover {
+		background: none;
+		font-weight: 700;
+		color: #1B1B1B;
+	}
+
+	header .navbar-nav>li {
+		padding-bottom: 0;
+		padding-top: 0;
+	}
+
+	header .nav li .dropdown-menu {
+		margin-top: 0;
+	}
+
+	.navbar-collapse.collapse {
+		border: none;
+		overflow: hidden;
+	}
+
+}

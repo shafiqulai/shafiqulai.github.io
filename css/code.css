@@ -1,0 +1,152 @@
+﻿
+.tabulator {
+  border: none;
+}
+.tabulator .tabulator-header {
+  border: 1px solid #dbdbdb;
+  border-width: 0 0 2px;
+}
+.tabulator .tabulator-header .tabulator-col {
+  border-right: none;
+}
+.tabulator .tabulator-header .tabulator-col.tabulator-moving {
+  border: none;
+}
+.tabulator .tabulator-header .tabulator-col .tabulator-col-content {
+  padding: 0.5em 0.75em;
+}
+.tabulator .tabulator-header .tabulator-col .tabulator-col-content .tabulator-col-sorter {
+  right: 0px;
+}
+.tabulator .tabulator-header .tabulator-col .tabulator-header-filter input {
+  border: 1px solid #dbdbdb;
+}
+.tabulator .tabulator-header .tabulator-calcs-holder {
+  border: 1px solid #dbdbdb;
+  border-width: 2px 0 0;
+}
+.tabulator .tabulator-header .tabulator-calcs-holder .tabulator-row .tabulator-cell {
+  border-bottom-width: 0;
+}
+.tabulator .tabulator-tableholder .tabulator-table .tabulator-row.tabulator-calcs.tabulator-calcs-top {
+  border: 1px solid #dbdbdb;
+  border-width: 0 0 2px;
+}
+.tabulator .tabulator-tableholder .tabulator-table .tabulator-row.tabulator-calcs.tabulator-calcs-bottom {
+  border: 1px solid #dbdbdb;
+  border-width: 2px 0 0;
+}
+.tabulator .tabulator-tableholder .tabulator-table .tabulator-row.tabulator-calcs .tabulator-cell {
+  border-bottom-width: 0;
+}
+.tabulator .tabulator-footer {
+  padding: 0.5em 0.75em;
+  border: 1px solid #dbdbdb;
+  border-width: 2px 0 0;
+}
+.tabulator .tabulator-footer .tabulator-calcs-holder {
+  margin: -5px -10px 10px -10px;
+  border: 1px solid #dbdbdb;
+  border-width: 0 0 2px;
+}
+.tabulator .tabulator-footer .tabulator-calcs-holder .tabulator-row .tabulator-cell {
+  border-bottom-width: 0;
+}
+.tabulator .tabulator-footer .tabulator-spreadsheet-tabs {
+  margin-top: calc(-0.5em - 5px);
+}
+.tabulator .tabulator-footer .tabulator-spreadsheet-tabs .tabulator-spreadsheet-tab {
+  border-color: #dbdbdb;
+  font-weight: normal;
+}
+.tabulator .tabulator-footer .tabulator-spreadsheet-tabs .tabulator-spreadsheet-tab.tabulator-spreadsheet-tab-active {
+  border-color: #4a4a4a;
+  color: #363636;
+  font-weight: bold;
+}
+.tabulator .tabulator-footer .tabulator-page {
+  margin: 0 0.1875em;
+  padding: calc(0.375em - 1px) 0.75em;
+  border: 1px solid #dbdbdb;
+  font-size: 16px;
+}
+.tabulator .tabulator-footer .tabulator-page.active {
+  border-color: #4a4a4a;
+  color: #363636;
+  font-weight: bold;
+}
+@media (hover: hover) and (pointer: fine) {
+  .tabulator .tabulator-footer .tabulator-page:not(.disabled):hover {
+    cursor: pointer;
+    border-color: #b5b5b5;
+    background: inherit;
+    color: inherit;
+  }
+}
+.tabulator.is-striped .tabulator-row:nth-child(even) {
+  background-color: #fafafa;
+}
+.tabulator.is-bordered {
+  border: 1px solid #dbdbdb;
+}
+.tabulator.is-bordered .tabulator-header .tabulator-col {
+  border-right: 1px solid #dbdbdb;
+}
+.tabulator.is-bordered .tabulator-tableholder .tabulator-table .tabulator-row .tabulator-cell {
+  border-right: 1px solid #dbdbdb;
+}
+.tabulator.is-narrow .tabulator-header .tabulator-col .tabulator-col-content {
+  padding: 0.25em 0.5em;
+}
+.tabulator.is-narrow .tabulator-tableholder .tabulator-table .tabulator-row .tabulator-cell {
+  padding: 0.25em 0.5em;
+}
+.tabulator-row {
+  min-height: 22px;
+}
+.tabulator-row.tabulator-row-even {
+  background-color: inherit;
+}
+.tabulator-row.tabulator-selected {
+  background-color: #00d1b2 !important;
+}
+@media (hover: hover) and (pointer: fine) {
+  .tabulator-row.tabulator-selected:hover {
+    background-color: #009e86 !important;
+  }
+}
+.tabulator-row .tabulator-cell {
+  padding: 0.5em 0.75em;
+  border: 1px solid #dbdbdb;
+  border-width: 0 0 1px;
+}
+.tabulator-row .tabulator-cell.tabulator-row-header {
+  border: 1px solid #dbdbdb;
+  border-width: 0 0 1px;
+  border-right-width: 1px;
+  background: transparent;
+}
+.tabulator-row.tabulator-group {
+  border-bottom: 1px solid #999;
+  border-right: none;
+  border-top: 1px solid #999;
+  color: #363636;
+}
+.tabulator-print-table .tabulator-print-table-group {
+  box-sizing: border-box;
+  border-bottom: 1px solid #999;
+  border-right: none;
+  border-top: 1px solid #999;
+  color: #363636;
+}
+.tabulator-popup-container {
+  background: white;
+}
+.tabulator-edit-list .tabulator-edit-list-item.active {
+  color: white;
+}
+@media (hover: hover) and (pointer: fine) {
+  .tabulator-edit-list .tabulator-edit-list-item:hover {
+    color: white;
+  }
+}
