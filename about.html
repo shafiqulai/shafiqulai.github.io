@@ -103,7 +103,7 @@
 				<div class="col-md-8">
 					<div class="copyright">
 						<p>
-							<span>Copyright &copy; 2025 Shafiqul AI | All right reserved. By Md Shafiqul Islam</span>
+							<span>Copyright &copy; <span id="currentYear"></span> Shafiqul AI | All right reserved. By Md Shafiqul Islam</span>
 						</p>
 					</div>
 				</div>
@@ -150,6 +150,11 @@
 <script type="text/javascript" src="js/jquery-3.7.1.min.js"></script>
 <script type="text/javascript" src="js/bootstrap.min.js"></script>
 <script type="text/javascript" src="js/smooth-scroll.polyfills.min.js"></script>
+
+<script>
+    document.getElementById("currentYear").textContent = new Date().getFullYear();
+</script>
+
 
 </body>
 </html>
