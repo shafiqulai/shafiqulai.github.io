@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>Blog 1 - Shafiqul AI</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="Blog 1 - Shafiqul AI" />
+	<meta name="author" content="Md Shafiqul Islam" />
+	<link rel="icon" href="../img/favicon.ico" type="image/x-icon">
+
+	<!-- css -->
+	<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="../css/font-awesome.css" />
+	<link rel="stylesheet" type="text/css" href="../css/slick.css" />
+	<link rel="stylesheet" type="text/css" href="../css/slick-theme.css" />
+	<link rel="stylesheet" type="text/css" href="../css/tabulator_site.min.css" />
+	<link rel="stylesheet" type="text/css" href="../css/prism.css" />
+	<link rel="stylesheet" type="text/css" href="../css/style.css" />
+
+	<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+	<div id="wrapper">
+		<!-- start header -->
+		<header>
+			<div class="navbar navbar-default navbar-static-top">
+				<div class="container">
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle" data-toggle="collapse"
+							data-target=".navbar-collapse">
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+						<a class="navbar-brand" href="../index.html"><img src="../img/logo.png" alt="logo" class="navbar-logo" /></a>
+					</div>
+					<div class="navbar-collapse collapse ">
+						<ul class="nav navbar-nav">
+							<li><a href="../index.html">Home</a></li>
+							<li><a href="../about.html">About</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</header>
+		<!-- end header -->
+
+		<section id="content">
+			<div class="container">
+
+				<!-- blog details -->
+				<div id="blogContainer">
+					<!-- blog title -->
+					<div class="container blg-title-container">
+						<h2 class="blg-title">Blog post Id 1 : Decoding PointNet: A Practical Guide to 3D Segmentation with Python and PyTorch</h2>
+					</div>
+
+					<div class="blg-paragraph">
+						<p> PointNet [1] is a seminal paper in 3D perception, applying deep learning to 
+							point clouds for object classification and part/scene semantic segmentation. 
+							The original white-paper has been re-implemented with TensorFlow 2.0 and can 
+							be found at <a href="https://github.com/luis-gonzales/pointnet_own" target="_blank">github.com/luis-gonzales/pointnet_own</a>.
+						</p>
+					</div>
+
+					<!-- Table of Contents -->
+					<div class="blg-toc-container">
+						<h1>Table of Contents</h1>
+						<ul class="blg-toc-ul">
+							<li class="blg-toc-li"><a href="#input-data">Input Data</a></li>
+							<li class="blg-toc-li"><a href="#architecture">Architecture</a></li>
+							<ul class="blg-toc-ul">
+								<li class="blg-toc-li"><a href="#permutation">Permutation Invariance</a></li>
+								<li class="blg-toc-li"><a href="#transformation">Transformation Invariance</a></li>
+							</ul>
+							<li class="blg-toc-li"><a href="#analysis">Analysis and Visualization</a></li>
+							<li class="blg-toc-li"><a href="#data-transformation">Data Transformation</a></li>
+							<ul class="blg-toc-ul">
+								<li class="blg-toc-li"><a href="#normalize">Normalize</a></li>
+								<li class="blg-toc-li"><a href="#to-tensor">ToTensor</a></li>
+							</ul>
+							<li class="blg-toc-li"><a href="#dataset">PointCloud Dataset</a></li>
+							<li class="blg-toc-li"><a href="#loss">Loss Function</a></li>
+							<li class="blg-toc-li"><a href="#conclusion">Conclusion</a></li>
+						</ul>
+					</div>
+
+					<div id = "input-data" class="blg-main-header">
+						<h2> Input Data</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p> PointNet takes raw point cloud data as input, which is typically collected from 
+							either a lidar or radar sensor. Unlike 2D pixel arrays (images) or 3D voxel arrays, 
+							point clouds have an unstructured representation in that the data is simply a 
+							collection (more specifically, a set) of the points captured during a lidar or radar sensor 
+							scan. In order to leverage existing techniques built around (2D and 3D) convolutions, many 
+							researchers and practitioners often discretize a point cloud by taking multi-view projections 
+							onto 2D space or quantizing it to 3D voxels. Given that the original data is manipulated, either 
+							approach can have negative impacts.
+						</p>
+					</div>
+					
+					<div id = "architecture" class="blg-main-header">
+						<h2> Architecture</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p> Given that PointNet consumes raw point cloud data, it was necessary to develop an architecture 
+							that conformed to the unique properties of point sets. Among these, the authors emphasize:
+						</p>
+					</div>
+
+					<div id = "permutation" class="blg-sub-header">
+						<h2> Permutation Invariance</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p> Permutation (Order) Invariance: given the unstructured nature of point cloud data, a scan made up 
+							of N points has N! permutations. The subsequent data processing must be invariant to the different 
+							representations.
+						</p>
+					</div>
+
+					<div id = "transformation" class="blg-sub-header">
+						<h2> Transformation Invariance</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p> classification and segmentation outputs should be unchanged if the object undergoes certain 
+							transformations, including rotation and translation.
+						</p>
+					</div>
+					<div class="blg-img-container">
+						<img src="../img/template/img1.png" alt="" />
+						<h3> Fig 1: PointNet Architecture</h3>
+					</div>
+
+					<div id = "analysis" class="blg-main-header">
+						<h2> Analysis and Visualization</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p> There is a considerable amount of intuition that can be drawn from the global feature vector. 
+							Firstly, the dimensionality of the vector, referred to by the authors as the bottleneck dimension 
+							and symbolized by K, relates directly to the expressiveness of the model, as mentioned previously. 
+							Naturally, a larger value of K leads to a more complex — and, likely, accurate — model, and vice versa. 
+							For reference, PointNet is designed with K=1024. Fig. 9 shows the accuracy of PointNet across K and 
+							number points comprising an input point cloud.
+						</p>
+					</div>
+					<div class="blg-img-container">
+						<img src="../img/template/img2.png" alt="" />
+						<h3> Fig 2: Accuracy across bottleneck size</h3>
+					</div>
+					<div class="blg-paragraph">
+						<p> Also, recall that the feature vector was the result of a thoughtfully applied symmetric 
+							function (for permutation invariance). In particular, PointNet makes use of max pooling. 
+							Similar to using the max operator to compress multiple real-valued inputs to a single value, 
+							the output of max pooling compresses the n points of the input point cloud to a subset of points.
+						</p>
+					</div>
+
+					<div id = "data-transformation" class="blg-main-header">
+						<h2> Data Transformation</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p> A crucial step in preparing our data involved normalization and tensor 
+							conversion through custom transformations. Two primary transformations were employed:
+						</p>
+					</div>
+
+					<div id = "normalize" class="blg-sub-header">
+						<h2> Normalize</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p> This operation centers the point cloud by subtracting its mean and scales it to 
+							ensure the maximum norm is unity.
+						</p>
+					</div>
+
+					<!-- Code -->
+					<div class="blg-code-container">
+						<pre class="line-numbers">
+							<code class="language-python">
+class Normalize(object):
+	def __call__(self, pointcloud):
+		assert len(pointcloud.shape)==2
+
+		norm_pointcloud = pointcloud - np.mean(pointcloud, axis=0)
+		norm_pointcloud /= np.max(np.linalg.norm(norm_pointcloud, axis=1))
+
+		return  norm_pointcloud
+							</code>
+						</pre>							
+					</div>
+
+
+					<div id = "to-tensor" class="blg-sub-header">
+						<h2> ToTensor</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p> This transformation converts the point cloud into a PyTorch tensor.
+						</p>
+					</div>
+
+					<!-- Code -->
+					<div class="blg-code-container">
+						<pre class="line-numbers">
+							<code class="language-python">
+class ToTensor(object):
+	def __call__(self, pointcloud):
+		assert len(pointcloud.shape)==2
+
+		return torch.from_numpy(pointcloud)
+							</code>
+						</pre>							
+					</div>
+					<div class="blg-paragraph">
+						<p> The combination of these transformations was encapsulated in the default_transforms() function.
+						</p>
+					</div>
+
+					<div id = "dataset" class="blg-main-header">
+						<h2> PointCloud Dataset</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p> We then crafted a custom dataset, PointCloudData, extending PyTorch's Dataset class. 
+							This dataset represents a collection of point clouds for training and testing. The structure involves:
+						</p>
+					</div>
+					<ul>
+						<li class="blg-li">Initializing with dataset details and an optional transformation function.</li>
+						<li class="blg-li">Defining the length of the dataset.</li>
+						<li class="blg-li">Retrieving an item, and applying transformations if specified.</li>
+					</ul>
+					<div class="blg-paragraph">
+						<p> This meticulous approach to dataset creation and loading is not only beneficial for basic problems 
+							but becomes indispensable as the complexity of the dataset and training procedures increases. 
+							It lays the groundwork for efficient, scalable, and parallelized data processing during training and testing.
+						</p>
+					</div>
+
+					<div id = "loss" class="blg-main-header">
+						<h2> Loss Function</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p> In the realm of neural network training, the loss function plays a pivotal role in guiding 
+							the model's parameter updates. Our PointNet model employs a carefully designed loss function, 
+							influenced by the insights provided in the paper: "A regularization loss (with weight 0.001) is added 
+							to the softmax classification loss to make the matrix close to orthogonal."
+						</p>
+					</div>
+
+
+					<!-- Table -->
+					<div class="blg-table-container"></div>
+					<div class="blg-center-txt">
+						<h3> Table 1 : Person detail information</h3>
+					</div>
+					<div class="blg-paragraph">
+						<p> This loss function combines the standard Negative Log Likelihood (NLL) loss for softmax 
+							classification with a regularization term. The regularization term penalizes deviations of 
+							the transformation matrices from orthogonality, aligning with the paper's emphasis on achieving orthogonality
+						</p>
+					</div>
+
+					<div id = "conclusion" class="blg-main-header">
+						<h2> Conclusion</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p> PointNet emerges as a groundbreaking tool for 3D segmentation, overcoming challenges posed 
+							by unordered point sets. Its theoretical foundations, architectural design, and practical 
+							implementation showcase its versatility and reliability. By combining theoretical prowess 
+							with practical implementation, we've demystified the journey of understanding and utilizing 
+							PointNet for 3D segmentation. The integration of PyTorch and Python provides a practical framework 
+							for exploring the potential of PointNet in real-world applications.
+						</p>
+					</div>
+
+				</div>
+
+				<!-- Download Source Code -->
+
+				<h1>
+					<img src="../img/download.png" alt="Download" style="vertical-align: middle; margin-right: 5px;"/>
+					Download Full Source Code : 
+					<a href="https://github.com/luis-gonzales/pointnet_own" target="_blank">PointNet Architecture</a>
+				</h1>
+
+				<div class="reference-container">
+					<hr class="blg-hr">
+					<h2>References</h2>
+					<ul class="blg-ul">
+						<li class="blg-li">Point Cloud : <a target="_blank" href="https://www.dronegenuity.com/point-clouds/">https://www.dronegenuity.com/point-clouds/</a></li>
+						<li class="blg-li">CloudCompare : <a target="_blank" href="https://www.danielgm.net/cc/">https://www.danielgm.net/cc/</a></li>
+						<li class="blg-li">Laspy : <a target="_blank" href="https://laspy.readthedocs.io/en/latest/intro.html">https://laspy.readthedocs.io/en/latest/intro.html</a></li>
+						<li class="blg-li">Gradio : <a target="_blank" href="https://www.gradio.app/">https://www.gradio.app/</a></li>
+						<li class="blg-li">Docker : <a target="_blank" href="https://www.docker.com/get-started/">https://www.docker.com/get-started/</a></li>
+					</ul>
+				</div>
+
+				<div class="blg-center-txt">
+					<h1>Related Articles</h1>
+				</div>
+
+				<!-- blog posts in slick slider -->
+				<div id="postContainer" class="row">
+					<!-- Blog posts will be dynamically generated here -->
+				</div>
+
+				<!-- Slide Counter -->
+				<div class="blg-slide-counter">
+					<span id="currentSlide">1</span> / <span id="totalSlides">1</span>
+				</div>
+
+			</div>
+		</section>
+		
+		<section class="footer-section">
+			<div class="container footer">
+				<div class="row footer">
+					<div class="col-md-6">
+						<div class="copyright">
+							<p>
+								<span>Copyright &copy; 2025 Shafiqul AI | All right reserved. By Md Shafiqul Islam</span>
+							</p>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<ul class="social-network">
+							<li>
+								<a target="_blank" href="mailto:mdshafiqul.islam603@gmail.com" data-placement="top" title="Gmail">
+									<img src="../img/contact/gmail.png" alt="Gmail">
+									<span class="icon-label">Gmail</span>
+								</a>
+							</li>
+							<li>
+								<a target="_blank" href="https://www.linkedin.com/in/shafiqul-islam-sumon/" data-placement="top" title="LinkedIn">
+									<img src="../img/contact/linkedin.png" alt="LinkedIn">
+									<span class="icon-label">LinkedIn</span>
+								</a>
+							</li>
+							<li>
+								<a target="_blank" href="https://github.com/shafiqulislamsumon" data-placement="top" title="GitHub">
+									<img src="../img/contact/github.png" alt="GitHub">
+									<span class="icon-label">GitHub</span>
+								</a>
+							</li>
+							<li>
+								<a target="_blank" href="https://leetcode.com/u/shafiqul/" data-placement="top" title="LeetCode">
+									<img src="../img/contact/leetcode.png" alt="LeetCode">
+									<span class="icon-label">LeetCode</span>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</section>
+
+
+	</div> <!-- end wrapper -->
+
+	<a href="#" class="scrollup"><i class="fa fa-angle-up active"></i></a>
+
+	<!-- javascript -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script type="text/javascript" src="../js/jquery-3.7.1.min.js"></script>
+	<script type="text/javascript" src="../js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="../js/slick.min.js"></script>
+	<script type="text/javascript" src="../js/tabulator.min.js"></script>
+	<script type="text/javascript" src="../js/prism.js"></script>
+	<script type="text/javascript" src="../js/smooth-scroll.polyfills.min.js"></script>
+	<script type="text/javascript" src="../js/detail.js"></script>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			var tabledata = [
+				{ id: 1, name: "John Doe", age: 29, gender: "Male", occupation: "Doctor", progress: 12 },
+				{ id: 2, name: "Jane Smith", age: 42, gender: "Female", occupation: "Engineer", progress: 20 },
+				{ id: 3, name: "Mary Johnson", age: 35, gender: "Female", occupation: "Housewife", progress: 32 },
+				{ id: 4, name: "Michael Williams", age: 31, gender: "Male", occupation: "Teacher", progress: 10 },
+				{ id: 5, name: "Andrew wills", age: 23, gender: "Male", occupation: "Student", progress: 54 },
+				{ id: 6, name: "Alice Hans", age: 53, gender: "Male", occupation: "Driver", progress: 72 }
+			];
+
+			var columns = [
+				{ title: "Id", field: "id" },
+				{ title: "Name", field: "name" },
+				{ title: "Age", field: "age", hozAlign: "left", sorter: "number" },
+				{ title: "Gender", field: "gender" },
+				{ title: "Occupation", field: "occupation" },
+				{ title: "Progress", field: "progress" },
+			];
+
+			// Create a Tabulator on an element with id "example-table"
+			new Tabulator(".blg-table-container", {
+				data: tabledata, //assign data to table
+				columns: columns, //create columns from data field names automatically
+				layout: "fitColumns",
+				pagination: "local",
+				paginationSize: 6,
+				paginationSizeSelector: [3, 6, 8, 10],
+				paginationCounter: "rows",
+			});
+		});
+	</script>
+
+</body>
+
+</html>

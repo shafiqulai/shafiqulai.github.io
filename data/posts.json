@@ -2,12 +2,11 @@
     {
         "id": 1,
         "author": "Md Shafiqul Islam",
-        "category": ["LLM"],
-        "image": "./img/posts/bike_water1-1000x600.jpg",
-        "slide": "./img/slides/4.png",
-        "title": "Blog post Id 1 : Decoding PointNet: A Practical Guide to 3D Segmentation with Python and PyTorch",
-        "date": "13 Nov 2024",
-        "description": "In at accumsan risus. Nam id volutpat ante. Etiam vel mi mattis, vulputate nunc nec, sodales nibh. Etiam nulla magna, gravida eget ultricies sit amet, hendrerit in lorem. hello world, i am creating my personal blog and portfolio.",
+        "category": ["Docker"],
+        "image": "./img/blog_1/blog_1_thumbnail.png",
+        "title": "Protect Sensitive Information in Docker: Accessing .env Credentials Without Exposing Them",
+        "date": "3 Dec 2024",
+        "description": "Managing sensitive information like API keys and credentials is crucial in modern application development. While Docker simplifies containerization, mishandling .env files can expose secrets and compromise security. This blog will guide you through securely managing .env files in Docker, preventing them from being embedded in images, and dynamically injecting credentials at runtime. By following these steps, you’ll ensure your applications remain secure and production-ready.",
         "readMoreUrl": "./blogs/blog_1.html"
     },
     {
@@ -17,9 +16,9 @@
         "image": "./img/posts/mac_glasses1-1000x600.jpg",
         "slide": "./img/slides/2.jpg",
         "title": "Blog post Id 2 : Winter Is Coming. Get ready for the upcoming winter. This year there might be more cold than ever.",
-        "date": "5 Oct 2014",
+        "date": "2 Nov 2024",
         "description": "In at accumsan risus. Nam id volutpat ante. Etiam vel mi mattis, vulputate nunc nec, sodales nibh. Etiam nulla magna, gravida eget ultricies sit amet, hendrerit in lorem.",
-        "readMoreUrl": "./blogs/blog_1.html"
+        "readMoreUrl": "./blogs/template.html"
     },
     {
         "id": 3,
@@ -30,7 +29,7 @@
         "title": "Blog post Id 3 : The Illustration",
         "date": "7 Nov 2014",
         "description": "In at accumsan risus. Nam id volutpat ante. Etiam vel mi mattis, vulputate nunc nec, sodales nibh. Etiam nulla magna, gravida eget ultricies sit amet, hendrerit in lorem.",
-        "readMoreUrl": "./blogs/blog_1.html"
+        "readMoreUrl": "./blogs/template.html"
     },
     {
         "id": 4,
@@ -41,7 +40,7 @@
         "title": "Blog post Id 4 : Design Your Mind",
         "date": "2 Jun 2012",
         "description": "In at accumsan risus. Nam id volutpat ante. Etiam vel mi mattis, vulputate nunc nec, sodales nibh. Etiam nulla magna, gravida eget ultricies sit amet, hendrerit in lorem.",
-        "readMoreUrl": "./blogs/blog_1.html"
+        "readMoreUrl": "./blogs/template.html"
     },
     {
         "id": 5,
@@ -52,7 +51,7 @@
         "title": "Blog post Id 5 : Winter is coming",
         "date": "13 Sep 2014",
         "description": "In at accumsan risus. Nam id volutpat ante. Etiam vel mi mattis, vulputate nunc nec, sodales nibh. Etiam nulla magna, gravida eget ultricies sit amet, hendrerit in lorem.",
-        "readMoreUrl": "./blogs/blog_1.html"
+        "readMoreUrl": "./blogs/template.html"
     },
     {
         "id": 6,
@@ -63,7 +62,7 @@
         "title": "Blog post Id 6 : The Illustration",
         "date": "25 Dec 2017",
         "description": "In at accumsan risus. Nam id volutpat ante. Etiam vel mi mattis, vulputate nunc nec, sodales nibh. Etiam nulla magna, gravida eget ultricies sit amet, hendrerit in lorem.",
-        "readMoreUrl": "./blogs/blog_1.html"
+        "readMoreUrl": "./blogs/template.html"
     },
     {
         "id": 7,
@@ -74,7 +73,7 @@
         "title": "Blog post Id 7 : Design Your Mind",
         "date": "8 Jan 2019",
         "description": "In at accumsan risus. Nam id volutpat ante. Etiam vel mi mattis, vulputate nunc nec, sodales nibh. Etiam nulla magna, gravida eget ultricies sit amet, hendrerit in lorem.",
-        "readMoreUrl": "./blogs/blog_1.html"
+        "readMoreUrl": "./blogs/template.html"
     },
     {
         "id": 8,
@@ -85,7 +84,7 @@
         "title": "Blog post Id 8 : Winter Is Coming",
         "date": "16 Aug 2015",
         "description": "In at accumsan risus. Nam id volutpat ante. Etiam vel mi mattis, vulputate nunc nec, sodales nibh. Etiam nulla magna, gravida eget ultricies sit amet, hendrerit in lorem.",
-        "readMoreUrl": "./blogs/blog_1.html"
+        "readMoreUrl": "./blogs/template.html"
     },
     {
         "id": 9,
@@ -96,7 +95,7 @@
         "title": "Blog post Id 9 : The Illustration",
         "date": "24 Feb 2013",
         "description": "In at accumsan risus. Nam id volutpat ante. Etiam vel mi mattis, vulputate nunc nec, sodales nibh. Etiam nulla magna, gravida eget ultricies sit amet, hendrerit in lorem.",
-        "readMoreUrl": "./blogs/blog_1.html"
+        "readMoreUrl": "./blogs/template.html"
     },
     {
         "id": 10,
@@ -107,6 +106,6 @@
         "title": "Blog post Id 10 : The Illustration",
         "date": "30 Apr 2023",
         "description": "In at accumsan risus. Nam id volutpat ante. Etiam vel mi mattis, vulputate nunc nec, sodales nibh. Etiam nulla magna, gravida eget ultricies sit amet, hendrerit in lorem.",
-        "readMoreUrl": "./blogs/blog_1.html"
+        "readMoreUrl": "./blogs/template.html"
     }
 ]

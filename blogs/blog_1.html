@@ -3,9 +3,9 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>Blog 1 - Shafiqul AI</title>
+	<title>Manage .env Files in Docker</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<meta name="description" content="Blog 1 - Shafiqul AI" />
+	<meta name="description" content="Manage .env Files in Docker" />
 	<meta name="author" content="Md Shafiqul Islam" />
 	<link rel="icon" href="../img/favicon.ico" type="image/x-icon">
 
@@ -57,226 +57,717 @@
 				<div id="blogContainer">
 					<!-- blog title -->
 					<div class="container blg-title-container">
-						<h2 class="blg-title">Blog post Id 1 : Decoding PointNet: A Practical Guide to 3D Segmentation with Python and PyTorch</h2>
+						<h2 class="blg-title">Protect Sensitive Information in Docker: Accessing .env Credentials Without Exposing Them</h2>
+					</div>
+
+					<div class="blg-img-container">
+						<img src="../img/blog_1/blog_1_thumbnail.png" alt="Protect Sensitive Information in Docker" style="width: 70%;"/>
 					</div>
 
 					<div class="blg-paragraph">
-						<p> PointNet [1] is a seminal paper in 3D perception, applying deep learning to 
-							point clouds for object classification and part/scene semantic segmentation. 
-							The original white-paper has been re-implemented with TensorFlow 2.0 and can 
-							be found at <a href="https://github.com/luis-gonzales/pointnet_own" target="_blank">github.com/luis-gonzales/pointnet_own</a>.
+						<p> 
+							Managing sensitive information like API keys and credentials is crucial in modern application development. 
+							While Docker simplifies containerization, mishandling <span style="background-color: #efefef;">.env</span> files can expose secrets and compromise security. 
+							This blog will guide you through securely managing <span style="background-color: #efefef;">.env</span> files in Docker, preventing them from being embedded 
+							in images, and dynamically injecting credentials at runtime. By following these steps, you'll ensure your 
+							applications remain secure and production-ready.
 						</p>
+						<br>
 					</div>
 
 					<!-- Table of Contents -->
 					<div class="blg-toc-container">
 						<h1>Table of Contents</h1>
-						<ul class="blg-toc-ul">
-							<li class="blg-toc-li"><a href="#input-data">Input Data</a></li>
-							<li class="blg-toc-li"><a href="#architecture">Architecture</a></li>
+						<ol class="blg-toc-ol">
+							<li class="blg-toc-li"><a href="#introduction">Introduction</a></li>
+							<li class="blg-toc-li"><a href="#security-risk">Why Excluding .env Files from Docker Images is Crucial</a></li>
 							<ul class="blg-toc-ul">
-								<li class="blg-toc-li"><a href="#permutation">Permutation Invariance</a></li>
-								<li class="blg-toc-li"><a href="#transformation">Transformation Invariance</a></li>
+								<li class="blg-toc-li"><a href="#risk-including-env">Security Risks of Including .env Files</a></li>
+								<li class="blg-toc-li"><a href="#violate-security">Violates Security Best Practices</a></li>
+								<li class="blg-toc-li"><a href="#docker-example">Practical Docker Example</a></li>
+								<li class="blg-toc-li"><a href="#best-practice">Best Practices: Exclude .env Files</a></li>
 							</ul>
-							<li class="blg-toc-li"><a href="#analysis">Analysis and Visualization</a></li>
-							<li class="blg-toc-li"><a href="#data-transformation">Data Transformation</a></li>
+							<li class="blg-toc-li"><a href="#approach">Approach</a></li>
 							<ul class="blg-toc-ul">
-								<li class="blg-toc-li"><a href="#normalize">Normalize</a></li>
-								<li class="blg-toc-li"><a href="#to-tensor">ToTensor</a></li>
+								<li class="blg-toc-li"><a href="#approach1">Using Only Dockerfile with --env-file</a></li>
+								<li class="blg-toc-li"><a href="#approach2">Using Docker Compose</a></li>
 							</ul>
-							<li class="blg-toc-li"><a href="#dataset">PointCloud Dataset</a></li>
-							<li class="blg-toc-li"><a href="#loss">Loss Function</a></li>
+							<li class="blg-toc-li"><a href="#comparison">Comparison of different approaches</a></li>
 							<li class="blg-toc-li"><a href="#conclusion">Conclusion</a></li>
-						</ul>
+						</ol>
 					</div>
+					<br>
 
-					<div id = "input-data" class="blg-main-header">
-						<h2> Input Data</h2>
+					<div id = "introduction" class="blg-main-header">
+						<h2> 1. Introduction</h2>
 					</div>
 					<div class="blg-paragraph">
-						<p> PointNet takes raw point cloud data as input, which is typically collected from 
-							either a lidar or radar sensor. Unlike 2D pixel arrays (images) or 3D voxel arrays, 
-							point clouds have an unstructured representation in that the data is simply a 
-							collection (more specifically, a set) of the points captured during a lidar or radar sensor 
-							scan. In order to leverage existing techniques built around (2D and 3D) convolutions, many 
-							researchers and practitioners often discretize a point cloud by taking multi-view projections 
-							onto 2D space or quantizing it to 3D voxels. Given that the original data is manipulated, either 
-							approach can have negative impacts.
+						<p> 
+							When building modern applications, managing sensitive information such as API keys, tokens, and 
+							database credentials is a critical aspect of development. Developers often store these credentials 
+							in <span style="background-color: #efefef;">.env</span> files for simplicity, but improper handling 
+							of these files in Dockerized environments can lead to severe security risks.
+						</p>
+						<p>
+							Including <span style="background-color: #efefef;">.env</span> files in Docker images may expose 
+							sensitive data through shared images or repositories, increasing the likelihood of accidental leaks. 
+							Additionally, this practice violates the best principles of secrets management, which emphasize separating 
+							application code from credentials.
+						</p>
+						<p>
+							To address this, we'll explore how to securely pass <span style="background-color: #efefef;">.env</span> files 
+							to Docker containers without embedding them in the image. This method ensures that sensitive credentials remain 
+							external to the Docker image, protecting them from unauthorized access while maintaining flexibility for updates.
+						</p>
+						<br>
+						<p>In this blog, we'll cover:</p>
+						<ul>
+							<li class="blg-li">Why embedding <span style="background-color: #efefef;">.env</span> files in Docker images is a bad idea.</li>
+							<li class="blg-li">A step-by-step guide to securely accessing <span style="background-color: #efefef;">.env</span> credentials at runtime.</li>
+							<li class="blg-li">Practical code examples to demonstrate the process.</li>
+							<li class="blg-li">Common pitfalls to avoid and tips for enhancing security.</li>
+						</ul>
+						<p>By the end, you'll have a clear understanding of how to manage sensitive data in Docker containers without compromising security.</p>
+						<br>
+					</div>
+					<br>
+					
+					<div id = "security-risk" class="blg-main-header">
+						<h2> 2. Why Excluding .env Files from Docker Images is Crucial</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p> 
+							When managing sensitive information such as API keys, database credentials, or tokens in 
+							applications, storing them in <span style="background-color: #efefef;">.env</span> files is a 
+							common practice. However, including <span style="background-color: #efefef;">.env</span> files in 
+							Docker images can lead to severe security risks, compromising your application's sensitive data. Let's explore 
+							why excluding <span style="background-color: #efefef;">.env</span> files from Docker images is essential.
+						</p>
+					</div>
+					<br>
+
+					<div id = "risk-including-env"class="blg-sub-header">
+						<h2> I. Security Risks of Including .env Files</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p>Here is summary of possible security risks of including .env file in docker image.</p>
+					</div>
+
+					<ul>
+						<li class="blg-li" style="font-weight: bold;">Accidental Exposure in Shared Images</li>
+						<div class="blg-paragraph">
+							<p>
+								Docker images are often pushed to repositories like Docker Hub or shared within teams. 
+								If <span style="background-color: #efefef;">.env</span> files are included in the image, 
+								their sensitive contents become part of the image layers. These layers can be inspected using tools 
+								like <span style="background-color: #efefef;">docker history</span> or extracted 
+								with <span style="background-color: #efefef;">docker save</span>, making 
+								secrets accessible to anyone with access to the image.
+							</p>
+							<p>For instance:</p>
+						</div>
+
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+docker pull your-repo/your-image:latest
+docker history your-repo/your-image:latest
+								</code>
+							</pre>							
+						</div>
+
+						<div class="blg-paragraph">
+							<p>The command might expose a layer that reveals:</p>
+						</div>
+
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-text">
+ADD file:3be2f00a0db1d6... in /app/.env
+								</code>
+							</pre>							
+						</div>
+
+						<li class="blg-li" style="font-weight: bold;">Persistent Secrets in Image Layers</li>
+						<div class="blg-paragraph">
+							<p>
+								Once a <span style="background-color: #efefef;">.env</span> file is embedded in an image, it becomes a part of the image history. 
+								Even if you later remove or replace it, the older layers will still contain the sensitive data 
+								unless you rebuild the image from scratch. This creates long-term security risks.
+							</p>
+						</div>
+					</ul>
+					<br>
+
+					<div id="violate-security" class="blg-sub-header">
+						<h2> II. Violates Security Best Practices</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p>
+							Modern security standards recommend separating sensitive credentials from application code. 
+							Including <span style="background-color: #efefef;">.env</span> files in Docker images contradicts 
+							this principle and introduces several challenges:
 						</p>
 					</div>
 					
-					<div id = "architecture" class="blg-main-header">
-						<h2> Architecture</h2>
-					</div>
-					<div class="blg-paragraph">
-						<p> Given that PointNet consumes raw point cloud data, it was necessary to develop an architecture 
-							that conformed to the unique properties of point sets. Among these, the authors emphasize:
-						</p>
-					</div>
-
-					<div id = "permutation" class="blg-sub-header">
-						<h2> Permutation Invariance</h2>
-					</div>
-					<div class="blg-paragraph">
-						<p> Permutation (Order) Invariance: given the unstructured nature of point cloud data, a scan made up 
-							of N points has N! permutations. The subsequent data processing must be invariant to the different 
-							representations.
-						</p>
-					</div>
-
-					<div id = "transformation" class="blg-sub-header">
-						<h2> Transformation Invariance</h2>
-					</div>
-					<div class="blg-paragraph">
-						<p> classification and segmentation outputs should be unchanged if the object undergoes certain 
-							transformations, including rotation and translation.
-						</p>
-					</div>
-					<div class="blg-img-container">
-						<img src="../img/blog_1/img1.png" alt="" />
-						<h3> Fig 1: PointNet Architecture</h3>
-					</div>
-
-					<div id = "analysis" class="blg-main-header">
-						<h2> Analysis and Visualization</h2>
-					</div>
-					<div class="blg-paragraph">
-						<p> There is a considerable amount of intuition that can be drawn from the global feature vector. 
-							Firstly, the dimensionality of the vector, referred to by the authors as the bottleneck dimension 
-							and symbolized by K, relates directly to the expressiveness of the model, as mentioned previously. 
-							Naturally, a larger value of K leads to a more complex — and, likely, accurate — model, and vice versa. 
-							For reference, PointNet is designed with K=1024. Fig. 9 shows the accuracy of PointNet across K and 
-							number points comprising an input point cloud.
-						</p>
-					</div>
-					<div class="blg-img-container">
-						<img src="../img/blog_1/img2.png" alt="" />
-						<h3> Fig 2: Accuracy across bottleneck size</h3>
-					</div>
-					<div class="blg-paragraph">
-						<p> Also, recall that the feature vector was the result of a thoughtfully applied symmetric 
-							function (for permutation invariance). In particular, PointNet makes use of max pooling. 
-							Similar to using the max operator to compress multiple real-valued inputs to a single value, 
-							the output of max pooling compresses the n points of the input point cloud to a subset of points.
-						</p>
-					</div>
-
-					<div id = "data-transformation" class="blg-main-header">
-						<h2> Data Transformation</h2>
-					</div>
-					<div class="blg-paragraph">
-						<p> A crucial step in preparing our data involved normalization and tensor 
-							conversion through custom transformations. Two primary transformations were employed:
-						</p>
-					</div>
-
-					<div id = "normalize" class="blg-sub-header">
-						<h2> Normalize</h2>
-					</div>
-					<div class="blg-paragraph">
-						<p> This operation centers the point cloud by subtracting its mean and scales it to 
-							ensure the maximum norm is unity.
-						</p>
-					</div>
-
-					<!-- Code -->
-					<div class="blg-code-container">
-						<pre class="line-numbers">
-							<code class="language-python">
-class Normalize(object):
-	def __call__(self, pointcloud):
-		assert len(pointcloud.shape)==2
-
-		norm_pointcloud = pointcloud - np.mean(pointcloud, axis=0)
-		norm_pointcloud /= np.max(np.linalg.norm(norm_pointcloud, axis=1))
-
-		return  norm_pointcloud
-							</code>
-						</pre>							
-					</div>
-
-
-					<div id = "to-tensor" class="blg-sub-header">
-						<h2> ToTensor</h2>
-					</div>
-					<div class="blg-paragraph">
-						<p> This transformation converts the point cloud into a PyTorch tensor.
-						</p>
-					</div>
-
-					<!-- Code -->
-					<div class="blg-code-container">
-						<pre class="line-numbers">
-							<code class="language-python">
-class ToTensor(object):
-	def __call__(self, pointcloud):
-		assert len(pointcloud.shape)==2
-
-		return torch.from_numpy(pointcloud)
-							</code>
-						</pre>							
-					</div>
-					<div class="blg-paragraph">
-						<p> The combination of these transformations was encapsulated in the default_transforms() function.
-						</p>
-					</div>
-
-					<div id = "dataset" class="blg-main-header">
-						<h2> PointCloud Dataset</h2>
-					</div>
-					<div class="blg-paragraph">
-						<p> We then crafted a custom dataset, PointCloudData, extending PyTorch's Dataset class. 
-							This dataset represents a collection of point clouds for training and testing. The structure involves:
-						</p>
-					</div>
 					<ul>
-						<li class="blg-li">Initializing with dataset details and an optional transformation function.</li>
-						<li class="blg-li">Defining the length of the dataset.</li>
-						<li class="blg-li">Retrieving an item, and applying transformations if specified.</li>
+						<li class="blg-li"><span style="font-weight: bold;">Static Secrets:</span> Secrets embedded into images 
+							become static. To update a credential, you need to rebuild and 
+							redeploy the image, which is time-consuming and inefficient.</li>
+						<li class="blg-li"><span style="font-weight: bold;">Environment-Specific Configurations:</span> Embedding 
+							<span style="background-color: #efefef;">.env</span> files in the image ties the container to a specific 
+							environment, making it harder to manage different credentials for development, staging, and production.</li>
+						
 					</ul>
+					<br>
+
+					<div id="docker-example" class="blg-sub-header">
+						<h2> III. Practical Docker Example</h2>
+					</div>
+
 					<div class="blg-paragraph">
-						<p> This meticulous approach to dataset creation and loading is not only beneficial for basic problems 
-							but becomes indispensable as the complexity of the dataset and training procedures increases. 
-							It lays the groundwork for efficient, scalable, and parallelized data processing during training and testing.
+						<p>
+							Here's a practical scenario illustrating why including .env files is risky:
+						</p>
+						<p>
+							<span style="font-weight: bold;">Dockerfile (Bad Practice):</span>
 						</p>
 					</div>
 
-					<div id = "loss" class="blg-main-header">
-						<h2> Loss Function</h2>
+					<!-- Code -->
+					<div class="blg-code-container">
+						<pre class="line-numbers">
+							<code class="language-docker">
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# This copies everything, including the .env file
+COPY . /app
+
+CMD ["python", "main.py"]
+							</code>
+						</pre>							
 					</div>
+					
 					<div class="blg-paragraph">
-						<p> In the realm of neural network training, the loss function plays a pivotal role in guiding 
-							the model's parameter updates. Our PointNet model employs a carefully designed loss function, 
-							influenced by the insights provided in the paper: "A regularization loss (with weight 0.001) is added 
-							to the softmax classification loss to make the matrix close to orthogonal."
+						<p>
+							<span style="font-weight: bold;">.env File:</span>
 						</p>
 					</div>
 
+					<!-- Code -->
+					<div class="blg-code-container">
+						<pre class="line-numbers">
+							<code class="language-dotenv">
+SLACK_BOT_TOKEN=my-slack-token
+SLACK_SIGNING_SECRET=my-slack-secret
+							</code>
+						</pre>							
+					</div>
+
+					<div class="blg-paragraph">
+						<p>
+							Building and pushing this image embeds the <span style="background-color: #efefef;">.env</span>  file 
+							into the image layers. Anyone with access to the image can inspect it:
+						</p>
+					</div>
+
+					<!-- Code -->
+					<div class="blg-code-container">
+						<pre class="line-numbers">
+							<code class="language-bash">
+docker save my-image > image.tar
+tar -xf image.tar
+grep -r "SLACK_BOT_TOKEN" .
+							</code>
+						</pre>							
+					</div>
+
+					<div class="blg-paragraph">
+						<p>
+							<span style="font-weight: bold;">Output:</span>
+						</p>
+					</div>
+
+					<!-- Code -->
+					<div class="blg-code-container">
+						<pre class="line-numbers">
+							<code class="language-text">
+SLACK_BOT_TOKEN=my-slack-token
+SLACK_SIGNING_SECRET=my-slack-secret								
+							</code>
+						</pre>							
+					</div>
+
+					<div id="best-practice" class="blg-sub-header">
+						<h2> IV. Best Practices: Exclude .env Files</h2>
+					</div>
+
+					<div class="blg-paragraph">
+						<p>
+							To prevent these risks, you should always exclude <span style="background-color: #efefef;">.env</span> files 
+							from Docker images using a <span style="background-color: #efefef;">.dockerignore</span> file:
+						</p>
+						<p>
+							<span style="background-color: #efefef;">.dockerignore:</span>
+						</p>
+					</div>
+
+					<!-- Code -->
+					<div class="blg-code-container">
+						<pre class="line-numbers">
+							<code class="language-text">
+.env								
+							</code>
+						</pre>							
+					</div>
+
+					<div class="blg-paragraph">
+						<p>
+							<span style="font-weight: bold;">Improved Dockerfile:</span>
+						</p>
+					</div>
+
+					<!-- Code -->
+					<div class="blg-code-container">
+						<pre class="line-numbers">
+							<code class="language-docker">
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# This copies everything, excluding the .env file due to .dockerignore
+COPY . /app
+
+CMD ["python", "main.py"]
+							</code>
+						</pre>							
+					</div>
+
+					<div class="blg-paragraph">
+						<p>
+							Now the <span style="background-color: #efefef;">.env</span> file remains external and is not part of the 
+							image. You can inject its values dynamically at runtime 
+							using <span style="background-color: #efefef;">docker-compose</span> or 
+							the <span style="background-color: #efefef;">--env-file</span> flag, ensuring secrets are handled securely.
+						</p>
+					</div>
+					<br><br>
+
+					<!-- 3rd Section -->
+					<div id = "approach" class="blg-main-header">
+						<h2> 3. Approach</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p> 
+							In this section, we'll explore how to securely 
+							manage <span style="background-color: #efefef;">.env</span> files with Docker by following a 
+							step-by-step procedure. We will cover two approaches:
+						</p>
+						<ol>
+							<li class="blg-li">Using only a <span style="background-color: #efefef;">Dockerfile</span> with the <span style="background-color: #efefef;">--env-file</span> option</li>
+							<li class="blg-li">Using <span style="background-color: #efefef;">docker-compose</span> to simplify handling environment variables.</li>
+							
+						</ol>
+						<p>
+							Both approaches ensure sensitive credentials in <span style="background-color: #efefef;">.env</span> files 
+							are passed to the container at runtime, without embedding them in the Docker image.
+						</p>
+					</div>
+					<br>
+
+					<div id="approach1" class="blg-sub-header">
+						<h2> Approach 1: Using Only Dockerfile with <span style="background-color: #efefef;">--env-file</span></h2>
+					</div>
+
+					<div class="blg-paragraph">
+						<p>
+							<span style="font-weight: bold;">Step 1: Prepare Application</span>
+						</p>
+						<p>
+							Create a simple Python script (<span style="background-color: #efefef;">main.py</span>) that reads and prints environment variables.
+						</p>
+						<p>
+							<span style="font-weight: bold;">main.py</span>
+						</p>
+
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-python">
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+
+def check_credentials():
+	token = os.getenv('SLACK_BOT_TOKEN')
+	secret = os.getenv('SLACK_SIGNING_SECRET')
+	key = os.getenv('OPENAI_API_KEY')
+
+	print("### SLACK_BOT_TOKEN : ", token)
+	print("### SLACK_SIGNING_SECRET : ", secret)
+	print("### OPENAI_API_KEY : ", key)
+
+
+if __name__ == "__main__":
+	check_credentials()
+								</code>
+							</pre>							
+						</div>
+
+						<p>
+							This script uses <span style="background-color: #efefef;">os.getenv()</span> to fetch the <span style="background-color: #efefef;">SLACK_BOT_TOKEN</span> and <span style="background-color: #efefef;">SLACK_SIGNING_SECRET</span> environment variables.
+						</p>
+
+					</div>
+					<br>
+
+					<div class="blg-paragraph">
+						<p>
+							<span style="font-weight: bold;">Step 2: Create a Secure <span style="background-color: #efefef;">.env</span> File</span>
+						</p>
+						<p>
+							In the same directory where <span style="background-color: #efefef;">main.py</span> exists, create a <span style="background-color: #efefef;">.env</span> file with the following content:
+						</p>
+						<p>
+							<span style="font-weight: bold;">.env file</span>
+						</p>
+
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-dotenv">
+SLACK_BOT_TOKEN=your-slack-bot-token
+SLACK_SIGNING_SECRET=your-signing-secret
+OPENAI_API_KEY=your openai api key								
+								</code>
+							</pre>							
+						</div>
+					</div>
+
+					<div class="blg-paragraph">
+						<p>
+							<span style="font-weight: bold;">Step 3: Create a Minimal Dockerfile</span>
+						</p>
+						<p>
+							Create a <span style="background-color: #efefef;">requirements.txt</span> file in the same directory where <span style="background-color: #efefef;">main.py</span> exists. 
+							It contains list of python libraries which needs to be installed while creating docker image. For example, <span style="background-color: #efefef;">python-dotenv</span>.
+							Here's a simple <span style="background-color: #efefef;">Dockerfile</span> that excludes the <span style="background-color: #efefef;">.env</span> file:
+						</p>
+						<p>
+							<span style="font-weight: bold;">Dockerfile</span>
+						</p>
+
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-docker">
+FROM python:3.10-slim
+
+# Set working directory
+WORKDIR /app
+
+# Copy the current directory contents into the container
+COPY . /app
+
+# Install dependencies, curl, and procps (for ps command)
+RUN apt-get update && apt-get install -y curl procps && \
+	pip install -r requirements.txt
+
+CMD ["python", "-u", "main.py"]
+								</code>
+							</pre>							
+						</div>
+					</div>
+
+					<div class="blg-paragraph">
+						<p>
+							<span style="font-weight: bold;">Step 4: Exclude <span style="background-color: #efefef;">.env</span> with <span style="background-color: #efefef;">.dockerignore</span></span>
+						</p>
+						<p>
+							Create a <span style="background-color: #efefef;">.dockerignore</span> file to ensure the <span style="background-color: #efefef;">.env</span> file is not included in the image:
+						</p>
+						<p>
+							<span style="font-weight: bold;">.dockerignore file</span>
+						</p>
+
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-text">
+.env
+								</code>
+							</pre>							
+						</div>
+
+						<p>
+							This prevents <span style="background-color: #efefef;">.env</span> from being copied into the Docker image during the <span style="background-color: #efefef;">COPY</span> step in the <span style="background-color: #efefef;">Dockerfile</span>.
+						</p>
+
+					</div>
+					<br>
+
+					<div class="blg-paragraph">
+						<p>
+							<span style="font-weight: bold;">Step 5: Build the Docker Image</span>
+						</p>
+						<p>
+							Build the Docker image:
+						</p>
+
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-text">
+docker build -t my-app .
+								</code>
+							</pre>							
+						</div>
+
+					</div>
+
+					<div class="blg-paragraph">
+						<p>
+							<span style="font-weight: bold;">Step 6: Run the Container with <span style="background-color: #efefef;">--env-file</span></span>
+						</p>
+						<p>
+							Pass the <span style="background-color: #efefef;">.env</span> file to the container at runtime using the <span style="background-color: #efefef;">--env-file</span> option:
+						</p>
+
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-text">
+docker run --env-file .env my-app
+								</code>
+							</pre>							
+						</div>
+
+						<p>
+							<span style="font-weight: bold;">Expected Output:</span>
+						</p>
+
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-text">
+### SLACK_BOT_TOKEN :  your-slack-bot-token
+### SLACK_SIGNING_SECRET :  your-signing-secret
+### OPENAI_API_KEY :  your openai api key
+								</code>
+							</pre>							
+						</div>
+
+					</div>
+
+					<div id="approach2" class="blg-sub-header">
+						<h2> Approach 2: Using Docker Compose</h2>
+					</div>
+
+					<div class="blg-paragraph">
+						<p>
+							If you prefer a simpler system to manage environment variables, you can use <span style="background-color: #efefef;">docker-compose</span>. 
+							This approach eliminates the need to pass <span style="background-color: #efefef;">--env-file</span> explicitly, as Docker Compose can automatically load <span style="background-color: #efefef;">.env</span> files.
+						</p>
+					</div>
+					<br>
+
+					<div class="blg-paragraph">
+						<p>
+							<span style="font-weight: bold;">Step 1: Prepare Application</span>
+						</p>
+						<p>
+							Use the same <span style="background-color: #efefef;">main.py</span> and <span style="background-color: #efefef;">.env</span> files as in Approach 1.
+						</p>
+					</div>
+					<br>
+
+					<div class="blg-paragraph">
+						<p>
+							<span style="font-weight: bold;">Step 2: Create a Dockerfile</span>
+						</p>
+						<p>
+							Use the same <span style="background-color: #efefef;">Dockerfile</span> as in Approach 1, ensuring <span style="background-color: #efefef;">.env</span> is excluded with <span style="background-color: #efefef;">.dockerignore</span>.
+						</p>
+					</div>
+					<br>
+
+					<div class="blg-paragraph">
+						<p>
+							<span style="font-weight: bold;">Step 3: Create a <span style="background-color: #efefef;">docker-compose.yml</span> File</span>
+						</p>
+						<p>
+							Create a <span style="background-color: #efefef;">docker-compose.yml</span> file to define the service and reference the <span style="background-color: #efefef;">.env</span> file:
+						</p>
+						<p>
+							docker-compose.yml:
+						</p>
+
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-docker">
+services:
+	app:
+		build:
+			context: .
+			dockerfile: Dockerfile
+		env_file:
+			- .env
+								</code>
+							</pre>							
+						</div>
+
+					</div>
+
+					<div class="blg-paragraph">
+						<p>
+							<span style="font-weight: bold;">Step 4: Build and Run the Application</span>
+						</p>
+						<p>
+							Build the docker image and and run the container using following commands.
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-text">
+# build docker image
+docker-compose build
+
+# run container
+docker-compose up
+								</code>
+							</pre>							
+						</div>
+						<p>
+							<span style="font-weight: bold;">Expected Output:</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-text">
+### SLACK_BOT_TOKEN :  your-slack-bot-token
+### SLACK_SIGNING_SECRET :  your-signing-secret
+### OPENAI_API_KEY :  your openai api key
+								</code>
+							</pre>							
+						</div>
+					
+					</div>
+
+					<div class="blg-paragraph">
+						<p>
+							<span style="font-weight: bold;">Notes</span>
+						</p>
+						<p>
+							We can override the <span style="background-color: #efefef;">.env</span> file by using the <span style="background-color: #efefef;">--env-file</span> flag when running <span style="background-color: #efefef;">docker-compose</span> commands.
+							Suppose we want to use a different <span style="background-color: #efefef;">.env</span> file, such as <span style="background-color: #efefef;">custom.env</span>. We can pass it like this:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-text">
+docker-compose --env-file custom.env up
+								</code>
+							</pre>							
+						</div>
+						<p>
+							This will instruct Docker Compose to load environment variables from <span style="background-color: #efefef;">custom.env</span> instead of the default <span style="background-color: #efefef;">.env</span>.
+						</p>
+						
+					</div>
+					<br>
+
+					<div class="blg-paragraph">
+						<p>
+							<span style="font-weight: bold;">Best Practices</span>
+						</p>
+						<ul>
+							<li class="blg-li">Use the <span style="background-color: #efefef;">--env-file</span> option when you need flexibility in choosing <span style="background-color: #efefef;">.env</span> files for different environments (e.g., <span style="background-color: #efefef;">dev.env</span>, <span style="background-color: #efefef;">prod.env</span>).</li>
+							<li class="blg-li">Avoid hardcoding the <span style="background-color: #efefef;">env_file</span> path in <span style="background-color: #efefef;">docker-compose.yml</span> for maximum runtime flexibility.</li>
+						</ul>
+						
+					</div>
+					<br><br>
+
+					<!-- 4th Section -->
+					<div id = "comparison" class="blg-main-header">
+						<h2> 4. Comparison of Docker (<span style="background-color: #efefef;">--env-file</span>) vs. Docker Compose Approaches</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p> 
+							Both Docker (<span style="background-color: #efefef;">--env-file</span>) and Docker Compose (<span style="background-color: #efefef;">env_file</span>) provide ways to pass <span style="background-color: #efefef;">.env</span> files at runtime while 
+							keeping them out of the Docker image. However, they have distinct advantages depending on your use case. 
+							Below is a detailed comparison based on key benefits:
+						</p>
+					</div>
 
 					<!-- Table -->
 					<div class="blg-table-container"></div>
 					<div class="blg-center-txt">
-						<h3> Table 1 : Person detail information</h3>
+						<h3> Table 1 : Comparison of different approaches</h3>
 					</div>
+					<br>
+
 					<div class="blg-paragraph">
-						<p> This loss function combines the standard Negative Log Likelihood (NLL) loss for softmax 
-							classification with a regularization term. The regularization term penalizes deviations of 
-							the transformation matrices from orthogonality, aligning with the paper's emphasis on achieving orthogonality
+						<p> 
+							<span style="font-weight: bold;">When to use Docker (<span style="background-color: #efefef;">--env-file</span>) approach?</span>
 						</p>
+						<ul>
+							<li class="blg-li">You have a <span style="font-weight: bold;">single-container</span> application.</li>
+							<li class="blg-li">You need <span style="font-weight: bold;">explicit control</span> over environment variable injection.</li>
+							<li class="blg-li">You want the flexibility to dynamically specify different <span style="background-color: #efefef;">.env</span> files at runtime.</li>
+							<li class="blg-li">You prefer a <span style="font-weight: bold;">minimal setup</span> without additional YAML configuration.</li>
+						</ul>
 					</div>
+					<br>
+
+					<div class="blg-paragraph">
+						<p> 
+							<span style="font-weight: bold;">When to use Docker Compose (<span style="background-color: #efefef;">env-file</span>) approach?</span>
+						</p>
+						<ul>
+							<li class="blg-li">You have <span style="font-weight: bold;">multiple services</span> (e.g., web app, database, cache) that need shared environment variables.</li>
+							<li class="blg-li">You want <span style="font-weight: bold;">automatic networking</span> and container orchestration.</li>
+							<li class="blg-li">You don't want to manually specify the <span style="background-color: #efefef;">.env</span> file path every time you start a container.</li>
+							<li class="blg-li">You need a <span style="font-weight: bold;">simplified deployment</span> and scaling process for development environments.</li>
+						</ul>
+					</div>
+					<br><br>
 
 					<div id = "conclusion" class="blg-main-header">
 						<h2> Conclusion</h2>
 					</div>
 					<div class="blg-paragraph">
-						<p> PointNet emerges as a groundbreaking tool for 3D segmentation, overcoming challenges posed 
-							by unordered point sets. Its theoretical foundations, architectural design, and practical 
-							implementation showcase its versatility and reliability. By combining theoretical prowess 
-							with practical implementation, we've demystified the journey of understanding and utilizing 
-							PointNet for 3D segmentation. The integration of PyTorch and Python provides a practical framework 
-							for exploring the potential of PointNet in real-world applications.
+						<p> 
+							Managing sensitive information securely in Dockerized environments is crucial for preventing credential 
+							leaks and maintaining best security practices. Including <span style="background-color: #efefef;">.env</span> files in Docker images can expose sensitive 
+							data, making it vulnerable to unauthorized access. Instead, a better approach is to keep secrets external 
+							and inject them dynamically at runtime.
+						</p>
+						<p>
+							We explored two secure ways to handle <span style="background-color: #efefef;">.env</span> files:
+						</p>
+						<ul>
+							<li class="blg-li"><span style="font-weight: bold;">Using</span> <span style="background-color: #efefef;">--env-file</span> with Docker: This approach offers explicit control and flexibility, allowing you to pass different <span style="background-color: #efefef;">.env</span> files dynamically at runtime.</li>
+							<li class="blg-li"><span style="font-weight: bold;">Using</span> <span style="background-color: #efefef;">env-file</span> with Docker Compose: This simplifies environment management for multi-container applications, ensuring secrets are loaded automatically without manual configuration.</li>
+						</ul>
+						<p>
+							Both methods ensure that <span style="background-color: #efefef;">.env</span> files remain outside the 
+							Docker image while providing a secure way to access credentials inside containers. Choosing the right approach 
+							depends on your project's needs. <span style="font-weight: bold;">Docker's <span style="background-color: #efefef;">--env-file</span> is great for single-container setups, while Docker Compose is ideal for multi-service applications.</span>
+						</p>
+						<p>
+							By following these best practices, you can safeguard sensitive credentials while maintaining flexibility, scalability, and security in your Docker deployments.
 						</p>
 					</div>
+					<br><br>
 
 				</div>
 
@@ -285,20 +776,22 @@ class ToTensor(object):
 				<h1>
 					<img src="../img/download.png" alt="Download" style="vertical-align: middle; margin-right: 5px;"/>
 					Download Full Source Code : 
-					<a href="https://github.com/luis-gonzales/pointnet_own" target="_blank">PointNet Architecture</a>
+					<a href="https://github.com/shafiqul-islam-sumon/SecureDockerEnv" target="_blank">SecureDockerEnv</a>
 				</h1>
+				<br>
 
 				<div class="reference-container">
 					<hr class="blg-hr">
-					<h3>[References]</h3>
-					<ul class="blg-ref-ul">
-						<li class="blg-ref-li">Point Cloud : <a target="_blank" href="https://www.dronegenuity.com/point-clouds/">https://www.dronegenuity.com/point-clouds/</a></li>
-						<li class="blg-ref-li">CloudCompare : <a target="_blank" href="https://www.danielgm.net/cc/">https://www.danielgm.net/cc/</a></li>
-						<li class="blg-ref-li">Laspy : <a target="_blank" href="https://laspy.readthedocs.io/en/latest/intro.html">https://laspy.readthedocs.io/en/latest/intro.html</a></li>
-						<li class="blg-ref-li">Gradio : <a target="_blank" href="https://www.gradio.app/">https://www.gradio.app/</a></li>
-						<li class="blg-ref-li">Docker : <a target="_blank" href="https://www.docker.com/get-started/">https://www.docker.com/get-started/</a></li>
+					<h2>References</h2>
+					<ul class="blg-ul">
+						<li class="blg-li"><a target="_blank" href="https://docs.docker.com/compose/how-tos/environment-variables/set-environment-variables/">https://docs.docker.com/compose/how-tos/environment-variables/set-environment-variables/</a></li>
+						<li class="blg-li"><a target="_blank" href="https://stackoverflow.com/questions/68122419/how-do-i-create-a-env-file-in-docker">https://stackoverflow.com/questions/68122419/how-do-i-create-a-env-file-in-docker</a></li>
+						<li class="blg-li"><a target="_blank" href="https://www.warp.dev/terminus/docker-compose-env-file">https://www.warp.dev/terminus/docker-compose-env-file</a></li>
+						<li class="blg-li"><a target="_blank" href="https://stackoverflow.com/questions/77465947/using-env-file-with-docker-compose">https://stackoverflow.com/questions/77465947/using-env-file-with-docker-compose</a></li>
+						<li class="blg-li"><a target="_blank" href="https://qiita.com/SolKul/items/989727aeeafcae28ecf7">https://qiita.com/SolKul/items/989727aeeafcae28ecf7</a></li>
 					</ul>
 				</div>
+				<br><br>
 
 				<div class="blg-center-txt">
 					<h1>Related Articles</h1>
@@ -313,6 +806,7 @@ class ToTensor(object):
 				<div class="blg-slide-counter">
 					<span id="currentSlide">1</span> / <span id="totalSlides">1</span>
 				</div>
+				<br>
 
 			</div>
 		</section>
@@ -323,7 +817,7 @@ class ToTensor(object):
 					<div class="col-md-6">
 						<div class="copyright">
 							<p>
-								<span>Copyright &copy; 2024 AI World | All right reserved. By Md Shafiqul Islam</span>
+								<span>Copyright &copy; 2025 Shafiqul AI | All right reserved. By Md Shafiqul Islam</span>
 							</p>
 						</div>
 					</div>
@@ -377,21 +871,18 @@ class ToTensor(object):
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
 			var tabledata = [
-				{ id: 1, name: "John Doe", age: 29, gender: "Male", occupation: "Doctor", progress: 12 },
-				{ id: 2, name: "Jane Smith", age: 42, gender: "Female", occupation: "Engineer", progress: 20 },
-				{ id: 3, name: "Mary Johnson", age: 35, gender: "Female", occupation: "Housewife", progress: 32 },
-				{ id: 4, name: "Michael Williams", age: 31, gender: "Male", occupation: "Teacher", progress: 10 },
-				{ id: 5, name: "Andrew wills", age: 23, gender: "Male", occupation: "Student", progress: 54 },
-				{ id: 6, name: "Alice Hans", age: 53, gender: "Male", occupation: "Driver", progress: 72 }
+				{ feature: "Ease of Use", docker: "Requires manually specifying --env-file when running the container.", docker_container: "Automatically loads .env file when running docker-compose up." },
+				{ feature: "Multiple Services Support", docker: "Best suited for single-container applications.", docker_container: "Ideal for multi-container applications where multiple services share environment variables."},
+				{ feature: "Explicit Control", docker: "Each docker run command explicitly specifies the .env file, avoiding unintended overrides.", docker_container: "Variables are implicitly loaded from .env, which may cause conflicts if multiple .env files exist."},
+				{ feature: "Runtime Flexibility", docker: "Allows dynamic selection of .env files using --env-file /path/to/env.", docker_container: "Requires modifying docker-compose.yml to change the .env file path (unless overridden with --env-file)."},
+				{ feature: "File Location", docker: "The .env file can be located anywhere and explicitly passed at runtime.", docker_container: "The .env file must be in the location specified in docker-compose.yml or the default project directory."},
+				
 			];
 
 			var columns = [
-				{ title: "Id", field: "id" },
-				{ title: "Name", field: "name" },
-				{ title: "Age", field: "age", hozAlign: "left", sorter: "number" },
-				{ title: "Gender", field: "gender" },
-				{ title: "Occupation", field: "occupation" },
-				{ title: "Progress", field: "progress" },
+				{ title: "Feature", field: "feature" },
+				{ title: "Docker (--env-file)", field: "docker", hozAlign: "left", sorter: "number" },
+				{ title: "Docker Compose (env_file)", field: "docker_container" },
 			];
 
 			// Create a Tabulator on an element with id "example-table"

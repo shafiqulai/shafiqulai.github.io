@@ -544,7 +544,7 @@ select.selectmenu {
 }
 
 .blg-code-container {
-	width: 70%;
+	width: 100%;
 	margin: 20px auto; /* Centering it horizontally */
 	display: block; /* Ensures the div is treated as a block-level element */
 	overflow: hidden; /* Adds overflow handling to prevent content from expanding the div */
@@ -575,11 +575,17 @@ select.selectmenu {
 	padding-inline-start: 1.5em;
 	font-weight: 400;
 }
+.blg-toc-ol {
+	-webkit-padding-start: 1.5em;
+	padding-inline-start: 1.5em;
+	font-weight: 400;
+}
 .blg-toc-ul ::marker {
-	color: #48b;
+	content: "\2022"; /* Unicode for a filled bullet point */
+	/* color: #48b; */
 }
 .blg-toc-ol ::marker {
-	color: #48b;
+	color: #000;
 }
 .blg-toc-li {
 	position: relative;
@@ -591,8 +597,12 @@ select.selectmenu {
 	cursor: default;
 	transition: color 0.4s;
 }
-.blg-toc-li:hover {
-	color: #358ccb;
+.blg-toc-li > a {
+    color: black; /* Set the text color to black */
+}
+
+.blg-toc-li > a:hover {
+    color: #000; /* Change the color on hover (optional) */
 }
 .blg-toc-li:hover::marker {
 	font-weight: 700;
@@ -628,13 +638,13 @@ select.selectmenu {
 	font-weight: bold;
 }
 
-.blg-ref-li {
-	font-size: 16px; /* Increases the text size */
+.blg-li {
+	font-size: 18px; /* Increases the text size */
 	padding: 10px; /* Adds padding around the text within each item */
 	border-radius: 5px; /* Optional: rounds the corners of each item */
 }
 
-.blg-ref-ul ::marker {
+.blg-ul ::marker {
 	color: #48b;
 }
 
@@ -936,25 +946,13 @@ p.sub-header:before {
 }
 
 .btn-o {
-	border: 1px solid #3A4F52;
-	color: #3A4F52;
+	border: 1px solid  #006400;
+	color:  #006400;
 }
 
 .btn-o:hover {
-	background: #3A4F52;
+	background:  #006400;
 	color: white;
-}
-
-.btn.btn-o-white {
-	border: 1px solid white;
-	color: white;
-	background: transparent;
-
-}
-
-.btn.btn-o-white:hover {
-	background: white !important;
-	color: #6a6a6a;
 }
 
 .load-more {
@@ -1153,6 +1151,13 @@ a.scrollup i:hover {
 	margin-left: 0;
 }
 
+.tabulator .tabulator-cell {
+	white-space: normal !important;      /* enable text wrapping */
+	overflow: visible !important;        /* allow the cell to grow vertically */
+	text-overflow: unset !important;     /* remove the ellipsis */
+	height: auto !important;            /* let the row expand naturally */
+  }
+  
 
 @media (max-width: 767px) {
 

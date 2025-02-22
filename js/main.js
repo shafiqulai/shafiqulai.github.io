@@ -12,6 +12,7 @@ function fetchPosts() {
         .then(response => response.json())
         .then(data => {
             totalPostsCount = data.length; // Store total number of posts
+            countCategories(data); // Count categories and update the category list
 
             // Sort posts by date (newest first)
             posts = data.sort((a, b) => new Date(b.date.replace(',', '')) - new Date(a.date.replace(',', '')));
@@ -24,7 +25,6 @@ function fetchPosts() {
             displayedPosts = [...posts]; // Copy the remaining posts
             displayPosts(true); // Display the initial set of posts
 
-            countCategories(data); // Count categories and update the category list
             updateButtonVisibility(); // Update Load More button visibility
         })
         .catch(error => console.error('Error fetching posts:', error));
@@ -209,7 +209,17 @@ function generateCategories() {
 // Function to filter posts by category
 function filterPostsByCategory(category) {
     currentPostIndex = 0;
-    displayedPosts = category === 'All' ? [mostRecentPost, ...posts] : posts.filter(post => post.category.includes(category));
+    if (category === 'All') {
+        // Show all posts, including the most recent post
+        displayedPosts = [mostRecentPost, ...posts];
+    } else {
+        // Filter both the most recent post and the other posts
+        displayedPosts = [
+            ...(mostRecentPost && mostRecentPost.category.includes(category) ? [mostRecentPost] : []),
+            ...posts.filter(post => post.category.includes(category))
+        ];
+    }
+
     displayPosts(true);
     updateButtonVisibility();
 }
