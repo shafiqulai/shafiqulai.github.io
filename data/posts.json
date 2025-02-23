@@ -3,7 +3,7 @@
         "id": 1,
         "author": "Md Shafiqul Islam",
         "category": ["Docker"],
-        "image": "./img/blog_1/blog_1_thumbnail.png",
+        "image": "./img/blog_1/blog_1_thumbnail.webp",
         "title": "Protect Sensitive Information in Docker: Accessing .env Credentials Without Exposing Them",
         "date": "3 Dec 2024",
         "description": "Managing sensitive information like API keys and credentials is crucial in modern application development. While Docker simplifies containerization, mishandling .env files can expose secrets and compromise security. This blog will guide you through securely managing .env files in Docker, preventing them from being embedded in images, and dynamically injecting credentials at runtime. By following these steps, you’ll ensure your applications remain secure and production-ready.",
