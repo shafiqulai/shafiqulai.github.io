@@ -172,8 +172,7 @@
 							<pre class="line-numbers">
 								<code class="language-bash">
 docker pull your-repo/your-image:latest
-docker history your-repo/your-image:latest
-								</code>
+docker history your-repo/your-image:latest</code>
 							</pre>							
 						</div>
 
@@ -184,9 +183,8 @@ docker history your-repo/your-image:latest
 						<!-- Code -->
 						<div class="blg-code-container">
 							<pre class="line-numbers">
-								<code class="language-text">
-ADD file:3be2f00a0db1d6... in /app/.env
-								</code>
+								<code class="language-bash">
+ADD file:3be2f00a0db1d6... in /app/.env</code>
 							</pre>							
 						</div>
 
@@ -247,8 +245,7 @@ WORKDIR /app
 # This copies everything, including the .env file
 COPY . /app
 
-CMD ["python", "main.py"]
-							</code>
+CMD ["python", "main.py"]</code>
 						</pre>							
 					</div>
 					
@@ -263,8 +260,7 @@ CMD ["python", "main.py"]
 						<pre class="line-numbers">
 							<code class="language-dotenv">
 SLACK_BOT_TOKEN=my-slack-token
-SLACK_SIGNING_SECRET=my-slack-secret
-							</code>
+SLACK_SIGNING_SECRET=my-slack-secret</code>
 						</pre>							
 					</div>
 
@@ -281,8 +277,7 @@ SLACK_SIGNING_SECRET=my-slack-secret
 							<code class="language-bash">
 docker save my-image > image.tar
 tar -xf image.tar
-grep -r "SLACK_BOT_TOKEN" .
-							</code>
+grep -r "SLACK_BOT_TOKEN" .</code>
 						</pre>							
 					</div>
 
@@ -297,10 +292,10 @@ grep -r "SLACK_BOT_TOKEN" .
 						<pre class="line-numbers">
 							<code class="language-text">
 SLACK_BOT_TOKEN=my-slack-token
-SLACK_SIGNING_SECRET=my-slack-secret								
-							</code>
+SLACK_SIGNING_SECRET=my-slack-secret</code>
 						</pre>							
 					</div>
+					<br>
 
 					<div id="best-practice" class="blg-sub-header">
 						<h2> IV. Best Practices: Exclude .env Files</h2>
@@ -320,8 +315,7 @@ SLACK_SIGNING_SECRET=my-slack-secret
 					<div class="blg-code-container">
 						<pre class="line-numbers">
 							<code class="language-text">
-.env								
-							</code>
+.env</code>
 						</pre>							
 					</div>
 
@@ -342,8 +336,7 @@ WORKDIR /app
 # This copies everything, excluding the .env file due to .dockerignore
 COPY . /app
 
-CMD ["python", "main.py"]
-							</code>
+CMD ["python", "main.py"]</code>
 						</pre>							
 					</div>
 
@@ -385,7 +378,7 @@ CMD ["python", "main.py"]
 
 					<div class="blg-paragraph">
 						<p>
-							<span style="font-weight: bold;">Step 1: Prepare Application</span>
+							<span style="font-weight: bold;">🔹 Step 1: Prepare Application</span>
 						</p>
 						<p>
 							Create a simple Python script (<span style="background-color: #efefef;">main.py</span>) that reads and prints environment variables.
@@ -416,8 +409,7 @@ def check_credentials():
 
 
 if __name__ == "__main__":
-	check_credentials()
-								</code>
+	check_credentials()</code>
 							</pre>							
 						</div>
 
@@ -430,7 +422,7 @@ if __name__ == "__main__":
 
 					<div class="blg-paragraph">
 						<p>
-							<span style="font-weight: bold;">Step 2: Create a Secure <span style="background-color: #efefef;">.env</span> File</span>
+							<span style="font-weight: bold;">🔹 Step 2: Create a Secure <span style="background-color: #efefef;">.env</span> File</span>
 						</p>
 						<p>
 							In the same directory where <span style="background-color: #efefef;">main.py</span> exists, create a <span style="background-color: #efefef;">.env</span> file with the following content:
@@ -445,15 +437,15 @@ if __name__ == "__main__":
 								<code class="language-text">
 SLACK_BOT_TOKEN=your-slack-bot-token
 SLACK_SIGNING_SECRET=your-signing-secret
-OPENAI_API_KEY=your openai api key								
-								</code>
+OPENAI_API_KEY=your openai api key</code>
 							</pre>							
 						</div>
 					</div>
+					<br>
 
 					<div class="blg-paragraph">
 						<p>
-							<span style="font-weight: bold;">Step 3: Create a Minimal Dockerfile</span>
+							<span style="font-weight: bold;">🔹 Step 3: Create a Minimal Dockerfile</span>
 						</p>
 						<p>
 							Create a <span style="background-color: #efefef;">requirements.txt</span> file in the same directory where <span style="background-color: #efefef;">main.py</span> exists. 
@@ -480,15 +472,15 @@ COPY . /app
 RUN apt-get update && apt-get install -y curl procps && \
 	pip install -r requirements.txt
 
-CMD ["python", "-u", "main.py"]
-								</code>
+CMD ["python", "-u", "main.py"]</code>
 							</pre>							
 						</div>
 					</div>
+					<br>
 
 					<div class="blg-paragraph">
 						<p>
-							<span style="font-weight: bold;">Step 4: Exclude <span style="background-color: #efefef;">.env</span> with <span style="background-color: #efefef;">.dockerignore</span></span>
+							<span style="font-weight: bold;">🔹 Step 4: Exclude <span style="background-color: #efefef;">.env</span> with <span style="background-color: #efefef;">.dockerignore</span></span>
 						</p>
 						<p>
 							Create a <span style="background-color: #efefef;">.dockerignore</span> file to ensure the <span style="background-color: #efefef;">.env</span> file is not included in the image:
@@ -501,8 +493,7 @@ CMD ["python", "-u", "main.py"]
 						<div class="blg-code-container">
 							<pre class="line-numbers">
 								<code class="language-text">
-.env
-								</code>
+.env</code>
 							</pre>							
 						</div>
 
@@ -515,7 +506,7 @@ CMD ["python", "-u", "main.py"]
 
 					<div class="blg-paragraph">
 						<p>
-							<span style="font-weight: bold;">Step 5: Build the Docker Image</span>
+							<span style="font-weight: bold;">🔹 Step 5: Build the Docker Image</span>
 						</p>
 						<p>
 							Build the Docker image:
@@ -525,16 +516,16 @@ CMD ["python", "-u", "main.py"]
 						<div class="blg-code-container">
 							<pre class="line-numbers">
 								<code class="language-bash">
-docker build -t my-app .
-								</code>
+docker build -t my-app .</code>
 							</pre>							
 						</div>
 
 					</div>
+					<br>
 
 					<div class="blg-paragraph">
 						<p>
-							<span style="font-weight: bold;">Step 6: Run the Container with <span style="background-color: #efefef;">--env-file</span></span>
+							<span style="font-weight: bold;">🔹 Step 6: Run the Container with <span style="background-color: #efefef;">--env-file</span></span>
 						</p>
 						<p>
 							Pass the <span style="background-color: #efefef;">.env</span> file to the container at runtime using the <span style="background-color: #efefef;">--env-file</span> option:
@@ -544,10 +535,10 @@ docker build -t my-app .
 						<div class="blg-code-container">
 							<pre class="line-numbers">
 								<code class="language-bash">
-docker run --env-file .env my-app
-								</code>
+docker run --env-file .env my-app</code>
 							</pre>							
 						</div>
+						<br>
 
 						<p>
 							<span style="font-weight: bold;">Expected Output:</span>
@@ -559,12 +550,12 @@ docker run --env-file .env my-app
 								<code class="language-text">
 ### SLACK_BOT_TOKEN :  your-slack-bot-token
 ### SLACK_SIGNING_SECRET :  your-signing-secret
-### OPENAI_API_KEY :  your openai api key
-								</code>
+### OPENAI_API_KEY :  your openai api key</code>
 							</pre>							
 						</div>
 
 					</div>
+					<br>
 
 					<div id="approach2" class="blg-sub-header">
 						<h2> Approach 2: Using Docker Compose</h2>
@@ -580,7 +571,7 @@ docker run --env-file .env my-app
 
 					<div class="blg-paragraph">
 						<p>
-							<span style="font-weight: bold;">Step 1: Prepare Application</span>
+							<span style="font-weight: bold;">🔹 Step 1: Prepare Application</span>
 						</p>
 						<p>
 							Use the same <span style="background-color: #efefef;">main.py</span> and <span style="background-color: #efefef;">.env</span> files as in Approach 1.
@@ -590,7 +581,7 @@ docker run --env-file .env my-app
 
 					<div class="blg-paragraph">
 						<p>
-							<span style="font-weight: bold;">Step 2: Create a Dockerfile</span>
+							<span style="font-weight: bold;">🔹 Step 2: Create a Dockerfile</span>
 						</p>
 						<p>
 							Use the same <span style="background-color: #efefef;">Dockerfile</span> as in Approach 1, ensuring <span style="background-color: #efefef;">.env</span> is excluded with <span style="background-color: #efefef;">.dockerignore</span>.
@@ -600,7 +591,7 @@ docker run --env-file .env my-app
 
 					<div class="blg-paragraph">
 						<p>
-							<span style="font-weight: bold;">Step 3: Create a <span style="background-color: #efefef;">docker-compose.yml</span> File</span>
+							<span style="font-weight: bold;">🔹 Step 3: Create a <span style="background-color: #efefef;">docker-compose.yml</span> File</span>
 						</p>
 						<p>
 							Create a <span style="background-color: #efefef;">docker-compose.yml</span> file to define the service and reference the <span style="background-color: #efefef;">.env</span> file:
@@ -619,16 +610,16 @@ services:
 			context: .
 			dockerfile: Dockerfile
 		env_file:
-			- .env
-								</code>
+			- .env</code>
 							</pre>							
 						</div>
 
 					</div>
+					<br>
 
 					<div class="blg-paragraph">
 						<p>
-							<span style="font-weight: bold;">Step 4: Build and Run the Application</span>
+							<span style="font-weight: bold;">🔹 Step 4: Build and Run the Application</span>
 						</p>
 						<p>
 							Build the docker image and and run the container using following commands.
@@ -641,10 +632,11 @@ services:
 docker-compose build
 
 # run container
-docker-compose up
-								</code>
+docker-compose up</code>
 							</pre>							
 						</div>
+						<br>
+
 						<p>
 							<span style="font-weight: bold;">Expected Output:</span>
 						</p>
@@ -654,12 +646,12 @@ docker-compose up
 								<code class="language-text">
 ### SLACK_BOT_TOKEN :  your-slack-bot-token
 ### SLACK_SIGNING_SECRET :  your-signing-secret
-### OPENAI_API_KEY :  your openai api key
-								</code>
+### OPENAI_API_KEY :  your openai api key</code>
 							</pre>							
 						</div>
 					
 					</div>
+					<br>
 
 					<div class="blg-paragraph">
 						<p>
@@ -673,8 +665,7 @@ docker-compose up
 						<div class="blg-code-container">
 							<pre class="line-numbers">
 								<code class="language-bash">
-docker-compose --env-file custom.env up
-								</code>
+docker-compose --env-file custom.env up</code>
 							</pre>							
 						</div>
 						<p>
@@ -717,7 +708,7 @@ docker-compose --env-file custom.env up
 
 					<div class="blg-paragraph">
 						<p> 
-							<span style="font-weight: bold;">When to use Docker (<span style="background-color: #efefef;">--env-file</span>) approach?</span>
+							<span style="font-weight: bold;">📌 When to use Docker (<span style="background-color: #efefef;">--env-file</span>) approach?</span>
 						</p>
 						<ul>
 							<li class="blg-li">You have a <span style="font-weight: bold;">single-container</span> application.</li>
@@ -730,7 +721,7 @@ docker-compose --env-file custom.env up
 
 					<div class="blg-paragraph">
 						<p> 
-							<span style="font-weight: bold;">When to use Docker Compose (<span style="background-color: #efefef;">env-file</span>) approach?</span>
+							<span style="font-weight: bold;">📌 When to use Docker Compose (<span style="background-color: #efefef;">env-file</span>) approach?</span>
 						</p>
 						<ul>
 							<li class="blg-li">You have <span style="font-weight: bold;">multiple services</span> (e.g., web app, database, cache) that need shared environment variables.</li>

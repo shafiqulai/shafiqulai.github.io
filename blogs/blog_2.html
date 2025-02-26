@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>How to Generate an SSH Key and Add It to GitHub for Secure Git Operations</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="How to Generate an SSH Key and Add It to GitHub for Secure Git Operations" />
+	<meta name="author" content="Md Shafiqul Islam" />
+	<link rel="icon" href="../img/favicon.ico" type="image/x-icon">
+
+	<!-- css -->
+	<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="../css/font-awesome.css" />
+	<link rel="stylesheet" type="text/css" href="../css/slick.css" />
+	<link rel="stylesheet" type="text/css" href="../css/slick-theme.css" />
+	<link rel="stylesheet" type="text/css" href="../css/tabulator_site.min.css" />
+	<link rel="stylesheet" type="text/css" href="../css/prism.css" />
+	<link rel="stylesheet" type="text/css" href="../css/style.css" />
+	
+
+	<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+	<div id="wrapper">
+		<!-- start header -->
+		<header>
+			<div class="navbar navbar-default navbar-static-top">
+				<div class="container">
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle" data-toggle="collapse"
+							data-target=".navbar-collapse">
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+						<a class="navbar-brand" href="../index.html"><img src="../img/logo.png" alt="logo" class="navbar-logo" /></a>
+					</div>
+					<div class="navbar-collapse collapse ">
+						<ul class="nav navbar-nav">
+							<li><a href="../index.html">Home</a></li>
+							<li><a href="../about.html">About</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</header>
+		<!-- end header -->
+
+		<section id="content">
+			<div class="container">
+
+				<!-- blog details -->
+				<div id="blogContainer">
+					<!-- blog title -->
+					<div class="container blg-title-container">
+						<h2 class="blg-title">How to Generate an SSH Key and Add It to GitHub for Secure Git Operations</h2>
+					</div>
+
+					<div class="blg-img-container">
+						<img src="../img/blog_2/blog_2_thumbnail.webp" alt="Generate an SSH Key and Add It to GitHub" style="width: 70%;"/>
+					</div>
+
+					<div class="blg-paragraph">
+						<p> 
+							GitHub requires authentication for performing Git operations like cloning, pushing, and pulling repositories. While passwords were previously used, GitHub now recommends SSH keys for secure and seamless authentication.
+						</p>
+						<p>
+							In this article, you'll learn how to generate an SSH key, add it to GitHub, and configure your system to authenticate using SSH. By the end, you'll be able to securely interact with your GitHub repositories without entering credentials repeatedly.
+						</p>
+						<br>
+					</div>
+
+					<!-- Table of Contents -->
+					<div class="blg-toc-container">
+						<h1>Table of Contents</h1>
+						<ol class="blg-toc-ol">
+							<li class="blg-toc-li"><a href="#introduction">Introduction</a></li>
+							<li class="blg-toc-li"><a href="#what-is-ssh">What is an SSH Key and Why Use It for GitHub?</a></li>
+							<li class="blg-toc-li"><a href="#generate-ssh">Generating an SSH Key Pair</a></li>
+							<ul class="blg-toc-ul">
+								<li class="blg-toc-li"><a href="#check-ssh">Checking for Existing SSH Keys</a></li>
+								<li class="blg-toc-li"><a href="#new-ssh">Creating a New SSH Key</a></li>
+								<li class="blg-toc-li"><a href="#passphrase">Adding a Passphrase (Optional)</a></li>
+							</ul>
+							<li class="blg-toc-li"><a href="#ssh-agent">Adding the SSH Key to the SSH Agent</a></li>
+							<ul class="blg-toc-ul">
+								<li class="blg-toc-li"><a href="#start-agent">Start the SSH Agent</a></li>
+								<li class="blg-toc-li"><a href="#add-key-to-agent">Add SSH Key to the Agent</a></li>
+								<li class="blg-toc-li"><a href="#verify-ssh">Verify the SSH Key is Added</a></li>
+							</ul>
+							<li class="blg-toc-li"><a href="#ssh-github">Adding the SSH Key to GitHub</a></li>
+							<ul class="blg-toc-ul">
+								<li class="blg-toc-li"><a href="#public-key">Copying the Public Key</a></li>
+								<li class="blg-toc-li"><a href="#add-key">Adding the Key to GitHub</a></li>
+								<li class="blg-toc-li"><a href="#test-ssh">Testing the SSH Connection</a></li>
+							</ul>
+							<li class="blg-toc-li"><a href="#configure-git">Configuring Git to Use SSH</a></li>
+							<li class="blg-toc-li"><a href="#clone">Cloning a Repository Using SSH</a></li>
+							<li class="blg-toc-li"><a href="#push">Pushing Code to GitHub Using SSH</a></li>
+							<li class="blg-toc-li"><a href="#multiple-ssh">Managing Multiple SSH Keys (Optional)</a></li>
+							<li class="blg-toc-li"><a href="#conclusion">Conclusion</a></li>
+						</ol>
+					</div>
+					<br>
+
+					<div id = "introduction" class="blg-main-header">
+						<h2> 1. Introduction</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p> 
+							When working with GitHub, you often need to perform Git operations such as cloning repositories, pushing 
+							changes, and pulling updates. Every interaction between your local machine and GitHub requires authentication to ensure security.
+						</p>
+						<p>
+							Previously, GitHub allowed password authentication for Git operations, but it has deprecated this method 
+							due to security risks. Instead, it now enforces more secure alternatives like SSH keys or personal access 
+							tokens (PATs). Among these, SSH keys are one of the most convenient and secure ways to authenticate without 
+							manually entering credentials every time.
+						</p>
+						<p>
+							Once configured, SSH authentication enables a secure, password-free connection between your system and 
+							GitHub, allowing you to clone repositories, push commits, and manage your code effortlessly.
+						</p>
+						<br>
+					</div>
+					<br>
+					
+					<div id = "what-is-ssh" class="blg-main-header">
+						<h2>2. What is an SSH Key and Why Use It for GitHub?</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p>
+							<span style="font-weight: bold;">🔹 What is an SSH Key?</span>
+						</p>
+						<p> 
+							An SSH (Secure Shell) key is a cryptographic key pair used for secure authentication between your local 
+							system and a remote server, such as GitHub. Instead of using a username and password for authentication, 
+							SSH keys enable a more secure and seamless login process.
+						</p>
+						<p>An SSH key pair consists of:</p>
+						<ul>
+							<li class="blg-li"><span style="font-weight: bold;">Private Key</span> (<span style="background-color: #efefef;">id_ed25519</span>) - Stored securely on your computer and never shared.</li>
+							<li class="blg-li"><span style="font-weight: bold;">Public Key</span> (<span style="background-color: #efefef;">id_ed25519.pub</span>) - Shared with remote servers (e.g., GitHub) to authenticate your identity.</li>
+						</ul>
+						<p>
+							When you attempt to connect to GitHub via SSH, the server verifies your private key using the corresponding 
+							public key. If they match, you are granted access without needing to enter a password.
+						</p>
+					</div>
+					<br>
+
+					<div class="blg-paragraph">
+						<p>
+							<span style="font-weight: bold;">🔹 Why Use SSH Keys for GitHub?</span>
+						</p>
+						<p> 
+							GitHub previously allowed users to authenticate using passwords for Git operations (e.g., cloning, pushing, pulling). 
+							However, due to security concerns, GitHub has removed password-based authentication and now recommends SSH keys or Personal 
+							Access Tokens (PATs) instead.
+						</p>
+						<p>Here's why SSH keys are preferred:</p>
+						<ul>
+							<li class="blg-li-check"><span style="font-weight: bold;">Enhanced Security</span> - SSH keys use strong encryption, making them much more secure than passwords. Even if someone intercepts the authentication request, they cannot derive the private key.</li>
+							<li class="blg-li-check"><span style="font-weight: bold;">No Need for Passwords</span> - Once configured, SSH authentication does not require entering your username and password every time you interact with GitHub.</li>
+							<li class="blg-li-check"><span style="font-weight: bold;">Faster and Seamless Authentication</span> - SSH connections are automated, making Git operations quicker compared to entering credentials manually.</li>
+							<li class="blg-li-check"><span style="font-weight: bold;">GitHub Requirement</span> - Since August 2021, GitHub no longer supports password authentication for Git operations, making SSH keys one of the best alternatives.</li>
+						</ul>
+					</div>
+					<br>
+
+					<div class="blg-paragraph">
+						<p>
+							<span style="font-weight: bold;">🔹 How SSH Authentication Works in GitHub (Example)</span>
+						</p>
+						<p> 
+							Let's say you want to <span style="font-weight: bold;">clone</span> a GitHub repository using SSH. Instead of using an HTTPS URL and 
+							entering a password, you would use an SSH URL like this:
+						</p>
+						<p>
+							<span style="font-weight: bold;">Without SSH (Using HTTPS, Requires Credentials Each Time)</span>
+						</p>
+
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+git clone https://github.com/your-username/repository.git</code>
+							</pre>
+						</div>
+						<p>
+							When running this command, GitHub will ask for your username and password (or personal access token) every time you push or pull code.
+						</p>
+
+						<p>
+							<span style="font-weight: bold;">With SSH (No Credentials Needed After Setup)</span>
+						</p>
+
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+git clone git@github.com:your-username/repository.git</code>
+							</pre>
+						</div>
+						<p>
+							If your SSH key is correctly configured, GitHub will authenticate you automatically, and the repository will be cloned without asking for credentials.
+						</p>
+						
+					</div>
+					<br>
+
+					<div id = "generate-ssh" class="blg-main-header">
+						<h2> 3. Generating an SSH Key Pair</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p> 
+							To securely authenticate with GitHub, you need to generate an <span style="font-weight: bold;">SSH key pair</span> — a cryptographic key combination that consists of:
+						</p>
+						<ul>
+							<li class="blg-li"><span style="font-weight: bold;">Private Key</span> (<span style="background-color: #efefef;">id_ed25519</span>) - Stored securely on your local machine; never share this key.</li>
+							<li class="blg-li"><span style="font-weight: bold;">Public Key</span> (<span style="background-color: #efefef;">id_ed25519.pub</span>) - Added to your GitHub account to authenticate your identity.</li>
+						</ul>
+						<p>
+							GitHub recommends using the <span style="font-weight: bold;">Ed25519</span> algorithm instead of RSA because it is more secure, faster, and generates smaller keys.
+						</p>
+					</div>
+					<br>
+
+					<div id = "check-ssh"class="blg-sub-header">
+						<h2> 🔍 Checking for Existing SSH Keys</h2>
+					</div>
+
+					<div class="blg-paragraph">
+						<p>
+							Before generating a new SSH key, check if you already have one on your system. Open a terminal (Command Prompt, 
+							Git Bash, or macOS/Linux Terminal) and run:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+ls -al ~/.ssh</code>
+							</pre>
+						</div>
+
+						<p> 
+							<span style="font-weight: bold;">For Windows (PowerShell):</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+dir $HOME\.ssh\</code>
+							</pre>
+						</div>
+
+						<p> 
+							This will list all files in the <span style="background-color: #efefef;">.ssh</span> directory. If you see files like <span style="background-color: #efefef;">id_rsa</span> and <span style="background-color: #efefef;">id_rsa.pub</span>, an SSH key already exists.
+						</p>
+						<br>
+						<p> 
+							<span style="font-weight: bold;">✅ Example Output (If SSH Keys Exist):</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+-rw-------  1 user user  2655 Feb 20 15:22 id_ed25519
+-rw-r--r--  1 user user   574 Feb 20 15:22 id_ed25519.pub
+-rw-------  1 user user  1326 Feb 20 15:22 known_hosts</code>
+							</pre>
+						</div>
+						<br>
+
+						<p> 
+							<span style="font-weight: bold;">🔴 If You Already Have an SSH Key</span>
+						</p>
+						<ul>
+							<li class="blg-li">If <span style="background-color: #efefef;">id_ed25519</span> and <span style="background-color: #efefef;">id_ed25519.pub</span> exist, you can use them or generate a new key if needed.</li>
+							<li class="blg-li">If you prefer a new key, move the existing one to a backup location using:</li>
+						</ul>
+
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+mv ~/.ssh/id_ed25519 ~/.ssh/id_ed25519_backup
+mv ~/.ssh/id_ed25519.pub ~/.ssh/id_ed25519_backup.pub</code>
+							</pre>
+						</div>
+
+					</div>
+					<br>
+
+					<div id = "new-ssh"class="blg-sub-header">
+						<h2> ⚡ Creating a New SSH Key</h2>
+					</div>
+
+					<div class="blg-paragraph">
+						<p> 
+							To generate an SSH key using the <span style="font-weight: bold;">Ed25519 algorithm</span>, run the following command:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+ssh-keygen -t ed25519 -C "your-email@example.com"</code>
+							</pre>
+						</div>
+
+						<p> 
+							<span style="font-weight: bold;">Explanation of Flags:</span>
+						</p>
+
+						<ul>
+							<li class="blg-li"><span style="background-color: #efefef;">-t ed25519</span> → Specifies the Ed25519 algorithm (recommended by GitHub).</li>
+							<li class="blg-li"><span style="background-color: #efefef;">-C "your-email@example.com"</span> → Adds an identifying comment (your GitHub email).</li>
+						</ul>
+						<p>
+							<span style="font-weight: bold;">Example Output:</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-vbnet">
+Generating public/private ed25519 key pair.
+Enter file in which to save the key (/home/user/.ssh/id_ed25519):</code>
+							</pre>
+						</div>
+						<p>
+							Simply press <span style="font-weight: bold;">Enter</span> to accept the default location (<span style="background-color: #efefef;">~/.ssh/id_ed25519</span> for Linux/macOS or <span style="background-color: #efefef;">%USERPROFILE%\.ssh\id_ed25519</span> for Windows).
+						</p>
+						<br>
+
+						<p> 
+							<span style="font-weight: bold;">🔴 If You Already Have a Key with the Same Name</span>
+						</p>
+						<p>
+							You will see a message like this:
+						</p>
+
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+/home/user/.ssh/id_ed25519 already exists. Overwrite? (y/n)</code>
+							</pre>
+						</div>
+						<p> 
+							Type <span style="font-weight: bold;">n</span> (No) to avoid losing your existing key. If you want to generate a new key, provide a different filename like:
+						</p>
+
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+ssh-keygen -t ed25519 -C "your-email@example.com" -f ~/.ssh/id_ed25519_new</code>
+							</pre>
+						</div>
+						<p>
+							This will create a new key pair (<span style="background-color: #efefef;">id_ed25519_new</span> and <span style="background-color: #efefef;">id_ed25519_new.pub</span>).
+						</p>
+
+					</div>
+					<br>
+
+					<div id = "passphrase"class="blg-sub-header">
+						<h2> 🔑 Adding a Passphrase (Optional)</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p>
+							After choosing a location, you will be prompted to enter a <span style="font-weight: bold;">passphrase:</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+Enter passphrase (empty for no passphrase):</code>
+							</pre>
+						</div>
+
+						<p> 
+							<span style="font-weight: bold;">💡 What is a Passphrase?</span>
+						</p>
+						<p>
+							A <span style="font-weight: bold;">passphrase</span> adds an extra layer of security to your SSH key. Even if someone gets your private key, they <span style="font-weight: bold;">cannot use it without the passphrase.</span>
+						</p>
+						<ul>
+							<li class="blg-li"><span style="font-weight: bold;">✔ Strong Security</span> → Use a passphrase for better protection.</li>
+							<li class="blg-li"><span style="font-weight: bold;">❌ Convenience</span> → If you don't want to enter a passphrase every time, leave it empty.</li>
+						</ul>
+						<p>
+							If you set a passphrase, you must enter it every time you use SSH, unless you add it to the SSH agent.
+						</p>
+						<br>
+
+						<p> 
+							<span style="font-weight: bold;">✅ Example of a Complete SSH Key Generation Process</span>
+						</p>
+						<p> 
+							<span style="font-weight: bold;">Command</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+ssh-keygen -t ed25519 -C "your-email@example.com"</code>
+							</pre>
+						</div>
+
+						<p> 
+							<span style="font-weight: bold;">Expected Output:</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+Generating public/private ed25519 key pair.
+Enter file in which to save the key (/home/user/.ssh/id_ed25519): [Press Enter]
+Enter passphrase (empty for no passphrase): ********
+Enter same passphrase again: ********
+Your identification has been saved in /home/user/.ssh/id_ed25519
+Your public key has been saved in /home/user/.ssh/id_ed25519.pub
+The key fingerprint is:
+SHA256:abc123... your-email@example.com
+The key's randomart image is:
++--[ED25519 256]--+
+|       ..        |
+|      .o .       |
+|     .+ +        |
+|    . = B        |
+|   o = S o       |
+|  . + = o        |
+|   o o o .       |
+|    E . .        |
+|                 |
++----[SHA256]-----+</code>
+							</pre>
+						</div>
+
+						<p> 
+							Now, your <span style="font-weight: bold;">SSH key is successfully created</span> and saved in <span style="background-color: #efefef;">~/.ssh/</span>
+						</p>
+
+					</div>
+					<br>
+
+					<div id = "ssh-agent" class="blg-main-header">
+						<h2> 4. Adding the SSH Key to the SSH Agent</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p> 
+							Once you've generated an <span style="font-weight: bold;">SSH key pair</span>, you need to <span style="font-weight: bold;">add the private key</span> to the <span style="font-weight: bold;">SSH agent</span>. 
+							The SSH agent is a background program that <span style="font-weight: bold;">stores your private key in memory</span> so that you don't have 
+							to enter your passphrase every time you authenticate with GitHub.
+						</p>
+						<p>
+							Without adding your key to the SSH agent, you might have to enter the <span style="font-weight: bold;">passphrase manually</span> every time 
+							you push, pull, or clone a repository. Let's go step by step to set it up.
+						</p>
+
+					</div>
+					<br>
+
+					<div id = "start-agent"class="blg-sub-header">
+						<h2> 📌 Step 1: Start the SSH Agent</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p>
+							Before adding your key, ensure the SSH agent is running. Use the following command to start it:
+						</p>
+						<p> 
+							<span style="font-weight: bold;">🔹 For macOS & Linux:</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+eval "$(ssh-agent -s)"</code>
+							</pre>
+						</div>
+
+						<p> 
+							<span style="font-weight: bold;">Example Output:</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+Agent pid 12345</code>
+							</pre>
+						</div>
+						<p>
+							This confirms that the SSH agent is running in the background.
+						</p>
+						<br>
+
+						<p> 
+							<span style="font-weight: bold;">🔹 For Windows (Git Bash or WSL):</span>
+						</p>
+						<p>
+							If you're using Git Bash or Windows Subsystem for Linux (WSL), run:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+eval "$(ssh-agent -s)"</code>
+							</pre>
+						</div>
+
+						<p>
+							If you're using <span style="font-weight: bold;">PowerShell</span>, start the SSH agent manually:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+Start-Service ssh-agent</code>
+							</pre>
+						</div>
+						<p>
+							To ensure the SSH agent starts automatically in future PowerShell sessions, run:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+Set-Service -Name ssh-agent -StartupType Automatic</code>
+							</pre>
+						</div>
+						<br>
+
+						<div id = "add-key-to-agent"class="blg-sub-header">
+							<h2> 📌 Step 2: Add Your SSH Key to the Agent</h2>
+						</div>
+						<p>
+							Now, add your <span style="font-weight: bold;">private key</span> (<span style="background-color: #efefef;">id_ed25519</span>) to the SSH agent.
+						</p>
+						<p> 
+							<span style="font-weight: bold;">🔹 Standard Command (For macOS, Linux, Git Bash, WSL, PowerShell)</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+ssh-add ~/.ssh/id_ed25519</code>
+							</pre>
+						</div>
+						<p> 
+							<span style="font-weight: bold;">Example Output (if successful):</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+Identity added: /home/user/.ssh/id_ed25519 (your-email@example.com)</code>
+							</pre>
+						</div>
+						<br>
+
+						<p> 
+							<span style="font-weight: bold;">🔹 If You Used a Different Key Name</span>
+						</p>
+						<p> 
+							If you created an SSH key with a <span style="font-weight: bold;">custom filename</span>, specify the exact path. For example:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+ssh-add ~/.ssh/id_ed25519_new</code>
+							</pre>
+						</div>
+						<br>
+
+						<p> 
+							<span style="font-weight: bold;">🔹 If You Get a "Could not open a connection to your authentication agent" Error</span>
+						</p>
+						<p> 
+							Try running:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+eval "$(ssh-agent -s)"</code>
+							</pre>
+						</div>
+						<p> 
+							Then re-run:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+ssh-add ~/.ssh/id_ed25519</code>
+							</pre>
+						</div>
+						<br>
+
+						<div id = "verify-ssh"class="blg-sub-header">
+							<h2> 📌 Step 3: Verify the SSH Key is Added</h2>
+						</div>
+						<p>
+							To confirm that your key was added successfully, run:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+ssh-add -l</code>
+							</pre>
+						</div>
+						<p>
+							If your key is properly added, you will see output like:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+256 SHA256:abc123... /home/user/.ssh/id_ed25519 (your-email@example.com)</code>
+							</pre>
+						</div>
+						<p>
+							If no identities are listed, try adding the key again using:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+ssh-add ~/.ssh/id_ed25519</code>
+							</pre>
+						</div>
+						<br>
+
+						<p> 
+							<span style="font-weight: bold;">🛠 Troubleshooting Common Issues</span>
+						</p>
+						<p> 
+							<span style="font-weight: bold;">❌ Error: </span><span style="background-color: #efefef;">Could not open a connection to your authentication agent</span>
+						</p>
+						<p> 
+							Solution: Start the SSH agent using:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+eval "$(ssh-agent -s)"</code>
+							</pre>
+						</div>
+						<p> 
+							Then try adding your key again.
+						</p>
+						<br>
+
+						<p> 
+							<span style="font-weight: bold;">❌ Error: </span><span style="background-color: #efefef;">Permission denied (publickey) </span><span style="font-weight: bold;">when connecting to GitHub</span>
+						</p>
+						<p> 
+							Solution: Ensure your key is added to GitHub. You can also check if your key is loaded with:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+ssh-add -l</code>
+							</pre>
+						</div>
+
+					</div>
+
+					<br>
+
+					<div id = "ssh-github" class="blg-main-header">
+						<h2> 5. Adding the SSH Key to GitHub</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p> 
+							Now that you have generated your <span style="font-weight: bold;">SSH key pair</span> and added the private key to the SSH agent, 
+							the next step is to <span style="font-weight: bold;">add the public key</span> to your <span style="font-weight: bold;">GitHub account</span>. This allows GitHub to recognize your 
+							system and grant access to repositories without requiring a password.
+						</p>
+						<p>
+							Let's go step by step.
+						</p>
+					</div>
+					<br>
+
+					<div id = "public-key"class="blg-sub-header">
+						<h2> 📌 Step 1: Copying the Public Key</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p> 
+							The <span style="font-weight: bold;">public key</span> is the one you need to upload to GitHub. Follow these steps to copy it:
+						</p>
+						<p>
+							<span style="font-weight: bold;">🔹 Linux & macOS</span>
+						</p>
+						<p>
+							Run the following command in your terminal:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+cat ~/.ssh/id_ed25519.pub</code>
+							</pre>
+						</div>
+
+						<p>
+							This will display your public key. Copy the entire output.
+						</p>
+						<p>
+							Alternatively, use:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+pbcopy < ~/.ssh/id_ed25519.pub</code>
+							</pre>
+						</div>
+						<p>
+							Works only on <span style="font-weight: bold;">macOS</span>, copies the key directly to your clipboard.
+						</p>
+						<br>
+
+						<p>
+							<span style="font-weight: bold;">🔹 Windows (PowerShell)</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-powershell">
+Get-Content $HOME\.ssh\id_ed25519.pub | clip</code>
+							</pre>
+						</div>
+						<p>
+							This copies the public key to your clipboard.
+						</p>
+						<br>
+
+						<p>
+							<span style="font-weight: bold;">🔹 Windows (Git Bash)</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-powershell">
+cat ~/.ssh/id_ed25519.pub | clip</code>
+							</pre>
+						</div>
+						<br>
+
+						<p>
+							<span style="font-weight: bold;">Example Output (Public Key Format)</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-powershell">
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDEXAMPLEKEY1234567890abcdef your-email@example.com</code>
+							</pre>
+						</div>
+						<p>
+							<span style="font-weight: bold;">Important:</span> Copy the entire key, including <span style="background-color: #efefef;">ssh-ed25519</span> at the beginning.
+						</p>
+						<br>
+					</div>
+
+					<div id = "add-key"class="blg-sub-header">
+						<h2> 📌 Step 2: Adding the Key to GitHub</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p> 
+							<span style="font-weight: bold;">🔹 Navigate to GitHub SSH Settings</span>
+						</p>
+						<p> 
+							1️⃣ <span style="font-weight: bold;">Log in to GitHub</span> → <a href="https://github.com" target="_blank">https://github.com</a>
+						</p>
+						<p> 
+							2️⃣ Click on <span style="font-weight: bold;">Your Profile Picture</span> (top-right corner) → <span style="font-weight: bold;">Settings</span>
+						</p>
+						<p> 
+							3️⃣ On the left sidebar, click <span style="font-weight: bold;">SSH and GPG keys</span>
+						</p>
+						<p> 
+							4️⃣ Click the <span style="font-weight: bold;">New SSH Key</span> button
+						</p>
+						<br>
+
+						<p> 
+							<span style="font-weight: bold;">🔹 Add the Public Key</span>
+						</p>
+						<ul>
+							<li class="blg-li"><span style="font-weight: bold;">Title:</span> Enter a recognizable name (e.g., "My Laptop" or "Work PC").</li>
+							<li class="blg-li"><span style="font-weight: bold;">Key Type:</span> Select <span style="font-weight: bold;">Authentication Key</span>.</li>
+							<li class="blg-li"><span style="font-weight: bold;">Key:</span> Paste your <span style="font-weight: bold;">public key</span> (<span style="background-color: #efefef;">id_ed25519.pub</span>).</li>
+							<li class="blg-li">Click <span style="font-weight: bold;">Add SSH Key</span>.</li>
+						</ul>
+						<br>
+
+						<p> 
+							✅ Example:
+						</p>
+						<div style="width: 100%; max-width: 800px; border-radius: 5px; border: 1px solid #ddd; overflow: hidden; font-family: Arial, sans-serif;">
+							<table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
+								<thead>
+									<tr style="background-color: #eee; border-bottom: 1px solid #ddd;">
+										<th style="padding: 10px; text-align: left; font-weight: bold; border-right: 1px solid #ddd;">Field</th>
+										<th style="padding: 10px; text-align: left; font-weight: bold;">Value</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr style="border-bottom: 1px solid #ddd;">
+										<td style="padding: 10px; border-right: 1px solid #ddd;">Title</td>
+										<td style="padding: 10px; font-weight: bold;">My Laptop</td>
+									</tr>
+									<tr style="border-bottom: 1px solid #ddd;">
+										<td style="padding: 10px; border-right: 1px solid #ddd;">Key Type</td>
+										<td style="padding: 10px; font-weight: bold;">Authentication Key</td>
+									</tr>
+									<tr>
+										<td style="padding: 10px; border-right: 1px solid #ddd;">Key</td>
+										<td style="padding: 10px;">
+											<span style="display: inline-block; background-color: #eee; padding: 5px 10px; border-radius: 5px; font-family: monospace;">
+												ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAADEXAMPLEKEY your-email@example.com
+											</span>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						
+						<p> 
+							After clicking <span style="font-weight: bold;">Add SSH Key</span>, GitHub will save your key.
+						</p>
+					</div>
+					<br>
+
+					<div id = "test-ssh"class="blg-sub-header">
+						<h2> 📌 Step 3: Testing the SSH Connection</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p> 
+							Now, let's verify that the SSH key works by connecting to GitHub.
+						</p>
+						<p> 
+							Run the following command:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+ssh -T git@github.com</code>
+							</pre>
+						</div>
+						<br>
+						<p> 
+							<span style="font-weight: bold;">Expected Output (if successful):</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-vbnet">
+Hi your-username! You've successfully authenticated, but GitHub does not provide shell access.</code>
+							</pre>
+						</div>
+						<p> 
+							This confirms that your key is working, and you can now <span style="font-weight: bold;">clone, push, and pull repositories securely</span>.
+						</p>
+						<br>
+
+						<p> 
+							<span style="font-weight: bold;">🛠 Troubleshooting Common Issues</span>
+						</p>
+						<p> 
+							<span style="font-weight: bold;">❌ Error: </span> <span style="background-color: #efefef;">Permission denied (publickey)</span>
+						</p>
+						<p> 
+							<span style="font-weight: bold;">Solution:</span>
+						</p>
+						<ol>
+							<li class="blg-li">Ensure your SSH key is <span style="font-weight: bold;">added to GitHub</span>.</li>
+							<li class="blg-li">Verify that your <span style="font-weight: bold;">SSH agent</span> has the key loaded:</li>
+							
+						</ol>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+ssh-add -l</code>
+							</pre>
+						</div>
+						<p> 
+							If no keys are listed, add it again:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+ssh-add ~/.ssh/id_ed25519</code>
+							</pre>
+						</div>
+
+					</div>
+					<br>
+
+					<div id = "configure-git" class="blg-main-header">
+						<h2> 6. Configuring Git to Use SSH</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p> 
+							Now that we have <span style="font-weight: bold;">added our SSH key to GitHub</span>, we need to configure Git to <span style="font-weight: bold;">use SSH</span> 
+							for all GitHub interactions. This ensures that Git does not default to HTTPS authentication, 
+							which requires a password or access token.
+						</p>
+						<p>
+							Let's set up Git correctly for SSH authentication.
+						</p>
+						<br>
+
+						<p>
+							<span style="font-weight: bold;">🔹 1. Set Global Git User Information</span>
+						</p>
+						<p>
+							Before using Git, it's essential to configure your <span style="font-weight: bold;">name and email</span>, which are used to identify you in commits.
+						</p>
+						<p>
+							<span style="font-weight: bold;">Run the following commands:</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+git config --global user.name "John Doe"
+git config --global user.email johndoe@example.com</code>
+							</pre>
+						</div>
+						<p>
+							<span style="font-weight: bold;">Replace</span> <span style="background-color: #efefef;">"John Doe"</span> and <span style="background-color: #efefef;">"johndoe@example.com"</span> with your actual name and email address.
+						</p>
+						<br>
+						<p>
+							<span style="font-weight: bold;">Verify your settings:</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+git config --global --list</code>
+							</pre>
+						</div>
+						<br>
+						<p>
+							<span style="font-weight: bold;">✅ Expected Output:</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-java">
+user.name=John Doe
+user.email=johndoe@example.com</code>
+							</pre>
+						</div>
+						<br>
+
+						<p>
+							<span style="font-weight: bold;">🔹 2. Configure Git to Always Use SSH for GitHub</span>
+						</p>
+						<p>
+							By default, Git may use <span style="font-weight: bold;">HTTPS</span> when cloning repositories. To ensure Git always uses <span style="font-weight: bold;">SSH instead of HTTPS</span>, run:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+git config --global url."git@github.com:".insteadOf "https://github.com/"</code>
+							</pre>
+						</div>
+						<p>
+							<span style="font-weight: bold;">What does this do?</span>
+						</p>
+						<p>
+							🔄 This command <span style="font-weight: bold;">automatically replaces HTTPS URLs with SSH URLs</span> when interacting with GitHub repositories.
+						</p>
+						<p>
+							<span style="font-weight: bold;">Example: Before & After Running This Command</span>
+						</p>
+						<br>
+						<p>
+							<span style="font-weight: bold;">🔴 Before (<span style="background-color: #efefef;">https://</span> used)</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+git clone https://github.com/your-username/repository.git</code>
+							</pre>
+						</div>
+						<p>
+							Git will <span style="font-weight: bold;">ask for a username and access token</span>.
+						</p>
+						<br>
+						<p>
+							<span style="font-weight: bold;">🟢 After (<span style="background-color: #efefef;">git@github.com:</span> used)</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+git clone https://github.com/your-username/repository.git</code>
+							</pre>
+						</div>
+						<p>
+							Git <span style="font-weight: bold;">automatically converts</span> it to:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+git clone git@github.com:your-username/repository.git</code>
+							</pre>
+						</div>
+						<p>
+							✅ Now, Git uses SSH without requiring credentials!
+						</p>
+						<br>
+						<p>
+							<span style="font-weight: bold;">Verify Your Configuration:</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+git config --global --list</code>
+							</pre>
+						</div>
+						<p>
+							<span style="font-weight: bold;">Expected Output:</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-java">
+user.name=John Doe
+user.email=johndoe@example.com
+url.git@github.com:.insteadOf=https://github.com/</code>
+							</pre>
+						</div>
+
+					</div>
+					<br>
+
+					<div id = "clone" class="blg-main-header">
+						<h2> 7. Cloning a Repository Using SSH</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p> 
+							Once your <span style="font-weight: bold;">SSH key is added to GitHub</span> and <span style="font-weight: bold;">Git is configured to use SSH</span>, you can securely 
+							<span style="font-weight: bold;">clone repositories</span> without entering a username or password. Cloning a repository means 
+							creating a local copy of a project from GitHub so you can work on it.
+						</p>
+						<p>
+							Let's go step by step on how to clone a repository using SSH.
+						</p>
+						<br>
+						<p>
+							<span style="font-weight: bold;">📌 1. Find the SSH URL of the Repository</span>
+						</p>
+						<p>
+							Before cloning, you need to get the <span style="font-weight: bold;">SSH URL</span> of the repository you want to clone.
+						</p>
+						<br>
+						<p>
+							<span style="font-weight: bold;">🔹 Steps to Get the SSH URL on GitHub</span>
+						</p>
+						<p>
+							1️⃣ Go to <a href="https://github.com/" target="_blank">GitHub</a> and open the repository you want to clone.
+						</p>
+						<p>
+							2️⃣ Click on the <span style="font-weight: bold;">Code</span> button (🔽 green button at the top right).
+						</p>
+						<p>
+							3️⃣ Select the <span style="font-weight: bold;">SSH</span> tab.
+						</p>
+						<p>
+							4️⃣ Copy the SSH URL.
+						</p>
+						<br>
+						<p>
+							<span style="font-weight: bold;">Example SSH URL format:</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+git@github.com:your-username/repository.git</code>
+							</pre>
+						</div>
+						<br>
+
+						<p>
+							<span style="font-weight: bold;">📌 2. Clone the Repository Using SSH</span>
+						</p>
+						<p>
+							Now, open a <span style="font-weight: bold;">terminal</span> (Command Prompt, Git Bash, or macOS/Linux Terminal) and run:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+git clone git@github.com:your-username/repository.git</code>
+							</pre>
+						</div>
+						<p>
+							<span style="font-weight: bold;">Replace</span> <span style="background-color: #efefef;">your-username/repository.git</span> with the actual repository name.
+						</p>
+						<br>
+						<p>
+							<span style="font-weight: bold;">✅ Example Command:</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+git clone git@github.com:octocat/Hello-World.git</code>
+							</pre>
+						</div>
+						<p>
+							<span style="font-weight: bold;">Expected Output (If Cloning is Successful)</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-java">
+Cloning into 'Hello-World'...
+remote: Enumerating objects...
+remote: Counting objects...
+Receiving objects: 100% (xyz/xyz), done.</code>
+							</pre>
+						</div>
+						<p>
+							Now, you have successfully <span style="font-weight: bold;">cloned the repository </span>into a local folder.
+						</p>
+						<br>
+
+						<p>
+							<span style="font-weight: bold;">📌 3. Verify the Cloned Repository</span>
+						</p>
+						<p>
+							After cloning, navigate to the cloned directory and check the remote URL.
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+cd Hello-World
+git remote -v</code>
+							</pre>
+						</div>
+						<br>
+						<p>
+							<span style="font-weight: bold;">✅ Expected Output (If Using SSH):</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+origin  git@github.com:octocat/Hello-World.git (fetch)
+origin  git@github.com:octocat/Hello-World.git (push)</code>
+							</pre>
+						</div>
+						<p>
+							This confirms that <span style="font-weight: bold;">SSH is being used</span> for Git operations.
+						</p>
+						<br>
+					</div>
+
+					<div id = "push" class="blg-main-header">
+						<h2> 8. Pushing Code to GitHub Using SSH</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p> 
+							After <span style="font-weight: bold;">cloning a repository using SSH</span>, you can modify files, commit changes, and push them back 
+							to GitHub. Pushing code means <span style="font-weight: bold;">uploading your local changes</span> to the GitHub repository so that they 
+							are saved and shared with others (or just yourself in a private repo).
+						</p>
+						<p>
+							Let's go step by step.
+						</p>
+						<br>
+
+						<p>
+							<span style="font-weight: bold;">📌 1. Make Changes in the Repository</span>
+						</p>
+						<p>
+							After cloning a repository, navigate to the repository folder:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+cd repository-name</code>
+							</pre>
+						</div>
+						<p>
+							Now, let's create or modify a file.
+						</p>
+						<p>
+							<span style="font-weight: bold;">🔹 Create a new file (If <span style="background-color: #efefef;">example.txt</span>):</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+echo "This is a test file" > example.txt</code>
+							</pre>
+						</div>
+						<br>
+
+						<p>
+							<span style="font-weight: bold;">📌 2. Check the Git Status</span>
+						</p>
+						<p>
+							Run the following command to check what has changed:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+git status</code>
+							</pre>
+						</div>
+						<p>
+							<span style="font-weight: bold;">✅ Expected Output:</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-java">
+On branch main
+Untracked files:
+	(use "git add <file>..." to include in what will be committed)
+	example.txt</code>
+							</pre>
+						</div>
+						<p>
+							This means <span style="background-color: #efefef;">example.txt</span> is new and <span style="font-weight: bold;">not yet tracked</span> by Git.
+						</p>
+						<br>
+
+						<p>
+							<span style="font-weight: bold;">📌 3. Add the File to Staging</span>
+						</p>
+						<p>
+							To include the file in the next commit, run:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+git add example.txt</code>
+							</pre>
+						</div>
+						<p>
+							<span style="font-weight: bold;">To add all changed files at once:</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+git add .</code>
+							</pre>
+						</div>
+						<p>
+							Run <span style="background-color: #efefef;">git status</span> again, and now you should see:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-java">
+Changes to be committed:
+(use "git restore --staged <file>..." to unstage)
+	new file:   example.txt</code>
+							</pre>
+						</div>
+						<br>
+
+						<p>
+							<span style="font-weight: bold;">📌 4. Commit the Changes</span>
+						</p>
+						<p>
+							Now, commit the staged changes with a message:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+git commit -m "Added example.txt"</code>
+							</pre>
+						</div>
+						<p>
+							<span style="font-weight: bold;">✅ Expected Output:</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-java">
+[main 1a2b3c4] Added example.txt
+1 file changed, 1 insertion(+)
+create mode 100644 example.txt</code>
+							</pre>
+						</div>
+						<br>
+
+						<p>
+							<span style="font-weight: bold;">📌 5. Push the Changes to GitHub</span>
+						</p>
+						<p>
+							Now, let's push the changes using SSH:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+git push origin main</code>
+							</pre>
+						</div>
+						<p>
+							If your branch is <span style="background-color: #efefef;">master</span>, replace <span style="background-color: #efefef;">main</span> with <span style="background-color: #efefef;">master</span>.
+						</p>
+						<p>
+							<span style="font-weight: bold;">✅ Expected Output:</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-java">
+Enumerating objects...
+Counting objects...
+Compressing objects...
+Writing objects...
+To git@github.com:your-username/repository.git
+	abc123..def456  main -> main</code>
+							</pre>
+						</div>
+						<p>
+							🎉 Your changes are now uploaded to GitHub!
+						</p>
+						<br>
+
+						<p>
+							<span style="font-weight: bold;">📌 6. Verify the Changes on GitHub</span>
+						</p>
+						<p>
+							Go to your repository on <span style="font-weight: bold;">gitHub.com</span>, refresh the page, and you 
+							should see: If <span style="background-color: #efefef;">example.txt</span> added with the commit message <span style="font-weight: bold;">"Added example.txt"</span>.
+						</p>
+						<br>
+
+					</div>
+
+					<div id = "multiple-ssh" class="blg-main-header">
+						<h2> 9. Managing Multiple SSH Keys (Optional)</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p> 
+							If you work with <span style="font-weight: bold;">multiple GitHub accounts</span> (e.g., personal and work) or 
+							need SSH access to multiple services (e.g., GitHub, GitLab, Bitbucket), you may need to manage multiple SSH keys.
+							By default, Git uses <span style="font-weight: bold;">one SSH</span> key located at <span style="background-color: #efefef;">~/.ssh/id_ed25519</span>, but 
+							if you need separate keys for different accounts, you must configure SSH to handle them properly.
+						</p>
+						<p>
+							Let's go step by step on how to <span style="font-weight: bold;">manage multiple SSH keys</span>.
+						</p>
+						<br>
+
+						<p>
+							<span style="font-weight: bold;">📌 1. Generate Multiple SSH Keys</span>
+						</p>
+						<p>
+							To create <span style="font-weight: bold;">different SSH keys for different accounts</span>, generate a new key for each:
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+ssh-keygen -t ed25519 -C "work-email@example.com" -f ~/.ssh/id_ed25519_work</code>
+							</pre>
+						</div>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+ssh-keygen -t ed25519 -C "personal-email@example.com" -f ~/.ssh/id_ed25519_personal</code>
+							</pre>
+						</div>
+						<p>
+							<span style="font-weight: bold;">✅ Now, you have two key pairs:</span>
+						</p>
+						<ul>
+							<li class="blg-li"><span style="font-weight: bold;">Work Account:</span> <span style="background-color: #efefef;">id_ed25519_work</span> and <span style="background-color: #efefef;">id_ed25519_work.pub</span></li>
+							<li class="blg-li"><span style="font-weight: bold;">Personal Account:</span> <span style="background-color: #efefef;">id_ed25519_personal</span> and <span style="background-color: #efefef;">id_ed25519_personal.pub</span></li>
+						</ul>
+						<br>
+
+						<p>
+							<span style="font-weight: bold;">📌 2. Add the SSH Keys to GitHub</span>
+						</p>
+						<p>
+							Each <span style="font-weight: bold;">public key</span> (<span style="background-color: #efefef;">.pub</span> file) must be added to <span style="font-weight: bold;">GitHub → Settings → SSH and GPG Keys</span> under the respective account.
+						</p>
+						<p>
+							<span style="font-weight: bold;">🔹 Copy the Public Key for Work:</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+cat ~/.ssh/id_ed25519_work.pub | clip</code>
+							</pre>
+						</div>
+						<p>
+							Paste it into <span style="font-weight: bold;">GitHub (Work Account) → SSH Keys.</span>
+						</p>
+						<p>
+							<span style="font-weight: bold;">🔹 Copy the Public Key for Personal:</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+cat ~/.ssh/id_ed25519_personal.pub | clip</code>
+							</pre>
+						</div>
+						<p>
+							Paste it into <span style="font-weight: bold;">GitHub (Personal Account) → SSH Keys.</span>
+						</p>
+						<br>
+
+						<p>
+							<span style="font-weight: bold;">📌 3. Configure SSH to Use the Correct Key</span>
+						</p>
+						<p>
+							Since we have <span style="font-weight: bold;">multiple SSH keys</span>, we need to tell SSH which key to use for which GitHub account. 
+							This is done using the <span style="font-weight: bold;">SSH config file</span>.
+						</p>
+						<p>
+							<span style="font-weight: bold;">🔹 Open the SSH Config File:</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+nano ~/.ssh/config</code>
+							</pre>
+						</div>
+
+						<p>
+							<span style="font-weight: bold;">🔹 Add the Following Configuration:</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+# Work GitHub Account
+Host github-work
+	HostName github.com
+	User git
+	IdentityFile ~/.ssh/id_ed25519_work
+
+# Personal GitHub Account
+Host github-personal
+	HostName github.com
+	User git
+	IdentityFile ~/.ssh/id_ed25519_personal</code>
+							</pre>
+						</div>
+						<p>
+							<span style="font-weight: bold;">Explanation of the Config File:</span>
+						</p>
+						
+						<ul>
+							<li class="blg-li"><span style="background-color: #efefef;">Host github-work</span> → A nickname for the <span style="font-weight: bold;">work account</span>.</li>
+							<li class="blg-li"><span style="background-color: #efefef;">Host github-personal</span> → A nickname for the <span style="font-weight: bold;">personal account</span>.</li>
+							<li class="blg-li"><span style="background-color: #efefef;">IdentityFile ~/.ssh/id_ed25519_work</span> → Specifies which private key to use for work.</li>
+							<li class="blg-li"><span style="background-color: #efefef;">IdentityFile ~/.ssh/id_ed25519_personal</span> → Specifies which private key to use for personal use.</li>
+						</ul>
+						<p>
+							<span style="font-weight: bold;">🔹 Save and exit (<span style="background-color: #efefef;">CTRL + X</span>, then <span style="background-color: #efefef;">Y</span>, then <span style="background-color: #efefef;">Enter</span>).</span>
+						</p>
+						<br>
+						<p>
+							<span style="font-weight: bold;">📌 4. Use the Correct SSH Key for Each Repository</span>
+						</p>
+						<p>
+							Now, when cloning repositories, use the <span style="font-weight: bold;">custom SSH alias </span>instead of <span style="background-color: #efefef;">github.com</span>:
+						</p>
+						<p>
+							<span style="font-weight: bold;">🔹 Clone Work Repository (Using Work Key)</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+git clone git@github-work:work-username/work-repository.git</code>
+							</pre>
+						</div>
+						<p>
+							<span style="font-weight: bold;">🔹 Clone Personal Repository (Using Personal Key)</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+git clone git@github-personal:personal-username/personal-repository.git</code>
+							</pre>
+						</div>
+						<br>
+
+						<p>
+							<span style="font-weight: bold;">📌 5. Updating Existing Repositories to Use the Correct SSH Key</span>
+						</p>
+						<p>
+							If you already have a repository cloned with <span style="background-color: #efefef;">github.com</span>, update it to use the correct <span style="font-weight: bold;">custom SSH alias</span>.
+						</p>
+						<p>
+							<span style="font-weight: bold;">🔹 Check Current Remote URL:</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+git remote -v</code>
+							</pre>
+						</div>
+						<p>
+							<span style="font-weight: bold;">🔹 Change Remote URL to Work Key:</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+git remote set-url origin git@github-work:work-username/work-repository.git</code>
+							</pre>
+						</div>
+						<p>
+							<span style="font-weight: bold;">🔹 Change Remote URL to Personal Key:</span>
+						</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-shell">
+git remote set-url origin git@github-personal:personal-username/personal-repository.git</code>
+							</pre>
+						</div>
+						<p>
+							Now, every time you <span style="font-weight: bold;">push or pull</span>, Git will automatically use the correct SSH key.
+						</p>
+						<br>
+					</div>
+
+					<div id = "conclusion" class="blg-main-header">
+						<h2> 10. Conclusion</h2>
+					</div>
+					<div class="blg-paragraph">
+						<p> 
+							Setting up SSH authentication for GitHub is an essential step toward a <span style="font-weight: bold;">secure, efficient, and password-free workflow</span>. 
+							By replacing traditional HTTPS authentication with SSH, you eliminate 
+							the need to repeatedly enter credentials, while also improving security through encrypted key-based 
+							authentication. This guide walked you through <span style="font-weight: bold;">generating an SSH key pair, adding it to GitHub, configuring Git to use SSH, and managing multiple SSH keys</span> when working with different accounts. 
+							Additionally, we covered <span style="font-weight: bold;">cloning repositories, pushing code securely, and troubleshooting common SSH issues</span> to ensure a smooth experience. With this setup in place, Git operations become seamless, 
+							allowing you to focus on writing code rather than dealing with authentication hurdles. As GitHub 
+							continues to emphasize security best practices, SSH authentication remains the most reliable method 
+							for interacting with repositories, making your development workflow both safer and more convenient. 
+							Now, you're fully equipped to use SSH for all GitHub interactions, ensuring a frictionless coding experience.
+						</p>
+					</div>
+
+					<br><br>
+
+				</div>
+
+				<!-- Download Source Code -->
+
+				<h1>
+					<a href="https://github.com/shafiqul-islam-sumon/Github_SSH_Setup" target="_blank" style="text-decoration: none;">
+						<img src="../img/download.png" alt="Download" style="vertical-align: middle; margin-right: 5px;"/>
+					</a>
+					Download Full Source Code : 
+					<a href="https://github.com/shafiqul-islam-sumon/Github_SSH_Setup" target="_blank">Github_SSH_Setup</a>
+				</h1>
+				<br>
+
+				<div class="reference-container">
+					<hr class="blg-hr">
+					<h2>References</h2>
+					<ul class="blg-ul">
+						<li class="blg-li"><a target="_blank" href="https://docs.github.com/en/authentication/connecting-to-github-with-ssh">https://docs.github.com/en/authentication/connecting-to-github-with-ssh</a></li>
+						<li class="blg-li"><a target="_blank" href="https://docs.github.com/en/enterprise-cloud@latest/authentication/connecting-to-github-with-ssh/about-ssh">https://docs.github.com/en/enterprise-cloud@latest/authentication/connecting-to-github-with-ssh/about-ssh</a></li>
+						<li class="blg-li"><a target="_blank" href="https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account">https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account</a></li>
+					</ul>
+				</div>
+				<br><br>
+
+				<div class="blg-center-txt">
+					<h1>Related Articles</h1>
+				</div>
+
+				<!-- blog posts in slick slider -->
+				<div id="postContainer" class="row">
+					<!-- Blog posts will be dynamically generated here -->
+				</div>
+
+				<!-- Slide Counter -->
+				<div class="blg-slide-counter">
+					<span id="currentSlide">1</span> / <span id="totalSlides">1</span>
+				</div>
+				<br>
+
+			</div>
+		</section>
+		
+		<section class="footer-section">
+			<div class="container footer">
+				<div class="row footer">
+					<div class="col-md-8">
+						<div class="copyright">
+							<p>
+								<span>Copyright &copy; <span id="currentYear"></span> Shafiqul AI | All right reserved. By Md Shafiqul Islam</span>
+							</p>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<ul class="social-network">
+							<li>
+								<a target="_blank" href="mailto:mdshafiqul.islam603@gmail.com" data-placement="top" title="Gmail">
+									<img src="../img/contact/gmail.png" alt="Gmail">
+									<span class="icon-label">Gmail</span>
+								</a>
+							</li>
+							<li>
+								<a target="_blank" href="https://www.linkedin.com/in/shafiqul-islam-sumon/" data-placement="top" title="LinkedIn">
+									<img src="../img/contact/linkedin.png" alt="LinkedIn">
+									<span class="icon-label">LinkedIn</span>
+								</a>
+							</li>
+							<li>
+								<a target="_blank" href="https://github.com/shafiqulislamsumon" data-placement="top" title="GitHub">
+									<img src="../img/contact/github.png" alt="GitHub">
+									<span class="icon-label">GitHub</span>
+								</a>
+							</li>
+							<li>
+								<a target="_blank" href="https://leetcode.com/u/shafiqul/" data-placement="top" title="LeetCode">
+									<img src="../img/contact/leetcode.png" alt="LeetCode">
+									<span class="icon-label">LeetCode</span>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</section>
+
+
+	</div> <!-- end wrapper -->
+
+	<a href="#" class="scrollup"><i class="fa fa-angle-up active"></i></a>
+
+	<!-- javascript -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script type="text/javascript" src="../js/jquery-3.7.1.min.js"></script>
+	<script type="text/javascript" src="../js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="../js/slick.min.js"></script>
+	<script type="text/javascript" src="../js/tabulator.min.js"></script>
+	<script type="text/javascript" src="../js/prism.js"></script>
+	<script type="text/javascript" src="../js/smooth-scroll.polyfills.min.js"></script>
+	<script type="text/javascript" src="../js/detail.js"></script>
+
+	<script>
+		document.getElementById("currentYear").textContent = new Date().getFullYear();
+	</script>	
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			var tabledata = [
+				{ feature: "Ease of Use", docker: "Requires manually specifying --env-file when running the container.", docker_container: "Automatically loads .env file when running docker-compose up." },
+				{ feature: "Multiple Services Support", docker: "Best suited for single-container applications.", docker_container: "Ideal for multi-container applications where multiple services share environment variables."},
+				{ feature: "Explicit Control", docker: "Each docker run command explicitly specifies the .env file, avoiding unintended overrides.", docker_container: "Variables are implicitly loaded from .env, which may cause conflicts if multiple .env files exist."},
+				{ feature: "Runtime Flexibility", docker: "Allows dynamic selection of .env files using --env-file /path/to/env.", docker_container: "Requires modifying docker-compose.yml to change the .env file path (unless overridden with --env-file)."},
+				{ feature: "File Location", docker: "The .env file can be located anywhere and explicitly passed at runtime.", docker_container: "The .env file must be in the location specified in docker-compose.yml or the default project directory."},
+				
+			];
+
+			var columns = [
+				{ title: "Feature", field: "feature" },
+				{ title: "Docker (--env-file)", field: "docker", hozAlign: "left", sorter: "number" },
+				{ title: "Docker Compose (env_file)", field: "docker_container" },
+			];
+
+			// Create a Tabulator on an element with id "example-table"
+			new Tabulator(".blg-table-container", {
+				data: tabledata, //assign data to table
+				columns: columns, //create columns from data field names automatically
+				layout: "fitColumns",
+				pagination: "local",
+				paginationSize: 6,
+				paginationSizeSelector: [3, 6, 8, 10],
+				paginationCounter: "rows",
+			});
+		});
+	</script>
+	
+
+</body>
+
+</html>

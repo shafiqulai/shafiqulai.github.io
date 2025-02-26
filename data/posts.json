@@ -12,100 +12,12 @@
     {
         "id": 2,
         "author": "Md Shafiqul Islam",
-        "category": ["Data Science", "Computer Vision"],
-        "image": "./img/posts/mac_glasses1-1000x600.jpg",
-        "slide": "./img/slides/2.jpg",
-        "title": "Blog post Id 2 : Winter Is Coming. Get ready for the upcoming winter. This year there might be more cold than ever.",
-        "date": "2 Nov 2024",
-        "description": "In at accumsan risus. Nam id volutpat ante. Etiam vel mi mattis, vulputate nunc nec, sodales nibh. Etiam nulla magna, gravida eget ultricies sit amet, hendrerit in lorem.",
-        "readMoreUrl": "./blogs/template.html"
-    },
-    {
-        "id": 3,
-        "author": "Md Shafiqul Islam",
-        "category": ["Computer Vision"],
-        "image": "./img/posts/road-1000x600.jpg",
-        "slide": "./img/slides/3.jpg",
-        "title": "Blog post Id 3 : The Illustration",
-        "date": "7 Nov 2014",
-        "description": "In at accumsan risus. Nam id volutpat ante. Etiam vel mi mattis, vulputate nunc nec, sodales nibh. Etiam nulla magna, gravida eget ultricies sit amet, hendrerit in lorem.",
-        "readMoreUrl": "./blogs/template.html"
-    },
-    {
-        "id": 4,
-        "author": "Md Shafiqul Islam",
-        "category": ["Python"],
-        "image": "./img/posts/bike_water1-1000x600.jpg",
-        "slide": "./img/slides/4.png",
-        "title": "Blog post Id 4 : Design Your Mind",
-        "date": "2 Jun 2012",
-        "description": "In at accumsan risus. Nam id volutpat ante. Etiam vel mi mattis, vulputate nunc nec, sodales nibh. Etiam nulla magna, gravida eget ultricies sit amet, hendrerit in lorem.",
-        "readMoreUrl": "./blogs/template.html"
-    },
-    {
-        "id": 5,
-        "author": "Md Shafiqul Islam",
-        "category": ["System Design", "Computer Vision"],
-        "image": "./img/posts/mac_glasses1-1000x600.jpg",
-        "slide": "./img/slides/2.jpg",
-        "title": "Blog post Id 5 : Winter is coming",
-        "date": "13 Sep 2014",
-        "description": "In at accumsan risus. Nam id volutpat ante. Etiam vel mi mattis, vulputate nunc nec, sodales nibh. Etiam nulla magna, gravida eget ultricies sit amet, hendrerit in lorem.",
-        "readMoreUrl": "./blogs/template.html"
-    },
-    {
-        "id": 6,
-        "author": "Md Shafiqul Islam",
-        "category": ["LLM"],
-        "image": "./img/posts/road-1000x600.jpg",
-        "slide": "./img/slides/3.jpg",
-        "title": "Blog post Id 6 : The Illustration",
-        "date": "25 Dec 2017",
-        "description": "In at accumsan risus. Nam id volutpat ante. Etiam vel mi mattis, vulputate nunc nec, sodales nibh. Etiam nulla magna, gravida eget ultricies sit amet, hendrerit in lorem.",
-        "readMoreUrl": "./blogs/template.html"
-    },
-    {
-        "id": 7,
-        "author": "Md Shafiqul Islam",
-        "category": ["Computer Vision"],
-        "image": "./img/posts/bike_water1-1000x600.jpg",
-        "slide": "./img/slides/1.jpg",
-        "title": "Blog post Id 7 : Design Your Mind",
-        "date": "8 Jan 2019",
-        "description": "In at accumsan risus. Nam id volutpat ante. Etiam vel mi mattis, vulputate nunc nec, sodales nibh. Etiam nulla magna, gravida eget ultricies sit amet, hendrerit in lorem.",
-        "readMoreUrl": "./blogs/template.html"
-    },
-    {
-        "id": 8,
-        "author": "Md Shafiqul Islam",
-        "category": ["Data Science", "Computer Vision"],
-        "image": "./img/posts/mac_glasses1-1000x600.jpg",
-        "slide": "./img/slides/4.png",
-        "title": "Blog post Id 8 : Winter Is Coming",
-        "date": "16 Aug 2015",
-        "description": "In at accumsan risus. Nam id volutpat ante. Etiam vel mi mattis, vulputate nunc nec, sodales nibh. Etiam nulla magna, gravida eget ultricies sit amet, hendrerit in lorem.",
-        "readMoreUrl": "./blogs/template.html"
-    },
-    {
-        "id": 9,
-        "author": "Md Shafiqul Islam",
-        "category": ["LLM", "Computer Vision"],
-        "image": "./img/posts/road-1000x600.jpg",
-        "slide": "./img/slides/3.jpg",
-        "title": "Blog post Id 9 : The Illustration",
-        "date": "24 Feb 2013",
-        "description": "In at accumsan risus. Nam id volutpat ante. Etiam vel mi mattis, vulputate nunc nec, sodales nibh. Etiam nulla magna, gravida eget ultricies sit amet, hendrerit in lorem.",
-        "readMoreUrl": "./blogs/template.html"
-    },
-    {
-        "id": 10,
-        "author": "Md Shafiqul Islam",
-        "category": ["Python", "Computer Vision"],
-        "image": "./img/posts/road-1000x600.jpg",
-        "slide": "./img/slides/4.png",
-        "title": "Blog post Id 10 : The Illustration",
-        "date": "30 Apr 2023",
-        "description": "In at accumsan risus. Nam id volutpat ante. Etiam vel mi mattis, vulputate nunc nec, sodales nibh. Etiam nulla magna, gravida eget ultricies sit amet, hendrerit in lorem.",
-        "readMoreUrl": "./blogs/template.html"
+        "category": ["Git"],
+        "image": "./img/blog_2/blog_2_thumbnail.webp",
+        "title": "How to Generate an SSH Key and Add It to GitHub for Secure Git Operations",
+        "date": "24 Feb 2025",
+        "description": "GitHub requires authentication for performing Git operations like cloning, pushing, and pulling repositories. While passwords were previously used, GitHub now recommends SSH keys for secure and seamless authentication. In this guide, you'll learn how to generate an SSH key, add it to GitHub, and configure your system to authenticate using SSH. By the end, you'll be able to securely interact with your GitHub repositories without entering credentials repeatedly.",
+        "readMoreUrl": "./blogs/blog_2.html"
     }
+    
 ]
