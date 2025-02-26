@@ -512,7 +512,7 @@ select.selectmenu {
 .blg-paragraph p {
 	overflow: hidden;
 	display: block;
-	color: #000;
+	color: #333333;
 	line-height: 1.5em;
 	text-align: justify;
 	font-size: 18px;
@@ -585,24 +585,24 @@ select.selectmenu {
 	/* color: #48b; */
 }
 .blg-toc-ol ::marker {
-	color: #000;
+	color: #333333;
 }
 .blg-toc-li {
 	position: relative;
 	-webkit-padding-start: 0.5em;
 	padding-inline-start: 0.5em;
 	padding-top: 1.5em;
-	color: black;
+	color: #333333;
 	border-bottom: 1px solid rgba(25, 49, 68, 0.133);
 	cursor: default;
 	transition: color 0.4s;
 }
 .blg-toc-li > a {
-    color: black; /* Set the text color to black */
+    color: #333333; /* Set the text color to black */
 }
 
 .blg-toc-li > a:hover {
-    color: #000; /* Change the color on hover (optional) */
+    color: #333333; /* Change the color on hover (optional) */
 }
 .blg-toc-li:hover::marker {
 	font-weight: 700;
@@ -617,7 +617,7 @@ select.selectmenu {
 	margin-top: 5px;
 	margin-bottom: 5px;
 	font-size: 18px;
-	color: black;
+	color: #333333;
 	cursor: default;
 	padding-inline-start: 0.5em;
 	padding: 5px; /* Adds padding around the text within each item */
@@ -630,7 +630,7 @@ select.selectmenu {
 	margin-top: 5px;
 	margin-bottom: 5px;
 	font-size: 18px;
-	color: black;
+	color: #333333;
 	cursor: default;
 	padding-inline-start: 0.5em;
 	padding: 5px; /* Adds padding around the text within each item */
@@ -649,7 +649,7 @@ select.selectmenu {
 	margin-top: 10px;
 	margin-bottom: 20px;
 	font-size: 18px;
-	color: #333;
+	color: #333333;
 	font-weight: bold;
 }
 
@@ -859,7 +859,7 @@ a:hover img {
 
 
 .blog-post .date {
-	color: #000000;
+	color: #333333;
 	/* Ensures the date text is black */
 	font-style: italic;
 	line-height: 1.2em;
