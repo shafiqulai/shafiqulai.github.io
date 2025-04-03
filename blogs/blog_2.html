@@ -1698,36 +1698,6 @@ git remote set-url origin git@github-personal:personal-username/personal-reposit
 		document.getElementById("currentYear").textContent = new Date().getFullYear();
 	</script>	
 
-	<script>
-		document.addEventListener('DOMContentLoaded', function () {
-			var tabledata = [
-				{ feature: "Ease of Use", docker: "Requires manually specifying --env-file when running the container.", docker_container: "Automatically loads .env file when running docker-compose up." },
-				{ feature: "Multiple Services Support", docker: "Best suited for single-container applications.", docker_container: "Ideal for multi-container applications where multiple services share environment variables."},
-				{ feature: "Explicit Control", docker: "Each docker run command explicitly specifies the .env file, avoiding unintended overrides.", docker_container: "Variables are implicitly loaded from .env, which may cause conflicts if multiple .env files exist."},
-				{ feature: "Runtime Flexibility", docker: "Allows dynamic selection of .env files using --env-file /path/to/env.", docker_container: "Requires modifying docker-compose.yml to change the .env file path (unless overridden with --env-file)."},
-				{ feature: "File Location", docker: "The .env file can be located anywhere and explicitly passed at runtime.", docker_container: "The .env file must be in the location specified in docker-compose.yml or the default project directory."},
-				
-			];
-
-			var columns = [
-				{ title: "Feature", field: "feature" },
-				{ title: "Docker (--env-file)", field: "docker", hozAlign: "left", sorter: "number" },
-				{ title: "Docker Compose (env_file)", field: "docker_container" },
-			];
-
-			// Create a Tabulator on an element with id "example-table"
-			new Tabulator(".blg-table-container", {
-				data: tabledata, //assign data to table
-				columns: columns, //create columns from data field names automatically
-				layout: "fitColumns",
-				pagination: "local",
-				paginationSize: 6,
-				paginationSizeSelector: [3, 6, 8, 10],
-				paginationCounter: "rows",
-			});
-		});
-	</script>
-	
 
 </body>
 
