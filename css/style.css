@@ -914,7 +914,26 @@ a:hover img {
 	/* Typically smaller font size for paragraphs */
 }
 
+.code-soft {
+	background-color: #f5f5f5;         /* Light gray background */
+	border-radius: 6px;                /* Rounded corners */
+	padding: 2px 6px;
+	font-family: Menlo, Consolas, monospace;
+	font-size: 90%;
+	color: #333 !important;            /* Force normal text color */
+	font-weight: normal !important;    /* Avoid bold if inherited */
+}
 
+ul, ol {
+	margin-top: 0;
+	margin-bottom: 1em; /* Keeps space after the whole list */
+}
+
+ul li, ol li {
+	margin-bottom: 8px;  /* Controls space between items */
+	line-height: 1.7;     /* Slightly relaxed line height for readability */
+}
+  
 
 /*  end of Each Blog Post ==================================== */
 

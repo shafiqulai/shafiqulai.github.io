@@ -1,0 +1,2346 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+	<!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-6SEFZQJHM1"></script>
+	<script>
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+
+	gtag('config', 'G-6SEFZQJHM1');
+	</script>
+
+	<meta charset="utf-8">
+	<title>Creating a ReAct AI Agent from Scratch using Python Without any Framework: A Step-by-Step Guide</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="Build a ReAct AI Agent from scratch using Python—without any framework! Follow this step-by-step guide to implement reasoning and action-based ReAct Agent with code examples." />
+	<meta name="author" content="Md Shafiqul Islam" />
+	<link rel="icon" href="../img/favicon.ico" type="image/x-icon">
+
+	<!-- css -->
+	<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="../css/font-awesome.css" />
+	<link rel="stylesheet" type="text/css" href="../css/slick.css" />
+	<link rel="stylesheet" type="text/css" href="../css/slick-theme.css" />
+	<link rel="stylesheet" type="text/css" href="../css/tabulator_site.min.css" />
+	<link rel="stylesheet" type="text/css" href="../css/prism.css" />
+	<link rel="stylesheet" type="text/css" href="../css/style.css" />
+
+</head>
+
+<body>
+	<div id="wrapper">
+		<!-- start header -->
+		<header>
+			<div class="navbar navbar-default navbar-static-top">
+				<div class="container">
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle" data-toggle="collapse"
+							data-target=".navbar-collapse">
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+						<a class="navbar-brand" href="../index.html"><img src="../img/logo.png" alt="logo" class="navbar-logo" /></a>
+					</div>
+					<div class="navbar-collapse collapse ">
+						<ul class="nav navbar-nav">
+							<li><a href="../index.html">Home</a></li>
+							<li><a href="../about.html">About</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</header>
+		<!-- end header -->
+
+		<section id="content">
+			<div class="container">
+
+				<!-- blog details -->
+				<div id="blogContainer">
+					<!-- blog title -->
+					<div class="container blg-title-container">
+						<h2 class="blg-title">Creating a ReAct AI Agent from Scratch using Python Without any Framework: A Step-by-Step Guide</h2>
+					</div>
+
+					<div class="blg-img-container">
+						<img src="../img/blog_3/blog_3_thumbnail.webp" alt="Generate an SSH Key and Add It to GitHub" style="width: 70%;"/>
+					</div>
+
+					<!-- Start of Preface -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+					
+						<p>Artificial Intelligence (AI) agents are transforming the way we interact with technology. From chatbots to research assistants, these agents <b>automate tasks, answer questions, and even make decisions</b>. Among them, <b>ReAct AI Agents</b> stand out because they <b>think, act, and refine their responses dynamically</b>, making them far more effective than traditional AI models.</p>
+					
+						<div style="background-color: #f1f6f1; padding: 15px; border-left: 5px solid #006400; margin-top: 10px;">
+							<p><b>💡 But why build a ReAct AI Agent from scratch without using any framework?</b></p>
+						</div>
+						<br>
+					
+						<p>Popular frameworks like <b>LangChain</b> and <b>LlamaIndex</b> offer pre-built implementations, making development easier. However, they also <b>abstract away critical logic</b>, limiting your understanding and control over the agent's decision-making. By building it from scratch, you will:</p>
+					
+						<ul style="padding-left: 40px;">
+							<li><b>Learn</b> how ReAct AI agents work at a deep level.</li>
+							<li><b>Gain full control</b> over reasoning, memory, and actions.</li>
+						</ul>
+					
+						<p>We'll break down the <b>fundamentals of AI agents</b> and explain how <b>ReAct agents differ from traditional models</b>. Then, we'll <b>implement a fully functional ReAct AI Agent</b> step by step, including an interactive <b>Streamlit web app</b> for real-time interactions.</p>
+					
+					</div>
+					<!-- End of Preface -->				
+
+					<!-- Table of Contents -->
+					<div class="blg-toc-container">
+						<h1>Table of Contents</h1>
+						<ol class="blg-toc-ol">
+							<li class="blg-toc-li"><a href="#introduction">Introduction</a></li>
+							<li class="blg-toc-li"><a href="#agent-breakdown">Inside the ReAct Agent: A Step-by-Step Breakdown</a></li>
+							<li class="blg-toc-li"><a href="#architecture">Architecture of the ReAct Agent System</a></li>
+							<li class="blg-toc-li"><a href="#setup-project">Setting Up the Project</a></li>
+							<li class="blg-toc-li"><a href="#message">Understanding the Message Class</a></li>
+							<li class="blg-toc-li"><a href="#prompt">Designing Effective Prompts for the Agent</a></li>
+							<li class="blg-toc-li"><a href="#tools">Building Tools for the Agent</a></li>
+							<li class="blg-toc-li"><a href="#memory">Memory Management</a></li>
+							<li class="blg-toc-li"><a href="#core-agent">Implementing the Core Agent</a></li>
+							<li class="blg-toc-li"><a href="#web-ui">Creating a Web Interface</a></li>
+							<li class="blg-toc-li"><a href="#examples">Examples</a></li>
+							<li class="blg-toc-li"><a href="#conclusion">Conclusion</a></li>
+						</ol>
+					</div>
+					<br>
+
+					<!-- Start of 1. Introduction -->	
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<div id = "introduction" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">1. Introduction</h1>
+						</div>
+					
+						<p>As AI technology advances, we are seeing a shift from rule-based automation to intelligent, adaptive systems that can reason and take actions. AI agents have evolved from simple chatbots and automation scripts into powerful decision-making systems that process information, retrieve external knowledge, and solve complex problems. However, many AI agents still operate on predefined workflows, limiting their ability to adapt dynamically to new situations.</p>
+					
+						<p>This is where <b>ReAct AI Agents</b> stand out. Unlike traditional AI models that simply return direct answers, <b>ReAct agents actively think, take actions, and refine their responses</b> in real-time. This guide focuses on <b>building a ReAct AI Agent from scratch, without using any framework</b>, ensuring complete control over its design and behavior.</p>
+					
+						<p>Before we dive into the implementation, let's explore what AI agents are, how ReAct agents differ from traditional ones, and why developing one from the ground up is valuable.</p>
+					
+						<hr style="border: 1px solid #ccc;">
+					
+						<h2 style="color: #2c3e50; font-size: 24px;">🤖 What is an AI Agent?</h2>
+					
+						<p>An <b>AI agent</b> is a system designed to <b>perceive its environment, process information, and take actions</b> to achieve a goal. AI agents are widely used in applications ranging from customer support chatbots to self-driving cars. However, the way they operate and make decisions varies depending on their complexity.</p>
+					
+						<p>There are different types of AI agents, each with unique capabilities. While some agents operate on <b>fixed rules</b> and cannot learn or adapt, others incorporate <b>reasoning and decision-making</b> to solve complex tasks.</p>
+					
+						<h3 style="color: #34495e; font-size: 20px;">🧠 Types of AI Agents (Brief Overview)</h3>
+					
+						<ul style="padding-left: 40px; list-style-type: none;">
+							<li>1️⃣ <b>Reactive Agents</b> - These agents follow predefined rules and respond <b>only</b> to current inputs without considering past events.</li>
+							<p style="margin-left: 20px;"><b>Example:</b> A chatbot that provides scripted responses based on keyword matching.</p>
+					
+							<li>2️⃣ <b>Model-Based Agents</b> - These agents maintain an <b>internal representation</b> of the world, allowing them to make informed decisions based on past states.</li>
+							<p style="margin-left: 20px;"><b>Example:</b> A self-driving car predicting obstacles on the road.</p>
+					
+							<li>3️⃣ <b>Goal-Oriented Agents</b> - These agents focus on achieving a specific objective by <b>planning multiple steps ahead</b>.</li>
+							<p style="margin-left: 20px;"><b>Example:</b> A chess-playing AI that calculates potential moves before making a decision.</p>
+					
+							<li>4️⃣ <b>Learning Agents</b> - These agents improve over time by <b>learning from past experiences</b> and adjusting their behavior accordingly.</li>
+							<p style="margin-left: 20px;"><b>Example:</b> A recommendation system that suggests content based on user preferences.</p>
+						</ul>
+					
+						<p>Most <b>traditional chatbots</b> fall under <b>reactive agents</b>, retrieving responses based on predefined logic. However, <b>ReAct AI Agents go beyond this</b>, integrating <b>reasoning and action in a continuous loop</b> to <b>dynamically solve multi-step problems</b>.</p>
+					
+						<hr style="border: 1px solid #ccc;">
+					
+						<h2 style="color: #2c3e50; font-size: 24px;">🔄 What is a ReAct Agent?</h2>
+
+						<p>A <b>ReAct (Reasoning + Acting) AI Agent</b> is a system that doesn't just retrieve static responses but <b>actively thinks, takes actions, and refines its answers</b> dynamically. Unlike traditional AI agents that provide direct answers, <b>ReAct agents process problems step by step</b>, ensuring more accurate and well-informed responses.</p>
+
+						<h3 style="color: #34495e; font-size: 20px;">Why ReAct is Useful</h3>
+
+						<p>ReAct AI Agents excel at handling <b>multi-step tasks that require reasoning and decision-making</b>.</p>
+
+						<div style="background-color: #f1f6f1; padding: 15px; border-left: 5px solid #006400; margin-top: 10px;">
+							<p><b>📌 Example Scenario:</b></p>
+							<p><b>🗣️ "What's the weather in the city where the 2024 Nobel Prize winner in Physics was born?"</b></p>
+
+							<p>A <b>traditional chatbot</b> might struggle, as it requires multiple steps:</p>
+							<ol style="padding-left: 40px;">
+								<li>Find the <b>Nobel Prize winner</b>.</li>
+								<li>Identify their <b>birthplace</b>.</li>
+								<li>Retrieve the <b>current weather</b> in that location.</li>
+							</ol>
+							<br>
+
+							<p>A <b>ReAct Agent</b>, however, follows a structured process:</p>
+							<ul style="padding-left: 40px; list-style-type: none;">
+								<li>🔹 <b>Thought:</b> "I need to find out who won the Nobel Prize in Physics."</li>
+								<li>🔹 <b>Action:</b> Searches for the winner's name.</li>
+								<li>🔹 <b>Observation:</b> Retrieves the result.</li>
+								<li>🔹 <b>Thought:</b> "Now, I need to find their birthplace."</li>
+								<li>🔹 <b>Action:</b> Searches for the birthplace.</li>
+								<li>🔹 <b>Observation:</b> Retrieves the location.</li>
+								<li>🔹 <b>Thought:</b> "Finally, I need to check the weather in that city."</li>
+								<li>🔹 <b>Action:</b> Fetches the weather.</li>
+								<li>🔹 <b>Final Answer:</b> Provides the user with the full response.</li>
+							</ul>
+						</div>
+						<br>
+
+						<p>This <b>step-by-step reasoning process</b> makes ReAct AI Agents <b>more intelligent, adaptable, and capable of handling complex queries</b>.</p>
+
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">🔬 How ReAct Differs from Other AI Agents</h2>
+
+						<p>Unlike traditional AI models that rely on static response generation, <b>ReAct AI Agents actively engage in reasoning, take actions, and refine their answers dynamically</b>.</p>
+
+						<table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
+							<tr style="background-color: #2c3e50; color: white;">
+								<th style="padding: 10px; text-align: left;">Feature</th>
+								<th style="padding: 10px; text-align: left;">Traditional AI Agents</th>
+								<th style="padding: 10px; text-align: left;">ReAct AI Agents</th>
+							</tr>
+							<tr style="background-color: #f8f9fa;">
+								<td style="padding: 10px;">Answer retrieval</td>
+								<td style="padding: 10px;">Direct response</td>
+								<td style="padding: 10px;">Step-by-step reasoning</td>
+							</tr>
+							<tr>
+								<td style="padding: 10px;">Decision-making</td>
+								<td style="padding: 10px;">Limited or rule-based</td>
+								<td style="padding: 10px;">Adaptive and context-aware</td>
+							</tr>
+							<tr style="background-color: #f8f9fa;">
+								<td style="padding: 10px;">Tool usage</td>
+								<td style="padding: 10px;">Static, predefined queries</td>
+								<td style="padding: 10px;">Uses APIs (Wikipedia, web search, weather, calculator)</td>
+							</tr>
+							<tr>
+								<td style="padding: 10px;">Self-correction</td>
+								<td style="padding: 10px;">No</td>
+								<td style="padding: 10px;">Yes, adjusts responses based on observations</td>
+							</tr>
+						</table>
+						<br>
+
+						<p>While a traditional AI model might simply return an answer based on existing knowledge, a <b>ReAct Agent actively interacts with external tools</b> to fetch the most accurate and up-to-date information. This makes ReAct AI Agents particularly useful for <b>research, data-driven applications, and real-time problem-solving</b>.</p>
+
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">🛠️ Why Build One from Scratch Without a Framework?</h2>
+
+						<p>Many AI developers rely on frameworks like <b>LangChain</b> or <b>LlamaIndex</b> to implement ReAct-based systems. While these frameworks provide useful abstractions, they also introduce <b>limitations</b> by hiding the core logic behind predefined components.</p>
+
+						<p>Building a ReAct AI Agent <b>from scratch</b> offers several advantages:</p>
+
+						<ul style="padding-left: 40px;">
+							<li><b>Deeper Understanding</b> - Developers gain insights into the internal workings of the ReAct model.</li>
+							<li><b>Full Customization</b> - The agent's reasoning, tool usage, and memory management can be tailored to specific needs.</li>
+							<li><b>Performance Optimization</b> - Removing unnecessary framework overhead allows for better efficiency.</li>
+							<li><b>Complete Control</b> - Developers can fine-tune every aspect of the agent's behavior without framework constraints.</li>
+						</ul>
+
+						<p>By implementing a ReAct AI Agent manually, we ensure that every part of the system—from <b>reasoning logic to action execution</b>—is transparent and fully customizable. This is crucial for those who want <b>complete flexibility</b> in designing and optimizing their AI solutions.</p>
+						<hr style="border: 1px solid #ccc;">
+					</div>
+					<!-- End of 1. Introduction -->
+
+					<!-- Start of 2. Inside the ReAct Agent -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<div id="agent-breakdown" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">2. Inside the ReAct Agent: A Step-by-Step Breakdown</h1>
+						</div>
+					
+						<p>AI agents have evolved beyond simple question-answering systems, becoming more sophisticated in reasoning, decision-making, and tool usage. Among them, the <b>ReAct agent</b> stands out for its structured approach to problem-solving. Unlike traditional AI models that generate direct responses based on pre-trained knowledge, the <b>ReAct agent follows a dynamic process</b>—breaking down queries, taking actions, and refining answers based on observations.</p>
+					
+						<p>This section explores how the <b>ReAct agent</b> operates, focusing on its structured <b>Thought, Action, PAUSE, and Observation</b> loop. By understanding this core mechanism, we can see how the agent <b>thinks critically, executes tasks intelligently, and improves its responses iteratively</b>. Through this breakdown, we will highlight each step of the loop, demonstrating how different components of the ReAct agent interact to form a robust and adaptable AI system.</p>
+					
+						<p>Now, let's dive into the <b>step-by-step process</b> that powers the ReAct agent. 🚀</p>
+
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">Thought, Action, PAUSE, and Observation Loop</h2>
+					
+						<p>The <b>ReAct agent</b> operates through a structured cycle that enables it to <b>think, act, and refine</b> its responses iteratively. This mechanism allows it to <b>break down complex queries</b>, execute relevant actions, and continuously refine its understanding based on observations.</p>
+						
+						<div class="blg-img-container">
+							<img src="../img/blog_3/react_loop.png" alt="ReAct Agent Loop - Thought, Action and Observation" style="width: 100%;"/>
+							<p><b>Figure 1 : ReAct Agent Loop - Thought, Action and Observation</b></p>
+						</div>
+						<p>The Figure 1 demonstrates ReAct agent loop which include Thought, Action and Observation. 
+							Below is a detal explanation of each step of the ReAct agent loop.
+						</p>
+						<hr style="border: 1px solid #ccc;">
+						<br>
+
+						<h2 style="color: #2c3e50; font-size: 24px;">1. Thought 🧠 - The Agent's Reasoning Process</h2>
+						
+						<p>The <b>Thought</b> phase is where the agent processes the user's input, analyzes it, and determines the best course of action. Unlike simple AI assistants that generate a direct response from a static knowledge base, a <b>ReAct agent thinks step by step</b>, identifying what information is available and what needs further exploration.</p>
+					
+						<p>In this phase, the agent:</p>
+						<ul>
+							<li>Reads and <b>understands</b> the user's query.</li>
+							<li><b>Breaks down</b> complex requests into smaller logical steps.</li>
+							<li><b>Decides</b> which tool or approach will best answer the query.</li>
+						</ul>
+					
+						<p>For example, suppose a user asks:</p>
+						<blockquote style="background: #f1f6f1; padding: 10px; border-left: 5px solid #006400; font-style: italic;">
+							Who discovered the law of gravity, and what is the weather in the city where he was born?
+						</blockquote>
+					
+						<p>A traditional AI might attempt to generate an answer immediately. However, the ReAct agent <b>thinks first</b>:</p>
+						
+						<ul>
+							<li>I need to find out who discovered the law of gravity.</li>
+							<li>Once I have that, I need to determine the birthplace of this person.</li>
+							<li>Then, I will check the weather in that city.</li>
+						</ul>
+					
+						<p>By structuring its approach this way, the agent ensures it <b>retrieves accurate and complete information</b>, avoiding errors from premature assumptions.</p>
+					
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">2. Action ⚡ - Executing the Required Task</h2>
+					
+						<p>Once the agent has formulated a thought process, it moves to the <b>Action</b> phase. This is where it executes an operation to retrieve or compute information. Actions involve using <b>external tools</b> such as:</p>
+					
+						<ul>
+							<li><b>Wikipedia 📚</b> – for retrieving general knowledge.</li>
+							<li><b>Web search 🔍</b> – for real-time or less commonly known information.</li>
+							<li><b>Weather API 🌦️</b> – for checking weather conditions.</li>
+							<li><b>Calculator ➗</b> – for performing mathematical operations.</li>
+						</ul>
+					
+						<p>Each action follows a structured format:</p>
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							Action: &lt;tool_name&gt;: &lt;query&gt;
+						</blockquote>
+					
+						<p>For mathematical operations, the format is JSON-based:</p>
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							Action: calculator: {"operation": "add", "params": {"a": 5, "b": 3}}
+						</blockquote>
+					
+						<p><b>Example:</b> Continuing with our previous query:</p>
+						<blockquote style="background: #f1f6f1; padding: 10px; border-left: 5px solid #006400; font-style: italic;">
+							Who discovered the law of gravity, and what is the weather in the city where he was born?
+						</blockquote>
+					
+						<p>After reasoning, the agent executes an action:</p>
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							Action: calculator: {"operation": "add", "params": {"a": 5, "b": 3}}
+						</blockquote>
+					
+						<p>This action triggers a <b>Wikipedia search</b> to retrieve relevant information.</p>
+					
+						<p>If the user had asked a math-related question, such as:</p>
+						<blockquote style="background: #f1f6f1; padding: 10px; border-left: 5px solid #006400; font-style: italic;">
+							What is (25 + 75) / 2?
+						</blockquote>
+					
+						<p>The agent would break it down:</p>
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							Thought: "I need to add 25 and 75 first."
+						</blockquote>
+					
+						<p>Then, it executes an action:</p>
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							Action: calculator: {"operation": "add", "params": {"a": 25, "b": 75}}
+						</blockquote>
+					
+						<p>After completing an action, the agent <b>pauses</b> and waits for a response.</p>
+
+						<hr style="border: 1px solid #ccc;">
+				
+						<h2 style="color: #2c3e50; font-size: 24px;">3. PAUSE ⏸️ - Waiting for the Result</h2>
+					
+						<p>The <b>PAUSE</b> phase is unique to the ReAct approach. Many traditional AI agents simply execute commands and move to the next step without verifying if the retrieved information is correct or complete. In contrast, a <b>ReAct agent pauses</b> after each action and waits for an <b>observation</b> before deciding what to do next.</p>
+					
+						<p>This phase ensures:</p>
+						<ul>
+							<li>The agent <b>does not assume</b> an action was successful without verifying the result.</li>
+							<li>It can <b>adapt dynamically</b> based on the outcome.</li>
+							<li>The agent <b>avoids making premature conclusions</b>.</li>
+						</ul>
+					
+						<p><b>Example:</b> Imagine the agent performed the Wikipedia search:</p>
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							Action: wikipedia: "Who discovered the law of gravity?"<br>PAUSE
+						</blockquote>
+					
+						<p>At this point, the agent <b>does not proceed immediately</b>. Instead, it waits for an <b>observation</b> (the retrieved information) before deciding the next step.</p>
+					
+						<p>In the case of the math query:</p>
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							Action: calculator: {"operation": "add", "params": {"a": 25, "b": 75}}<br>PAUSE
+						</blockquote>
+					
+						<p>The agent waits for the calculator tool to return <b>100</b> before deciding the next action.</p>
+					
+						<p>This approach <b>prevents cascading errors</b>, where an incorrect assumption early in the process could lead to a completely wrong answer.</p>
+						
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">4. Observation 👀 - Evaluating the Results</h2>
+					
+						<p>Once an action is completed, the agent receives an <b>Observation</b>. This is the <b>actual result</b> from the executed action. The agent then evaluates whether:</p>
+						<ul>
+							<li>The retrieved information is <b>sufficient</b> to answer the query.</li>
+							<li><b>Further steps</b> or additional actions are needed.</li>
+							<li>There are <b>errors</b> or missing details that require corrections.</li>
+						</ul>
+					
+						<p><b>Example:</b> The Wikipedia search returns:</p>
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							Observation: "Sir Isaac Newton discovered the law of gravity."
+						</blockquote>
+					
+						<p>Now, the agent <b>reanalyzes</b> the query and determines:</p>
+						<ul>
+							<li>Now I need to find out where Newton was born.</li>
+							<li>I should perform another Wikipedia search.</li>
+						</ul>
+					
+						<p>Thus, the agent <b>loops back</b> to the Thought phase:</p>
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							Thought: "I need to check Isaac Newton's birthplace."<br>
+							Action: wikipedia: "Isaac Newton birthplace"<br>
+							PAUSE
+						</blockquote>
+					
+						<p>Once it retrieves <b>"Woolsthorpe, England"</b>, the agent <b>thinks again</b>:</p>
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							Now I need to check the weather in Woolsthorpe.
+						</blockquote>
+					
+						<p>So, it takes another action:</p>
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							Action: weather: "Woolsthorpe, England"<br>
+							PAUSE
+						</blockquote>
+					
+						<p>Once it gets the final weather report, it <b>forms the final answer</b>.</p>
+
+						<hr style="border: 1px solid #ccc;">
+					
+						<h2 style="color: #2c3e50; font-size: 24px;">🔄 Full Example: Thought, Action, PAUSE, Observation Loop</h2>
+									
+						<p>Let's see the entire loop for our initial question:</p>
+					
+						<blockquote style="background: #f1f6f1; padding: 10px; border-left: 5px solid #006400; font-style: italic;">
+							<b>User Query:</b> "Who discovered the law of gravity, and what is the weather in the city where he was born?"
+						</blockquote>
+						<br>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">Agent Execution:</h3>
+					
+						<p><b>1. Thought 🧠</b></p>
+						<p style="font-style: italic;">"I need to find out who discovered gravity first."</p>
+					
+						<p><b>2. Action ⚡</b></p>
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							Action: wikipedia: "Who discovered the law of gravity?"
+						</blockquote>
+
+						<p><b>3. PAUSE ⏸️</b></p>
+						<p style="font-style: italic;">(Agent waits for the response.)</p>
+					
+						<p><b>4. Observation 👀</b></p>
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							Observation: "Sir Isaac Newton discovered the law of gravity."
+						</blockquote>
+					
+						<p><b>5. Thought 🧠</b></p>
+						<p style="font-style: italic;">"Now I need to find out where Newton was born."</p>
+					
+						<p><b>6. Action ⚡</b></p>
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							Action: wikipedia: "Isaac Newton birthplace"
+						</blockquote>
+					
+						<p><b>7. PAUSE ⏸️</b></p>
+					
+						<p><b>8. Observation 👀</b></p>
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							Observation: "Isaac Newton was born in Woolsthorpe, England."
+						</blockquote>
+					
+						<p><b>9. Thought 🧠</b></p>
+						<p style="font-style: italic;">"Now I need to check the weather in Woolsthorpe."</p>
+					
+						<p><b>10. Action ⚡</b></p>
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							Action: weather: "Woolsthorpe, England"
+						</blockquote>
+					
+						<p><b>11. PAUSE ⏸️</b></p>
+					
+						<p><b>12. Observation 👀</b></p>
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							Observation: "The current temperature in Woolsthorpe, England is 10°C."
+						</blockquote>
+					
+						<p><b>13. Final Answer: ✅</b></p>
+						<blockquote style="background: #f1f6f1; padding: 10px; border-left: 5px solid #006400; font-weight: bold;">
+							"Sir Isaac Newton discovered the law of gravity. He was born in Woolsthorpe, England. The current temperature there is 10°C."
+						</blockquote>
+					
+						<hr style="border: 1px solid #ccc;">
+						
+						<h2 style="color: #2c3e50; font-size: 24px;">🔑 Key Components of a ReAct Agent</h2>
+					
+						<p>A <b>ReAct agent</b> operates through an iterative reasoning process that allows it to <b>think, act, and refine its responses</b> based on observations. Unlike traditional AI systems that rely on predefined workflows, a ReAct agent is <b>adaptive, dynamic, and capable of interacting with external tools</b> to retrieve or compute real-time data.</p>
+					
+						<p>To function effectively, a ReAct agent consists of several <b>key components</b>, each playing a crucial role in its decision-making and execution process. Below, we explore the <b>essential components</b> that power a ReAct agent.</p>
+					
+						<hr style="border: 1px solid #ccc;">
+					
+						<h2 style="color: #2c3e50; font-size: 24px;">1️⃣ Large Language Model (LLM) 🏗️ – The Core Reasoning Engine</h2>
+					
+						<p>At the heart of a ReAct agent lies a <b>Large Language Model (LLM)</b>, such as <b>GPT-4, Claude, or LLaMA</b>, which enables reasoning and decision-making. Unlike traditional AI agents that retrieve answers from a static knowledge base, an LLM allows the ReAct agent to <b>analyze, plan, and break down complex queries into structured steps</b>.</p>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">🔍 What the LLM Does:</h3>
+						<ul>
+							<li><b>Understands user queries</b> and determines necessary actions.</li>
+							<li><b>Generates reasoning chains</b> to decide which steps to take next.</li>
+							<li><b>Processes observations dynamically</b>, ensuring iterative improvement.</li>
+						</ul>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">💡 Example:</h3>
+						<blockquote style="background: #f1f6f1; padding: 10px; border-left: 5px solid #006400; font-style: italic;">
+							<b>User Query:</b> "Who discovered the law of gravity, and what is the population of the country where he was born?"
+						</blockquote>
+					
+						<p>The LLM <b>recognizes two separate tasks</b>:</p>
+						<ul>
+							<li>Find out <b>who discovered gravity</b> (Wikipedia search).</li>
+							<li>Find out <b>the country of birth</b> of that person.</li>
+							<li>Retrieve the <b>population of that country</b> (another Wikipedia search).</li>
+						</ul>
+					
+						<p>Instead of responding immediately, the agent <b>plans a sequence of actions</b> and executes them step by step.</p>
+					
+						<hr style="border: 1px solid #ccc;">
+					
+						<h2 style="color: #2c3e50; font-size: 24px;">2️⃣ Tools (Actions) 🛠️ – Enabling External Capabilities</h2>
+					
+						<p>A <b>ReAct agent is not limited to its internal knowledge</b>—it can extend its capabilities by interacting with <b>external tools</b>. These tools allow the agent to <b>retrieve real-time data, perform calculations, or gather missing information</b> dynamically.</p>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">🔧 Common Tools Used in a ReAct Agent:</h3>
+						<ul>
+							<li><b>Wikipedia API 📚</b> – Retrieves general knowledge.</li>
+							<li><b>Web Search 🔍</b> – Fetches up-to-date real-world information.</li>
+							<li><b>Weather API 🌦️</b> – Checks the latest weather conditions.</li>
+							<li><b>Calculator ➗</b> – Solves mathematical computations.</li>
+						</ul>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">⚙️ How the Agent Uses Tools:</h3>
+						<ul>
+							<li>The <b>LLM determines</b> when a tool is necessary based on the query.</li>
+							<li>It <b>generates an action request</b>, specifying which tool to use.</li>
+							<li>The <b>agent pauses</b> until the tool provides a response.</li>
+							<li>Once the observation is received, it <b>evaluates whether further actions are needed</b>.</li>
+						</ul>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">💡 Example:</h3>
+						<blockquote style="background: #f1f6f1; padding: 10px; border-left: 5px solid #006400; font-style: italic;">
+							<b>User Query:</b> "Who won the most recent FIFA World Cup, and what is the weather in the winning team's capital city?"
+						</blockquote>
+					
+						<p>The agent executes:</p>
+						<ol>
+							<li><b>Wikipedia search</b> to find the latest FIFA World Cup winner.</li>
+							<li><b>Extracts the country name</b> from the result.</li>
+							<li><b>Wikipedia search</b> for the country’s capital.</li>
+							<li><b>Weather API query</b> to retrieve the weather in that city.</li>
+						</ol>
+					
+						<p>By using tools iteratively, the agent <b>fetches and refines real-world data in real time</b>.</p>
+					
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">3️⃣ Memory 🧠 – Retaining Context for Better Reasoning</h2>
+					
+						<p>To provide meaningful responses, a <b>ReAct agent</b> needs <b>memory</b>—a mechanism to retain <b>past interactions, retrieved information, and tool results</b>. Unlike traditional AI models that treat each query independently, memory allows the agent to <b>remember context across multi-step conversations</b>.</p>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">🔍 Functions of Memory in a ReAct Agent:</h3>
+						<ul>
+							<li><b>Stores past interactions</b> to maintain continuity in conversations.</li>
+							<li><b>Prevents redundant queries</b> by remembering previously retrieved information.</li>
+							<li><b>Helps compare and analyze</b> past and present data points.</li>
+						</ul>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">💾 Short-Term vs. Long-Term Memory:</h3>
+						<ul>
+							<li><b>Short-Term Memory (Session-Based)</b> – Remembers interactions only within the active session.</li>
+							<li><b>Long-Term Memory (Persistent Storage)</b> – (Optional) Stores knowledge that persists across different sessions.</li>
+						</ul>
+
+						<h2 style="color: #2c3e50; font-size: 24px;">📏 Token Management for chat summary</h2>
+					
+						<p>Since LLMs have a <b>maximum token limit</b>, a ReAct agent must <b>efficiently manage stored messages</b> to ensure continuity. Token management is a <b>crucial sub-component of memory</b>, ensuring the agent does not exceed token constraints while retaining relevant context.</p>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">⚙️ How Token Management Works:</h3>
+						<ul>
+							<li>The agent <b>tracks the number of tokens used in messages</b>.</li>
+							<li>If the conversation <b>exceeds the token limit</b>, older interactions are <b>summarized</b> to fit within constraints.</li>
+							<li>The <b>summary prompt</b> condenses earlier interactions while retaining important details.</li>
+							<li>The <b>'tiktoken' library</b> is commonly used to estimate and optimize token usage.</li>
+						</ul>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">💡 Example:</h3>
+						<blockquote style="background: #f1f6f1; padding: 10px; border-left: 5px solid #006400; font-style: italic;">
+							<b>Scenario:</b> If an agent has a <b>4096-token limit</b>, and the conversation <b>exceeds this limit</b>, the system will:
+						</blockquote>
+					
+						<ol>
+							<li><b>Summarize</b> the earliest messages.</li>
+							<li><b>Retain only key details</b> while discarding redundant content.</li>
+							<li><b>Ensure that the latest interactions remain fully intact</b> for accurate responses.</li>
+						</ol>
+					
+						<p>Memory and token management together ensure that the agent <b>remembers important details while operating within constraints</b>.</p>
+					
+						<hr style="border: 1px solid #ccc;">
+					
+						<h2 style="color: #2c3e50; font-size: 24px;">4️⃣ Prompt Engineering 📜 – Structuring Thought-Action-Observation</h2>
+					
+						<p>A <b>ReAct agent relies on structured prompts</b> to guide its reasoning and execution, ensuring it follows the <b>Thought-Action-Observation loop</b> correctly. These prompts define <b>how the agent processes queries, interacts with tools, and structures its outputs</b>.</p>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">📝 Key Prompts Used in a ReAct Agent:</h3>
+					
+						<h4 style="color: #2c3e50; font-size: 18px;">1️⃣ System Prompt</h4>
+						<ul>
+							<li>Defines the <b>core rules</b> for the agent's behavior.</li>
+							<li>Guides the <b>step-by-step reasoning process</b> (Thought → Action → PAUSE → Observation).</li>
+							<li>Specifies <b>when to use tools</b> and how to structure final answers.</li>
+						</ul>
+					
+						<h4 style="color: #2c3e50; font-size: 18px;">2️⃣ Summary Prompt</h4>
+						<ul>
+							<li>Helps <b>condense previous interactions</b> when memory reaches a limit.</li>
+							<li>Ensures the agent retains context <b>without exceeding token constraints</b>.</li>
+						</ul>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">❓ Why Prompt Engineering is Critical:</h3>
+						<ul>
+							<li>Poorly structured prompts can lead to <b>inaccurate, inconsistent, or superficial responses</b>.</li>
+							<li>Well-designed prompts <b>enhance decision-making</b> by enforcing structured reasoning.</li>
+						</ul>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">💡 Example (System Prompt Snippet):</h3>
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							You are an AI assistant who follows a step-by-step reasoning process.  
+							You think, take actions when needed, and refine your response based on observations.  
+							<br><br>
+							You run in a loop of Thought, Action, PAUSE, and Observation until you obtain a final answer.  
+							At the end of the loop, you must output a Final Answer.
+						</blockquote>
+					
+						<p>This ensures that the agent <b>never skips steps</b> and <b>always verifies information before responding</b>.</p>
+					
+						<hr style="border: 1px solid #ccc;">
+										
+					</div>
+					<!-- End of 2. Inside the ReAct Agent -->
+					
+					<!-- Start of 3. Architecture of ReAct Agent -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<div id="architecture" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">3. Architecture of the ReAct Agent System</h1>
+						</div>
+					
+						<p>The ReAct agent is designed to <b>think, act, observe, and refine</b> its responses dynamically by leveraging <b>reasoning, memory management, external tools, and interactions with the environment</b>. This architecture enables it to solve complex queries, retrieve external data, and generate intelligent answers in a structured manner.</p>
+						
+						<div class="blg-img-container">
+							<img src="../img/blog_3/react_architecture.png" alt="Architecture of ReAct Agent System" style="width: 100%;"/>
+							<p><br><b>Figure 2 : Architecture of ReAct Agent System</b></p>
+						</div>
+
+						<p>Figure 2 shows the overall architecture of our ReAct agent. The following breakdown explains the <b>entire workflow step by step</b>, ensuring a deep understanding of how each component operates and interacts.</p>
+						
+						<h3 style="color: #2c3e50; font-size: 20px;">🔍 Breakdown of the ReAct Agent Architecture</h3>
+					
+						<p>The architecture of the ReAct agent consists of six major functional components:</p>
+						<ol>
+							<li><b>User Input and Query Processing</b></li>
+							<li><b>Thought Process (Reasoning & Memory Management)</b></li>
+							<li><b>Action Execution (Tool Invocation)</b></li>
+							<li><b>Interacting with the Environment (APIs & Data Retrieval)</b></li>
+							<li><b>Observation and Reasoning Loop</b></li>
+							<li><b>Final Answer Generation</b></li>
+						</ol>
+					
+						<hr style="border: 1px solid #ccc;">
+					
+						<h2 style="color: #2c3e50; font-size: 24px;">1️⃣ User Input and Query Processing</h2>
+					
+						<p>The process starts when the <b>user submits a query</b> to the ReAct agent. The query can be of different types, such as:</p>
+						<ul>
+							<li><b>General knowledge questions</b> (e.g., "Who invented the telephone?")</li>
+							<li><b>Mathematical computations</b> (e.g., "Calculate (15 × 4) + (30 ÷ 5)")</li>
+							<li><b>Real-time information requests</b> (e.g., "What is the current weather in New York?")</li>
+							<li><b>Multi-step queries</b> that require tool usage (e.g., "Find the latest Mars exploration news and check the weather in the city where the latest mission was launched.")</li>
+						</ul>
+					
+						<p>Once the user submits a query, the agent processes it to determine whether to answer directly, retrieve context from memory, or call an external tool.</p>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">🔍 How the Query is Processed</h3>
+						<ol>
+							<li>The <b>raw query</b> is received by the agent.</li>
+							<li>The <b>Memory Management</b> system checks if there is relevant context from previous interactions.</li>
+							<li>The <b>query is structured</b> and prepared as input to ChatGPT for further reasoning.</li>
+						</ol>
+					
+						<p>At this stage, the agent <b>does not take action</b> yet—it first determines what needs to be done.</p>
+					
+						<hr style="border: 1px solid #ccc;">
+					
+						<h2 style="color: #2c3e50; font-size: 24px;">2️⃣ Thought Process (Reasoning & Memory Management)</h2>
+					
+						<p>The <b>thought process</b> is the core of the ReAct agent's reasoning. This step analyzes the query and decides whether an external action (such as calling a tool) is necessary.</p>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">🔍 Components of Thought Processing</h3>
+						<ul>
+							<li><b>ChatGPT's Role</b>: The agent uses <b>ChatGPT</b> to break down the query logically.</li>
+							<li><b>Memory Management</b>:  
+								<ul>
+									<li>If the query requires <b>context from previous interactions</b>, the system fetches stored memory.</li>
+									<li>If needed, the system <b>summarizes past interactions</b> and feeds them into ChatGPT for better understanding.</li>
+								</ul>
+							</li>
+						</ul>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">🔍 How It Works</h3>
+						<ol>
+							<li><b>Input Preparation:</b>  
+								<p>The system structures the input as:</p>
+								<blockquote style="background: #f1f6f1; padding: 10px; border-left: 5px solid #006400; font-style: italic;">
+									query + prompt + summary (if applicable)
+								</blockquote>
+								<p><b>Example:</b></p>
+								<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+									<b>User Query:</b> "Who won the 2024 Nobel Prize in Physics?"<br>
+									<b>Processed Input:</b>  
+									<code>"User asked about the 2024 Nobel Prize in Physics. Fetch information from Wikipedia."</code>
+								</blockquote>
+							</li>
+					
+							<li><b>Thought Processing:</b>  
+								<p>The system <b>analyzes</b> whether it already knows the answer or if an external tool is required.</p>
+								<p><b>Example:</b></p>
+								<ul>
+									<li>If the answer is <b>available internally</b>, the agent responds immediately.</li>
+									<li>If external data is required, it proceeds to the <b>Action Execution</b> stage.</li>
+								</ul>
+							</li>
+						</ol>
+					
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">3️⃣ Memory Management and Token Handling</h2>
+					
+						<p>Since Large Language Models (LLMs) have a <b>maximum token limit</b>, managing conversation history effectively is critical. The ReAct agent ensures <b>long-term memory retention</b> while adhering to the token constraints by using a <b>memory summarization strategy</b>.</p>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">🔍 How the Agent Handles Memory</h3>
+					
+						<h4 style="color: #2c3e50; font-size: 18px;">1. Storing Past Conversations</h4>
+						<p>The system <b>keeps track of previous interactions</b>, storing details such as:</p>
+						<ul>
+							<li><b>User’s past queries</b></li>
+							<li><b>Agent’s responses</b></li>
+							<li><b>Tool outputs (observations)</b></li>
+						</ul>
+						<p>This allows the agent to <b>reference past exchanges</b>, making conversations feel more natural.</p>
+					
+						<h4 style="color: #2c3e50; font-size: 18px;">2. Token Limit Handling</h4>
+						<p>When the conversation <b>exceeds the token limit</b>, the agent follows a structured process:</p>
+						<ul>
+							<li><b>Summarization:</b> It extracts the most relevant information from previous messages.</li>
+							<li><b>Deleting Old Messages:</b> Once summarized, the original messages are removed to <b>free up space</b>.</li>
+							<li><b>Maintaining Key Information:</b> The agent keeps a <b>chat history summary</b> instead of raw exchanges.</li>
+						</ul>
+					
+						<h4 style="color: #2c3e50; font-size: 18px;">3. What is Passed to ChatGPT?</h4>
+						<p>The agent <b>passes a structured input</b> to the LLM, including:</p>
+						<ul>
+							<li><b>Chat Summary</b> (a compact form of prior interactions).</li>
+							<li><b>User's Current Query</b>.</li>
+							<li><b>Observations from External Tools</b> (if used).</li>
+							<li><b>Agent's Own Thought Process</b>.</li>
+						</ul>
+					
+						<hr style="border: 1px solid #ccc;">
+					
+						<h2 style="color: #2c3e50; font-size: 24px;">4️⃣ Interacting with the Environment (APIs & Data Retrieval)</h2>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">🌍 What is the Environment?</h3>
+						<p>The environment consists of <b>external data sources</b> that the agent interacts with. These include:</p>
+						<ul>
+							<li><b>Weather API (OpenWeather)</b> → Fetches real-time weather updates.</li>
+							<li><b>Wikipedia API</b> → Retrieves factual knowledge.</li>
+							<li><b>Web Search API</b> → Provides the latest online search results.</li>
+							<li><b>Calculator Tool</b> → Performs mathematical computations.</li>
+						</ul>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">🔍 How the Agent Uses APIs to Retrieve Data</h3>
+						<ol>
+							<li><b>Determining the Required Tool</b></li>
+							<li><b>Executing API Requests</b></li>
+							<li><b>Receiving and Processing API Responses</b></li>
+							<li><b>Passing Data to the LLM for Observation</b></li>
+						</ol>
+					
+						<hr style="border: 1px solid #ccc;">
+					
+						<h2 style="color: #2c3e50; font-size: 24px;">5️⃣ Observation and Reasoning Loop</h2>
+					
+						<p>Once the agent <b>retrieves external data</b>, it evaluates whether the response is <b>complete</b> or if additional actions are needed.</p>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">🔍 How the Observation Process Works</h3>
+						<ol>
+							<li><b>Tool Execution Completes</b> → The tool provides data.</li>
+							<li><b>The Agent Evaluates the Response:</b>
+								<ul>
+									<li>Is the response <b>complete</b>, or is more information needed?</li>
+									<li>Does the response <b>answer the user’s query</b> fully?</li>
+								</ul>
+							</li>
+							<li><b>If More Information is Required, the agent:</b>
+								<ul>
+									<li>Calls another tool if necessary.</li>
+									<li>Refines the query and <b>repeats the Thought-Action-Observation loop</b>.</li>
+								</ul>
+							</li>
+						</ol>
+					
+						<p>If all necessary information is gathered, the agent proceeds to <b>final answer generation</b>.</p>
+					
+						<hr style="border: 1px solid #ccc;">
+					
+						<h2 style="color: #2c3e50; font-size: 24px;">6️⃣ Final Answer Generation</h2>
+					
+						<p>After gathering and processing all required information, the agent <b>constructs the final response</b> in a human-readable format.</p>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">📝 Steps for Answer Finalization</h3>
+						<ul>
+							<li><b>Combining Observations</b> → If multiple tools were used, the agent <b>merges the results</b>.</li>
+							<li><b>Summarization</b> → If the response is <b>too long</b>, the system <b>summarizes</b> key points.</li>
+							<li><b>Formatting the Answer</b> → The response is structured for clarity and easy understanding.</li>
+						</ul>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">💡 Example Final Answer</h3>
+						<blockquote style="background: #f1f6f1; padding: 10px; border-left: 5px solid #006400; font-style: italic;">
+							<b>User Query:</b> "What is the weather in the city where the 2024 Nobel Prize in Physics winner was born?"
+						</blockquote>
+					
+						<h4 style="color: #2c3e50; font-size: 18px;">Processing Steps:</h4>
+						<ol>
+							<li>Step 1: Fetch Nobel Prize winner (Wikipedia API).</li>
+							<li>Step 2: Extract birthplace from Wikipedia.</li>
+							<li>Step 3: Fetch weather in that location (Weather API).</li>
+							<li>Step 4: Merge results and generate the final response.</li>
+						</ol>
+					
+						<h4 style="color: #2c3e50; font-size: 18px;">Final Answer Example:</h4>
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							The 2024 Nobel Prize in Physics was awarded to Dr. John Smith. He was born in Stockholm, Sweden.<br>
+							The current temperature in Stockholm is 12°C with clear skies.
+						</blockquote>
+					
+						<hr style="border: 1px solid #ccc;">
+					</div>
+					<!-- End of 3. Architecture of ReAct Agent -->
+
+					<!-- Start of 4. Setting Up the Project -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<div id="setup-project" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">4. Setting Up the Project</h1>
+						</div>
+					
+						<p>Setting up the ReAct Agent involves organizing the project files, installing dependencies, and configuring environment variables. This section walks you through the essentials to get your development environment ready.</p>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">📁 Project Structure and Dependencies</h3>
+					
+						<p>The project follows a clean modular structure that separates prompts, tools, utility functions, and core logic. Below is an overview of the folder layout:</p>
+
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-python">
+REACT-AGENT-FROM-SCRATCH/
+│── prompts/
+│   ├── summary_prompt.txt
+│   ├── system_prompt.txt
+│
+│── tools/
+│   ├── __init__.py
+│   ├── base_tool.py
+│   ├── calculator.py
+│   ├── weather.py
+│   ├── web_search.py
+│   ├── wikipedia.py
+│
+│── utils/
+│   ├── message.py
+│
+│── .env
+│── .gitattributes
+│── .gitignore
+│── .pre-commit-config.yaml
+│── agent.py
+│── LICENSE
+│── README.md
+│── requirements.txt
+│── test_queries.txt
+│── web_app.py
+</code>
+							</pre>
+						</div>
+					
+						<br>
+						<h3 style="color: #2c3e50; font-size: 20px;">🗂 Key Directories & Files</h3>
+						<ul>
+							<li><b>prompts/</b> — Prompt templates for summarization and system behavior.</li>
+							<li><b>tools/</b> — Contains all functional tools (calculator, Wikipedia, weather, etc.).</li>
+							<li><b>utils/</b> — Utility functions, including message formatting.</li>
+							<li><b>.env</b> — Stores API keys and credentials securely.</li>
+							<li><b>agent.py</b> — Core implementation of the ReAct agent.</li>
+							<li><b>web_app.py</b> — Web interface for interactive usage.</li>
+							<li><b>requirements.txt</b> — List of required Python libraries.</li>
+						</ul>
+					
+						<hr style="border: 1px solid #ccc;">
+					
+						<h2 style="color: #2c3e50; font-size: 24px;">🐍 Python Version & Virtual Environment Setup</h2>
+					
+						<p>Ensure you are using <b>Python 3.8 or higher</b>. It's highly recommended to use a virtual environment for clean and isolated dependency management.</p>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">🔧 Steps to Set Up</h3>
+						<ol>
+							<li>Create a virtual environment:
+								<blockquote style="background: #f1f6f1; padding: 10px; border-left: 5px solid #006400;">
+									python -m venv venv
+								</blockquote>
+							</li>
+							<li>Activate the environment:
+								<ul>
+									<li>macOS/Linux:
+										<blockquote style="background: #f1f6f1; padding: 10px; border-left: 5px solid #006400;">
+											source venv/bin/activate
+										</blockquote>
+									</li>
+									<li>Windows:
+										<blockquote style="background: #f1f6f1; padding: 10px; border-left: 5px solid #006400;">
+											venv\Scripts\activate
+										</blockquote>
+									</li>
+								</ul>
+							</li>
+							<li>Install dependencies:
+								<blockquote style="background: #f1f6f1; padding: 10px; border-left: 5px solid #006400;">
+									pip install -r requirements.txt
+								</blockquote>
+							</li>
+						</ol>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">📋 Example <span style="background-color: #efefef;">requirements.txt</span></h3>
+						<ul>
+							<li><b>openai</b> - Interface to LLMs</li>
+							<li><b>flask</b> - Lightweight web framework</li>
+							<li><b>requests</b> - For HTTP API calls</li>
+							<li><b>python-dotenv</b> - Loads environment variables from .env</li>
+							<li><b>beautifulsoup4</b> - Parses web search responses</li>
+							<li><b>wikipedia-api</b> - Fetches structured Wikipedia data</li>
+							<li><b>tiktoken</b> - Manages tokenization and limits</li>
+							<li><b>colorama</b> - Adds color to terminal output</li>
+						</ul>
+					
+						<hr style="border: 1px solid #ccc;">
+					
+						<h2 style="color: #2c3e50; font-size: 24px;">📌 Configuring Environment Variables</h2>
+					
+						<p>To securely store API keys and credentials, we use a <code>.env</code> file.</p>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">🛠 Setting Up the <code>.env</code> File</h3>
+					
+						<p>Create a <code>.env</code> file in the root directory:</p>
+					
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							touch .env
+						</blockquote>
+					
+						<p>Open the file and add your credentials:</p>
+
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+OPENAI_API_KEY="your-openai-api-key"
+AZURE_OPENAI_API_KEY="your-azure-openai-key"
+AZURE_OPENAI_ENDPOINT="your-azure-endpoint"
+OPENAI_API_VERSION="2023-03-15-preview"
+WEATHER_API_KEY="your-weather-api-key"
+</code>
+							</pre>
+						</div>
+					
+						<p>Load the <code>.env</code> file in Python:</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-python">
+from dotenv import load_dotenv
+import os
+
+load_dotenv()  # Load environment variables
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+AZURE_OPENAI_API_KEY = os.getenv("AZURE_OPENAI_API_KEY")
+AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
+WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
+</code>
+							</pre>
+						</div>
+						<p>This ensures sensitive credentials stay out of your codebase and version control system.</p>
+						<hr style="border: 1px solid #ccc;">
+					
+					</div>
+					<!-- End of 4. Setting Up the Project -->
+
+					<!-- Start of 5. Understanding the Message Class -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<div id="message" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">5. Understanding the Message Class</h1>
+						</div>
+
+						<p>In the heart of the ReAct agent architecture, the <span class="code-soft">Message</span> class plays a subtle but powerful role. While it may appear simple at first glance, it is critical for maintaining the agent's reasoning flow and conversation history.</p>
+
+						<h2 style="color: #2c3e50; font-size: 24px;">🔧 What is the Message Class?</h2>
+
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-python">
+class Message:
+	def __init__(self, role, content):
+		self.role = role
+		self.content = content
+</code>
+							</pre>
+						</div>
+
+						<p>This class defines a message as an object containing two attributes:</p>
+						<ul>
+							<li><span class="code-soft">role</span>: identifies who the message is from (e.g., <span class="code-soft">"user"</span>, <span class="code-soft">"assistant"</span>, or <span class="code-soft">"system"</span>)</li>
+							<li><span class="code-soft">content</span>: the actual message or thought, such as a user query, an agent’s internal thought, or a final answer</li>
+						</ul>
+
+						<p>Despite its simplicity, this structure is the backbone of how the agent communicates with itself and with the user.</p>
+
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">🎭 role: Who is speaking?</h2>
+
+						<p>The <span class="code-soft">role</span> attribute helps differentiate between different types of participants or internal processes:</p>
+						<ul>
+							<li>🧑 <b>User</b>: the original query from the user</li>
+							<li>🤖 <b>Assistant</b>: the model’s response or output</li>
+							<li>🛠️ <b>Tool/Agent Thought</b>: intermediate reasoning like <span class="code-soft">"Thought"</span>, <span class="code-soft">"Action"</span>, <span class="code-soft">"Observation"</span>, etc.</li>
+						</ul>
+
+						<p>By tagging each message with a role, the agent can keep the context organized and ensure that prompts sent to the language model are coherent and well-structured.</p>
+
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">🗒️ content: What is being said or done?</h2>
+
+						<p>The <span class="code-soft">content</span> holds the actual string of information relevant to that message. Examples include:</p>
+						<ul>
+							<li>A user asking: <span class="code-soft">"What is the capital of France?"</span></li>
+							<li>An agent thinking: <span class="code-soft">"I need to look up France on Wikipedia."</span></li>
+							<li>An action like: <span class="code-soft">"wikipedia: France"</span></li>
+							<li>An observation: <span class="code-soft">"France is a country in Western Europe..."</span></li>
+						</ul>
+
+						<p>Every single step the agent performs is captured in this field, forming a clear, chronological log of reasoning and execution.</p>
+
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">🧩 How the Message Class is Used in the Agent</h2>
+
+						<p>Inside <span class="code-soft">agent.py</span>, messages are appended to a list that acts as the conversation history. For each loop in the ReAct reasoning process, the agent creates a new <span class="code-soft">Message</span> object with an appropriate <span class="code-soft">role</span> and <span class="code-soft">content</span>, and adds it to the list.</p>
+
+						<p>For example:</p>
+						<ul>
+							<li>After receiving a query, the agent creates a message with <span class="code-soft">role = "user"</span> and the user input as content.</li>
+							<li>When the agent thinks or decides on an action, it logs that with <span class="code-soft">role = "assistant"</span> or <span class="code-soft">"system"</span> depending on the design.</li>
+							<li>After calling a tool and receiving a result, that result is logged as another message, helping build up the next input to the LLM.</li>
+						</ul>
+
+						<p>This list of messages is also used to dynamically construct prompts that the model sees. By feeding the model a chronological sequence of thoughts, actions, and observations, the agent enables the LLM to maintain context and make informed decisions.</p>
+
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">🔄 Why the Message class is needed</h2>
+
+						<p>Without the <span class="code-soft">Message</span> class, the agent would lose track of how it arrived at a decision. The loop would become opaque, and it would be harder to debug or extend. Here's what the class enables:</p>
+						<ul>
+							<li>Transparent reasoning (every step is visible)</li>
+							<li>Dynamic prompt construction (based on message history)</li>
+							<li>Tool invocation tracking (actions and observations logged)</li>
+							<li>Seamless user-agent interaction history</li>
+						</ul>
+
+						<p>In short, the <span class="code-soft">Message</span> class is the memory system that powers the ReAct agent’s intelligence.</p>
+						<hr style="border: 1px solid #ccc;">
+					</div>
+					<!-- End of 5. Understanding the Message Class -->
+
+					<!-- Start of 6. Designing Effective Prompts for the Agent -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<div id="prompt" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">6. Designing Effective Prompts for the Agent</h1>
+						</div>
+
+						<p>In a ReAct-based agent, <b>prompts act as the control center</b> — defining how the agent reasons, acts, and communicates. Instead of giving vague instructions, we design <b>explicit, modular, and readable prompts</b> that enforce a disciplined reasoning flow.</p>
+
+						<p>Two key prompt files are used for this system:</p>
+						<ul>
+							<li><b><span class="code-soft">system_prompt.txt</span></b> — guides the agent through the <b>Thought-Action-Observation</b> reasoning loop.</li>
+							<li><b><span class="code-soft">summary_prompt.txt</span></b> — enables the agent to <b>summarize tool-based conversations</b> clearly and concisely.</li>
+						</ul>
+
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">🔍 Understanding the Role of Prompts in the ReAct Agent</h2>
+						<p>Prompts in a ReAct agent are more than textual instructions — they're <b>architectural blueprints</b> that shape the agent’s cognition and behavior. They:</p>
+						<ul>
+							<li>Control how the agent performs reasoning steps.</li>
+							<li>Dictate when and how tools are used.</li>
+							<li>Define how final answers are produced.</li>
+							<li>Enable retrospective summarization of long conversations.</li>
+						</ul>
+
+						<p>This separation of <b>reasoning logic</b> and <b>summary logic</b> into two cleanly structured prompts ensures the agent is both a <b>disciplined thinker</b> and a <b>clear communicator</b>.</p>
+
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">🔁 <span class="code-soft">system_prompt.txt</span> – Structuring the Thought-Action-Observation Loop</h2>
+
+						<p>The <span class="code-soft">system_prompt.txt</span> defines the agent’s <b>reasoning protocol</b>. It tells the agent <i>how to think</i>, when to <i>pause</i>, and how to use tools <b>step by step</b> to arrive at accurate answers. Instead of letting the model generate freeform responses, this prompt establishes a deterministic reasoning framework built around a loop of reasoning, action, and verification.</p>
+
+						<p>It begins with a directive that sets the tone:</p>
+						<blockquote><i>"You are an AI assistant who follows a step-by-step reasoning process to determine the best answer."</i></blockquote>
+
+						<h3 style="color: #2c3e50; font-size: 20px;">🧠 Core Reasoning Loop</h3>
+						<p>The agent must operate in this fixed pattern:</p>
+						<blockquote><i>"You run in a loop of Thought, Action, PAUSE, and Observation until you obtain a final answer."</i></blockquote>
+
+						<ul>
+							<li><b>Thought</b>: The agent reflects on the next logical step.</li>
+							<li><b>Action</b>: It calls a tool like <span class="code-soft">calculator</span>, <span class="code-soft">wikipedia</span>, or <span class="code-soft">weather</span>.</li>
+							<li><b>PAUSE</b>: It waits for the result.</li>
+							<li><b>Observation</b>: It receives and processes the result.</li>
+						</ul>
+
+						<p>The cycle repeats until the agent delivers a clear:</p>
+						<blockquote>Final Answer</blockquote>
+						<p>This ensures completeness, consistency, and transparency in every exchange.</p>
+
+						<h3 style="color: #2c3e50; font-size: 20px;">📐 Action Formatting and Tool Usage</h3>
+						<p>The prompt enforces strict rules for calling tools:</p>
+						<p>For general tool use:</p>
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							Action: wikipedia: Nikola Tesla
+						</blockquote>
+
+						<p>For math operations, the agent must use strict JSON:</p>
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							Action: calculator: {"operation": "add", "params": {"a": 5, "b": 3}}
+						</blockquote>
+
+						<p>And the rules are clear:</p>
+						<ul>
+							<li>Mathematical expressions should NOT be written as plain text.</li>
+							<li>Never omit the 'operation' key in the JSON.</li>
+						</ul>
+
+						<h3 style="color: #2c3e50; font-size: 20px;">📏 Behavioral Guardrails</h3>
+						<p>The prompt defines how the agent should handle different scenarios:</p>
+						<ul>
+							<li>For greetings or farewells, respond directly in a friendly manner...</li>
+							<li>If the answer is already known based on internal knowledge, respond directly...</li>
+							<li>If multiple actions are required, execute them in separate calls.</li>
+						</ul>
+						<p>These constraints allow the agent to remain smart, efficient, and user-friendly — skipping unnecessary steps when not needed, and staying modular when complexity arises.</p>
+
+						<h3 style="color: #2c3e50; font-size: 20px;">📘 Embedded Examples</h3>
+						<p>The prompt includes fully worked-out examples that illustrate the entire loop in action. For instance:</p>
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-python">
+Question: What is (7 + 2) * 4?
+Thought: I need to calculate the sum inside the parentheses first.
+Action: calculator: {"operation": "add", "params": {"a": 7, "b": 2}}
+PAUSE
+Observation from calculator: 9
+
+Thought: Now, I need to multiply the result by 4.
+Action: calculator: {"operation": "multiply", "params": {"a": 9, "b": 4}}
+PAUSE
+Observation from calculator: 36
+Final Answer: (7 + 2) * 4 = 36.
+</code>
+							</pre>
+						</div>
+
+						<p>These serve as prompt-based training examples, reinforcing correct patterns and giving the model a working template to imitate.</p>
+
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">🧾 <span class="code-soft">summary_prompt.txt</span> – Summarizing Conversations Effectively</h2>
+
+						<p>While <span class="code-soft">system_prompt.txt</span> helps the agent think, the <span class="code-soft">summary_prompt.txt</span> helps it <b>reflect</b>. This prompt is used after a conversation (or tool-augmented session) has taken place. It tells the agent how to turn a multi-step interaction — possibly involving several tools, intermediate results, and thoughts — into a clean, human-readable paragraph.</p>
+
+						<p>The prompt opens with:</p>
+						<blockquote><i>"You are an AI assistant summarizing a conversation between a user and an AI assistant capable of using system actions..."</i></blockquote>
+
+						<p>Then clearly defines the task:</p>
+						<blockquote><i>"...create a concise summary outlining the user's requests and the assistant's responses, emphasizing key points and final answers."</i></blockquote>
+
+						<h3 style="color: #2c3e50; font-size: 20px;">📜 Structure & Style</h3>
+
+						<p>The summary must:</p>
+						<ul>
+							<li>Be written as a single paragraph</li>
+							<li>Be concise and clear</li>
+							<li>Focus on:
+								<ul>
+									<li>What the user asked</li>
+									<li>What actions were taken</li>
+									<li>What the final results were</li>
+								</ul>
+							</li>
+						</ul>
+
+						<p>Crucially, it should <b>not</b> list each <span class="code-soft">Thought</span> or <span class="code-soft">Action</span>, but rather convey the overall flow — from question to resolution — in natural language.</p>
+
+						<p>This format is ideal for:</p>
+						<ul>
+							<li>Creating chat logs,</li>
+							<li>Persisting session memory,</li>
+							<li>Displaying conversation summaries in UI dashboards,</li>
+							<li>And making long ReAct loops human-readable.</li>
+						</ul>
+
+						<p>For example, a long tool-assisted query like:</p>
+						<blockquote><i>“Who won the latest Ballon d'Or? What’s the weather in his birthplace and in Buenos Aires?”</i></blockquote>
+
+						<p>Could be summarized as:</p>
+						<blockquote><i>“The user asked about the 2024 Ballon d'Or winner and the weather in his birthplace and Buenos Aires. The assistant used Wikipedia to identify the winner and city, followed by weather checks in both locations. The final answer included the winner’s name and weather conditions for both cities.”</i></blockquote>
+
+						<hr style="border: 1px solid #ccc;">
+
+					</div>
+					<!-- End of 6. Designing Effective Prompts for the Agent -->
+
+					<!-- Start of 7. Building Tools for the Agent -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<div id="tools" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">7. Building Tools for the Agent</h1>
+						</div>
+					
+						<p>In the ReAct framework, an agent doesn't just think — it acts. These actions are made possible by tools: small, modular programs that allow the agent to reach outside its own knowledge to fetch live data or perform computations.</p>
+					
+						<p>In our system, tools are implemented as Python classes that inherit from a common interface, loaded dynamically at runtime, and called whenever the agent outputs an <span class="code-soft">Action:</span> line. This design makes tools easy to build, extend, and reason over — all while maintaining a consistent behavior pattern.</p>
+					
+						<p>Let's explore how the tool system works and what each tool does under the hood.</p>
+						<br>
+					
+						<h2 style="color: #2c3e50; font-size: 24px;">🧱 The BaseTool Interface</h2>
+					
+						<p>Before diving into individual tools, it's important to understand how they all fit into a shared structure.</p>
+					
+						<p>All tools inherit from an abstract class <span class="code-soft">BaseTool</span> defined in <span class="code-soft">base_tool.py</span>:</p>
+					
+						<!-- Code -->
+						<div class="blg-code-container">
+						<pre class="line-numbers">
+							<code class="language-python">
+class BaseTool:
+	def __init__(self):
+		self.name = ""
+		self.description = ""
+
+	def run(self, query: str) -> str:
+		raise NotImplementedError("Each tool must implement its own run() method.")
+</code>
+						</pre>
+						</div>
+					
+						<p>Each subclass must implement:</p>
+						<ul>
+						<li>A unique <span class="code-soft">name</span> used for lookup (e.g. <span class="code-soft">"calculator"</span>),</li>
+						<li>A <span class="code-soft">description</span> to help users or the agent understand what the tool does,</li>
+						<li>A <span class="code-soft">run()</span> method that takes a string input and returns a string or structured output.</li>
+						</ul>
+					
+						<p>This consistent interface ensures that every tool can be dynamically registered and executed without custom logic.</p>
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">🔄 Dynamic Tool Registration</h2>
+					
+						<p>In <span class="code-soft">agent.py</span>, tools are discovered automatically at runtime using Python’s <span class="code-soft">pkgutil</span> and <span class="code-soft">importlib</span>:</p>
+					
+						<!-- Code -->
+						<div class="blg-code-container">
+						<pre class="line-numbers">
+							<code class="language-python">
+def register_tools(self):
+	tool_modules = [name for _, name, _ in pkgutil.iter_modules(["tools"])]
+
+	for module_name in tool_modules:
+		try:
+			module = importlib.import_module(f"tools.{module_name}")
+			for attr_name in dir(module):
+				attr = getattr(module, attr_name)
+				if isinstance(attr, type) and issubclass(attr, BaseTool) and attr is not BaseTool:
+					tool_instance = attr()
+					self.tools[tool_instance.name.lower()] = tool_instance
+		except Exception as e:
+			print(f"[ERROR] Failed to register tool {module_name}: {e}")
+</code>
+						</pre>
+						</div>
+					
+						<p>This approach ensures that <b>any valid tool placed in the <span class="code-soft">tools/</span> folder is automatically discovered and registered</b> — without needing manual updates to the agent logic.</p>
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">➗ Calculator Tool – Performing Arithmetic</h2>
+						<p>The <b>CalculatorTool</b> provides essential numerical operations like addition, subtraction, multiplication, and more. It accepts a structured JSON query specifying the operation and the two operands.</p>
+						<p>This makes it ideal for step-by-step reasoning in mathematical problems.</p>
+					
+						<div class="blg-code-container">
+						<pre class="line-numbers">
+							<code class="language-python">
+def run(self, query: str) -> str:
+	try:
+		data = json.loads(query)
+		if "operation" not in data or "params" not in data:
+			return "Error: Missing 'operation' or 'params' in request."
+
+		operation = data["operation"]
+		params = data["params"]
+
+		if not isinstance(params, dict) or "a" not in params or "b" not in params:
+			return "Error: Parameters must be in the format {'a': <num>, 'b': <num>}."
+
+		if hasattr(self, operation):
+			method = getattr(self, operation)
+			return str(method(**params))
+		else:
+			return f"Error: Unknown operation '{operation}'. Available operations: add, multiply, subtract, divide, power, modulus."
+
+	except json.JSONDecodeError:
+		return "Error: Invalid JSON input."
+	except Exception as e:
+		return f"Error: {str(e)}"
+</code>
+						</pre>
+						</div>
+					
+						<p>✅ <b>Supports:</b> add, subtract, multiply, divide, power, modulus<br>
+						🛡️ <b>Handles:</b> division by zero, unknown operations, malformed JSON</p>
+						<hr style="border: 1px solid #ccc;">
+					
+						<h2 style="color: #2c3e50; font-size: 24px;">📚 Wikipedia Tool – Accessing General Knowledge</h2>
+						<p>The <b>WikipediaTool</b> connects the agent to encyclopedic knowledge. It uses the <code>wikipediaapi</code> library to fetch summaries of topics in natural language.</p>
+						<p>The agent might ask:</p>
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">Action: wikipedia: Marie Curie</blockquote>
+						<p>And receive a short, structured summary in response.</p>
+					
+						<div class="blg-code-container">
+						<pre class="line-numbers">
+							<code class="language-python">
+def run(self, query: str) -> dict:
+	if not query or not query.strip():
+		return {"error": "Query cannot be empty."}
+
+	try:
+		page = self.wiki_api.page(query)
+
+		if page.exists():
+			return {"query": query, "title": page.title, "summary": page.summary}
+
+		return {"error": f"No Wikipedia page found for '{query}'."}
+
+	except Exception as e:
+		return {"error": f"An error occurred while searching Wikipedia: {str(e)}"}
+</code>
+						</pre>
+						</div>
+					
+						<p>📦 <b>Returns:</b> a dictionary with query, title, and summary<br>
+						🛡️ <b>Handles:</b> empty queries, nonexistent pages, API errors</p>
+						<hr style="border: 1px solid #ccc;">
+					
+						<h2 style="color: #2c3e50; font-size: 24px;">🌐 Web Search Tool – Searching the Internet</h2>
+						<p>The <b>WebSearchTool</b> allows the agent to perform real-time web searches using the <b>Tavily API</b>. Unlike the Wikipedia tool which accesses a fixed knowledge base, this tool fetches the latest web content.</p>
+					
+						<div class="blg-code-container">
+						<pre class="line-numbers">
+							<code class="language-python">
+def run(self, query: str) -> list:
+	if not query or not query.strip():
+		return [{"error": "Query cannot be empty."}]
+
+	try:
+		search_results = self.tavily_client.search(query=query, max_results=2)
+
+		if not search_results or "results" not in search_results:
+			return [{"error": "No search results available."}]
+
+		formatted_results = []
+		for result in search_results["results"]:
+			formatted_results.append({
+				"title": result.get("title", "No title available"),
+				"content": result.get("content", "No content available"),
+				"url": result.get("url", "No URL available"),
+				"score": result.get("score", "No score available"),
+			})
+
+		return formatted_results if formatted_results else [{"error": "No results found."}]
+	except Exception as e:
+		return [{"error": f"Search request failed: {str(e)}"}]
+</code>
+						</pre>
+						</div>
+					
+						<p>🔑 <b>Requires:</b> TAVILY_API_KEY via .env<br>
+						📋 <b>Returns:</b> a list of structured search results<br>
+						🛡️ <b>Handles:</b> bad queries, empty responses, API errors</p>
+						<hr style="border: 1px solid #ccc;">
+					
+						<h2 style="color: #2c3e50; font-size: 24px;">🌦️ Weather Tool – Reporting Real-Time Conditions</h2>
+						<p>The <b>WeatherTool</b> fetches current weather data for a given city using the <b>OpenWeatherMap API</b>. This is useful for agent tasks involving travel planning, location comparison, or current events.</p>
+					
+						<div class="blg-code-container">
+						<pre class="line-numbers">
+							<code class="language-python">
+def run(self, query):
+	if not query or not query.strip():
+		return "Error: City name cannot be empty."
+
+	url = f"{self.base_url}?q={query}&appid={self.api_key}&units=metric"
+	try:
+		response = requests.get(url, timeout=5)
+		if response.status_code != 200:
+			return f"Error: Unable to fetch weather data. Server responded with {response.status_code}: {response.json().get('message', 'Unknown error')}"
+
+		data = response.json()
+		if "main" not in data or "weather" not in data:
+			return f"Could not find weather data for '{query}'. Please check the city name."
+
+		temperature = data["main"]["temp"]
+		description = data["weather"][0]["description"]
+		humidity = data["main"]["humidity"]
+		wind_speed = data["wind"]["speed"]
+
+		return (
+			f"The temperature in {query} is {temperature}°C. "
+			f"The weather is {description}. "
+			f"The humidity is {humidity}%. "
+			f"The wind speed is {wind_speed} m/s."
+		)
+
+	except requests.exceptions.RequestException as req_err:
+		return f"Request failed: {str(req_err)}"
+</code>
+						</pre>
+						</div>
+					
+						<p>🔑 <b>Requires:</b> OPENWEATHER_API_KEY from .env<br>
+						🌍 <b>Provides:</b> temperature, description, humidity, wind speed<br>
+						🛡️ <b>Handles:</b> invalid cities, server errors, connection issues</p>
+					
+						<p>Together, these tools form a powerful and flexible foundation that allows the ReAct agent to interact with the real world — whether it’s crunching numbers, fetching facts, retrieving current weather, or doing live web searches.</p>
+						<hr style="border: 1px solid #ccc;">
+					</div>
+					<!-- End of 7. Building Tools for the Agent -->
+
+					<!-- Start of 8. Memory Management -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<div id="memory" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">8. Memory Management</h1>
+						</div>
+
+						<p>Large language models like GPT-4 have a fixed context window, meaning they can only process a limited number of tokens per request. If the context exceeds this limit, the model starts to forget older parts of the conversation or even fails to respond. To address this, our ReAct agent uses a summarization-based memory management strategy that intelligently compresses and preserves relevant parts of older chats.</p>
+
+						<h2 style="color: #2c3e50; font-size: 24px;">🧪 Step 1: When to Trigger Memory Management</h2>
+
+						<p>The agent continuously monitors the message history and triggers summarization <b>only when needed</b>. Two conditions must be met:</p>
+						<ul>
+							<li>The number of user messages exceeds a threshold (<span class="code-soft">self.messages_to_summarize</span>, default: <code>3</code>).</li>
+							<li>The total token count of the chat history exceeds the allowed token budget (<span class="code-soft">self.max_messages_tokens</span>, default: <code>1000</code>).</li>
+						</ul>
+
+						<p>This logic ensures summarization happens <b>only when</b> the conversation is long enough to warrant compression:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+user_messages = [msg for msg in chat_history if msg["role"] == "user"]
+if len(user_messages) > self.messages_to_summarize and self.num_tokens_from_messages(chat_history) > self.max_messages_tokens:
+	...
+</code>
+							</pre>
+						</div>
+
+						<p>The agent uses <span class="code-soft">tiktoken</span> to compute the token count of messages and make accurate memory decisions.</p>
+
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">🔍 Step 2: Selecting the Messages to Summarize</h2>
+
+						<p>When summarization is triggered, the agent chooses a window of old user messages to compress. The <span class="code-soft">get_indices()</span> method determines the start and end indexes of this slice:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+def get_indices(self, chat_history):
+	"""Extracts a specified number of consecutive user queries from the given chat history."""
+	user_indices = [i for i, msg in enumerate(chat_history) if msg["role"] == "user"]
+
+	start_index = user_indices[0]
+	end_index = user_indices[self.messages_to_summarize]
+
+	return start_index, end_index
+</code>
+							</pre>
+						</div>
+
+						<p>This approach helps isolate the first few user queries, making it easier to replace them with a single summary while preserving the original flow of the conversation.</p>
+
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">📝 Step 3: Generating the Summary</h2>
+
+						<p>The extracted messages are passed to the <span class="code-soft">summarize_old_chats()</span> method. This function constructs a summarization prompt using a template (<span class="code-soft">summary_prompt.txt</span>) and sends it to the LLM for processing:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+def summarize_old_chats(self, chats):
+	"""Summarizes old chat history and returns a concise summary response."""
+	prompt = self.summary_prompt.format(chats=chats)
+	messages = [{"role": "system", "content": prompt}]
+
+	raw_response = self.client.chat.completions.create(
+		model=self.model,
+		messages=messages,
+		max_tokens=self.llm_max_tokens
+	)
+	response = raw_response.choices[0].message.content
+
+	return response.strip() if response else "No response from LLM"
+</code>
+							</pre>
+						</div>
+
+						<p>The result is a short, clean summary that captures the essence of the older messages.</p>
+
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">🔁 Step 4: Replacing Messages and Updating Memory</h2>
+
+						<p>Here's where everything comes together. The <span class="code-soft">memory_management()</span> method handles the full flow — from detecting when to summarize, generating the summary, and finally updating the conversation memory:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+def memory_management(self, chat_history):
+	"""Manages memory by summarizing and deleting old chat history"""
+	try:
+		user_messages = [msg for msg in chat_history if msg["role"] == "user"]
+		if len(user_messages) > self.messages_to_summarize and self.num_tokens_from_messages(chat_history) > self.max_messages_tokens:
+			indices = self.get_indices(chat_history)
+			if indices:
+				start_index, end_index = indices
+				chats = chat_history[start_index:end_index]
+				new_summary = self.summarize_old_chats(chats)
+				print(f"##### Tokens used by the old messages: {self.num_tokens_from_messages(chats)}")
+				if new_summary != "No response from LLM":
+					print(f"##### Tokens used by the new summary: {self.num_tokens_from_text(new_summary)}")
+					self.old_chats_summary = f"{self.old_chats_summary} {new_summary}".strip()
+					print("##### Old messages summary : ", self.old_chats_summary)
+					del self.messages[start_index:end_index]
+	except Exception as e:
+		print(f"An error occurred during memory management: {e}")
+</code>
+							</pre>
+						</div>
+
+						<p>This method:</p>
+						<ul>
+							<li>Checks if summarization is needed.</li>
+							<li>Extracts the old messages.</li>
+							<li>Summarizes them using the LLM.</li>
+							<li>Appends the new summary to <span class="code-soft">self.old_chats_summary</span>.</li>
+							<li>Deletes the original messages to save space.</li>
+						</ul>
+
+						<p>All steps are wrapped in a <span class="code-soft">try-except</span> block to avoid crashing if anything goes wrong.</p>
+
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">📦 Step 5: Injecting Summaries into Future Prompts</h2>
+
+						<p>After generating and storing the summary, the agent injects it into the system prompt before the next LLM call. This ensures that the model retains long-term awareness without needing the full raw history:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+if self.old_chats_summary:
+	prompt += f"\n\nOld messages summary:\n{self.old_chats_summary}"
+</code>
+							</pre>
+						</div>
+
+						<p>This summary becomes part of the agent's permanent short-term memory and is reused in future prompts — essentially compressing many turns into a single message the model can understand.</p>
+
+						<hr style="border: 1px solid #ccc;">
+
+					</div>
+					<!-- End of 8. Memory Management -->
+
+					<!-- Start of 9. Implementing the Core Agent -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<div id="core-agent" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">9. Implementing the Core Agent</h1>
+						</div>
+
+						<p>At the heart of the system lies the <b>ReAct loop</b> — a structured cycle of reasoning, acting, and observing that powers the agent’s ability to solve complex queries. In this section, we’ll walk through how the loop is implemented in code, how actions are parsed and executed, how recursive reasoning is supported, and how iteration limits are enforced.</p>
+
+						<h2 style="color: #2c3e50; font-size: 24px;">🔄 Defining the ReAct Loop</h2>
+
+						<p>The main loop of reasoning is implemented in the <span class="code-soft">think()</span> method. This method does the following:</p>
+						<ol>
+							<li>Increments the current iteration.</li>
+							<li>Checks if the agent has exceeded the max allowed iterations.</li>
+							<li>Builds the system prompt with available tools and the current date.</li>
+							<li>Calls the LLM with the full chat history.</li>
+							<li>Saves the model's response.</li>
+							<li>Displays it nicely (formatted).</li>
+							<li>Parses and executes any detected actions.</li>
+						</ol>
+						<p>Here's the full <span class="code-soft">think()</span> method:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+def think(self):
+	"""Think and decide based on the response from OpenAI."""
+	self.current_iteration += 1
+
+	if self.current_iteration > self.max_iterations:
+		print(f"\n{Fore.YELLOW}Reached maximum iterations. Stopping.{Style.RESET_ALL}")
+		self.add_message(
+			"assistant",
+			"I'm sorry, but I couldn't find a satisfactory answer within the allowed number of iterations.",
+		)
+		return
+
+	current_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+	prompt = self.system_prompt.format(tools=self.get_tools(), date=current_date)
+
+	response = self.get_llm_response(prompt)
+	self.add_message("assistant", response)
+
+	# Print each thought immediately
+	self.format_output(response)
+
+	# Continue processing actions
+	self.determine_action(response)
+</code>
+							</pre>
+						</div>
+
+						<p>This is where the <b>ReAct loop starts and restarts</b>. Each loop is one cycle of “thought → action → observation”.</p>
+
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">🧠 Handling Thought, Action, and Observation</h2>
+
+						<p>Once the LLM generates a response, the agent looks for an <span class="code-soft">Action:</span> in that response. If found, it extracts the tool name and query, and prepares to call the tool.</p>
+						<p>This is handled in the <span class="code-soft">determine_action()</span> method:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+def determine_action(self, response):
+	"""Decide on the next action based on the response, without using regex."""
+
+	if "Final Answer:" in response:
+		return
+
+	action_start = response.find("Action:")
+
+	if action_start == -1:
+		print(f"{Fore.YELLOW}No action or final answer found in the response.{Style.RESET_ALL}")
+		return
+
+	action_line = response[action_start:].split("\n")[0].strip()
+	action_parts = action_line.replace("Action:", "").strip().split(":", 1)
+
+	if len(action_parts) < 2:
+		print(f"{Fore.RED}Error: Action format is incorrect: {action_line}{Style.RESET_ALL}")
+		return
+
+	tool_name = action_parts[0].strip().lower()
+	query = action_parts[1].strip()
+
+	if tool_name == "calculator":
+		try:
+			json_data = json.loads(query)
+			if "operation" not in json_data:
+				print(f"{Fore.RED}Error: Missing 'operation' in calculator JSON: {query}{Style.RESET_ALL}")
+				return
+			query = json.dumps(json_data)
+		except json.JSONDecodeError:
+			print(f"{Fore.RED}Error: Invalid JSON input for calculator: {query}{Style.RESET_ALL}")
+			return
+
+	self.execute_action(tool_name, query)
+</code>
+							</pre>
+						</div>
+
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">🔁 Managing Multiple Iterations for Reasoning</h2>
+
+						<p>The agent allows multiple reasoning steps per query. This is useful when the model needs to perform a sequence of actions before reaching a final answer.</p>
+
+						<p>To control this, two variables are used:</p>
+						<ul>
+							<li><span class="code-soft">self.current_iteration</span>: incremented on every call to <span class="code-soft">think()</span></li>
+							<li><span class="code-soft">self.max_iterations</span>: defines the upper limit (default: 10)</li>
+						</ul>
+						<p>Once the agent exceeds this limit, it gracefully stops and returns an apology:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+if self.current_iteration > self.max_iterations:
+	print(f"\n{Fore.YELLOW}Reached maximum iterations. Stopping.{Style.RESET_ALL}")
+	self.add_message("assistant", "I'm sorry, but I couldn't find a satisfactory answer within the allowed number of iterations.")
+	return
+</code>
+							</pre>
+						</div>
+
+						<p>This safeguard prevents the agent from getting stuck in an infinite loop due to malformed or incomplete actions.</p>
+
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">🛠️ Parsing and Executing Actions</h2>
+
+						<p>After extracting the action, the agent runs the specified tool using <span class="code-soft">execute_action()</span>:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+def execute_action(self, tool_name, query):
+	"""Act on the response by calling the appropriate tool."""
+	tool = self.tools.get(tool_name)
+
+	if tool:
+		result = tool.run(query)
+		observation = f"Observation: {tool_name} tool output: {result}"
+		self.add_message("system", observation)
+
+		print(f"{Fore.CYAN}\n[SYSTEM]:{Style.RESET_ALL} {observation}\n")
+
+		self.think()
+	else:
+		error_msg = f"Error: Tool '{tool_name}' not found"
+		print(f"\n{Fore.RED}{error_msg}{Style.RESET_ALL}")
+		self.add_message("system", error_msg)
+		self.think()
+</code>
+							</pre>
+						</div>
+
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">🔁 Calling Tools and Recursing</h2>
+
+						<p>The recursive nature of the ReAct loop is subtle but powerful. Notice how at the end of <span class="code-soft">execute_action()</span>, the method calls <span class="code-soft">self.think()</span> again — effectively re-entering the reasoning loop.</p>
+
+						<p>This is what enables the agent to:</p>
+						<ul>
+							<li>Think 🤔</li>
+							<li>Act 🛠️</li>
+							<li>Observe 👀</li>
+							<li>Feed the result back into the LLM</li>
+							<li>Repeat 🔄</li>
+						</ul>
+
+						<p>Until a <span class="code-soft">Final Answer</span> is returned or the iteration limit is reached.</p>
+
+						<p>This recursion turns the agent into a <b>step-by-step reasoner</b> — capable of breaking down complex problems into manageable actions.</p>
+
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">🟥 Final Answer Detection</h2>
+
+						<p>If the LLM’s response contains <span class="code-soft">Final Answer:</span>, the agent stops looping. This is checked early in <span class="code-soft">determine_action()</span>:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+if "Final Answer:" in response:
+	return
+</code>
+							</pre>
+						</div>
+
+						<p>No further actions or thoughts are processed after that. This is essential for clean termination of the loop when a complete result has been generated.</p>
+
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">🎨 Output Formatting</h2>
+
+						<p>For easier debugging and user visibility, the output is styled using colors. The <span class="code-soft">format_output()</span> method adds color codes using <span class="code-soft">colorama</span>:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+def format_output(self, response):
+	"""Format output for better readability."""
+	response = re.sub(r"Final Answer:", f"{Fore.RED}\n[FINAL ANSWER]:{Style.RESET_ALL}", response)
+	response = re.sub(r"Action:", f"{Fore.YELLOW}\n[ACTION]:{Style.RESET_ALL}", response)
+	response = re.sub(r"PAUSE", f"{Fore.MAGENTA}\n[PAUSE]:{Style.RESET_ALL}", response)
+
+	print(f"{Fore.GREEN}\n[ASSISTANT]:{Style.RESET_ALL} {response}\n")
+</code>
+							</pre>
+						</div>
+
+						<p>This makes it easy to distinguish between reasoning steps, actions, observations, and final answers in the terminal output.</p>
+						<br>
+						<p>The ReAct loop is the backbone of the agent's intelligence. It controls how the agent reasons through a problem step-by-step, decides when to take action, executes that action, and observes the result — all while staying within a controlled iterative framework.</p>
+						<p>By structuring the code in modular methods like <span class="code-soft">think()</span>, <span class="code-soft">determine_action()</span>, and <span class="code-soft">execute_action()</span>, and using recursion to re-enter the loop after each observation, the agent becomes powerful, composable, and easy to extend.</p>
+						<hr style="border: 1px solid #ccc;">
+					</div>
+					<!-- End of 9. Implementing the Core Agent -->
+
+					<!-- Start of 10. Creating a Web Interface -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<div id="web-ui" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">10. Creating a Web Interface</h1>
+						</div>
+
+						<p>To make our ReAct Agent accessible through an intuitive and interactive user experience, we built a web interface using <b>Streamlit</b> — a powerful Python framework for quickly creating data and AI apps with minimal boilerplate. This interface allows users to submit natural language queries and receive intelligent responses, all while revealing the agent's reasoning process.</p>
+
+						<p>Let's explore the layout, behavior, and how to run the application step-by-step.</p>
+
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">🧱 Layout Overview</h2>
+
+						<p>The web interface is composed of three primary components:</p>
+
+						<ul>
+							<li><b>💬 Main Area (Chat Panel)</b><br>
+							This is the central space where the conversation unfolds. When a user submits a question, it appears here with a 👩‍💼 icon. The assistant’s final response is shown underneath with a 🤖 icon. Each message appears in a styled bubble, making the interaction feel like a natural dialogue.</li>
+
+							<li><b>📊 Sidebar (Chain of Thought Panel)</b><br>
+							Located on the left, the sidebar displays the agent's internal reasoning process, also known as the <i>Chain of Thought</i>. For every query, it logs a step-by-step breakdown:
+								<ul>
+									<li>🧠 <b>Thought</b> – how the agent interprets the query</li>
+									<li>🛠️ <b>Action</b> – which tool it invokes (e.g., calculator, Wikipedia)</li>
+									<li>⏸️ <b>PAUSE</b> – a signal that it's waiting for the result</li>
+									<li>👁️ <b>Observation</b> – the result returned by the tool</li>
+									<li>✅ <b>Final Answer</b> – the final conclusion, also shown in the main area</li>
+								</ul>
+							This separation ensures clarity between the process and the answer, giving users insight into how the response was formed.</li>
+
+							<li><b>⌨️ Input Box (User Query Field)</b><br>
+							At the bottom is a simple chat input box labeled “How can I help?”. Users type in their questions here. Once submitted, the app updates the sidebar with reasoning steps and the main area with the final answer.</li>
+						</ul>
+
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">⚙️ Running the Web App</h2>
+
+						<p>To run the interface locally, use the following command from the terminal in your project directory:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">streamlit run web_app.py</code>
+							</pre>
+						</div>
+
+						<p>This will launch a local server and open the web app in your browser. From there, you can interact with the agent by asking questions such as:</p>
+
+						<ul>
+							<li>What is the current weather in Tokyo?</li>
+							<li>Calculate step by step: ((144 / 12) * (9 - 3)) % (5^2)</li>
+						</ul>
+
+						<p>The app will respond with a thoughtful breakdown in the sidebar and a clean answer in the chat panel.</p>
+
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">🖼️ Visual Example</h2>
+
+						<p>Here's a typical interaction:</p>
+
+						<ul>
+							<li><b>Main Area:</b>
+								<ul>
+									<li>👩‍💼 User: Who discovered gravity?</li>
+									<li>🤖 Assistant: Final Answer: Isaac Newton</li>
+								</ul>
+							</li>
+							<li><b>Sidebar:</b>
+								<ul>
+									<li>🧠 Thought: I know this can be answered using internal knowledge</li>
+									<li>✅ Final Answer: Isaac Newton</li>
+								</ul>
+							</li>
+						</ul>
+
+						<p>This side-by-side layout makes the experience both informative and engaging — users see not only the answer, but also how the agent arrived at it.</p>
+
+						<hr style="border: 1px solid #ccc;">
+
+						<h2 style="color: #2c3e50; font-size: 24px;">🖥️ Web Interface Preview</h2>
+
+						<p>The screenshot below shows the Streamlit-based web application in action. You can see the chat panel on the right where the conversation between the user and the agent is displayed, and the sidebar on the left where the agent’s internal reasoning steps are logged. This layout provides both a smooth user experience and full transparency into how each response is generated.</p>
+
+						<div class="blg-img-container">
+							<img src="../img/blog_3/web_app.png" alt="Streamlit LLM Web Interface for ReAct Agent" style="width: 100%;"/>
+							<p><br><b>Figure 3 : Streamlit interface displaying the user chat panel, reasoning sidebar, and input box.</b></p>
+						</div>
+
+						<hr style="border: 1px solid #ccc;">
+
+					</div>
+					<!-- End of 10. Creating a Web Interface -->
+
+					<!-- Start of 11. Examples -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<div id="examples" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">11. Examples</h1>
+						</div>
+
+						<p>In this section, we'll walk through real examples to illustrate how the ReAct agent processes complex queries using its reasoning loop: <b>Thought → Action → Observation → Final Answer</b>. You’ll see how it selects the right tools (like <span class="code-soft">web_search</span>, <span class="code-soft">calculator</span>, and <span class="code-soft">weather</span>), interprets intermediate results, and builds a complete answer step-by-step—just like a human would.</p>
+						<br>
+
+						<h2 style="color: #2c3e50; font-size: 24px;">🌍 Example 1: Distance and Weather in Multiple Cities</h2>
+
+						<p>In this example, the user asks a multi-part question that combines <strong>geographical reasoning</strong> with <strong>real-time data retrieval</strong>. The ReAct agent must compute the total travel distance across three major cities—<strong>Tokyo</strong>, <strong>London</strong>, and <strong>New York</strong>—and also report the current <strong>weather conditions</strong> in each. This example demonstrates the agent’s ability to chain multiple sub-tasks together using external tools while maintaining logical consistency throughout the reasoning process.</p>
+
+						<p>Let's walk through how the ReAct agent processes the following user query:</p>
+
+						<!-- Code (full, colorized, and not truncated) -->
+						<div class="blg-code-container" style="font-family: monospace; background-color: #fbfbfb; padding: 15px; border: 1px solid #ddd; border-radius: 6px;">
+
+							<div><span style="color: #2c82c9;"><b>USER QUERY:</b></span> What's the total distance between Tokyo, London, and New York, and what's the weather in each city?</div>
+							
+							<br>
+							
+							<div><span style="color: #2ecc71;"><b>[ASSISTANT]:</b></span> Thought: I need to break the task into two parts: first, calculate the total distance between Tokyo, London, and New York, and second, fetch the weather information for each city.</div>
+							<div>First, I need to look up the distances between the cities.</div>
+							
+							<br>
+							
+							<div><span style="color: #f39c12;"><b>[ACTION]:</b></span> <span style="color: #d35400;">web_search</span>: distance between Tokyo and London</div>
+							<div><span style="color: #b57edc;"><b>[PAUSE]:</b></span></div>
+							
+							<br>
+							
+							<div><span style="color: #3498db;"><b>[SYSTEM]:</b></span> Observation: <span style="color: #d35400;">web_search</span> tool output: [{'title': 'Distance Tokyo → London - Air line, driving route, midpoint', 'content': 'Distance: 5,939.91 mi (9,559.36 km) The shortest distance (air line) between Tokyo and London is 5,939.91 mi (9,559.36 km). Driving route: -- (- ) The shortest route between Tokyo and London is according to the route planner. The driving time is approx. . Half of the trip is reached in . Time difference: -9h', 'url': 'https://www.distance.to/Tokyo/London', 'score': 0.9582926}, {'title': 'Distance from London to Tokyo (LHR - HND) - Air Miles Calculator', 'content': 'Distance from London to Tokyo (London Heathrow Airport - Haneda Airport) is 5975 miles / 9615 kilometers / 5192 nautical miles. See also a map, estimated flight duration, carbon dioxide emissions and the time difference between London and Tokyo.', 'url': 'https://www.airmilescalculator.com/distance/lhr-to-hnd/', 'score': 0.94620544}]</div>
+							
+							<br>
+							
+							<div><span style="color: #2ecc71;"><b>[ASSISTANT]:</b></span> Thought: The distance between Tokyo and London is approximately 9,559.36 km. Next, I need to find the distance between London and New York.</div>
+							
+							<br>
+							
+							<div><span style="color: #f39c12;"><b>[ACTION]:</b></span> <span style="color: #d35400;">web_search</span>: distance between London and New York</div>
+							<div><span style="color: #b57edc;"><b>[PAUSE]:</b></span></div>
+							
+							<br>
+							
+							<div><span style="color: #3498db;"><b>[SYSTEM]:</b></span> Observation: <span style="color: #d35400;">web_search</span> tool output: [{'title': 'Distance from New York to London - Distance Calculator', 'content': 'Find out the air travel distance between New York and London, which is 5,585 km or 3,470 miles. See the map, the GPS coordinates and the time it takes to fly from New York to London.', 'url': 'https://www.distancefromto.net/distance-from-new-york-to-london-gb', 'score': 0.9477354}, {'title': 'Distance New-York → London - Air line, driving route, midpoint', 'content': 'Find out the distance between New-York and London in miles and kilometers, as well as the flight time and route. The web page also shows the midpoint, time difference, and similar routes between the two cities.', 'url': 'https://www.distance.to/New-York/London', 'score': 0.539833}]</div>
+							
+							<br>
+							
+							<div><span style="color: #2ecc71;"><b>[ASSISTANT]:</b></span> Thought: The distance between London and New York is approximately 5,585 km. Now, I need to find the distance between New York and Tokyo.</div>
+							
+							<br>
+							
+							<div><span style="color: #f39c12;"><b>[ACTION]:</b></span> <span style="color: #d35400;">web_search</span>: distance between New York and Tokyo</div>
+							<div><span style="color: #b57edc;"><b>[PAUSE]:</b></span></div>
+							
+							<br>
+							
+							<div><span style="color: #3498db;"><b>[SYSTEM]:</b></span> Observation: <span style="color: #d35400;">web_search</span> tool output: [{'title': 'Distance Tokyo > New-York - Air line, driving route, midpoint', 'content': 'The shortest distance (air line) between Tokyo and New-York is 6,741.05 mi (10,848.68 km). Driving route: -- (- ) The shortest route between Tokyo and New-York is according to the route planner. The driving time is approx. . Half of the trip is reached in . Time difference: -13h', 'url': 'https://www.distance.to/Tokyo/New-York', 'score': 0.95154464}, {'title': 'Distance from New York to Tokyo (JFK - Air Miles Calculator', 'content': 'Distance from New York to Tokyo (New York John F. Kennedy International Airport - Narita International Airport) is 6745 miles / 10854 kilometers / 5861 nautical miles. See also a map, estimated flight duration, carbon dioxide emissions and the time difference between New York and Tokyo.', 'url': 'https://www.airmilescalculator.com/distance/jfk-to-nrt/', 'score': 0.94944966}]</div>
+							
+							<br>
+							
+							<div><span style="color: #2ecc71;"><b>[ASSISTANT]:</b></span> Thought: The distance between New York and Tokyo is approximately 10,848.68 km. Now I need to sum these distances to find the total distance.</div>
+							
+							<br>
+							
+							<div><span style="color: #f39c12;"><b>[ACTION]:</b></span> <span style="color: #d35400;">calculator</span>: {"operation": "add", "params": {"a": 9559.36, "b": 5585}}</div>
+							<div><span style="color: #b57edc;"><b>[PAUSE]:</b></span></div>
+							
+							<br>
+							
+							<div><span style="color: #3498db;"><b>[SYSTEM]:</b></span> Observation: <span style="color: #d35400;">calculator</span> tool output: 15144.36</div>
+							
+							<br>
+							
+							<div><span style="color: #2ecc71;"><b>[ASSISTANT]:</b></span> Thought: I have calculated the sum of the distances between Tokyo and London, and London and New York, which is 15,144.36 km. Now I need to add the distance between New York and Tokyo.</div>
+							
+							<br>
+							
+							<div><span style="color: #f39c12;"><b>[ACTION]:</b></span> <span style="color: #d35400;">calculator</span>: {"operation": "add", "params": {"a": 15144.36, "b": 10848.68}}</div>
+							<div><span style="color: #b57edc;"><b>[PAUSE]:</b></span></div>
+							
+							<br>
+							
+							<div><span style="color: #3498db;"><b>[SYSTEM]:</b></span> Observation: <span style="color: #d35400;">calculator</span> tool output: 25993.04</div>
+							
+							<br>
+							
+							<div><span style="color: #2ecc71;"><b>[ASSISTANT]:</b></span> Thought: The total distance between Tokyo, London, and New York is 25,993.04 km. Next, I need to check the weather in each city.</div>
+							
+							<br>
+							
+							<div><span style="color: #f39c12;"><b>[ACTION]:</b></span> <span style="color: #d35400;">weather</span>: Tokyo</div>
+							<div><span style="color: #b57edc;"><b>[PAUSE]:</b></span></div>
+							
+							<br>
+							
+							<div><span style="color: #3498db;"><b>[SYSTEM]:</b></span> Observation: <span style="color: #d35400;">weather</span> tool output: The temperature in Tokyo is 9.4°C. The weather is broken clouds. The humidity is 75%. The wind speed is 7.72 m/s.</div>
+							
+							<br>
+							
+							<div><span style="color: #2ecc71;"><b>[ASSISTANT]:</b></span></div>
+							<div><span style="color: #f39c12;"><b>[ACTION]:</b></span> <span style="color: #d35400;">weather</span>: London</div>
+							<div><span style="color: #b57edc;"><b>[PAUSE]:</b></span></div>
+							
+							<br>
+							
+							<div><span style="color: #3498db;"><b>[SYSTEM]:</b></span> Observation: <span style="color: #d35400;">weather</span> tool output: The temperature in London is 15.81°C. The weather is scattered clouds. The humidity is 48%. The wind speed is 6.26 m/s.</div>
+							
+							<br>
+							
+							<div><span style="color: #2ecc71;"><b>[ASSISTANT]:</b></span></div>
+							<div><span style="color: #f39c12;"><b>[ACTION]:</b></span> <span style="color: #d35400;">weather</span>: New York</div>
+							<div><span style="color: #b57edc;"><b>[PAUSE]:</b></span></div>
+							
+							<br>
+							
+							<div><span style="color: #3498db;"><b>[SYSTEM]:</b></span> Observation: <span style="color: #d35400;">weather</span> tool output: The temperature in New York is 7.9°C. The weather is clear sky. The humidity is 44%. The wind speed is 4.12 m/s.</div>
+							
+							<br>
+							
+							<div><span style="color: #2ecc71;"><b>[ASSISTANT]:</b></span></div>
+							<div><span style="color: #e74c3c;"><b>[FINAL ANSWER]:</b></span> The total distance between Tokyo, London, and New York is 25,993.04 km.</div>
+							
+							<br>
+							
+							<div>The weather is as follows:</div>
+							<div>– Tokyo: 9.4°C with broken clouds, humidity 75%, and wind speed 7.72 m/s.</div>
+							<div>– London: 15.81°C with scattered clouds, humidity 48%, and wind speed 6.26 m/s.</div>
+							<div>– New York: 7.9°C with clear sky, humidity 44%, and wind speed 4.12 m/s.</div>
+							
+						</div>
+						<br>
+						<h2 style="color: #2c3e50; font-size: 24px;">🧠 Step-by-Step Breakdown of the Agent’s Thought Process</h2>
+
+						<h3 style="color: #2c3e50;">🔍 Understanding the Task</h3>
+						<p>The agent identifies that it must:</p>
+						<ul>
+							<li><b>Calculate</b> the total distance by summing two segments: <b>Tokyo → London</b> and <b>London → New York</b></li>
+							<li><b>Retrieve</b> the current weather for <b>Tokyo</b>, <b>London</b>, and <b>New York</b></li>
+						</ul>
+
+						<h3 style="color: #2c3e50;">🌐 Calculating Distances with <span class="code-soft">web_search</span> Tool</h3>
+						<p>The agent first queries the <span class="code-soft">web_search</span> tool:</p>
+						<ul>
+							<li><b>Tokyo to London</b> → ~<b>5,956 miles</b></li>
+							<li><b>London to New York</b> → ~<b>3,471 miles</b></li>
+						</ul>
+
+						<h3 style="color: #2c3e50;">➕ Summing the Distances with <span class="code-soft">calculator</span> Tool</h3>
+						<p>Using the <span class="code-soft">calculator</span> tool:</p>
+						<ul>
+							<li><span class="code-soft">5956 + 3471 = 9427</span></li>
+							<li><b>Total Distance</b>: <b>9,427 miles</b></li>
+						</ul>
+
+						<h3 style="color: #2c3e50;">☁️ Fetching Weather with <span class="code-soft">weather</span> Tool</h3>
+						<p>The agent queries the <span class="code-soft">weather</span> tool for each city:</p>
+						<ul>
+							<li><b>Tokyo</b> → 9.52°C, broken clouds, 74% humidity, 7.72 m/s wind</li>
+							<li><b>London</b> → 15.85°C, broken clouds, 49% humidity, 10.29 m/s wind</li>
+							<li><b>New York</b> → 6.89°C, clear sky, 42% humidity, 6.17 m/s wind</li>
+						</ul>
+
+						<h2 style="color: #2c3e50; font-size: 24px;">✅ Final Answer</h2>
+
+						<p>The <b>total distance</b> between <b>Tokyo</b>, <b>London</b>, and <b>New York</b> is <b>9,427 miles</b>.</p>
+
+						<p>The <b>current weather</b> in each city is:</p>
+						<ul>
+							<li><b>Tokyo</b>: 9.52°C, broken clouds, 74% humidity, and wind speed of 7.72 m/s</li>
+							<li><b>London</b>: 15.85°C, broken clouds, 49% humidity, and wind speed of 10.29 m/s</li>
+							<li><b>New York</b>: 6.89°C, clear sky, 42% humidity, and wind speed of 6.17 m/s</li>
+						</ul>
+						<hr style="border: 1px solid #ccc;">
+						<br>
+
+						<h2 style="color: #2c3e50; font-size: 24px;">🧠 Example 2: Weather in the Birth City of a Nobel Laureate</h2>
+					
+						<p>In this example, the user asks a complex query that requires <strong>reasoning over multiple steps</strong>. The agent must first find out who won the 2024 Nobel Prize in Physics, determine where that person was born, and finally retrieve the weather for that birthplace. This showcases the ReAct agent’s ability to handle multi-hop reasoning using external tools.</p>
+						
+						<p>Let's walk through how the ReAct agent processes the following user query:</p>
+						
+						<!-- Code Block: Example 2 Full Agent Interaction -->
+						<div class="blg-code-container" style="font-family: monospace; background-color: #fbfbfb; padding: 15px; border: 1px solid #ddd; border-radius: 6px;">
+
+							<div><span style="color: #2c82c9;"><b>USER QUERY:</b></span> What is the weather in the city where the 2024 Nobel Prize in Physics winner was born?</div>
+						
+							<br>
+						
+							<div><span style="color: #2ecc71;"><b>[ASSISTANT]:</b></span> Thought: I need to determine the winner of the 2024 Nobel Prize in Physics and then find the city where the laureate was born. After that, I can check the weather in that city.</div>
+						
+							<br>
+						
+							<div><span style="color: #f39c12;"><b>[ACTION]:</b></span> <span style="color: #d35400;">web_search</span>: 2024 Nobel Prize in Physics winner</div>
+							<div><span style="color: #b57edc;"><b>[PAUSE]:</b></span></div>
+						
+							<br>
+						
+							<div><span style="color: #3498db;"><b>[SYSTEM]:</b></span> Observation: <span style="color: #d35400;">web_search</span> tool output: [{'title': 'All Nobel Prizes 2024 - NobelPrize.org', 'content': 'Nobel Prizes & laureates All Nobel Prizes All Nobel Prizes 2024 About the prize NOBEL PRIZES 2024 The Nobel Prize in Physics 2024 The Nobel Prize in Chemistry 2024 The Nobel Prize in Literature 2024 ...', 'url': 'https://www.nobelprize.org/all-nobel-prizes-2024/', 'score': 0.8719229}, {'title': 'The Nobel Prize in Physics 2024 - NobelPrize.org', 'content': 'The Nobel Prize in Physics 2024 - NobelPrize.org ... The Nobel Prize in Physics 2024 was awarded jointly to John J. ...', 'url': 'https://www.nobelprize.org/prizes/physics/2024/summary/Â/', 'score': 0.81025416}]</div>
+						
+							<br>
+						
+							<div><span style="color: #2ecc71;"><b>[ASSISTANT]:</b></span> Thought: From the search results, it appears that the information about the 2024 Nobel Prize in Physics winner might be found on NobelPrize.org. I will now look up the specific page for the 2024 Nobel Prize in Physics to find out the winner and their birthplace.</div>
+						
+							<br>
+						
+							<div><span style="color: #f39c12;"><b>[ACTION]:</b></span> <span style="color: #d35400;">web_search</span>: The Nobel Prize in Physics 2024 winner's birthplace</div>
+							<div><span style="color: #b57edc;"><b>[PAUSE]:</b></span></div>
+						
+							<br>
+						
+							<div><span style="color: #3498db;"><b>[SYSTEM]:</b></span> Observation: <span style="color: #d35400;">web_search</span> tool output: [{'title': 'The Nobel Prize in Physics 2024 - Popular science background ...', 'content': 'The Royal Swedish Academy of Sciences has decided to award the Nobel Prize in Physics 2024 to. JOHN J. HOPFIELD Born 1933 in Chicago, IL, USA. ... GEOFFREY HINTON Born 1947 in London, UK. ...', 'url': 'https://www.nobelprize.org/prizes/physics/2024/popular-information/?hidden=true/', 'score': 0.8690161}, {'title': 'Press release: The Nobel Prize in Physics 2024 - NobelPrize.org', 'content': 'Press release: The Nobel Prize in Physics 2024 ...', 'url': 'https://www.nobelprize.org/prizes/physics/2024/press-release/', 'score': 0.35367426}]</div>
+						
+							<br>
+						
+							<div><span style="color: #2ecc71;"><b>[ASSISTANT]:</b></span> Thought: The 2024 Nobel Prize in Physics was awarded to John J. Hopfield and Geoffrey Hinton. John J. Hopfield was born in Chicago, IL, USA, and Geoffrey Hinton was born in London, UK. To find the weather, I can choose either city. I will proceed to check the weather for Chicago.</div>
+						
+							<br>
+						
+							<div><span style="color: #f39c12;"><b>[ACTION]:</b></span> <span style="color: #d35400;">weather</span>: Chicago</div>
+							<div><span style="color: #b57edc;"><b>[PAUSE]:</b></span></div>
+						
+							<br>
+						
+							<div><span style="color: #3498db;"><b>[SYSTEM]:</b></span> Observation: <span style="color: #d35400;">weather</span> tool output: The temperature in Chicago is 6.46°C. The weather is thunderstorm. The humidity is 94%. The wind speed is 2.57 m/s.</div>
+						
+							<br>
+						
+							<div><span style="color: #2ecc71;"><b>[ASSISTANT]:</b></span></div>
+							<div><span style="color: #e74c3c;"><b>[FINAL ANSWER]:</b></span> The weather in Chicago, where John J. Hopfield, the 2024 Nobel Prize in Physics winner, was born, is currently 6.46°C with a thunderstorm. The humidity is 94%, and the wind speed is 2.57 m/s.</div>
+						
+						</div>
+						<br>
+  
+					
+						<h2 style="color: #2c3e50; font-size: 24px;">🧩 Step-by-Step Breakdown of the Agent’s Thought Process</h2>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">🔍 Understanding the Task</h3>
+						<p>The agent identifies that it must:</p>
+						<ul>
+						<li>Find out who won the <strong>2024 Nobel Prize in Physics</strong>.</li>
+						<li>Determine the <strong>birthplace</strong> of that laureate.</li>
+						<li>Use that information to get the <strong>current weather</strong> in the city of birth.</li>
+						</ul>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">🌐 Discovering the Winner with <span class="code-soft">web_search</span></h3>
+						<p>The agent begins by using the <span class="code-soft">web_search</span> tool to retrieve the name of the 2024 Nobel Prize in Physics winner.</p>
+						<ul>
+						<li>The first search result provides limited but promising information.</li>
+						<li>The agent refines its query and successfully identifies the laureates:<br>
+							<strong>John J. Hopfield</strong> (born in Chicago, USA) and <strong>Geoffrey Hinton</strong> (born in London, UK).</li>
+						</ul>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">🧭 Reasoning and Decision</h3>
+						<p>With two possible cities, the agent <strong>chooses Chicago</strong> (birthplace of John J. Hopfield) to proceed. This decision is based on simplifying the query, assuming either city would suffice.</p>
+					
+						<h3 style="color: #2c3e50; font-size: 20px;">🌦️ Checking the Weather with <span class="code-soft">weather</span></h3>
+						<p>Using the <span class="code-soft">weather</span> tool, the agent retrieves the current weather in <strong>Chicago</strong>:</p>
+						<ul>
+						<li><strong>Temperature</strong>: 6.46°C</li>
+						<li><strong>Condition</strong>: Thunderstorm</li>
+						<li><strong>Humidity</strong>: 94%</li>
+						<li><strong>Wind Speed</strong>: 2.57 m/s</li>
+						</ul>
+										
+						<h2 style="color: #2c3e50; font-size: 24px;">✅ Final Answer</h2>
+					
+						<p>The weather in <strong>Chicago</strong>, where <strong>John J. Hopfield</strong>, one of the 2024 Nobel Prize in Physics winners, was born, is:</p>
+						<ul>
+						<li><strong>6.46°C</strong>, with a <strong>thunderstorm</strong></li>
+						<li><strong>Humidity</strong>: 94%</li>
+						<li><strong>Wind Speed</strong>: 2.57 m/s</li>
+						</ul>
+						<hr style="border: 1px solid #ccc;">
+
+					</div>
+					<!-- End of 11. Examples -->
+
+					<!-- Start of 12. Conclusion -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<div id="conclusion" class="blg-main-header">
+						<h1 style="color: #2c3e50; font-size: 28px;">12. Conclusion</h1>
+						</div>
+					
+						<p>Building a ReAct agent from scratch reveals the true power of combining <strong>LLM-driven reasoning</strong> with <strong>tool-augmented execution</strong>. Through this blog, we explored the fundamental architecture, how thoughts and actions are structured, and how tools like <span class="code-soft">web_search</span>, <span class="code-soft">calculator</span>, and <span class="code-soft">weather</span> are orchestrated to solve complex queries step by step.</p>
+					
+						<p>By walking through real-world examples, we saw how the agent:</p>
+						<ul>
+						<li>Thinks through multi-step logic like a human</li>
+						<li>Chooses the right tool for the job</li>
+						<li>Interprets results before deciding the next step</li>
+						<li>Builds answers through iterative reasoning and observation</li>
+						</ul>
+					
+						<p>This modular and transparent design not only enables powerful capabilities, but also makes the agent easy to debug, extend, and trust.</p>
+					
+						<p>Whether you're a developer exploring AI tooling or an engineer architecting intelligent systems, building your own ReAct agent is a rewarding way to understand the inner workings of next-generation assistants.</p>
+						<br>
+					</div>
+					<!-- End of 12. Conclusion -->
+  
+					<!-- Download Source Code -->
+
+					<h1>
+						<a href="https://github.com/shafiqul-islam-sumon/ReAct-Agent-from-Scratch" target="_blank" style="text-decoration: none;">
+							<img src="../img/download.png" alt="Download" style="vertical-align: middle; margin-right: 5px;"/>
+						</a>
+						Download Full Source Code : 
+						<a href="https://github.com/shafiqul-islam-sumon/ReAct-Agent-from-Scratch" target="_blank">ReAct-Agent-from-Scratch</a>
+					</h1>
+					<br>
+
+					<div class="reference-container">
+						<hr class="blg-hr">
+						<h2>References</h2>
+						<ul class="blg-ul">
+							<li class="blg-li"><a target="_blank" href="https://github.com/alejandro-ao/agents-no-framework">https://github.com/alejandro-ao/agents-no-framework</a></li>
+							<li class="blg-li"><a target="_blank" href="https://python.langchain.com/docs/tutorials/agents/">https://python.langchain.com/docs/tutorials/agents/</a></li>
+							<li class="blg-li"><a target="_blank" href="https://docs.llamaindex.ai/en/stable/examples/agent/react_agent/">https://docs.llamaindex.ai/en/stable/examples/agent/react_agent/</a></li>
+						</ul>
+					</div>
+					<br><br>
+
+					<div class="blg-center-txt">
+						<h1>Related Articles</h1>
+					</div>
+
+				<!-- End of blog posts container -->
+				
+				<!-- blog posts in slick slider -->
+				<div id="postContainer" class="row">
+					<!-- Blog posts will be dynamically generated here -->
+				</div>
+
+				<!-- Slide Counter -->
+				<div class="blg-slide-counter">
+					<span id="currentSlide">1</span> / <span id="totalSlides">1</span>
+				</div>
+				<br>
+
+			</div>
+		</section>
+		
+		<section class="footer-section">
+			<div class="container footer">
+				<div class="row footer">
+					<div class="col-md-8">
+						<div class="copyright">
+							<p>
+								<span>Copyright &copy; <span id="currentYear"></span> Shafiqul AI | All right reserved. By Md Shafiqul Islam</span>
+							</p>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<ul class="social-network">
+							<li>
+								<a target="_blank" href="mailto:mdshafiqul.islam603@gmail.com" data-placement="top" title="Gmail">
+									<img src="../img/contact/gmail.png" alt="Gmail">
+									<span class="icon-label">Gmail</span>
+								</a>
+							</li>
+							<li>
+								<a target="_blank" href="https://www.linkedin.com/in/shafiqul-islam-sumon/" data-placement="top" title="LinkedIn">
+									<img src="../img/contact/linkedin.png" alt="LinkedIn">
+									<span class="icon-label">LinkedIn</span>
+								</a>
+							</li>
+							<li>
+								<a target="_blank" href="https://github.com/shafiqulislamsumon" data-placement="top" title="GitHub">
+									<img src="../img/contact/github.png" alt="GitHub">
+									<span class="icon-label">GitHub</span>
+								</a>
+							</li>
+							<li>
+								<a target="_blank" href="https://leetcode.com/u/shafiqul/" data-placement="top" title="LeetCode">
+									<img src="../img/contact/leetcode.png" alt="LeetCode">
+									<span class="icon-label">LeetCode</span>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</section>
+
+
+	</div> <!-- end wrapper -->
+
+	<a href="#" class="scrollup"><i class="fa fa-angle-up active"></i></a>
+
+	<!-- javascript -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script type="text/javascript" src="../js/jquery-3.7.1.min.js"></script>
+	<script type="text/javascript" src="../js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="../js/slick.min.js"></script>
+	<script type="text/javascript" src="../js/tabulator.min.js"></script>
+	<script type="text/javascript" src="../js/prism.js"></script>
+	<script type="text/javascript" src="../js/smooth-scroll.polyfills.min.js"></script>
+	<script type="text/javascript" src="../js/detail.js"></script>
+
+	<script>
+		document.getElementById("currentYear").textContent = new Date().getFullYear();
+	</script>	
+
+</body>
+
+</html>

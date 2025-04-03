@@ -18,6 +18,16 @@
         "date": "24 Feb 2025",
         "description": "GitHub requires authentication for performing Git operations like cloning, pushing, and pulling repositories. While passwords were previously used, GitHub now recommends SSH keys for secure and seamless authentication. In this guide, you'll learn how to generate an SSH key, add it to GitHub, and configure your system to authenticate using SSH. By the end, you'll be able to securely interact with your GitHub repositories without entering credentials repeatedly.",
         "readMoreUrl": "./blogs/blog_2.html"
+    },
+    {
+        "id": 3,
+        "author": "Md Shafiqul Islam",
+        "category": ["Agent"],
+        "image": "./img/blog_3/blog_3_thumbnail.webp",
+        "title": "Creating a ReAct AI Agent from Scratch using Python Without any Framework: A Step-by-Step Guide",
+        "date": "15 Mar 2025",
+        "description": "Artificial Intelligence (AI) agents are transforming the way we interact with technology. From chatbots to research assistants, these agents automate tasks, answer questions, and even make decisions. Among them, ReAct AI Agents stand out because they think, act, and refine their responses dynamically, making them far more effective than traditional AI models.",
+        "readMoreUrl": "./blogs/blog_3.html"
     }
     
 ]
