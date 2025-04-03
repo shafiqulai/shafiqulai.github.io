@@ -10,7 +10,9 @@
 	function gtag(){dataLayer.push(arguments);}
 	gtag('js', new Date());
 
-	gtag('config', 'G-6SEFZQJHM1');
+	gtag('config', 'G-6SEFZQJHM1', {
+    	cookie_domain: 'shafiqulai.github.io'
+  	});
 	</script>
 
 	<meta charset="utf-8">
@@ -684,7 +686,7 @@
 						<p>The process starts when the <b>user submits a query</b> to the ReAct agent. The query can be of different types, such as:</p>
 						<ul>
 							<li><b>General knowledge questions</b> (e.g., "Who invented the telephone?")</li>
-							<li><b>Mathematical computations</b> (e.g., "Calculate (15 × 4) + (30 ÷ 5)")</li>
+							<li><b>Mathematical computations</b> (e.g., "Calculate (15 x 4) + (30 ÷ 5)")</li>
 							<li><b>Real-time information requests</b> (e.g., "What is the current weather in New York?")</li>
 							<li><b>Multi-step queries</b> that require tool usage (e.g., "Find the latest Mars exploration news and check the weather in the city where the latest mission was launched.")</li>
 						</ul>
@@ -753,8 +755,8 @@
 						<h4 style="color: #2c3e50; font-size: 18px;">1. Storing Past Conversations</h4>
 						<p>The system <b>keeps track of previous interactions</b>, storing details such as:</p>
 						<ul>
-							<li><b>User’s past queries</b></li>
-							<li><b>Agent’s responses</b></li>
+							<li><b>User's past queries</b></li>
+							<li><b>Agent's responses</b></li>
 							<li><b>Tool outputs (observations)</b></li>
 						</ul>
 						<p>This allows the agent to <b>reference past exchanges</b>, making conversations feel more natural.</p>
@@ -1041,7 +1043,7 @@ class Message:
 						<p>This class defines a message as an object containing two attributes:</p>
 						<ul>
 							<li><span class="code-soft">role</span>: identifies who the message is from (e.g., <span class="code-soft">"user"</span>, <span class="code-soft">"assistant"</span>, or <span class="code-soft">"system"</span>)</li>
-							<li><span class="code-soft">content</span>: the actual message or thought, such as a user query, an agent’s internal thought, or a final answer</li>
+							<li><span class="code-soft">content</span>: the actual message or thought, such as a user query, an agent's internal thought, or a final answer</li>
 						</ul>
 
 						<p>Despite its simplicity, this structure is the backbone of how the agent communicates with itself and with the user.</p>
@@ -1123,7 +1125,7 @@ class Message:
 						<hr style="border: 1px solid #ccc;">
 
 						<h2 style="color: #2c3e50; font-size: 24px;">🔍 Understanding the Role of Prompts in the ReAct Agent</h2>
-						<p>Prompts in a ReAct agent are more than textual instructions — they're <b>architectural blueprints</b> that shape the agent’s cognition and behavior. They:</p>
+						<p>Prompts in a ReAct agent are more than textual instructions — they're <b>architectural blueprints</b> that shape the agent's cognition and behavior. They:</p>
 						<ul>
 							<li>Control how the agent performs reasoning steps.</li>
 							<li>Dictate when and how tools are used.</li>
@@ -1137,7 +1139,7 @@ class Message:
 
 						<h2 style="color: #2c3e50; font-size: 24px;">🔁 <span class="code-soft">system_prompt.txt</span> – Structuring the Thought-Action-Observation Loop</h2>
 
-						<p>The <span class="code-soft">system_prompt.txt</span> defines the agent’s <b>reasoning protocol</b>. It tells the agent <i>how to think</i>, when to <i>pause</i>, and how to use tools <b>step by step</b> to arrive at accurate answers. Instead of letting the model generate freeform responses, this prompt establishes a deterministic reasoning framework built around a loop of reasoning, action, and verification.</p>
+						<p>The <span class="code-soft">system_prompt.txt</span> defines the agent's <b>reasoning protocol</b>. It tells the agent <i>how to think</i>, when to <i>pause</i>, and how to use tools <b>step by step</b> to arrive at accurate answers. Instead of letting the model generate freeform responses, this prompt establishes a deterministic reasoning framework built around a loop of reasoning, action, and verification.</p>
 
 						<p>It begins with a directive that sets the tone:</p>
 						<blockquote><i>"You are an AI assistant who follows a step-by-step reasoning process to determine the best answer."</i></blockquote>
@@ -1302,7 +1304,7 @@ class BaseTool:
 
 						<h2 style="color: #2c3e50; font-size: 24px;">🔄 Dynamic Tool Registration</h2>
 					
-						<p>In <span class="code-soft">agent.py</span>, tools are discovered automatically at runtime using Python’s <span class="code-soft">pkgutil</span> and <span class="code-soft">importlib</span>:</p>
+						<p>In <span class="code-soft">agent.py</span>, tools are discovered automatically at runtime using Python's <span class="code-soft">pkgutil</span> and <span class="code-soft">importlib</span>:</p>
 					
 						<!-- Code -->
 						<div class="blg-code-container">
