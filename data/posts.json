@@ -24,7 +24,7 @@
         "author": "Md Shafiqul Islam",
         "category": ["Agent"],
         "image": "./img/blog_3/blog_3_thumbnail.webp",
-        "title": "Creating a ReAct AI Agent from Scratch using Python Without any Framework: A Step-by-Step Guide",
+        "title": "Create ReAct AI Agent from Scratch using Python Without any Framework: A Step-by-Step Guide",
         "date": "15 Mar 2025",
         "description": "Artificial Intelligence (AI) agents are transforming the way we interact with technology. From chatbots to research assistants, these agents automate tasks, answer questions, and even make decisions. Among them, ReAct AI Agents stand out because they think, act, and refine their responses dynamically, making them far more effective than traditional AI models.",
         "readMoreUrl": "./blogs/blog_3.html"
