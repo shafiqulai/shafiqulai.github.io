@@ -16,7 +16,7 @@
 	</script>
 
 	<meta charset="utf-8">
-	<title>Creating a ReAct AI Agent from Scratch using Python Without any Framework: A Step-by-Step Guide</title>
+	<title>Create ReAct AI Agent from Scratch using Python Without any Framework: A Step-by-Step Guide</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<meta name="description" content="Build a ReAct AI Agent from scratch using Python—without any framework! Follow this step-by-step guide to implement reasoning and action-based ReAct Agent with code examples." />
 	<meta name="author" content="Md Shafiqul Islam" />
@@ -66,11 +66,11 @@
 				<div id="blogContainer">
 					<!-- blog title -->
 					<div class="container blg-title-container">
-						<h2 class="blg-title">Creating a ReAct AI Agent from Scratch using Python Without any Framework: A Step-by-Step Guide</h2>
+						<h2 class="blg-title">Create ReAct AI Agent from Scratch using Python Without any Framework: A Step-by-Step Guide</h2>
 					</div>
 
 					<div class="blg-img-container">
-						<img src="../img/blog_3/blog_3_thumbnail.webp" alt="Generate an SSH Key and Add It to GitHub" style="width: 70%;"/>
+						<img src="../img/blog_3/blog_3_thumbnail.webp" alt="Create ReAct Agent from Scratch without any framework" style="width: 70%;"/>
 					</div>
 
 					<!-- Start of Preface -->
@@ -558,7 +558,7 @@
 						<ol>
 							<li><b>Wikipedia search</b> to find the latest FIFA World Cup winner.</li>
 							<li><b>Extracts the country name</b> from the result.</li>
-							<li><b>Wikipedia search</b> for the country’s capital.</li>
+							<li><b>Wikipedia search</b> for the country's capital.</li>
 							<li><b>Weather API query</b> to retrieve the weather in that city.</li>
 						</ol>
 					
@@ -811,7 +811,7 @@
 							<li><b>The Agent Evaluates the Response:</b>
 								<ul>
 									<li>Is the response <b>complete</b>, or is more information needed?</li>
-									<li>Does the response <b>answer the user’s query</b> fully?</li>
+									<li>Does the response <b>answer the user's query</b> fully?</li>
 								</ul>
 							</li>
 							<li><b>If More Information is Required, the agent:</b>
@@ -1055,7 +1055,7 @@ class Message:
 						<p>The <span class="code-soft">role</span> attribute helps differentiate between different types of participants or internal processes:</p>
 						<ul>
 							<li>🧑 <b>User</b>: the original query from the user</li>
-							<li>🤖 <b>Assistant</b>: the model’s response or output</li>
+							<li>🤖 <b>Assistant</b>: the model's response or output</li>
 							<li>🛠️ <b>Tool/Agent Thought</b>: intermediate reasoning like <span class="code-soft">"Thought"</span>, <span class="code-soft">"Action"</span>, <span class="code-soft">"Observation"</span>, etc.</li>
 						</ul>
 
@@ -1102,7 +1102,7 @@ class Message:
 							<li>Seamless user-agent interaction history</li>
 						</ul>
 
-						<p>In short, the <span class="code-soft">Message</span> class is the memory system that powers the ReAct agent’s intelligence.</p>
+						<p>In short, the <span class="code-soft">Message</span> class is the memory system that powers the ReAct agent's intelligence.</p>
 						<hr style="border: 1px solid #ccc;">
 					</div>
 					<!-- End of 5. Understanding the Message Class -->
@@ -1247,10 +1247,10 @@ Final Answer: (7 + 2) * 4 = 36.
 						</ul>
 
 						<p>For example, a long tool-assisted query like:</p>
-						<blockquote><i>“Who won the latest Ballon d'Or? What’s the weather in his birthplace and in Buenos Aires?”</i></blockquote>
+						<blockquote><i>“Who won the latest Ballon d'Or? What's the weather in his birthplace and in Buenos Aires?”</i></blockquote>
 
 						<p>Could be summarized as:</p>
-						<blockquote><i>“The user asked about the 2024 Ballon d'Or winner and the weather in his birthplace and Buenos Aires. The assistant used Wikipedia to identify the winner and city, followed by weather checks in both locations. The final answer included the winner’s name and weather conditions for both cities.”</i></blockquote>
+						<blockquote><i>“The user asked about the 2024 Ballon d'Or winner and the weather in his birthplace and Buenos Aires. The assistant used Wikipedia to identify the winner and city, followed by weather checks in both locations. The final answer included the winner's name and weather conditions for both cities.”</i></blockquote>
 
 						<hr style="border: 1px solid #ccc;">
 
@@ -1477,7 +1477,7 @@ def run(self, query):
 						🌍 <b>Provides:</b> temperature, description, humidity, wind speed<br>
 						🛡️ <b>Handles:</b> invalid cities, server errors, connection issues</p>
 					
-						<p>Together, these tools form a powerful and flexible foundation that allows the ReAct agent to interact with the real world — whether it’s crunching numbers, fetching facts, retrieving current weather, or doing live web searches.</p>
+						<p>Together, these tools form a powerful and flexible foundation that allows the ReAct agent to interact with the real world — whether it's crunching numbers, fetching facts, retrieving current weather, or doing live web searches.</p>
 						<hr style="border: 1px solid #ccc;">
 					</div>
 					<!-- End of 7. Building Tools for the Agent -->
@@ -1630,7 +1630,7 @@ if self.old_chats_summary:
 							<h1 style="color: #2c3e50; font-size: 28px;">9. Implementing the Core Agent</h1>
 						</div>
 
-						<p>At the heart of the system lies the <b>ReAct loop</b> — a structured cycle of reasoning, acting, and observing that powers the agent’s ability to solve complex queries. In this section, we’ll walk through how the loop is implemented in code, how actions are parsed and executed, how recursive reasoning is supported, and how iteration limits are enforced.</p>
+						<p>At the heart of the system lies the <b>ReAct loop</b> — a structured cycle of reasoning, acting, and observing that powers the agent's ability to solve complex queries. In this section, we'll walk through how the loop is implemented in code, how actions are parsed and executed, how recursive reasoning is supported, and how iteration limits are enforced.</p>
 
 						<h2 style="color: #2c3e50; font-size: 24px;">🔄 Defining the ReAct Loop</h2>
 
@@ -1801,7 +1801,7 @@ def execute_action(self, tool_name, query):
 
 						<h2 style="color: #2c3e50; font-size: 24px;">🟥 Final Answer Detection</h2>
 
-						<p>If the LLM’s response contains <span class="code-soft">Final Answer:</span>, the agent stops looping. This is checked early in <span class="code-soft">determine_action()</span>:</p>
+						<p>If the LLM's response contains <span class="code-soft">Final Answer:</span>, the agent stops looping. This is checked early in <span class="code-soft">determine_action()</span>:</p>
 
 						<div class="blg-code-container">
 							<pre class="line-numbers"><code class="language-python">
@@ -1859,7 +1859,7 @@ def format_output(self, response):
 
 						<ul>
 							<li><b>💬 Main Area (Chat Panel)</b><br>
-							This is the central space where the conversation unfolds. When a user submits a question, it appears here with a 👩‍💼 icon. The assistant’s final response is shown underneath with a 🤖 icon. Each message appears in a styled bubble, making the interaction feel like a natural dialogue.</li>
+							This is the central space where the conversation unfolds. When a user submits a question, it appears here with a 👩‍💼 icon. The assistant's final response is shown underneath with a 🤖 icon. Each message appears in a styled bubble, making the interaction feel like a natural dialogue.</li>
 
 							<li><b>📊 Sidebar (Chain of Thought Panel)</b><br>
 							Located on the left, the sidebar displays the agent's internal reasoning process, also known as the <i>Chain of Thought</i>. For every query, it logs a step-by-step breakdown:
@@ -1924,7 +1924,7 @@ def format_output(self, response):
 
 						<h2 style="color: #2c3e50; font-size: 24px;">🖥️ Web Interface Preview</h2>
 
-						<p>The screenshot below shows the Streamlit-based web application in action. You can see the chat panel on the right where the conversation between the user and the agent is displayed, and the sidebar on the left where the agent’s internal reasoning steps are logged. This layout provides both a smooth user experience and full transparency into how each response is generated.</p>
+						<p>The screenshot below shows the Streamlit-based web application in action. You can see the chat panel on the right where the conversation between the user and the agent is displayed, and the sidebar on the left where the agent's internal reasoning steps are logged. This layout provides both a smooth user experience and full transparency into how each response is generated.</p>
 
 						<div class="blg-img-container">
 							<img src="../img/blog_3/web_app.png" alt="Streamlit LLM Web Interface for ReAct Agent" style="width: 100%;"/>
@@ -1943,12 +1943,12 @@ def format_output(self, response):
 							<h1 style="color: #2c3e50; font-size: 28px;">11. Examples</h1>
 						</div>
 
-						<p>In this section, we'll walk through real examples to illustrate how the ReAct agent processes complex queries using its reasoning loop: <b>Thought → Action → Observation → Final Answer</b>. You’ll see how it selects the right tools (like <span class="code-soft">web_search</span>, <span class="code-soft">calculator</span>, and <span class="code-soft">weather</span>), interprets intermediate results, and builds a complete answer step-by-step—just like a human would.</p>
+						<p>In this section, we'll walk through real examples to illustrate how the ReAct agent processes complex queries using its reasoning loop: <b>Thought → Action → Observation → Final Answer</b>. You'll see how it selects the right tools (like <span class="code-soft">web_search</span>, <span class="code-soft">calculator</span>, and <span class="code-soft">weather</span>), interprets intermediate results, and builds a complete answer step-by-step—just like a human would.</p>
 						<br>
 
 						<h2 style="color: #2c3e50; font-size: 24px;">🌍 Example 1: Distance and Weather in Multiple Cities</h2>
 
-						<p>In this example, the user asks a multi-part question that combines <strong>geographical reasoning</strong> with <strong>real-time data retrieval</strong>. The ReAct agent must compute the total travel distance across three major cities—<strong>Tokyo</strong>, <strong>London</strong>, and <strong>New York</strong>—and also report the current <strong>weather conditions</strong> in each. This example demonstrates the agent’s ability to chain multiple sub-tasks together using external tools while maintaining logical consistency throughout the reasoning process.</p>
+						<p>In this example, the user asks a multi-part question that combines <strong>geographical reasoning</strong> with <strong>real-time data retrieval</strong>. The ReAct agent must compute the total travel distance across three major cities—<strong>Tokyo</strong>, <strong>London</strong>, and <strong>New York</strong>—and also report the current <strong>weather conditions</strong> in each. This example demonstrates the agent's ability to chain multiple sub-tasks together using external tools while maintaining logical consistency throughout the reasoning process.</p>
 
 						<p>Let's walk through how the ReAct agent processes the following user query:</p>
 
@@ -2070,7 +2070,7 @@ def format_output(self, response):
 							
 						</div>
 						<br>
-						<h2 style="color: #2c3e50; font-size: 24px;">🧠 Step-by-Step Breakdown of the Agent’s Thought Process</h2>
+						<h2 style="color: #2c3e50; font-size: 24px;">🧠 Step-by-Step Breakdown of the Agent's Thought Process</h2>
 
 						<h3 style="color: #2c3e50;">🔍 Understanding the Task</h3>
 						<p>The agent identifies that it must:</p>
@@ -2116,7 +2116,7 @@ def format_output(self, response):
 
 						<h2 style="color: #2c3e50; font-size: 24px;">🧠 Example 2: Weather in the Birth City of a Nobel Laureate</h2>
 					
-						<p>In this example, the user asks a complex query that requires <strong>reasoning over multiple steps</strong>. The agent must first find out who won the 2024 Nobel Prize in Physics, determine where that person was born, and finally retrieve the weather for that birthplace. This showcases the ReAct agent’s ability to handle multi-hop reasoning using external tools.</p>
+						<p>In this example, the user asks a complex query that requires <strong>reasoning over multiple steps</strong>. The agent must first find out who won the 2024 Nobel Prize in Physics, determine where that person was born, and finally retrieve the weather for that birthplace. This showcases the ReAct agent's ability to handle multi-hop reasoning using external tools.</p>
 						
 						<p>Let's walk through how the ReAct agent processes the following user query:</p>
 						
@@ -2173,7 +2173,7 @@ def format_output(self, response):
 						<br>
   
 					
-						<h2 style="color: #2c3e50; font-size: 24px;">🧩 Step-by-Step Breakdown of the Agent’s Thought Process</h2>
+						<h2 style="color: #2c3e50; font-size: 24px;">🧩 Step-by-Step Breakdown of the Agent's Thought Process</h2>
 					
 						<h3 style="color: #2c3e50; font-size: 20px;">🔍 Understanding the Task</h3>
 						<p>The agent identifies that it must:</p>
