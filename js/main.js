@@ -100,13 +100,13 @@ function displayTopBlogPost(post) {
     description.innerText = post.description;
     descContainer.appendChild(description);
 
-    const readMoreLink = document.createElement('a');
-    readMoreLink.href = `${post.readMoreUrl}?id=${post.id}`;
-    readMoreLink.className = 'read-more';
-    readMoreLink.innerText = 'Read More';
-    readMoreLink.target = '_blank';
-    readMoreLink.rel = 'noopener noreferrer';
-    descContainer.appendChild(readMoreLink);
+    const readMoreButton = document.createElement('button');
+    readMoreButton.className = 'read-more-button';
+    readMoreButton.innerText = 'Read More';
+    readMoreButton.addEventListener('click', () => {
+        window.open(`${post.readMoreUrl}?id=${post.id}`, '_blank', 'noopener');
+    });
+    descContainer.appendChild(readMoreButton);
 
     // Append both containers to the top blog container
     topBlogContainer.appendChild(imgContainer);
@@ -150,13 +150,13 @@ function createPostElements(post, postDiv) {
     description.innerText = post.description;
     postDiv.appendChild(description);
 
-    const readMoreLink = document.createElement('a');
-    readMoreLink.href = `${post.readMoreUrl}?id=${post.id}`;
-    readMoreLink.className = 'read-more';
-    readMoreLink.innerText = "Read More";
-    readMoreLink.target = "_blank";
-    readMoreLink.rel = "noopener noreferrer";
-    postDiv.appendChild(readMoreLink);
+    const readMoreButton = document.createElement('button');
+    readMoreButton.className = 'read-more-button';
+    readMoreButton.innerText = 'Read More';
+    readMoreButton.addEventListener('click', () => {
+        window.open(`${post.readMoreUrl}?id=${post.id}`, '_blank', 'noopener');
+    });
+    postDiv.appendChild(readMoreButton);
 }
 
 // Function to update the Load More link's visibility

@@ -657,6 +657,66 @@ select.selectmenu {
 	color: #48b;
 }
 
+.author_section {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.author_img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+}
+
+.author_details {
+  display: flex;
+  flex-direction: row; /* ✅ horizontal layout */
+  align-items: center;  /* ✅ vertically align name and date */
+  gap: 10px;            /* optional: space between name and date */
+}
+
+.author_name {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.published_date {
+  font-size: 16px;
+  color: #777;
+}
+
+.read-more-button {
+  padding: 10px 20px;
+  background-color: #3e85cc;       /* Normal state: Blue */
+  color: #ffffff;
+  font-size: 14px;
+  border: none;
+  border-radius: 6px;
+  width: 110px;
+  display: inline-block;
+  text-align: center;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: background-color 0.25s ease, transform 0.1s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Hover: Darker blue */
+.read-more-button:hover {
+  background-color: #0056b3;
+}
+
+/* Active (Click): Even darker + slight scale */
+.read-more-button:active {
+  background-color: #004399;
+  transform: scale(0.97);
+}
+
+
 
 /* ====================================== End Blog Details ==================================== */
 
@@ -969,18 +1029,32 @@ p.sub-header:before {
 	font-weight: 300;
 }
 
-.btn {
-	border-radius: 10;
+.load-more-button {
+  display: inline-block;
+  padding: 10px 24px;
+  background-color: #28a745;
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background-color 0.25s ease, transform 0.1s ease;
+  cursor: pointer;
 }
 
-.btn-o {
-	border: 1px solid  #006400;
-	color:  #006400;
+.load-more-button:hover {
+  background-color: #218838;
+  color: white;              /* 👈 override blue text */
+  text-decoration: none;     /* 👈 remove underline */
 }
 
-.btn-o:hover {
-	background:  #006400;
-	color: white;
+.load-more-button:active {
+  background-color: #1e7e34;
+  transform: scale(0.97);
+  color: white;              /* keep color on click */
+  text-decoration: none;     /* no underline on click */
 }
 
 .load-more {
@@ -992,6 +1066,8 @@ p.sub-header:before {
 	height: 100px;
 	/* Optional: to demonstrate vertical centering */
 }
+
+
 
 /* Title
 ==================================== */

@@ -7,6 +7,12 @@ function fetchPosts(currentPostId) {
 
             posts = updateResourcePaths(posts)
             const currentIndex = posts.findIndex(post => post.id === currentPostId);
+            const currentPost = posts[currentIndex];
+
+            if (currentPost) {
+                populateAuthorInfo(currentPost);  // ✅ pass only the selected post
+            }
+
             displayPosts(posts);
 
             // Ensure the Slick slider is initialized only after posts are appended
@@ -15,6 +21,28 @@ function fetchPosts(currentPostId) {
             }, 100); // Delay initialization slightly to ensure DOM elements are ready
         })
         .catch(error => console.error('Error loading posts:', error));
+}
+
+function populateAuthorInfo(post) {
+    
+    const authorNameElem = document.getElementById("author_name");
+    const authorImgElem = document.getElementById("author_img");
+    const publishedDateElem = document.getElementById("published_date");
+
+    if (post.author) {
+        authorNameElem.textContent = post.author;
+    }
+
+    if (post.author_img) {
+        console.log(post.author_img);
+        authorImgElem.src = post.author_img;
+    } else {
+        authorImgElem.src = "../img/author/shafiqul.jpg"; // fallback image
+    }
+
+    if (post.date) {
+        publishedDateElem.textContent = ` - ${post.date}`;
+    }
 }
 
 function updateResourcePaths(posts){
@@ -87,13 +115,13 @@ function createPostElement(post) {
     description.innerText = post.description;
     postDiv.appendChild(description);
 
-    const readMoreLink = document.createElement('a');
-    readMoreLink.href = `${post.readMoreUrl}?id=${post.id}`;
-    readMoreLink.className = 'read-more';
-    readMoreLink.innerText = "Read More";
-    readMoreLink.target = "_blank"; // Ensure it opens in a new tab
-    readMoreLink.rel = "noopener noreferrer"; // Security reasons
-    postDiv.appendChild(readMoreLink);
+    const readMoreButton = document.createElement('button');
+    readMoreButton.className = 'read-more-button';
+    readMoreButton.innerText = 'Read More';
+    readMoreButton.addEventListener('click', () => {
+        window.open(`${post.readMoreUrl}?id=${post.id}`, '_blank', 'noopener');
+    });
+    postDiv.appendChild(readMoreButton);
 
     return postDiv;
 }

@@ -1,7 +1,8 @@
 [
     {
         "id": 1,
-        "author": "Md Shafiqul Islam",
+        "author": "MD SHAFIQUL ISLAM",
+        "author_img": "../img/author/shafiqul.jpg",
         "category": ["Docker"],
         "image": "./img/blog_1/blog_1_thumbnail.webp",
         "title": "Protect Sensitive Information in Docker: Accessing .env Credentials Without Exposing Them",
@@ -11,7 +12,8 @@
     },
     {
         "id": 2,
-        "author": "Md Shafiqul Islam",
+        "author": "MD SHAFIQUL ISLAM",
+        "author_img": "../img/author/shafiqul.jpg",
         "category": ["Git"],
         "image": "./img/blog_2/blog_2_thumbnail.webp",
         "title": "How to Generate an SSH Key and Add It to GitHub for Secure Git Operations",
@@ -21,7 +23,8 @@
     },
     {
         "id": 3,
-        "author": "Md Shafiqul Islam",
+        "author": "MD SHAFIQUL ISLAM",
+        "author_img": "../img/author/shafiqul.jpg",
         "category": ["Agent"],
         "image": "./img/blog_3/blog_3_thumbnail.webp",
         "title": "Create ReAct AI Agent from Scratch using Python Without any Framework: A Step-by-Step Guide",
