@@ -375,6 +375,7 @@ select.selectmenu {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2; /* Limits the text to 2 lines */
+	line-clamp: 2;
     line-height: 1.2em; /* Line height for headers */
     text-overflow: ellipsis; /* Adds ellipsis for overflow */
     font-size: 18px; /* Font size for headers */
@@ -386,6 +387,7 @@ select.selectmenu {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 5; /* Limits the text to 5 lines */
+	line-clamp: 5;
     line-height: 1.4em; /* A comfortable line height */
     text-overflow: ellipsis; /* Adds ellipsis for overflow */
     text-align: justify;
@@ -943,6 +945,7 @@ a:hover img {
 	display: -webkit-box;
 	-webkit-box-orient: vertical;
 	-webkit-line-clamp: 3;
+	line-clamp: 3;
 	/* Limits the text to 2 lines for headers */
 	line-height: 1.2em;
 	/* Line height for headers */
@@ -961,6 +964,7 @@ a:hover img {
 	display: -webkit-box;
 	-webkit-box-orient: vertical;
 	-webkit-line-clamp: 5;
+	line-clamp: 5;
 	/* Limits the text to 5 lines for paragraphs */
 	line-height: 1.4em;
 	/* A comfortable line height for reading */
