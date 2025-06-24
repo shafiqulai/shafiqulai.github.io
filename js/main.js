@@ -93,7 +93,7 @@ function displayTopBlogPost(post) {
 
     const dateDiv = document.createElement('div');
     dateDiv.className = 'date';
-    dateDiv.innerText = post.date;
+    dateDiv.innerText = '🗓️ ' + post.date;
     descContainer.appendChild(dateDiv);
 
     const description = document.createElement('p');
@@ -143,7 +143,7 @@ function createPostElements(post, postDiv) {
 
     const dateDiv = document.createElement('div');
     dateDiv.className = 'date';
-    dateDiv.innerText = post.date;
+    dateDiv.innerText = '🗓️ ' + post.date;
     postDiv.appendChild(dateDiv);
 
     const description = document.createElement('p');

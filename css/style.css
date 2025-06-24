@@ -359,8 +359,7 @@ select.selectmenu {
 
 .top-blg-desc-container .date {
 	display: inline-block;
-    color: #000000; /* Ensures the date text is black */
-    font-style: italic;
+    color: #333333; /* Ensures the date text is black */
     line-height: 1.2em; /* Maintain a comfortable line height */
     overflow: hidden; /* Prevents text overflow */
     text-overflow: ellipsis; /* Adds ellipsis if overflow occurs */
@@ -923,7 +922,6 @@ a:hover img {
 .blog-post .date {
 	color: #333333;
 	/* Ensures the date text is black */
-	font-style: italic;
 	line-height: 1.2em;
 	/* Line height should be enough to fit the text size */
 	height: 1.2em;
