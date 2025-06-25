@@ -41,7 +41,7 @@ function populateAuthorInfo(post) {
     }
 
     if (post.date) {
-        publishedDateElem.textContent = ` - ${post.date}`;
+        publishedDateElem.textContent = `🗓️ ${post.date}`;
     }
 }
 

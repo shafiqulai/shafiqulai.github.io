@@ -8,12 +8,15 @@
         <loc>https://shafiqulai.github.io/about.html</loc>
     </url>
     <url>
-        <loc>https://shafiqulai.github.io/blogs/blog_1.html</loc>
+        <loc>https://shafiqulai.github.io/blogs/blog_1.html?id=1</loc>
     </url>
     <url>
-        <loc>https://shafiqulai.github.io/blogs/blog_2.html</loc>
+        <loc>https://shafiqulai.github.io/blogs/blog_2.html?id=2</loc>
     </url>
     <url>
-        <loc>https://shafiqulai.github.io/blogs/blog_3.html</loc>
+        <loc>https://shafiqulai.github.io/blogs/blog_3.html?id=3</loc>
+    </url>
+    <url>
+        <loc>https://shafiqulai.github.io/blogs/blog_4.html?id=4</loc>
     </url>
 </urlset>
