@@ -701,7 +701,7 @@ select.selectmenu {
   display: inline-block;
   text-align: center;
   cursor: pointer;
-  margin-top: 12px;
+  margin-top: 6px;
   transition: background-color 0.25s ease, transform 0.1s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -820,18 +820,27 @@ select.selectmenu {
 /* Style for the categories container */
 .categories {
 	padding-left: 30px;
+	margin-top: 15px;
 	/* max-width: 200px; */
 	/* Adjust this width based on your design */
 }
 
-/* Style for the "categories" title */
-.categories h3 {
-	font-size: 1.5em;
-	margin-bottom: 20px;
-	margin-top: 15px;
-	padding: 10px 10px;
-	color: #fff;
+.category-header {
+	display: flex;
+	align-items: center;
 	background-color: #006400;
+	padding: 10px 10px;
+	gap: 10px;
+}
+
+.category-header img {
+	margin: 0; /* removes extra space */
+	display: block;
+}
+
+.category-header h3 {
+	margin: 0;
+	color: #fff;
 }
 
 /* Style for the unordered list that holds the categories */
@@ -1091,6 +1100,13 @@ section.blog-title h2 {
 	margin-bottom: 10px;
 	text-align: center;
 	/* font-weight: 400; */
+}
+
+.blog-title-flex {
+	display: flex;
+	align-items: center;
+	justify-content: center; /* center horizontally */
+	gap: 10px;
 }
 
 /* Footer

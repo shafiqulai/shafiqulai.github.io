@@ -8,7 +8,7 @@ let mostRecentPost = null; // Store the most recent post separately
 
 // Function to fetch the posts from the JSON file
 function fetchPosts() {
-    fetch('data/posts.json')
+    fetch('metadata/posts.json')
         .then(response => response.json())
         .then(data => {
             totalPostsCount = data.length; // Store total number of posts
@@ -187,19 +187,30 @@ function generateCategories() {
     const categoryContainer = document.getElementById('categoryList');
     categoryContainer.innerHTML = '';
 
+    const categoryIcons = getCategoryIcons();
+
+    // "All" option
     let listItem = document.createElement('li');
     let link = document.createElement('a');
     link.href = "#";
-    link.textContent = `All (${totalPostsCount})`; // Include the total posts count
+
+    const allIcon = categoryIcons["All"];
+    const allIconHTML = allIcon ? `<img src="${allIcon}" alt="All" style="width:20px; height:auto; vertical-align:middle; margin-right:10px;">` : '';
+    link.innerHTML = `${allIconHTML}<b>All (${totalPostsCount})</b>`;
     link.addEventListener('click', () => filterPostsByCategory('All'));
     listItem.appendChild(link);
     categoryContainer.appendChild(listItem);
 
+    // Other categories
     for (const [category, count] of Object.entries(categoryCounts)) {
         listItem = document.createElement('li');
         link = document.createElement('a');
         link.href = "#";
-        link.textContent = `${category} (${count})`;
+
+        const iconPath = categoryIcons[category];
+        const iconHTML = iconPath ? `<img src="${iconPath}" alt="${category}" style="width:24px; height:auto; vertical-align:middle; margin-right:10px;">` : '';
+
+        link.innerHTML = `${iconHTML}${category} (${count})`;
         link.addEventListener('click', () => filterPostsByCategory(category));
         listItem.appendChild(link);
         categoryContainer.appendChild(listItem);
@@ -223,6 +234,18 @@ function filterPostsByCategory(category) {
     displayPosts(true);
     updateButtonVisibility();
 }
+
+function getCategoryIcons() {
+    return {
+        "All": "./img/category/all.png",
+        "Agent": "./img/category/agent.png",
+        "Streamlit": "./img/category/streamlit.svg",
+        "Hugging Face": "./img/category/huggingface.svg",
+        "Docker": "./img/category/docker.svg",
+        "Git": "./img/category/git.svg"
+    };
+}
+
 
 // Run after the page loads
 window.onload = function() {

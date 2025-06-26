@@ -1,7 +1,7 @@
 
 // Fetch and load all blog posts
 function fetchPosts(currentPostId) {
-    fetch('../data/posts.json')
+    fetch('../metadata/posts.json')
         .then(response => response.json())
         .then(posts => {
 
