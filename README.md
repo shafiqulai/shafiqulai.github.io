@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="img/logo.png" alt="Shafiqul AI Logo" width="200"/>
+  <img src="img/others/logo.png" alt="Shafiqul AI Logo" width="200"/>
 </p>
 
 
