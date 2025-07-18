@@ -8,6 +8,7 @@ body {
 	font-weight: 300;
 	line-height: 1.6em;
 	color: #656565;
+	padding-top: 90px;
 }
 
 
@@ -66,6 +67,20 @@ h2 {
 
 header .navbar {
 	margin-bottom: 0;
+}
+
+.custom-sticky-navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 999;
+  background-color: #fff;
+  border-bottom: 1px solid #ccc;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  min-height: 70px; /* Let it grow if needed */
+  display: flex;
+  align-items: center; /* vertically center children */
+  padding: 0 20px; /* horizontal spacing */
 }
 
 .navbar-default {
@@ -128,7 +143,7 @@ header .navbar-default .navbar-nav>.open>a:focus {
 
 header .navbar {
 	min-height: 70px;
-	padding: 18px 0;
+	padding: 0;
 }
 
 header .navbar-nav>li {
