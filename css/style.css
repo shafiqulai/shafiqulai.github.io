@@ -716,7 +716,7 @@ select.selectmenu {
   display: flex;
   text-align: center;
   cursor: pointer;
-  margin-top: 6px;
+  margin-top: 2px;
   transition: background-color 0.25s ease, transform 0.1s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
