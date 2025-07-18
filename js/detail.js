@@ -117,7 +117,9 @@ function createPostElement(post) {
 
     const readMoreButton = document.createElement('button');
     readMoreButton.className = 'read-more-button';
-    readMoreButton.innerText = 'Read More';
+    const iconPath = '../img/others/read_more.png';
+    readMoreButton.innerHTML = `<img src="${iconPath}" alt="Read More" style="width:24px; height:auto; vertical-align:middle; margin-right:10px;">Read More`;
+
     readMoreButton.addEventListener('click', () => {
         window.open(`${post.readMoreUrl}?id=${post.id}`, '_blank', 'noopener');
     });

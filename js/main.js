@@ -102,7 +102,9 @@ function displayTopBlogPost(post) {
 
     const readMoreButton = document.createElement('button');
     readMoreButton.className = 'read-more-button';
-    readMoreButton.innerText = 'Read More';
+    const iconPath = './img/others/read_more.png';
+    readMoreButton.innerHTML = `<img src="${iconPath}" alt="Read More" style="width:24px; height:auto; vertical-align:middle; margin-right:10px;">Read More`;
+
     readMoreButton.addEventListener('click', () => {
         window.open(`${post.readMoreUrl}?id=${post.id}`, '_blank', 'noopener');
     });
@@ -152,7 +154,10 @@ function createPostElements(post, postDiv) {
 
     const readMoreButton = document.createElement('button');
     readMoreButton.className = 'read-more-button';
-    readMoreButton.innerText = 'Read More';
+
+    const iconPath = './img/others/read_more.png';
+    readMoreButton.innerHTML = `<img src="${iconPath}" alt="Read More" style="width:24px; height:auto; vertical-align:middle; margin-right:10px;">Read More`;
+
     readMoreButton.addEventListener('click', () => {
         window.open(`${post.readMoreUrl}?id=${post.id}`, '_blank', 'noopener');
     });
@@ -242,7 +247,8 @@ function getCategoryIcons() {
         "Streamlit": "./img/category/streamlit.svg",
         "Hugging Face": "./img/category/huggingface.svg",
         "Docker": "./img/category/docker.svg",
-        "Git": "./img/category/git.svg"
+        "Git": "./img/category/git.svg",
+        "Gradio": "./img/category/gradio.svg"
     };
 }
 
@@ -251,6 +257,9 @@ function getCategoryIcons() {
 window.onload = function() {
     fetchPosts();
     const loadMoreLink = document.getElementById('loadMoreLink');
+    const iconPath = './img/others/load_more.png';
+    loadMoreLink.innerHTML = `<img src="${iconPath}" alt="Load More" style="width:24px; height:auto; vertical-align:middle; margin-right:10px;">Load More`;
+
     if (loadMoreLink) {
         loadMoreLink.addEventListener('click', loadMorePosts);
     }
