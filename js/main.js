@@ -1,6 +1,7 @@
 let currentPostIndex = 0;
 let categoryCounts = {};
-const postsPerLoad = 3; // Number of posts to load each time
+const initialPostsToShow = 6; // Shown on first load
+const postsPerLoad = 3;       // Shown on each click
 let posts = []; // Holds all posts
 let displayedPosts = []; // Holds the filtered posts for display
 let totalPostsCount = 0; // Stores the total number of posts
@@ -38,8 +39,10 @@ function displayPosts(clear = false) {
         currentPostIndex = 0;      // Reset the post index
     }
 
+    const postsToShow = clear ? initialPostsToShow : postsPerLoad;
+
     // Append new posts
-    for (let i = currentPostIndex; i < currentPostIndex + postsPerLoad; i++) {
+    for (let i = currentPostIndex; i < currentPostIndex + postsToShow; i++) {
         if (i >= displayedPosts.length) break;
 
         const post = displayedPosts[i];  // Use the filtered posts
@@ -52,7 +55,7 @@ function displayPosts(clear = false) {
         container.appendChild(postDiv); // Append the post to the container
     }
 
-    currentPostIndex += postsPerLoad; // Increment the post index
+    currentPostIndex += postsToShow; // Increment the post index
     updateButtonVisibility(); // Update button visibility
 }
 
@@ -167,7 +170,7 @@ function createPostElements(post, postDiv) {
 // Function to update the Load More link's visibility
 function updateButtonVisibility() {
     const link = document.getElementById('loadMoreLink');
-    link.style.visibility = currentPostIndex >= displayedPosts.length ? 'hidden' : 'visible';
+    link.style.visibility = displayedPosts.length > initialPostsToShow && currentPostIndex < displayedPosts.length ? 'visible' : 'hidden';
 }
 
 // Function to load more posts when the link is clicked
