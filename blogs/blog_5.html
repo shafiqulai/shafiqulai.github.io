@@ -16,7 +16,7 @@
 	</script>
 
 	<meta charset="utf-8">
-	<title>Deploy Gradio App to Hugging Face Spaces - A Complete Guide</title>
+	<title>Deploy Gradio App to Hugging Face Spaces - Full Step by Step Guide</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<meta name="description" content="This comprehensive guide provides a step-by-step approach to deploying a Gradio application on Hugging Face Spaces. It covers project preparation, dependency management, and Space configuration to ensure a smooth deployment experience. Readers will learn how to structure their code, handle runtime settings, and troubleshoot common issues. By the end, you will have a fully functional Gradio app publicly accessible and hosted on a reliable platform." />
 	<meta name="author" content="MD SHAFIQUL ISLAM" />
@@ -66,7 +66,7 @@
 				<div id="blogContainer">
 					<!-- blog title -->
 					<div class="container blg-title-container">
-						<h2 class="blg-title">Deploy Gradio App to Hugging Face Space - A Complete Guide</h2>
+						<h2 class="blg-title">Deploy Gradio App to Hugging Face Space - Full Step by Step Guide</h2>
 					</div>
 
 					<!-- Author Info -->
@@ -82,21 +82,25 @@
 						<img src="../img/blog_5/thumbnail.png" alt="Deploy Gradio App to Hugging Face Spaces" style="width: 70%;"/>
 					</div>
 
-
 					<!-- Start of Preface -->
 					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
 
-						<p>Deploying your machine learning app shouldn't be more challenging than building it. In this guide, you'll discover how to turn a local <b>Streamlit application</b> into a shareable, public-facing demo using <b>Hugging Face Spaces</b> — no DevOps expertise or cloud infrastructure setup required.</p>
+						<p>🚀 Deploying your machine learning app should be as smooth and exciting as building it. With the rise of no-hassle tools like <b>Gradio</b> and hosting platforms like <b>Hugging Face Spaces</b>, it's now easier than ever to create and share intelligent web apps with the world — without worrying about complex DevOps setups.</p>
 
-						<div style="background-color: #f1f6f1; padding: 15px; border-left: 5px solid #006400; margin-top: 10px;">
-							<p><b>💡 Whether you're sharing with stakeholders, showcasing your project, or creating a live portfolio — this guide will help you to deploy machine learning Streamlit web app to Hugging Face.</b></p>
-						</div>
+						<p>This blog will walk you through the full deployment journey using our very own <b><a href="https://github.com/shafiqul-islam-sumon/ragent-chatbot" target="_blank" style="text-decoration: underline;">RAGent Chatbot</a></b> — a powerful AI assistant powered by <b>Retrieval-Augmented Generation (RAG)</b>. But the steps covered here will work for <b>any Gradio-based application</b>.</p>
+
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							🌟 Whether you're a developer showcasing your AI tool, a researcher sharing model results interactively, or an enthusiast building an intelligent prototype — this guide will help you take your app from local to live with ease.
+						</blockquote>
 						<br>
 
-						<p>We'll use a <b><a href="https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation" target="_blank" style="text-decoration: underline;">Fashion Recommendation System</a> powered by Retrieval-Augmented Generation (RAG)</b> as our working example. But the deployment process outlined here is fully applicable to <b>any Streamlit-based app</b>.</p>
+						<p>We'll go through each phase of the deployment process — from setting up your project to making your app publicly available on Hugging Face Spaces 🌐. No need for advanced cloud knowledge — if you can write Python, you can do this!</p>
+
+						<p>By the end of this guide, your Gradio app will be up and running on the web, accessible by anyone with a browser. Ready to share your AI with the world? Let's get started.</p>
 
 					</div>
 					<!-- End of Preface -->
+
 
 					<!-- Table of Contents -->
 					<div class="blg-toc-container">
@@ -104,294 +108,516 @@
 						<ol class="blg-toc-ol">
 							<li class="blg-toc-li"><a href="#introduction">Introduction</a></li>
 							<li class="blg-toc-li"><a href="#prerequisites">Prerequisites</a></li>
+							<li class="blg-toc-li"><a href="#setup-project">Set Up Gradio App</a></li>
+							<ul class="blg-toc-ul">
+								<li class="blg-toc-li"><a href="#project-structure">Organize Project Structure</a></li>
+								<li class="blg-toc-li"><a href="#requirements">Create requirements.txt</a></li>
+								<li class="blg-toc-li"><a href="#app-file">Create app.py</a></li>
+							</ul>
 							<li class="blg-toc-li"><a href="#deployment">Step-by-Step Deployment to Hugging Face</a></li>
 							<ul class="blg-toc-ul">
 								<li class="blg-toc-li"><a href="#create-account">Create a Hugging Face Account</a></li>
 								<li class="blg-toc-li"><a href="#create-space">Create a New Space</a></li>
-								<li class="blg-toc-li"><a href="#prepare-project">Prepare Your Project for Upload</a></li>
+								<li class="blg-toc-li"><a href="#secrets">Configure Secrets</a></li>
 								<li class="blg-toc-li"><a href="#upload-code">Upload Source Code</a></li>
 							</ul>
-							<li class="blg-toc-li"><a href="#requirements">Updating requirements.txt</a></li>
-							<li class="blg-toc-li"><a href="#docker">Modifying the Docker Configuration</a></li>
 							<li class="blg-toc-li"><a href="#build-run">Build and Run App</a></li>
 							<li class="blg-toc-li"><a href="#readme">Writing the README file</a></li>
-							<li class="blg-toc-li"><a href="#search-app">Searching Your App</a></li>
+							<li class="blg-toc-li"><a href="#share-app">Share and Showcase Your App</a></li>
 							<li class="blg-toc-li"><a href="#conclusion">Conclusion</a></li>
 						</ol>
 					</div>
 					<br>
 
-
 					<!-- 1. Start of Introduction -->
 					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
 
-						<div id = "introduction" class="blg-main-header">
+						<div id="introduction" class="blg-main-header">
 							<h1 style="color: #2c3e50; font-size: 28px;">1. Introduction</h1>
 						</div>
 
-						<p>Transitioning a machine learning app from local development to a public platform can feel overwhelming. This guide is here to simplify that process by offering a clear, step-by-step approach to deploying your <b>Streamlit application</b> using <b>Hugging Face Spaces</b>. Whether you're a developer, researcher, or student, you'll learn how to make your app available online with minimal effort.</p>
+						<p>With the rapid rise of AI-powered tools, creating interactive web-based demos has become a key part of sharing and showcasing your work. <b>Gradio</b> makes it easy to build intuitive user interfaces for machine learning models using just a few lines of Python code. But building your interface is only half the journey — the next step is to make it available to the world.</p>
+
+						<p>This is where <b>Hugging Face Spaces</b> comes into play — a developer-friendly platform that lets you deploy and host your Gradio apps directly in the browser 🌐. No DevOps knowledge, no complex configuration — just write your code, upload your files, and your app is live.</p>
 
 						<br>
-						<p><b>🔹 Why Hugging Face Spaces?</b><br>
-						Hugging Face Spaces offers a frictionless deployment experience built specifically for machine learning and data applications. It supports popular tools like <b>Streamlit</b>, <b>Gradio</b>, and even static HTML out of the box. There's no need for DevOps setup or server management — just upload your code and get a live app with a shareable link. It's ideal for quick demos, prototyping, or showcasing your work.</p>
+						<p><b>🎯 What You'll Learn in This Guide</b><br>
+						This blog will walk you through a hands-on, beginner-friendly deployment process. By the end, you'll know how to:</p>
+
+						<ul style="padding-left: 20px;">
+							<li>🛠️ Set up a well-structured Gradio project</li>
+							<li>📦 Create essential files like <span class="code-soft">app.py</span> and <span class="code-soft">requirements.txt</span></li>
+							<li>🔐 Manage secrets and API keys securely (if needed)</li>
+							<li>☁️ Deploy the app to Hugging Face Spaces in minutes</li>
+							<li>📄 Write a clear and helpful README</li>
+							<li>📤 Share your deployed app with a public link</li>
+						</ul>
 
 						<br>
-						<p><b>🔹 Example Project: RAG-Based Fashion Recommendation App</b><br>
-						To illustrate the process, we'll deploy a <a href="https://huggingface.co/spaces/shafiqul1357/rag-fashion-recommendation" target="_blank" style="text-decoration: underline;">fashion recommendation app</a> that uses <b>Retrieval-Augmented Generation (RAG)</b>. The app helps users find clothing items by typing natural language queries — such as “Show me casual red dresses under ¥2000.” The app is already working locally with Streamlit, and now we'll make it available to others via Hugging Face Spaces.</p>
+						<p><b>🔍 Example Project: RAGent Chatbot</b><br>
+						As a working example, we'll use our <b><a href="https://github.com/shafiqul-islam-sumon/ragent-chatbot" target="_blank" style="text-decoration: underline;">RAGent Chatbot</a></b> — an AI assistant powered by <b>Retrieval-Augmented Generation (RAG)</b>. Users can ask natural language questions like “What are the latest AI trends?” and receive intelligent answers sourced from documents and tools. It runs locally using Gradio, and we'll show you exactly how to deploy it live on Hugging Face Spaces.</p>
+
 						<hr class="blg-hr">
 					</div>
 					<!-- End of Introduction -->
 
+
 					<!-- Start of 2. Prerequisites -->
 					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
 
-						<div id = "prerequisites" class="blg-main-header">
+						<div id="prerequisites" class="blg-main-header">
 							<h1 style="color: #2c3e50; font-size: 28px;">2. Prerequisites</h1>
 						</div>
 
-						<p>Before deploying your Streamlit app to Hugging Face Spaces, make sure the essentials are ready.</p>
-
-						<p><b>🔹 A Fully Developed Streamlit App</b><br>
-						Your application should be complete and thoroughly tested in your local environment. It must include a clear entry point like <span class="code-soft">app.py</span> or <span class="code-soft">web_app.py</span>, a <span class="code-soft">requirements.txt</span> file listing all dependencies, and any supporting configuration or utility files.</p>
-
-						<p>If your app relies on a vector database such as <b>ChromaDB</b>, ensure that the data directory — for example, <span class="code-soft">chroma_store</span> — is lightweight enough for upload. Alternatively, configure it to rebuild automatically when the app starts to avoid large file uploads.</p>
+						<p>Before you begin deploying your Gradio app to Hugging Face Spaces, make sure the following essentials are ready. These will ensure a smooth and uninterrupted setup experience. This section outlines both the tools you'll need and the foundational knowledge expected for this tutorial.</p>
 
 						<br>
-						<p><b>🔹 A Hugging Face Account</b><br>
-						To publish your app, you'll need an active Hugging Face account. Creating one is quick and free. Once logged in, you can set up and manage your own <span class="code-soft">Spaces</span>, which serve as hosted environments for ML applications.</p>
+						<p><b>✅ 1. Python Environment</b><br></p>
+						<p>To build and deploy Gradio apps, you'll need Python installed on your system — specifically version <b>3.7 or later</b>. Most modern systems support this out of the box. You can verify your Python version by running:</p>
 
-						<p>Sign up here: 
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+python --version
+</code>
+							</pre>
+						</div>
+
+						<p>💡 If Python is not installed, you can download it from the official website: 
+						<a href="https://www.python.org/downloads/" target="_blank" style="text-decoration: underline;">https://www.python.org/downloads/</a>.</p>
+
+						<br>
+						<p><b>✅ 2. Basic Python Knowledge</b><br></p>
+						<p>While this tutorial is beginner-friendly, having some basic familiarity with Python will help you follow along. You should be comfortable with the following concepts:</p>
+
+						<ul style="padding-left: 20px;">
+							<li>✍️ Writing simple Python scripts</li>
+							<li>📦 Installing packages using <span class="code-soft">pip</span></li>
+							<li>📁 Organizing and importing functions from Python files</li>
+						</ul>
+
+						<p>Don't worry if you're not an expert — as long as you understand how to run a script like <span class="code-soft">app.py</span> and install packages, you'll do just fine!</p>
+
+						<br>
+						<p><b>✅ 3. Gradio Library</b><br></p>
+						<p>Gradio is the core framework we'll use to create a clean and interactive web interface for your AI model. It's lightweight, intuitive, and powerful. To install Gradio, simply run:</p>
+
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+pip install gradio
+</code>
+							</pre>
+						</div>
+
+						<p>💡 Make sure you install the latest version of Gradio to ensure compatibility with Hugging Face Spaces.</p>
+
+						<br>
+						<p><b>✅ 4. Hugging Face Account</b><br></p>
+						<p>To deploy and share your app with others, you'll need a <b>free Hugging Face account</b>. It only takes a minute to create.</p>
+
+						<p>Once logged in, you'll have access to your personal or organizational dashboard, where you can manage your Spaces (hosted apps), upload code, monitor usage, and more.</p>
+
+						<p>📝 Sign up or log in at: 
 						<a href="https://huggingface.co/join" target="_blank" style="text-decoration: underline;">https://huggingface.co/join</a></p>
+
+						<br>
+
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							🌱 Notes: If you're following this guide to deploy the <a href="https://github.com/shafiqul-islam-sumon/ragent-chatbot" target="_blank" style="text-decoration: underline;">RAGent Chatbot</a>, make sure it's already tested and working in your local environment before uploading to Hugging Face.
+						</blockquote>
+
 						<hr class="blg-hr">
 					</div>
 					<!-- End of Prerequisites -->
 
-
-					<!-- Start of 3. Step-by-Step Deployment -->
+					<!-- Start of 3. Set Up the Gradio App -->
 					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
 
-						<div id = "deployment" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">3. Step-by-Step Deployment to Hugging Face</h1>
+						<div id="setup-project" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">3. Set Up the Gradio App</h1>
 						</div>
-						<p>This section walks you through the process of deploying your locally running Streamlit app to Hugging Face Spaces. From account setup to uploading your code and confirming the deployment, each step is practical and beginner-friendly.</p>
+
+						<p>In this section, we'll prepare the <b><a href="https://github.com/shafiqul-islam-sumon/ragent-chatbot" target="_blank" style="text-decoration: underline;">RAGent Chatbot</a></b> for deployment on Hugging Face Spaces. A well-structured project layout and essential deployment files are crucial to ensure the app runs smoothly in the hosted environment.</p>
+
+						<p>Let's walk through how the project was structured and which files are important for successful deployment.</p>
 
 						<br>
-						<div id = "create-account"class="blg-sub-header">
-							<h2> 🔹 3.1 Create a Hugging Face Account</h2>
+						<div id="project-structure" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">📁 3.1 Project Structure</h2>
 						</div>
-						<p>Before you can deploy your app, you need to create an account on Hugging Face — the platform that provides the <b>Spaces</b> feature for hosting ML applications.</p>
+
+						<p>We organized the RAGent Chatbot project in a clean, modular way to ensure scalability and easy maintenance. Below is a snapshot of the project's directory layout:</p>
+
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+ragent_chatbot/
+│
+├── app.py
+├── agent.py
+├── rag.py
+├── config.py
+├── tool_registry.py
+├── requirements.txt
+├── README.md
+├── .env
+│
+├── retriever/
+│   ├── __init__.py
+│   └── qdrant_retriever.py
+│
+├── tools/
+│   ├── __init__.py
+│   ├── base_tool.py
+│   ├── calculator_tool.py
+│   ├── llm_tool.py
+│   ├── rag_tool.py
+│   ├── weather_tool.py
+│   ├── web_search_tool.py
+│   └── wikipedia_tool.py
+│
+├── vector_db/
+│   ├── __init__.py
+│   ├── chunker.py
+│   ├── data_embedder.py
+│   └── qdrant_db.py
+│
+├── prompts/
+│   ├── agent_prompt.txt
+│   └── rag_prompt.txt
+│
+├── llm/
+│   ├── __init__.py
+│   └── gemini_llm.py
+│
+├── memory/
+│   ├── __init__.py
+│   └── chat_memory.py
+│
+├── data/
+├── doc_chunks/
+├── questions/
+│   └── test_questions.txt
+├── nltk_words/
+│
+├── utils/
+│   ├── __init__.py
+│   ├── html_template.py
+│   ├── nltk.py
+│   └── normalizer.py
+│
+├── figure/
+├── icons/
+</code>
+							</pre>
+						</div>
+
+						<p><b>✅ Key Point:</b> The <span class="code-soft">app.py</span> file must be placed at the root level. Hugging Face Spaces uses this as the entry point to launch your app automatically.</p>
 
 						<br>
-						<p><b>🔗 Step 1: Visit Hugging Face</b><br></p>
-						<p>Head over to the official website: 
-						<a href="https://huggingface.co/" target="_blank" style="text-decoration: underline;">https://huggingface.co/</a></p>
+						<div id="requirements" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">📦 3.2 Create <span class="code-soft">requirements.txt</span></h2>
+						</div>
+
+						<p>Next, we created a <b><span class="code-soft">requirements.txt</span></b> file that lists all the Python dependencies required for the app to function properly. Hugging Face uses this file during the build process to install the necessary packages inside the environment.</p>
+
+						<p>Here's the list of packages we used for the RAGent Chatbot:</p>
+
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-python">
+streamlit==1.46.1
+langchain==0.3.26
+langchain-community==0.3.26
+langchain-google-genai==2.1.5
+qdrant-client==1.14.3
+pdfplumber==0.11.7
+unstructured==0.18.3
+python-docx==1.2.0
+python-pptx==1.0.2
+openpyxl==3.1.5
+jq==1.9.1
+python-dotenv==1.1.1
+sentence-transformers==4.1.0
+transformers==4.53.0
+tavily-python==0.7.9
+wikipedia-api==0.8.1
+nltk==3.9.1
+numexpr==2.11.0
+</code>
+							</pre>
+						</div>
+
+						<p>💡 <b>Tip:</b> If your app uses private or sensitive keys (such as API keys), avoid hardcoding them. Instead, use environment variables via the <span class="code-soft">python-dotenv</span> package, which we've already included above.</p>
 
 						<br>
-						<p><b>📝 Step 2: Sign Up</b><br></p>
-						<p>Click <b>Sign up</b> at the top-right corner. You can register with your email or link your GitHub or Google account.</p>
+						<div id="app-file" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">🖥️ 3.3 Create <span class="code-soft">app.py</span> - The Required Entry Point</h2>
+						</div>
+
+						<p>To successfully deploy your Gradio app on Hugging Face Spaces, your project must include a file named <b><span class="code-soft">app.py</span></b> at the root directory. Hugging Face Spaces looks for this file as the default entry point to launch your application.</p>
+
+						<p><b>⚠️ Important:</b> If you name your main file anything else — like <span class="code-soft">web_app.py</span> or <span class="code-soft">main.py</span> — your app will not launch. At the time of writing, Spaces does not allow custom entry point filenames.</p>
+
+						<br>
+						<h3 style="color: #2c3e50; font-size: 18px;">✅ What We Implemented in <span class="code-soft">app.py</span></h3>
+
+						<p>In the <b>RAGent Chatbot</b> project, we designed the interface logic inside a class named <span class="code-soft">WebApp</span>. We used <span class="code-soft">gr.Blocks</span> to build a custom and modular Gradio interface. This approach kept the frontend presentation separate from the backend logic, improving maintainability and clarity.</p>
+
+						<p>At the bottom of the file, we added a standard launcher block to bootstrap the app:</p>
+
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-python">
+if __name__ == "__main__":
+	app = WebApp()
+	demo = app.build_ui()
+	demo.launch()
+</code>
+							</pre>
+						</div>
+
+						<p>This ensures Hugging Face can correctly detect and run the app when it's deployed.</p>
+
+						<br>
+						<h3 style="color: #2c3e50; font-size: 18px;">🔧 Behind the Interface: What <span class="code-soft">app.py</span> Does</h3>
+
+						<p>The <span class="code-soft">WebApp</span> class ties together several important components of the chatbot system:</p>
+
+						<ul style="padding-left: 20px;">
+							<li>✅ <b>Agent Execution:</b> Each query from the user is passed to the <span class="code-soft">Agent</span> class via <span class="code-soft">agent.run()</span>. This internally handles the full retrieval and reasoning pipeline using a RAG-based system.</li>
+							<li>📂 <b>File Upload Handling:</b> Users can upload multiple document types (PDF, DOCX, PPTX, TXT, JSON, etc.). These are processed, chunked, and stored into <span class="code-soft">Qdrant</span>, our vector database client.</li>
+							<li>🧠 <b>Chat Memory:</b> Session context is maintained using <span class="code-soft">MemoryManager</span>, which mimics LangChain's <span class="code-soft">HumanMessage</span> and <span class="code-soft">AIMessage</span> types for continuity in conversation.</li>
+							<li>🎨 <b>Custom Styling:</b> Visuals and theme are controlled via a helper method <span class="code-soft">HtmlTemplates.css()</span>, ensuring a clean and consistent look.</li>
+						</ul>
+
+						<p>Here's a simplified version of the code inside <span class="code-soft">app.py</span>:</p>
+
+						<!-- Code -->
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-python">
+import gradio as gr
+from agent import Agent
+from memory.chat_memory import MemoryManager
+from vector_db.qdrant_db import QdrantDBClient
+from utils.html_template import HtmlTemplates
+
+class WebApp:
+	def __init__(self):
+		self.agent = Agent()
+		self.memory = MemoryManager()
+		self.qdrant_client = QdrantDBClient()
+		self.css = HtmlTemplates.css()
+
+	def build_ui(self):
+		with gr.Blocks(theme=gr.themes.Default(), css=self.css) as demo:
+			self.build_chat_section()
+		return demo
+
+	def build_chat_section(self):
+		with gr.Column():
+			gr.Markdown("### 🤖 Ask Your Question")
+			gr.ChatInterface(
+				fn=self.run_agent,
+				type="messages",
+				show_progress="full",
+				save_history=False,
+			)
+
+	def run_agent(self, query, history):
+		past_messages = self.memory.get("session")
+		response = self.agent.run(query, past_messages)
+		self.memory.add("session", query)
+		self.memory.add("session", response)
+		return f"‍🤖 {response}"
+
+if __name__ == "__main__":
+	app = WebApp()
+	demo = app.build_ui()
+	demo.launch()
+</code>
+							</pre>
+						</div>
+
+						<p>By placing this complete and well-organized <span class="code-soft">app.py</span> at the root of our project, we ensured that Hugging Face Spaces could detect and run our chatbot without any issues. This setup is universal and can be adapted to most Gradio-based apps with minimal modification.</p>
+
+						<hr class="blg-hr">
+					</div>
+					<!-- End of 3. Set Up the Gradio App -->
+					
+					<!-- Start of 4. Deployment to Hugging Face -->
+					<div id="deployment" style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<div class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">4. Step-by-Step Deployment to Hugging Face</h1>
+						</div>
+
+						<p>After building and testing the <b><a href="https://github.com/shafiqul-islam-sumon/ragent-chatbot" target="_blank" style="text-decoration: underline;">RAGent Chatbot</a></b> locally, the final milestone was to take it live using <b>Hugging Face Spaces</b> — a fast, free, and powerful hosting platform for machine learning applications, especially those built with Gradio.</p>
+
+						<p>This section breaks down the entire deployment workflow into simple, actionable steps. From creating your Hugging Face account to uploading your project and going live, we've kept everything beginner-friendly and easy to follow.</p>
+
+						<br>
+						<div id="create-account" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">🧑‍💻 4.1 Create a Hugging Face Account</h2>
+						</div>
+
+						<p>To deploy your Gradio application, you'll first need to create a free account on <b>Hugging Face</b>. This account will give you access to your own dashboard where you can host and manage your ML demos using Spaces.</p>
+
+						<br>
+						<p><b>🔗 Step 1: Visit Hugging Face</b><br>
+						Navigate to the official website: <a href="https://huggingface.co" target="_blank" style="text-decoration: underline;">https://huggingface.co</a></p>
+
+						<br>
+						<p><b>📝 Step 2: Sign Up</b><br>
+						Click the <b>“Sign up”</b> button at the top-right corner of the homepage. You can register using your email address, or link your GitHub or Google account for quicker setup.</p>
 						<div class="blg-img-container">
-							<img src="../img/blog_4/sign_up.png" alt="Hugging Face Sign Up" style="width: 70%; margin-bottom: 20px;"/>
+							<img src="../img/blog_5/sign_up.png" alt="Hugging Face Sign Up" style="width: 70%; margin-bottom: 20px;"/>
 							<br>
 							<p><b>Figure 1 : Hugging Face Sign Up</b></p>
 						</div>
 
-						<br>
-						<p><b>📩 Step 3: Verify Your Email</b><br></p>
-						<p>Once you've signed up, you'll receive a confirmation link in your inbox. Click it to verify and activate your account.</p>
+						<p><b>📩 Step 3: Verify Your Email</b><br>
+						Hugging Face will send you a confirmation email. Click the link in that email to verify your address and activate your account. Without verification, you won't be able to deploy apps.</p>
 
 						<br>
-						<p><b>📁 Step 4: Access the Spaces Dashboard</b><br></p>
-						<p>After logging in, click your profile picture and select <b>Spaces</b> from the menu. Alternatively, you can go directly to 
-						<a href="https://huggingface.co/spaces" target="_blank" style="text-decoration: underline;">https://huggingface.co/spaces</a> to view and manage your hosted applications.</p>
+						<p><b>📁 Step 4: Access the Spaces Dashboard</b><br>
+						After logging in, click on your profile avatar (top right) and select <b>“Spaces”</b> from the dropdown menu. Or, visit it directly here: 
+						<a href="https://huggingface.co/spaces" target="_blank" style="text-decoration: underline;">https://huggingface.co/spaces</a></p>
 						<div class="blg-img-container">
-							<img src="../img/blog_4/dashboard.png" alt="Hugging Face Space Dashboard" style="width: 70%; margin-bottom: 20px;"/>
+							<img src="../img/blog_5/dashboard.png" alt="Hugging Face Space Dashboard" style="width: 70%; margin-bottom: 20px;"/>
 							<p><b>Figure 2 : Hugging Face Space Dashboard</b></p>
 						</div>
+						<p>This is your main hub for creating, deploying, and managing all your hosted Gradio apps — including our <b>RAGent Chatbot</b>.</p>
 
 						<br>
-						<div id = "create-space"class="blg-sub-header">
-							<h2> 🔹 3.2 Create a New Space</h2>
+						<div id="create-space" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">🏗️ 4.2 Create a New Space</h2>
 						</div>
-						<p>With your Hugging Face account set up, the next step is to create a <b>Space</b> — the environment where your Streamlit app will be hosted. Follow these steps to get started:</p>
+
+						<p>Once you're logged into your Hugging Face account, the next step is to create a new <b>Space</b> — a hosted environment where your Gradio app will live. Here's how we created a new Space for the <b>RAGent Chatbot</b> and what you need to know during the setup process.</p>
 
 						<br>
-						<p><b>🆕 Step 1: Click “Create new Space”</b><br></p>
-						<p>Visit the <b>Spaces</b> page and click the <b>+ New Space</b> button. This will open a form where you'll enter the basic information needed to set up your hosted app.</p>
+						<p><b>🆕 Step 1: Click “Create new Space”</b><br>
+						Go to the <a href="https://huggingface.co/spaces" target="_blank" style="text-decoration: underline;">Spaces page</a> and click the <b>“+ New Space”</b> button. This opens a form where you'll configure the settings for your application.</p>
 
 						<br>
-						<p><b>🗂️ Step 2: Fill in the Space Details</b><br></p>
-						<p>You'll be asked to provide the following details:</p>
+						<p><b>🗂️ Step 2: Fill in the Space Details</b><br>
+						You'll be asked to provide the following information:</p>
 						<div class="blg-img-container">
-							<img src="../img/blog_4/create_space.png" alt="Create New Hugging Face Space" style="width: 70%; margin-bottom: 20px;"/>
+							<img src="../img/blog_5/create_space.png" alt="Create New Hugging Face Space" style="width: 70%; margin-bottom: 20px;"/>
 							<p><b>Figure 3 : Create New Hugging Face Space</b></p>
 						</div>
 
-						<ul style="padding-left: 40px;">
-							<li><b>Space Name:</b> Choose a unique name, such as <span class="code-soft">rag-fashion-recommendation</span>.</li>
-							<li><b>Short Description:</b> Write a concise description within 60 characters.</li>
-							<li><b>License:</b> Select a license that fits your project (e.g., <span class="code-soft">mit</span>).</li>
-							<li><b>Select the Space SDK:</b> If you're using Gradio, choose it directly. If you're using Streamlit, first click the <b>Docker</b> button to view all SDK options, then select <b>Streamlit</b> from the list.</li>
+						<ul style="padding-left: 20px;">
+							<li><b>Space Name:</b> Choose a unique and relevant name, such as <span class="code-soft">ragent-chatbot</span>.</li>
+							<li><b>Short Description:</b> Provide a brief summary of your app's purpose (within 60 characters).</li>mit</span> is commonly used.</li>
+							<li><b>Select the Space SDK:</b> Choose <b>Gradio</b> as we're deploying a Gradio-based app.</li>
 							<div class="blg-img-container">
-								<img src="../img/blog_4/sdk.png" alt="Select Space SDK" style="width: 70%; margin-bottom: 20px;"/>
+								<img src="../img/blog_5/sdk.png" alt="Select Space SDK" style="width: 70%; margin-bottom: 20px;"/>
 								<p><b>Figure 4 : Select Space SDK</b></p>
 							</div>
-							<li><b>Space Hardware:</b> By default, the hardware is set to <span class="code-soft">CPU basic · 2 vCPU · 16 GB · FREE</span>. You can click the dropdown to choose upgraded hardware (note: additional costs apply).</li>
-							<li><b>Visibility:</b> Choose whether the Space will be <b>Public</b> (visible to everyone) or <b>Private</b> (restricted access). The default is Public.</li>
-							<div class="blg-img-container">
-								<img src="../img/blog_4/visibility.png" alt="Space Visibility" style="width: 70%; margin-bottom: 20px;"/>
-								<p><b>Figure 5 : Space Visibility</b></p>
-							</div>
-							<li><b>Hardware:</b> The default CPU setup is generally sufficient for most Streamlit apps unless your app requires GPU processing.</li>
+							<li><b>Hardware:</b> By default, Hugging Face provides <b>CPU Basic</b> (2 vCPUs, 16 GB RAM, FREE). This is sufficient for most apps. You can select other options via the dropdown if needed, but note that premium hardware will incur charges.</li>
+							<li><b>Visibility:</b> Decide whether to make your Space <b>Public</b> (anyone can view and use it) or <b>Private</b> (restricted access). By default, it's set to Public.</li>
 						</ul>
+
+						<br>
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							<b>💡 Note:</b> GPU hardware is only required for apps that rely on GPU-accelerated computations such as image generation or deep learning inference. For most Gradio and Streamlit apps, the default CPU setting is more than enough.
+						</blockquote>
 
 						<br>
 						<p><b>🖱️ Step 3: Click “Create Space”</b><br></p>
 						<p>Once all required fields are complete, click the <b>Create Space</b> button. Hugging Face will generate a repository for your app and show a default placeholder application until your files are uploaded.</p>
 
 						<div class="blg-img-container">
-								<img src="../img/blog_4/default_app.png" alt="Streamlit Default App" style="width: 70%; margin-bottom: 20px;"/>
-								<p><b>Figure 6 : Streamlit Default App</b></p>
+								<img src="../img/blog_5/default_app.png" alt="Gradio Default App" style="width: 70%; margin-bottom: 20px;"/>
+								<p><b>Figure 5 : Gradio Default screen</b></p>
 						</div>
-						
-						<br>
-						<div id = "prepare-project"class="blg-sub-header">
-							<h2>🔹 3.3 Prepare Your Project for Upload</h2>
-						</div>
-						<p>Before deploying to Hugging Face Spaces, it's crucial to ensure your project is well-organized, self-contained, and optimized for cloud execution. We'll use the <b><a href="https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation" target="_blank" style="text-decoration: underline;">rag-fashion-recommendation</a></b> app as a real-world example to walk through the ideal folder structure and secure configuration.</p>
 
 						<br>
-						<p><b>📁 Example Folder Structure</b><br></p>
-						<p>Here's a typical structure for a deployment-ready app:</p>
+						<div id="secrets" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">🔐 4.3 Configure Secrets</h2>
+						</div>
+
+						<p>In the <b>RAGent Chatbot</b>, we use external APIs and services — for example, the <span class="code-soft">Gemini API key</span> and other environment-specific configurations. To protect sensitive information, Hugging Face offers a secure way to manage and inject secrets into your app's runtime — without exposing them in your code or repository.</p>
+
+						<br>
+						<p><b>Here's how to configure your secrets securely:</b></p>
+
+						<ol style="padding-left: 20px;">
+							<li>Navigate to your Hugging Face Space, then click on <b>Settings</b> → <b>Variables and Secrets</b>.</li>
+							<div class="blg-img-container">
+								<img src="../img/blog_5/secrets.png" alt="Hugging Face Space Variables and Secrets" style="width: 70%; margin-bottom: 20px;"/>
+								<p><b>Figure 6 : Hugging Face Space Variables and Secrets</b></p>
+							</div>
+							<li>Click the <b>“New Secret”</b> button. A popup window will appear where you can enter your secret's name (e.g., <span class="code-soft">GEMINI_API_KEY</span>) and its value (your actual API key).</li>
+							<div class="blg-img-container">
+								<img src="../img/blog_5/new_secret.png" alt="Add Secrets to Face Space" style="width: 70%; margin-bottom: 20px;"/>
+								<p><b>Figure 7 : Add Secrets to Face Space</b></p>
+							</div>
+							<li>Click <b>Save</b> to securely store the key.</li>
+						</ol>
+
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							🔒 <b>Security Note:</b> These secrets are <b>not visible in your code</b> and are automatically injected into the environment at runtime. Use <span class="code-soft">os.environ.get("SECRET_NAME")</span> in your Python code to access them safely.
+						</blockquote>
+
+						<p>After adding all required keys, you'll see a list of your saved secrets in the interface.</p>
+						<div class="blg-img-container">
+							<img src="../img/blog_5/secret_list.png" alt="All added secrets" style="width: 70%; margin-bottom: 20px;"/>
+							<p><b>Figure 8 : All added secrets</b></p>
+						</div>
+						<p>This approach replaces the need for a <span class="code-soft">.env</span> file and ensures that your credentials remain protected — even in public repositories.</p>
+
+						<br>
+
+						<div id="upload-code" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">📤 4.4 Upload Source Code</h2>
+						</div>
+
+						<p>Once your app is ready and your Hugging Face Space has been created, it's time to upload your source code. Hugging Face provides two convenient options to do this — via Git or through the web interface.</p>
+
+						<br>
+						<h3 style="color: #2c3e50; font-size: 18px;">✅ Method 1: Using Git (Recommended for Developers)</h3>
+
+						<p>We used the Git method for our <b>RAGent Chatbot</b> deployment to keep version control, rollback support, and easier collaboration. Here's how to do it:</p>
+
+						<ol style="padding-left: 20px;">
+							<li>Install Git LFS (Large File Support) and clone your Hugging Face Space repository:</li>
+						</ol>
 
 						<!-- Code -->
 						<div class="blg-code-container">
 							<pre class="line-numbers">
 								<code class="language-bash">
-rag-fashion-recommendation/
-├── chroma_store/             # Vector DB (can be regenerated, not mandatory to upload)
-├── data/                     # Contains product data (e.g., images, CSV, JSON)
-├── prompt/                   # Prompt templates for the LLM
-├── utils/                    # Utility scripts, helpers
-├── .env                      # DO NOT upload this file
-├── .gitignore
-├── config.py                 # Central config file (used for paths, keys, etc.)
-├── data_embedder.py
-├── data_retriever.py
-├── metadata_extractor.py
-├── re_ranker.py
-├── vector_db.py
-├── web_app.py                # ✅ Entry point for Streamlit
-├── requirements.txt          # ✅ List of dependencies
-├── README.md                 # ✅ Add description, sample query, and thumbnail
-├── LICENSE
+git lfs install  # install Git Large File Support (recommended)
+git clone https://huggingface.co/spaces/your-username/ragent-chatbot
+cd ragent-chatbot
 </code>
 							</pre>
 						</div>
 
-
-						<p>Let's break down what to include, what to exclude, and how to securely handle sensitive information.</p>
-
 						<br>
-						<p><b>✅ What You Should Include</b><br></p>
-						<p>Make sure to upload the following components to your Hugging Face Space:</p>
+						<ol start="2" style="padding-left: 20px;">
+							<li>Copy all your project files into this directory. This includes:</li>
+						</ol>
 
-						<ul style="padding-left: 40px;">
-							<li><b>Main app file:</b> <span class="code-soft">web_app.py</span> — your Streamlit entry point. Hugging Face will automatically detect and run this.</li>
-							<li><b>Supporting modules:</b> Python files such as <span class="code-soft">config.py</span>, <span class="code-soft">vector_db.py</span>, <span class="code-soft">data_retriever.py</span>, <span class="code-soft">re_ranker.py</span>, etc., if imported by your app.</li>
-							<li><b>Support folders:</b> Include folders like <span class="code-soft">data/</span>, <span class="code-soft">prompt/</span>, or <span class="code-soft">utils/</span> that contain templates, helper functions, or static files.</li>
-							<li><b>Dependency file:</b> <span class="code-soft">requirements.txt</span> — lists all libraries needed for your app to run. Ensure all dependencies are correctly specified with versions.</li>
-							<li><b>Documentation (optional but recommended):</b> <span class="code-soft">README.md</span> with a short app description, sample queries, and usage tips.</li>
-							<li><b>Thumbnail image (optional):</b> A visual preview like <span class="code-soft">figure/thumbnail.png</span> can be referenced in the README for a more polished look.</li>
+						<ul style="padding-left: 20px;">
+							<li><span class="code-soft">app.py</span>, <span class="code-soft">agent.py</span>, <span class="code-soft">rag.py</span>, <span class="code-soft">config.py</span></li>
+							<li>All folders such as <span class="code-soft">tools/</span>, <span class="code-soft">retriever/</span>, <span class="code-soft">vector_db/</span></li>
+							<li>Supporting files like <span class="code-soft">requirements.txt</span>, <span class="code-soft">README.md</span>, and <span class="code-soft">.env.example</span></li>
 						</ul>
 
 						<br>
-						<p><b>❌ What You Should Exclude</b><br></p>
-						<p>Avoid uploading the following:</p>
-
-						<ul style="padding-left: 40px;">
-							<li><b>.env file:</b> This file often contains sensitive data like API keys. Never upload it to your repository — it risks exposing private credentials.</li>
-						</ul>
-
-						<br>
-						<p><b>🔐 How to Handle API Keys Securely (Using Hugging Face Secrets)</b><br></p>
-						<p>Hugging Face offers a secure way to manage sensitive credentials via environment secrets. Here's how to add them:</p>
-
-						<ol style="padding-left: 40px;">
-							<li>Navigate to your Space → <b>Settings</b> → <b>Variables and Secrets</b>.</li>
-							<div class="blg-img-container">
-								<img src="../img/blog_4/secrets.png" alt="Hugging Face Space Variables and Secrets" style="width: 70%; margin-bottom: 20px;"/>
-								<p><b>Figure 7 : Hugging Face Space Variables and Secrets</b></p>
-							</div>
-							<li>Click the <b>New Secret</b> button. In the popup, provide the secret name and its value (e.g., your API key), then click <b>Save</b>.</li>
-							<div class="blg-img-container">
-								<img src="../img/blog_4/new_secret.png" alt="Add Secrets to Face Space" style="width: 70%; margin-bottom: 20px;"/>
-								<p><b>Figure 8 : Add Secrets to Face Space</b></p>
-							</div>
-						</ol>
-
-						<p>This method keeps your secrets safe even in public repositories and eliminates the need for a <span class="code-soft">.env</span> file.</p>
-
-						<p><b>📋 Pre-Upload Checklist</b><br></p>
-						<p>Before pushing your project to Hugging Face, confirm the following:</p>
-
-						<ul style="padding-left: 40px;">
-							<li>✅ Your app runs without errors locally</li>
-							<li>✅ <span class="code-soft">web_app.py</span> is present and correctly references all necessary modules</li>
-							<li>✅ All required dependencies are listed in <span class="code-soft">requirements.txt</span></li>
-							<li>✅ Sensitive credentials are stored using Hugging Face Secrets</li>
-							<li>✅ <span class="code-soft">README.md</span> is added to help users understand your app</li>
-							<li>✅ <span class="code-soft">.env</span> and large or unnecessary local files are excluded using <span class="code-soft">.gitignore</span></li>
-						</ul>
-
-						<br>
-						<div id = "upload-code"class="blg-sub-header">
-							<h2>🔹 3.4 Upload Source Code</h2>
-						</div>
-						<p>Once your project is organized and ready, it's time to upload it to your Hugging Face Space. You can do this in two ways: by using Git over SSH for version-controlled uploads or via a simple drag-and-drop through the web interface. Both methods work well — choose the one that suits your workflow.</p>
-
-						<br>
-						<p><b>🛠️ Option 1: Upload Using Git over SSH</b><br></p>
-						<p>If you're familiar with Git and want full control over versioning, you can push your project using SSH. Here's how:</p>
-
-						<br>
-						<p><b>🔐 Step 1: Set Up SSH Access</b></p>
-						<ol style="padding-left: 40px;">
-							<li>Generate an SSH key if you don't already have one.</li>
-
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-ssh-keygen -t ed25519 -C "your_email@example.com"
-</code>
-							</pre>
-						</div>
-
-							<li>Add the public key to your Hugging Face account under <b>Settings → SSH & GPG Keys</b>.</li>
-						</ol>
-
-						<br>
-						<p><b>📝 Step 2: Clone Your Space</b></p>
-						<ol style="padding-left: 40px;">
-							<li>Go to your newly created Space and click the three-dot menu at the top right.</li>
-							<li>Select <b>Clone repository</b> from the dropdown.</li>
-							<div class="blg-img-container">
-								<img src="../img/blog_4/clone_space.png" alt="Clone Repository" style="width: 70%; margin-bottom: 20px;"/>
-								<p><b>Figure 9 : Clone Repository</b></p>
-							</div>
-							<li>A popup will show the Git clone command. Copy and run this command to clone the repo locally.</li>
-							<div class="blg-img-container">
-								<img src="../img/blog_4/clone_command.png" alt="Clone Command" style="width: 70%; margin-bottom: 20px;"/>
-								<p><b>Figure 10 : Clone Command</b></p>
-							</div>
-						</ol>
-
-						<br>
-						<p><b>🌐 Step 3: Push Your Project</b></p>
-						<ol style="padding-left: 40px;">
-							<li>Spaces that use Streamlit with Docker have a <span class="code-soft">src</span> folder in the root directory. Place all your project files inside this <span class="code-soft">src</span> folder.</li>
-							<li>Edit the <span class="code-soft">Dockerfile</span> if necessary to customize how the app runs.</li>
-							<li>Use standard Git commands (<span class="code-soft">git add</span>, <span class="code-soft">git commit</span>, <span class="code-soft">git push</span>) to push your code to Hugging Face.</li>
+						<ol start="3" style="padding-left: 20px;">
+							<li>Commit and push the code to Hugging Face:</li>
 						</ol>
 
 						<!-- Code -->
@@ -399,657 +625,339 @@ ssh-keygen -t ed25519 -C "your_email@example.com"
 							<pre class="line-numbers">
 								<code class="language-bash">
 git add .
-git commit -m "Initial commit"
-git push -u origin main
+git commit -m "Initial commit of RAGent Chatbot"
+git push
 </code>
 							</pre>
 						</div>
-
-						<br>
-						<p><b>⚠️ Common SSH Issue: Port 22 Blocked</b><br></p>
-						<p>In some networks (like corporate or university Wi-Fi), SSH traffic on port 22 may be blocked, causing Git commands to fail.</p>
-						
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-ssh: connect to host huggingface.co port 22: Connection timed out
-fatal: Could not read from remote repository.
-</code>
-							</pre>
-						</div>
-
-						<p>If this happens, the drag-and-drop method is a great fallback — it requires no special configuration and works in any browser.</p>
-
-						<br><br>
-						<p><b>📂 Option 2: Drag-and-Drop Upload (Recommended)</b><br></p>
-						<p>This method is straightforward and ideal for users unfamiliar with Git or those operating behind restricted networks.</p>
-						
-						<br>
-						<p><b>🖱️ Steps:</b></p>
-						<ol style="padding-left: 40px;">
-							<li>Open your Hugging Face Space and go to the <b>Files and versions</b> tab.</li>
-							<li>Click the <b>+ Contribute</b> button and choose <b>Upload files</b> from the dropdown.</li>
-							<div class="blg-img-container">
-								<img src="../img/blog_4/drag_drop.png" alt="Upload files by drag and drop" style="width: 70%; margin-bottom: 20px;"/>
-								<p><b>Figure 11 : Upload files by drag and drop</b></p>
-							</div>
-							<li>Select the required files and folders, then drag and drop them into the upload area.</li>
-							<li>After upload, Hugging Face will automatically install dependencies and launch your app.</li>
-						</ol>
-
-						<br>
-						<p style="color: green;"><b>[Notes]</b><br></p>
-						<p>In some cases, specific file types may not upload correctly using drag and drop. For example, in the RAG fashion project, the ChromaDB directory (which was pre-populated) included files like <span class="code-soft">.bin</span> extensions, which caused upload errors.</p>
-
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-chroma_store/
-├── chroma.sqlite3
-└── 00868136-8c25-43a1-91fe-6849d8055e8d/
-    ├── data_level0.bin
-    ├── header.bin
-    ├── length.bin
-    └── link_lists.bin
-</code>
-							</pre>
-						</div>
-
-						<p>To solve this, the entire ChromaDB folder was zipped and uploaded to the <span class="code-soft">src</span> directory. This approach ensures all files are preserved while avoiding file-type restrictions.</p>
-
-						<hr class="blg-hr">
-					</div>
-
-					<!-- End of Step-by-Step Deployment -->
-
-					<!-- Start of 4. Updating requirements.txt -->
-					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
-
-						<div id = "requirements" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">4. Updating <span class="code-soft">requirements.txt</span></h1>
-						</div>
-
-						<p>When you create a new Space using the <b>Streamlit SDK</b> on Hugging Face, the platform automatically generates a default project structure that includes a minimal <span class="code-soft">Dockerfile</span> and a placeholder <span class="code-soft">requirements.txt</span> file. These two components play a crucial role in defining the environment your app will run in — from which Python libraries are installed to how the container is built and started.</p>
-
-						<div class="blg-img-container">
-								<img src="../img/blog_4/root_dir.png" alt="hugging face space root directory structure" style="width: 70%; margin-bottom: 20px;"/>
-								<p><b>Figure 12 : Hugging face space root directory structure</b></p>
-						</div>
-
-						<p>However, the generated <span class="code-soft">requirements.txt</span> typically includes only a few common packages and doesn't reflect the actual dependencies your app may rely on. To ensure your deployment succeeds and your app behaves exactly as it does locally, it's important to explicitly list all the libraries your code depends on.</p>
-
-						<br>
-						<p><b>🛠️ Why Updating Matters</b><br></p>
-						<p>During deployment, Hugging Face uses the <span class="code-soft">Dockerfile</span> to build a containerized version of your environment. Inside that Dockerfile, Hugging Face references your <span class="code-soft">requirements.txt</span> file to install all required Python packages. If your app imports a library that's missing from this list, the build process will either fail entirely or the app will crash at runtime with errors such as <span class="code-soft">ModuleNotFoundError</span>.</p>
-
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-RUN pip install -r requirements.txt
-</code>
-							</pre>
-						</div>
-
-						<p>So before uploading your app, take a few moments to carefully review and update <span class="code-soft">requirements.txt</span>. This small step can save hours of debugging and deployment frustration.</p>
-
-						<br>
-						<p><b>✅ Required Dependencies for This Project</b><br></p>
-						<p>Based on the RAG-powered fashion recommendation system, your app may depend on a combination of machine learning, embedding, vector search, and UI-related libraries. A typical <span class="code-soft">requirements.txt</span> for this project might include the following:</p>
-
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-streamlit
-torch
-sentence-transformers
-python-dotenv
-langchain-groq
-chromadb
-watchdog
-</code>
-							</pre>
-						</div>
-
-						<p>Each of these libraries plays a specific role:</p>
-						<ul style="padding-left: 40px;">
-							<li><span class="code-soft">streamlit</span> - Renders the interactive frontend for your web app.</li>
-							<li><span class="code-soft">torch</span> - Handles deep learning and tensor operations.</li>
-							<li><span class="code-soft">sentence-transformers</span> - Generates vector embeddings from user queries and product descriptions.</li>
-							<li><span class="code-soft">python-dotenv</span> - Loads environment variables from local files or Hugging Face secrets.</li>
-							<li><span class="code-soft">langchain-groq</span> - Supports prompt chaining and LLM integration for enhanced retrieval and re-ranking.</li>
-							<li><span class="code-soft">chromadb</span> - Manages vector storage and similarity search operations.</li>
-							<li><span class="code-soft">watchdog</span> - Enables hot-reloading and file monitoring during local development.</li>
-						</ul>
-
-						<p>This list can vary depending on your project's architecture, so always double-check for additional dependencies your code may be importing.</p>
 
 						<br>
 						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
-						<p><b>🔸 Tip:</b> To ensure consistency across environments, you can pin versions to avoid compatibility issues. For example: 
-						<span class="code-soft">torch==2.1.0</span> or <span class="code-soft">streamlit==1.30.0</span>. Version pinning is especially helpful if you're collaborating with others or deploying to multiple environments.</p>
+							💡 We excluded <span class="code-soft">.env</span> in <span class="code-soft">.gitignore</span> to prevent uploading sensitive data. Instead, define secrets securely in the Hugging Face Secrets section and access them at runtime.
 						</blockquote>
-						<hr class="blg-hr">
-					</div>
-					<!-- End of Updating requirements.txt -->
-					
-					<!-- Start of 5. Modifying Docker Configuration -->
-					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
-
-						<div id = "docker" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">5. Modifying the Docker Configuration</h1>
-						</div>
-
-						<p>Hugging Face Spaces auto-generates a basic <span class="code-soft">Dockerfile</span> when you create a new Space using the Streamlit SDK. While this default setup works for very simple apps, it usually falls short for production-level projects that involve custom scripts, vector databases, or more advanced dependencies.</p>
-
-						<p>In this section, we'll walk through a customized <span class="code-soft">Dockerfile</span> tailored specifically for the <b>RAG-based <a href="https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation/tree/huggingface" target="_blank" style="text-decoration: underline;">fashion recommendation</a> app</b>. We'll break down each part of the file, explaining why it's important — especially in a restricted, containerized environment like Hugging Face Spaces. Here is the docker file which is used in this project.</p>
-						
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-FROM python:3.12-slim
-
-WORKDIR /app
-
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    curl \
-    software-properties-common \
-    unzip \
-    git \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy requirements and source code
-COPY requirements.txt ./
-COPY src/ ./src/
-
-# Clean old and extract chroma_store.zip directly into /tmp/
-RUN rm -rf /tmp/chroma_store && unzip ./src/chroma_store.zip -d /tmp/chroma_store && chmod -R 777 /tmp/chroma_store
-
-
-# Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# ✅ Prevent Streamlit from writing to root
-ENV STREAMLIT_HOME=/tmp/.streamlit
-ENV STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
-
-# Hugging Face cache paths (redirect to /tmp)
-ENV HF_HOME=/tmp/huggingface
-
-EXPOSE 8501
-
-HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
-
-ENTRYPOINT ["streamlit", "run", "src/web_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
-</code>
-							</pre>
-						</div>
-
-						<p><b>🛠️ Customized Dockerfile with Detailed Explanations</b></p>
-						<p> Here is a line by line explanation of custom docker file that is used in the app.</p>
 
 						<br>
-						<b>🔹 Base Image</b><br>
-						<p>A lightweight <span class="code-soft">python:3.10-slim</span> image is typically used to reduce image size and startup time. It provides a clean Python environment with minimal bloat.</p>
+						<h3 style="color: #2c3e50; font-size: 18px;">🖱️ Method 2: Upload via Web Interface</h3>
 
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-FROM python:3.12-slim
-</code>
-							</pre>
-						</div>
+						<p>If you're not comfortable with Git or working from a restricted environment, Hugging Face offers a very simple and reliable web-based method for uploading your files:</p>
 
 						<br>
-						<b>🔹 Working Directory</b><br>
-						<p>The command <span class="code-soft">WORKDIR /app</span> sets the working directory for all subsequent instructions. This ensures a clean and consistent context for file operations.</p>
-
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-WORKDIR /app
-</code>
-							</pre>
-						</div>
-
-						<br>
-						<b>🔹 Install OS-level Dependencies</b><br>
-						<p>To support various runtime operations, the Dockerfile installs essential system packages:</p>
-						<ul style="padding-left: 40px; margin-top: 5px;">
-							<li><b>unzip</b> - For extracting compressed files, such as <span class="code-soft">chroma_store.zip</span>.</li>
-							<li><b>curl</b> - Used for running health checks and interacting with web resources.</li>
-							<li><b>build-essential</b> - A set of tools for compiling Python packages that include native extensions.</li>
-							<li><b>git</b> - Required for downloading code from Git repositories or handling version control.</li>
-						</ul>
-
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    curl \
-    software-properties-common \
-    unzip \
-    git \
-    && rm -rf /var/lib/apt/lists/*
-</code>
-							</pre>
-						</div>
-
-						<br>
-						<b>🔹 Copy App Files</b><br>
-						<p>The Dockerfile copies your Python source code and related assets into the container so the app can run inside the build environment.</p>
-						<ul style="padding-left: 20px; margin-top: 5px;">
-							<li>Make sure all necessary scripts, such as <span class="code-soft">web_app.py</span> and helper modules, are included.</li>
-							<li>Include <span class="code-soft">chroma_store.zip</span> inside the <span class="code-soft">src/</span> directory before uploading, as this file contains the prebuilt vector database.</li>
-						</ul>
-
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-COPY requirements.txt ./
-COPY src/ ./src/
-</code>
-							</pre>
-						</div>
-
-						<br>
-						<b>🔹 Extract Vector Database</b><br>
-						<p>To ensure the ChromaDB data is available at runtime, the Dockerfile extracts the vector database from a compressed archive.</p>
-						<ul style="padding-left: 20px; margin-top: 5px;">
-							<li><span class="code-soft">chroma_store.zip</span> contains prebuilt embeddings for the vector database used by ChromaDB.</li>
-							<li>Instead of extracting it inside the <span class="code-soft">src/</span> folder or project root (which may cause permission errors), it is extracted to <span class="code-soft">/tmp/chroma_store</span> — a writable system directory.</li>
-							<li><span class="code-soft">chmod -R 777</span> is applied to ensure that all files inside are fully accessible by the container's non-root user, avoiding read/write restrictions during execution.</li>
-						</ul>
-
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-# Clean old and extract chroma_store.zip directly into /tmp/
-RUN rm -rf /tmp/chroma_store && unzip ./src/chroma_store.zip -d /tmp/chroma_store && chmod -R 777 /tmp/chroma_store
-</code>
-							</pre>
-						</div>
-
-						<br>
-						<b>🔹 Install Python Dependencies</b><br>
-						<p>all required Python packages listed in your <span class="code-soft">requirements.txt</span> file using pip.</p>
-						<ul style="padding-left: 20px; margin-top: 5px;">
-							<li>Includes essential libraries such as <span class="code-soft">streamlit</span>, <span class="code-soft">chromadb</span>, <span class="code-soft">langchain-groq</span>, and others used in your project.</li>
-							<li>Ensures your app has the same environment on Hugging Face as it does locally.</li>
-						</ul>
-
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-RUN pip install --no-cache-dir -r requirements.txt
-</code>
-							</pre>
-						</div>
-
-						<br>
-						<b>🔹 Set Writable Directory for Streamlit</b><br>
-						<p>Streamlit stores session state and configuration files in a hidden folder, which needs to be writable.</p>
-						<ul style="padding-left: 20px; margin-top: 5px;">
-							<li>By default, it tries to create the <span class="code-soft">.streamlit</span> folder in the home directory (<span class="code-soft">/root</span>), which is not writable in Hugging Face's container environment.</li>
-							<li>Redirecting this folder to <span class="code-soft">/tmp/.streamlit</span> ensures the app can manage sessions and configuration without encountering permission issues.</li>
-						</ul>
-						
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-ENV STREAMLIT_HOME=/tmp/.streamlit
-</code>
-							</pre>
-						</div>
-
-						<br>
-						<b>🔹 Disable Analytics</b><br>
-						<p>Streamlit collects anonymous usage statistics by default, which may cause issues in restricted environments.</p>
-						<ul style="padding-left: 20px; margin-top: 5px;">
-							<li>Disabling analytics prevents unexpected network calls, improving privacy and reliability in containerized setups like Hugging Face Spaces.</li>
-							<li>It also reduces the chance of connectivity-related errors or delays during app initialization.</li>
-						</ul>
-
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-ENV STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
-</code>
-							</pre>
-						</div>
-
-						<br>
-						<b>🔹 Redirect Hugging Face Cache Directory</b><br>
-						<p>Some libraries used in LLM applications rely on local caching to store model weights and configuration files.</p>
-						<ul style="padding-left: 20px; margin-top: 5px;">
-							<li>By default, libraries like <span class="code-soft">sentence-transformers</span> and <span class="code-soft">transformers</span> store cache data in <span class="code-soft">~/.cache</span>.</li>
-							<li>In Hugging Face Spaces, writing to the home directory is restricted, which can cause permission errors during model loading.</li>
-							<li>Setting the environment variable <span class="code-soft">HF_HOME=/tmp/huggingface</span> redirects the cache location to a writable directory, ensuring smooth execution and reuse of downloaded models.</li>
-						</ul>
-
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-ENV HF_HOME=/tmp/huggingface
-</code>
-							</pre>
-						</div>
-
-						<br>
-						<b>🔹 Expose the Streamlit Port</b><br>
-						<p>Streamlit runs by default on port <span class="code-soft">8501</span>, and this needs to be explicitly exposed so Hugging Face can serve the app publicly.</p>
-						<ul style="padding-left: 20px; margin-top: 5px;">
-							<li>The <span class="code-soft">EXPOSE 8501</span> command in the Dockerfile tells the container platform which port the app listens on.</li>
-							<li>Hugging Face connects this port to the public interface, allowing users to access your app from the browser.</li>
-						</ul>
-
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-EXPOSE 8501
-</code>
-							</pre>
-						</div>
-
-						<br>
-						<b>🔹 Health Check</b><br>
-						<p>A health check verifies that your app has started successfully and is responsive to incoming requests.</p>
-						<ul style="padding-left: 20px; margin-top: 5px;">
-							<li>If the app doesn't return a successful response within a certain time frame, Hugging Face considers the deployment unhealthy.</li>
-							<li>This mechanism helps catch broken builds early and prevents users from accessing a non-functional interface.</li>
-							<li>Typically, a simple <span class="code-soft">curl</span> command is used in the Dockerfile to check if the Streamlit app is running on port <span class="code-soft">8501</span>.</li>
-						</ul>
-
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
-</code>
-							</pre>
-						</div>
-
-						<br>
-						<b>🔹 Entry Point</b><br>
-						<p>Defines the default command that runs when the container starts — in this case, launching the Streamlit application.</p>
-						<ul style="padding-left: 20px; margin-top: 5px;">
-							<li>Starts the Streamlit app located in the <span class="code-soft">src/</span> directory.</li>
-							<li>Specifies <span class="code-soft">8501</span> as the port and binds it to <span class="code-soft">0.0.0.0</span> to make the app publicly accessible through Hugging Face's interface.</li>
-						</ul>
-
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-ENTRYPOINT ["streamlit", "run", "src/web_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
-</code>
-							</pre>
-						</div>
-
-						<p>By customizing the Docker configuration in this way, you ensure your app runs reliably in a secure, containerized environment — with all dependencies in place and system-level quirks accounted for.</p>
-						<hr class="blg-hr">
-					</div>
-					<!-- End of Modifying Docker Configuration -->
-					
-					<!-- Start of 6. Build and Run App -->
-					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
-
-						<div id = "build-run" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">6. Build and Run App</h1>
-						</div>
-
-						<p>Unlike traditional platforms, Hugging Face Spaces does not offer a manual <b>Build</b> or <b>Run</b> button. Instead, it uses a commit-based workflow similar to GitHub. Whenever you upload new files or modify existing ones in the Space repository, Hugging Face automatically triggers a build followed by execution.</p>
-
-						<p>To update your app and trigger a new build, follow these steps:</p>
-
-						<ol style="padding-left: 40px;">
-							<li>Navigate to the <b>Files</b> tab in your Hugging Face Space.</li>
-							<li>Select the file you want to edit.</li>
-							<li>Click the <b>Edit</b> button at the top of the file view.</li>
+						<ol style="padding-left: 20px;">
+							<li>Open your Space and navigate to the <b>“Files and versions”</b> tab.</li>
+							<li>Click the <b>“+ Contribute”</b> button and select <b>“Upload files”</b> from the dropdown menu.</li>
 							<div class="blg-img-container">
-								<img src="../img/blog_4/edit.png" alt="Edit File in Hugging Face Space" style="width: 70%; margin-bottom: 20px;"/>
-								<p><b>Figure 13 : Edit File in Hugging Face Space</b></p>
+								<img src="../img/blog_5/contribute.png" alt="Upload source code" style="width: 70%; margin-bottom: 20px;"/>
+								<p><b>Figure 9 : Upload source code</b></p>
 							</div>
-							<li>Apply the necessary changes. Scroll to the bottom, write a commit message, and click <b>Commit changes to main</b>.</li>
+							<li>Select all required files and folders, or drag and drop them into the upload area.</li>
 							<div class="blg-img-container">
-								<img src="../img/blog_4/commit.png" alt="Commit Changes in Hugging Face Space" style="width: 70%; margin-bottom: 20px;"/>
-								<p><b>Figure 14 : Commit Changes in Hugging Face Space</b></p>
+								<img src="../img/blog_5/drag_drop.png" alt="Drag and drop files" style="width: 70%; margin-bottom: 20px;"/>
+								<p><b>Figure 10 : Drag and drop files</b></p>
 							</div>
-							<li>This action will automatically trigger a new build. Once completed, your updated app will be live and running. You can view your deployed app by visiting its URL. For example: <a href="https://huggingface.co/spaces/shafiqul1357/rag-fashion-recommendation" target="_blank" style="text-decoration: underline;">Fashion Recommendation System</a></li>
+							<li>Add a commit message, then click <b>“Commit changes to main”</b>.</li>
 							<div class="blg-img-container">
-								<img src="../img/blog_4/app.png" alt="Fasion Recommendation App" style="width: 70%; margin-bottom: 20px;"/>
-								<p><b>Figure 15 : Fasion Recommendation App</b></p>
+								<img src="../img/blog_5/commit.png" alt="Commit files in Hugging Face" style="width: 70%; margin-bottom: 20px;"/>
+								<p><b>Figure 11 : Commit files in Hugging Face</b></p>
 							</div>
 						</ol>
+
+						<p>Once the files are uploaded, Hugging Face will automatically install the dependencies listed in <span class="code-soft">requirements.txt</span> and launch your app using <span class="code-soft">app.py</span>.</p>
+
 						<hr class="blg-hr">
 					</div>
-					<!-- End of Build and Run App -->
+					<!-- End of 4. Deployment to Hugging Face -->
 
-					<!-- Start of 7. Writing an Effective README file -->
+					<!-- Start of 5. Build and Run App -->
 					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
 
-						<div id = "readme" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">7. Writing an Effective README File</h1>
+						<div id="build-run" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">5. Build and Run App</h1>
 						</div>
 
-						<p>A well-crafted <span class="code-soft">README.md</span> is more than just a formality — it's your app's first impression. Whether users land on your Hugging Face Space or GitHub repository, the README provides the initial context they need to understand your project.</p>
-
-						<p>It should clearly communicate the app's purpose, how to use it, and any setup instructions. An effective README not only improves the user experience but also boosts visibility by including proper tags, descriptions, and metadata for discoverability.</p>
-						<div class="blg-img-container">
-								<img src="../img/blog_4/readme.png" alt="README file of fashion recommendation system" style="width: 70%; margin-bottom: 20px;"/>
-								<p><b>Figure 16 : README file of fashion recommendation system</b></p>
-						</div>
-						<p>Let's break down what to include and how to structure it, using our current README file.</p>
+						<p>Once we pushed the <b>RAGent Chatbot</b> source code to our Hugging Face Space, the platform automatically took care of the build and launch process — no additional deployment scripts or manual intervention required.</p>
 
 						<br>
-						<b>📄 Top-Level Metadata (YAML Block)</b>
-						<p>At the very top of your <span class="code-soft">README.md</span> file, Hugging Face supports a special metadata block written in YAML format. This block defines how your Space is presented on the platform — including its title, description, tags, license, and visibility settings. It's a useful way to enhance both the appearance and discoverability of your app. Below is a sample used in this project.</p>
+						<p><b>Hugging Face Spaces</b> is specifically optimized for hosting <b>Gradio applications</b>. As long as your project follows a few basic rules, the app builds and runs seamlessly:</p>
+
+						<ul style="padding-left: 20px;">
+							<li>✅ A valid <span class="code-soft">app.py</span> file exists at the project root</li>
+							<li>✅ All dependencies are correctly listed in <span class="code-soft">requirements.txt</span></li>
+							<li>✅ No missing files or unresolved import errors</li>
+						</ul>
+
+						<br>
+						<h3 style="color: #2c3e50; font-size: 18px;">🔄 Automatic Build Triggers</h3>
+
+						<p>One of the most powerful features of Hugging Face Spaces is its automatic build and deployment system. Here's what happens under the hood:</p>
+
+						<ul style="padding-left: 20px;">
+							<li>📝 Every time you add, modify, or delete a file — via Git or the web UI — the platform automatically re-triggers the build process.</li>
+							<li>🧱 During the build, Hugging Face:
+								<ul style="padding-left: 20px;">
+									<li>Installs dependencies from <span class="code-soft">requirements.txt</span></li>
+									<li>Loads environment variables from the Secrets manager</li>
+									<li>Runs <span class="code-soft">app.py</span> to start the application</li>
+								</ul>
+							</li>
+						</ul>
+
+						<div class="blg-img-container">
+							<img src="../img/blog_5/build.png" alt="Build app" style="width: 70%; margin-bottom: 20px;"/>
+							<p><b>Figure 12 : Build app</b></p>
+						</div>
+						<p>This auto-build workflow makes development highly efficient — there's no need to restart or manually deploy after each change. Updates are reflected in real time once the build is complete.</p>
+
+						<br>
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							🛠️ <b>Tip:</b> If your app fails to start, check the <b>“Build Logs”</b> tab on your Space page. It provides detailed output for debugging any issues during the build or execution stages.
+						</blockquote>
+
+						<br>
+						<h3 style="color: #2c3e50; font-size: 18px;">✅ Live Deployment</h3>
+
+						<p>After a successful build, our <b>RAGent Chatbot</b> became instantly available at the following public URL:</p>
+
+						<p>🔗 <a href="https://huggingface.co/spaces/shafiqul1357/ragent-chatbot" target="_blank" style="text-decoration: underline;">https://huggingface.co/spaces/shafiqul1357/ragent-chatbot</a></p>
+
+						<div class="blg-img-container">
+							<img src="../img/blog_5/app.png" alt="RAGent Chatbot app" style="width: 70%; margin-bottom: 20px;"/>
+							<p><b>Figure 13 : RAGent Chatbot app</b></p>
+						</div>
+						<p>Through this live app, users can:</p>
+						<ul style="padding-left: 20px;">
+							<li>📂 Upload documents in supported formats such as PDF, DOCX, and TXT</li>
+							<li>💬 Interact with the chatbot using natural language questions</li>
+							<li>🤖 Receive real-time, intelligent answers powered by a retrieval-augmented generation (RAG) pipeline</li>
+						</ul>
+
+						<br>
+						<p>The interface is built with Gradio <span class="code-soft">Blocks</span> and customized using in-house styles to deliver a smooth and responsive user experience — across both desktop and mobile devices.</p>
+
+						<hr class="blg-hr">
+					</div>
+					<!-- End of 5. Build and Run App -->
+
+					<!-- Start of 6. Writing the README File -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<div id="readme" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">6. Writing the README File</h1>
+						</div>
+
+						<p>A well-crafted <span class="code-soft">README.md</span> file plays a vital role in communicating what your application does, how it works, and how others can use or contribute to it. For the <b>RAGent Chatbot</b>, we made sure to write a clear, organized, and visually engaging README that functions as the landing page for the app on Hugging Face Spaces.</p>
+
+						<p>Below is a breakdown of how we structured our README and what each section accomplishes:</p>
+
+						<br>
+						<h3 style="color: #2c3e50; font-size: 18px;">🧾 YAML Header Metadata</h3>
+
+						<p>At the very top of the README, we included a <span class="code-soft">YAML</span> header block. Hugging Face Spaces uses this metadata to visually style your app page and define runtime behavior:</p>
 
 						<!-- Code -->
 						<div class="blg-code-container">
 							<pre class="line-numbers">
-								<code class="language-bash">
----
-title: RAG Fashion Recommendation
-emoji: 👗
-colorFrom: green
-colorTo: pink
-sdk: docker
-app_port: 8501
-tags:
-- streamlit
-- fashion
-- recommendation
-- chromadb
-- rag
-- LLM
-- ai
-license: mit
+								<code class="language-yaml">
+title: RAGent Chatbot
+emoji: 🤖
+colorFrom: blue
+colorTo: green
+sdk: gradio
+sdk_version: 5.36.2
+app_file: app.py
 pinned: false
-short_description: A fashion recommendation system powered by RAG and ChromaDB.
----
+license: mit
+short_description: A Smart AI chatbot powered by RAG and AGENT
 </code>
 							</pre>
 						</div>
 
-						<p><b>✅ Why it's important:</b></p>
-						<ul style="padding-left: 40px; margin-top: 5px;">
-							<li><b>title</b>, <b>emoji</b>, and <b>colorFrom/colorTo</b> define the visual branding of your Space.</li>
-							<li><b>sdk</b> and <b>app_port</b> tell Hugging Face how to run your app — especially important for Docker-based deployments.</li>
-							<li><b>tags</b> improve the discoverability of your app through search and filtering on the platform.</li>
-							<li><b>short_description</b> appears in preview cards and Space listings to give users a quick summary.</li>
+						<ul style="padding-left: 20px;">
+							<li><span class="code-soft">title</span>, <span class="code-soft">emoji</span>, <span class="code-soft">colorFrom</span>, and <span class="code-soft">colorTo</span> define the visual theme.</li>
+							<li><span class="code-soft">sdk</span> and <span class="code-soft">app_file</span> tell Hugging Face how to launch the app.</li>
+							<li><span class="code-soft">short_description</span> gives users a one-line summary in the Spaces directory.</li>
 						</ul>
 
 						<br>
-						<p><b>🖼️ Visual Preview</b><br></p>
-						<p>Including a UI screenshot or thumbnail image in your README helps users quickly understand what your app does. A well-chosen preview can improve engagement and make your Space look more professional at first glance.</p>
+						<h3 style="color: #2c3e50; font-size: 18px;">🖼️ Visual Preview</h3>
+
+						<p>We added a preview image to make the page visually appealing and informative at a glance. This image is stored in the <span class="code-soft">figure/</span> folder:</p>
 
 						<!-- Code -->
 						<div class="blg-code-container">
 							<pre class="line-numbers">
-								<code class="language-bash">
+								<code class="language-markdown">
 ![App Preview](figure/thumbnail.png)
 </code>
 							</pre>
 						</div>
 
-						<p>Make sure the path is correct and relative to the README file.</p>
-
 						<br>
-						<p><b>📌 Recommended README Sections</b><br></p>
-						<p>Below is a detailed breakdown of the key sections you should include in your <span class="code-soft">README.md</span> to make it informative, useful, and professional.</p>
+						<h3 style="color: #2c3e50; font-size: 18px;">🧠 App Description and Purpose</h3>
 
-						<br>
-						<p><b>1. Project Introduction</b><br></p>
-						<p>Start with a concise overview of what your application does. Mention its primary use case and the core technologies or frameworks involved. This section sets the context for first-time visitors and helps them understand the value of your app right away.</p>
-						
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-# 👗 RAG Fashion Recommendation
-A smart fashion product recommendation system built using Retrieval-Augmented Generation (RAG).
-</code>
-							</pre>
-						</div>
-
-						<br>
-						<p><b>2. Features</b><br></p>
-						<p>List the main features of your application to showcase its capabilities. Use bullet points or emojis to make this section easy to scan. Focus on user-facing functionality that sets your app apart.</p>
+						<p>We opened the README with a brief overview of what the app is and what it does. For example:</p>
 
 						<!-- Code -->
 						<div class="blg-code-container">
 							<pre class="line-numbers">
-								<code class="language-bash">
-- Search products using natural language
-- View rich product metadata
-- Get personalized, context-aware suggestions
+								<code class="language-markdown">
+RAGent Chatbot is an intelligent retrieval-augmented agent assistant powered by LLMs…
 </code>
 							</pre>
 						</div>
 
-						<br>
-						<p><b>3. Technology Stack</b><br></p>
-						<p>List the technologies used in your app — such as the frontend framework, backend runtime, vector database, LLM provider, and embedding model. This gives technical users quick insight into how the system is built and what powers its functionality.</p>
+						<p>This section helps readers — both technical and non-technical — understand what problem the app solves and how it works at a high level.</p>
 
 						<br>
-						<p><b>4. How to Search Products</b><br></p>
-						<p>This section is especially helpful for users. Show examples of actual queries they can try, and explain the kinds of input your app understands.<br></p>
-						
-						<br>
-						<p>✅ <b>Tip:</b> Encourage users to use natural language. Highlight that they can filter by attributes like <b>gender</b>, <b>season</b>, <b>price</b>, <b>brand</b>, <b>style</b>, and more. Sample queries make the app feel more approachable and intuitive.</p>
+						<h3 style="color: #2c3e50; font-size: 18px;">🛠 Features</h3>
 
-						<br>
-						<p><b>5. GitHub Repository</b><br></p>
-						<p>Include a direct link to your app's source code so users and developers can explore, clone, or contribute to the project.</p>
+						<p>We then listed key capabilities of the app, using emojis to make it more engaging:</p>
 
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-[👉 RAG Fashion Recommendation System](https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation)
-</code>
-							</pre>
-						</div>
-
-						<br>
-						<p><b>6. Live Demo Link</b><br></p>
-						<p>Provide a direct link to the live version of your app so users can try it out instantly. This makes your project more engaging and accessible without requiring any setup.</p>
-						
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-[🚀 Try it live on Hugging Face Spaces](https://huggingface.co/spaces/shafiqul1357/rag-fashion-recommendation)
-</code>
-							</pre>
-						</div>
-
-						<br>
-						<p><b>✅ Best Practices</b></p>
-						<ul style="padding-left: 40px; margin-top: 5px;">
-							<li>Use headings (<span class="code-soft">##</span>, <span class="code-soft">###</span>) to organize content and create a clear visual hierarchy.</li>
-							<li>Use bullet points, emojis, and code blocks to improve readability and visual engagement.</li>
-							<li>Keep content concise but meaningful — readers should understand what your app does within 30 seconds of scanning the README.</li>
+						<ul style="padding-left: 20px;">
+							<li>🔍 <b>Hybrid Search</b> (<span class="code-soft">BM25</span> + vector search)</li>
+							<li>🧠 <b>ReAct Agent</b> (uses tools only when needed)</li>
+							<li>🎛️ <b>Gradio UI</b> (modern interactive interface)</li>
+							<li>🔧 <b>Modular Tools</b> (easily extensible components)</li>
 						</ul>
-						<hr style="border: 1px solid #ccc;">
-					</div>
-					<!-- End of Writing an Effective README file -->
-					
-					<!-- Start of 8. Searching Your App -->
-					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
-
-						<div id = "search-app" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">8. Searching Your App</h1>
-						</div>
-
-						<p>Once your app is deployed on Hugging Face Spaces, it becomes searchable within the broader Hugging Face ecosystem. This makes it easy for users — including yourself — to find and access it using the platform's built-in search functionality.</p>
 
 						<br>
-						<p><b>🔍 Using the Hugging Face Search Bar</b></p>
+						<h3 style="color: #2c3e50; font-size: 18px;">🧱 Tech Stack</h3>
 
-						<ol style="padding-left: 40px;">
-							<li>Go to the Hugging Face Spaces dashboard: 
-								<a href="https://huggingface.co/spaces" target="_blank" style="text-decoration: underline;">https://huggingface.co/spaces</a></li>
-							<li>Type the name of your app into the search bar — for example: <b>fashion recommendation</b>.</li>
-							<li>The search results will display all relevant Spaces. You can locate your app in the list based on its name, description, or tags.</li>
+						<p>We clearly stated the core technologies behind the app, making it easy for developers to explore or contribute:</p>
+
+						<ul style="padding-left: 20px;">
+							<li><b>Frontend:</b> Gradio</li>
+							<li><b>Agent Framework:</b> LangChain</li>
+							<li><b>Vector DB:</b> Qdrant</li>
+							<li><b>LLM:</b> Gemini</li>
+							<li><b>Embedding Model:</b> BAAI/bge-large-en-v1.5</li>
+						</ul>
+
+						<br>
+						<h3 style="color: #2c3e50; font-size: 18px;">💡 Example Queries</h3>
+
+						<p>To help new users get started, we added several sample prompts that showcase the app's capabilities:</p>
+
+						<ol style="padding-left: 20px;">
+							<li>“What is LangChain and how is it different from LlamaIndex?”</li>
+							<li>“Who is the CEO of OpenAI and when was the company founded?”</li>
+							<li>“What is 245 * 92?”</li>
 						</ol>
 
-						<p>Here's an example search result for this app.</p>
-						<div class="blg-img-container">
-								<img src="../img/blog_4/search_app.png" alt="Search app by key word" style="width: 70%; margin-bottom: 20px;"/>
-								<p><b>Figure 17 : Search app by key word</b></p>
-						</div>
+						<p>This invites users to immediately interact with the app in a meaningful way.</p>
 
 						<br>
-						<p><b>📁 Direct Navigation</b><br></p>
-						<p>If you already know the direct URL of your deployed app, you can access it anytime by navigating straight to the link — no search required. This is the fastest way to open your app for testing, sharing, or demonstration purposes.</p>
-						
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-https://huggingface.co/spaces/<your-username>/<your-space-name>
-</code>
-							</pre>
-						</div>
-						<p>In this case: 👉 <a href="https://huggingface.co/spaces/shafiqul1357/rag-fashion-recommendation" target="_blank" style="text-decoration: underline;">https://huggingface.co/spaces/shafiqul1357/rag-fashion-recommendation</a></p>
+						<h3 style="color: #2c3e50; font-size: 18px;">🔗 External Links</h3>
+
+						<p>Finally, we closed the README with quick-access links to both the source code and the live app:</p>
+
+						<ul style="padding-left: 20px;">
+							<li>👉 <a href="https://github.com/shafiqul-islam-sumon/ragent-chatbot" target="_blank" style="text-decoration: underline;">GitHub Repository</a></li>
+							<li>🚀 <a href="https://huggingface.co/spaces/shafiqul1357/ragent-chatbot" target="_blank" style="text-decoration: underline;">Live Demo</a></li>
+						</ul>
+
+						<p>By keeping the README informative, easy to scan, and well-structured, we created an inviting entry point for users and contributors alike.</p>
 
 						<hr class="blg-hr">
 					</div>
-					<!-- End of Searching Your App -->
-
-					<!-- Start of 9. Conclusion -->
+					<!-- End of 6. Writing the README File -->
+					
+					<!-- Start of 7. Share and Showcase Your App -->
 					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
 
-						<div id = "conclusion" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">9. Conclusion</h1>
+						<div id="share-app" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">7. Share and Showcase Your App</h1>
 						</div>
 
-						<p>Deploying your Streamlit app to Hugging Face Spaces doesn't have to be complicated. With a well-organized project structure, a few essential configuration adjustments, and a clear <span class="code-soft">README.md</span>, you can transform a local prototype into a fully functional, cloud-hosted application — all without dealing with servers or infrastructure management.</p>
+						<p>After deploying the <b>RAGent Chatbot</b> to Hugging Face Spaces, the next step was to <b>share it with the world</b> and make it easily discoverable. Hugging Face offers several built-in features and best practices to help promote your app and attract users.</p>
 
-						<p>In this guide, we covered the full deployment lifecycle using a practical example — a <b>RAG-based fashion recommendation system</b>. From creating your Space and preparing the project files to securing credentials, customizing the Dockerfile, and writing an effective README, each step contributes to a reliable and professional deployment experience.</p>
+						<br>
+						<h3 style="color: #2c3e50; font-size: 18px;">🔗 Share the Live App URL</h3>
 
-						<p>Whether you're launching a personal portfolio project, showcasing a client demo, or deploying an internal tool, <b>Hugging Face Spaces</b> provides a developer-friendly platform to bring your ideas online and share them with the world.</p>
+						<p>Our live chatbot is publicly available at:</p>
+
+						<p>👉 <a href="https://huggingface.co/spaces/shafiqul1357/ragent-chatbot" target="_blank" style="text-decoration: underline;">https://huggingface.co/spaces/shafiqul1357/ragent-chatbot</a></p>
+
+						<br>
+						<p>You can share this link with:</p>
+						<ul style="padding-left: 20px;">
+							<li>👥 Teammates and collaborators</li>
+							<li>💼 Potential employers or clients</li>
+							<li>🌍 Open-source and ML communities on GitHub, Reddit, or LinkedIn</li>
+						</ul>
+
+						<p>✅ Anyone with the link can try the chatbot directly in their browser — no installation, no setup.</p>
+
+						<br>
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							🌐 Hugging Face Spaces are fully responsive and work across desktop and mobile, ensuring a smooth user experience on any device.
+						</blockquote>
+
+						<br>
+						<h3 style="color: #2c3e50; font-size: 18px;">🌟 Make the App Discoverable</h3>
+
+						<p>To increase visibility and reach a wider audience, we followed a few discovery-boosting steps:</p>
+
+						<ul style="padding-left: 20px;">
+							<li>🏷️ Added relevant tags like <span class="code-soft">gradio</span>, <span class="code-soft">rag</span>, <span class="code-soft">chatbot</span>, and <span class="code-soft">document-qa</span></li>
+							<li>🖼️ Uploaded a visual thumbnail via <span class="code-soft">icons/</span> to make the app stand out</li>
+							<li>🌍 Set the visibility to <b>Public</b> so it shows up in Hugging Face search and category listings</li>
+							<li>📢 Shared the app link on platforms like <b>LinkedIn</b>, <b>Twitter/X</b>, <b>GitHub</b>, and <b>Reddit</b></li>
+						</ul>
+
+						<p>Users can also discover the app by searching for the app name directly within Hugging Face Spaces.</p>
+
+						<div class="blg-img-container">
+							<img src="../img/blog_5/search_app.png" alt="Search app by name" style="width: 70%; margin-bottom: 20px;"/>
+							<p><b>Figure 14 : Search app by name</b></p>
+						</div>
+
+						<br>
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							🧩 Apps with proper metadata, clear naming, and well-maintained <span class="code-soft">README.md</span> files are more likely to be featured and discovered by the Hugging Face community.
+						</blockquote>
+
+						<p>With the app now published and shared, users can easily upload their own documents, ask natural questions, and explore the full capabilities of our RAG-based conversational AI in real time.</p>
+
+						<hr class="blg-hr">
+					</div>
+					<!-- End of 7. Share and Showcase Your App -->
+
+					<!-- Start of 8. Conclusion -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<div id="conclusion" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">8. Conclusion</h1>
+						</div>
+
+						<p>Deploying AI applications should be just as seamless as building them — and with <b>Gradio</b> and <b>Hugging Face Spaces</b>, we accomplished exactly that for our <b>RAGent Chatbot</b>.</p>
+
+						<br>
+						<p>In this guide, we walked you through the entire deployment lifecycle, from preparing your local project to making it live and shareable:</p>
+
+						<ul style="padding-left: 20px;">
+							<li>🧱 Structuring the project and organizing essential files</li>
+							<li>📄 Creating <span class="code-soft">app.py</span> as the entry point for Hugging Face</li>
+							<li>🔐 Securing API keys using Hugging Face Secrets</li>
+							<li>🚀 Uploading, building, and running the app with zero manual deployment</li>
+							<li>📢 Sharing your app and boosting discoverability</li>
+							<li>📝 Writing a complete <span class="code-soft">README.md</span> to support users and contributors</li>
+						</ul>
+
+						<br>
+						<p>The <b>RAGent Chatbot</b> showcases the power of combining <b>Retrieval-Augmented Generation (RAG)</b> with agent-based reasoning — resulting in an extensible AI assistant that can retrieve, reason, and act intelligently in real time.</p>
+
+						<br>
+						<p>Thanks to Hugging Face Spaces, this entire system is now accessible via the browser — no installations or setup required.</p>
+
+						<p>👉 <b>Try it Live:</b> <a href="https://huggingface.co/spaces/shafiqul1357/ragent-chatbot" target="_blank" style="text-decoration: underline;">https://huggingface.co/spaces/shafiqul1357/ragent-chatbot</a></p>
+						<p>📦 <b>Source Code:</b> <a href="https://github.com/shafiqul-islam-sumon/ragent-chatbot" target="_blank" style="text-decoration: underline;">GitHub Repository</a></p>
+
+						<br>
+						<p>Whether you're deploying your first ML demo or launching a production-grade research assistant, we hope this guide empowers you to bring your ideas to life with confidence and clarity.</p>
 
 					</div>
-					<!-- End of Conclusion -->
+					<!-- End of 8. Conclusion -->
+
 
 					<!-- Start of Technical stacks -->
 					<div class="reference-container">
@@ -1061,12 +969,8 @@ https://huggingface.co/spaces/<your-username>/<your-space-name>
 								<b>Python</b> 
 							</li>
 							<li class="blg-li">
-								<img src="../img/technical_stack/docker.svg" alt="Docker" width="32" style="vertical-align: middle; margin-right: 6px;">
-								<b>Docker</b> 
-							</li>
-							<li class="blg-li">
-								<img src="../img/technical_stack/streamlit.svg" alt="Streamlit" width="32" style="vertical-align: middle; margin-right: 6px;">
-								<b>Streamlit</b> 
+								<img src="../img/technical_stack/gradio.svg" alt="Gradio" width="32" style="vertical-align: middle; margin-right: 6px;">
+								<b>Gradio</b> 
 							</li>
 							<li class="blg-li">
 								<img src="../img/technical_stack/huggingface.svg" alt="Hugging Face" width="32" style="vertical-align: middle; margin-right: 6px;">
@@ -1077,20 +981,32 @@ https://huggingface.co/spaces/<your-username>/<your-space-name>
 								<b>RAG</b> 
 							</li>
 							<li class="blg-li">
-								<img src="../img/technical_stack/groq.svg" alt="Groq" width="32" style="vertical-align: middle; margin-right: 6px;">
-								<b>Groq</b> 
+								<img src="../img/technical_stack/gemini.svg" alt="Gemini" width="32" style="vertical-align: middle; margin-right: 6px;">
+								<b>Google Gemini</b> 
 							</li>
 							<li class="blg-li">
-								<img src="../img/technical_stack/llama.png" alt="Llama 3" width="32" style="vertical-align: middle; margin-right: 6px;">
-								<b>Llama 3</b> 
+								<img src="../img/technical_stack/qdrant.svg" alt="Qdrant" width="32" style="vertical-align: middle; margin-right: 6px;">
+								<b>Qdrant</b> 
 							</li>
 							<li class="blg-li">
-								<img src="../img/technical_stack/chroma.svg" alt="Chroma DB" width="32" style="vertical-align: middle; margin-right: 6px;">
-								<b>Chroma DB</b> 
+								<img src="../img/technical_stack/langchain.svg" alt="LangChain" width="32" style="vertical-align: middle; margin-right: 6px;">
+								<b>LangChain</b> 
 							</li>
 							<li class="blg-li">
 								<img src="../img/technical_stack/prompt.png" alt="Prompt Engineering" width="32" style="vertical-align: middle; margin-right: 6px;">
 								<b>Prompt Engineering</b> 
+							</li>
+							<li class="blg-li">
+								<img src="../img/technical_stack/wikipedia.svg" alt="Wikipedia" width="32" style="vertical-align: middle; margin-right: 6px;">
+								<b>Wikipedia</b> 
+							</li>
+							<li class="blg-li">
+								<img src="../img/technical_stack/tavily.png" alt="Tavily API" width="32" style="vertical-align: middle; margin-right: 6px;">
+								<b>Tavily API</b> 
+							</li>
+							<li class="blg-li">
+								<img src="../img/technical_stack/open_weather.png" alt="OpenWeatherMap API" width="32" style="vertical-align: middle; margin-right: 6px;">
+								<b>OpenWeatherMap API</b> 
 							</li>
 						</ul>
 						<br>
@@ -1099,13 +1015,13 @@ https://huggingface.co/spaces/<your-username>/<your-space-name>
 
 					<!-- Download Source Code -->
 
-					<h2>
-						<a href="https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation/tree/huggingface" target="_blank" style="text-decoration: none;">
+					<h1>
+						<a href="https://github.com/shafiqul-islam-sumon/ragent-chatbot" target="_blank" style="text-decoration: none;">
 							<img src="../img/others/download.svg" alt="Download" style="width: 48px; height: 48px; vertical-align: middle; margin-right: 5px;"/>
 						</a>
 						Download Source Code : 
-						<a href="https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation/tree/huggingface" target="_blank">RAG Fashion Recommendation System</a>
-					</h2>
+						<a href="https://github.com/shafiqul-islam-sumon/ragent-chatbot" target="_blank" style="text-decoration: underline;">RAGent Chatbot</a>
+					</h1>
 					<br>
 
 					<div class="reference-container">
@@ -1113,24 +1029,24 @@ https://huggingface.co/spaces/<your-username>/<your-space-name>
 						<h2>📚 <b>References</b></h2>
 						<ul class="blg-ul">
 							<li class="blg-li">🔗 <b>GitHub Repository:</b> 
-								<a target="_blank" style="text-decoration: underline;" href="https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation/tree/huggingface">
-									RAG Fashion Recommendation System
+								<a target="_blank" style="text-decoration: underline;" href="https://github.com/shafiqul-islam-sumon/ragent-chatbot">
+									RAGent Chatbot
 								</a>
 							</li>
 							<li class="blg-li">🤗 <b>Live App in Hugging Face Space:</b> 
-								<a target="_blank" style="text-decoration: underline;" href="https://huggingface.co/spaces/shafiqul1357/rag-fashion-recommendation">
-									Fashion Recommendation App
+								<a target="_blank" style="text-decoration: underline;" href="https://huggingface.co/spaces/shafiqul1357/ragent-chatbot">
+									RAGent Chatbot App
 								</a>
 							</li>
 							<li class="blg-li">
-								<img src="../img/blog_4/streamlit.svg" alt="Medium Icon" width="24" style="vertical-align: middle; margin-right: 6px;">
-								<b>Streamlit Website:</b> 
-								<a target="_blank" style="text-decoration: underline;" href="https://streamlit.io/">Streamlit</a>
+								<img src="../img/blog_5/gradio.svg" alt="Medium Icon" width="24" style="vertical-align: middle; margin-right: 6px;">
+								<b>Gradio Website:</b> 
+								<a target="_blank" style="text-decoration: underline;" href="https://www.gradio.app/">Gradio</a>
 							</li>
 							<li class="blg-li">
-								<img src="../img/blog_4/medium.svg" alt="Medium Icon" width="24" style="vertical-align: middle; margin-right: 6px;">
+								<img src="../img/blog_5/medium.svg" alt="Medium Icon" width="24" style="vertical-align: middle; margin-right: 6px;">
 								<b>Medium Article:</b> 
-								<a target="_blank" style="text-decoration: underline;" href="https://medium.com/@shafiqul-islam/deploy-streamlit-app-to-hugging-face-spaces-a-complete-guide-9c1ec83d24ed">
+								<a target="_blank" style="text-decoration: underline;" href="https://medium.com/@shafiqul-islam/deploy-gradio-app-to-hugging-face-space-full-step-by-step-guide-37f8bec80ceb">
 									Read the Blog on Medium
 								</a>
 							</li>
