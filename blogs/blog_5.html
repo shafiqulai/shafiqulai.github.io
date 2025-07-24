@@ -132,6 +132,7 @@
 					<!-- 1. Start of Introduction -->
 					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
 
+						<a id="introduction" style="position: relative; top: -110px; visibility: hidden;"></a>
 						<div id="introduction" class="blg-main-header">
 							<h1 style="color: #2c3e50; font-size: 28px;">1. Introduction</h1>
 						</div>
@@ -165,6 +166,7 @@
 					<!-- Start of 2. Prerequisites -->
 					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
 
+						<a id="prerequisites" style="position: relative; top: -110px; visibility: hidden;"></a>
 						<div id="prerequisites" class="blg-main-header">
 							<h1 style="color: #2c3e50; font-size: 28px;">2. Prerequisites</h1>
 						</div>
@@ -236,6 +238,7 @@ pip install gradio
 					<!-- Start of 3. Set Up the Gradio App -->
 					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
 
+						<a id="setup-project" style="position: relative; top: -110px; visibility: hidden;"></a>
 						<div id="setup-project" class="blg-main-header">
 							<h1 style="color: #2c3e50; font-size: 28px;">3. Set Up the Gradio App</h1>
 						</div>
@@ -245,6 +248,7 @@ pip install gradio
 						<p>Let's walk through how the project was structured and which files are important for successful deployment.</p>
 
 						<br>
+						<a id="project-structure" style="position: relative; top: -90px; visibility: hidden;"></a>
 						<div id="project-structure" class="blg-sub-header">
 							<h2 style="color: #2c3e50; font-size: 22px;">📁 3.1 Project Structure</h2>
 						</div>
@@ -319,6 +323,7 @@ ragent_chatbot/
 						<p><b>✅ Key Point:</b> The <span class="code-soft">app.py</span> file must be placed at the root level. Hugging Face Spaces uses this as the entry point to launch your app automatically.</p>
 
 						<br>
+						<a id="requirements" style="position: relative; top: -90px; visibility: hidden;"></a>
 						<div id="requirements" class="blg-sub-header">
 							<h2 style="color: #2c3e50; font-size: 22px;">📦 3.2 Create <span class="code-soft">requirements.txt</span></h2>
 						</div>
@@ -356,6 +361,7 @@ numexpr==2.11.0
 						<p>💡 <b>Tip:</b> If your app uses private or sensitive keys (such as API keys), avoid hardcoding them. Instead, use environment variables via the <span class="code-soft">python-dotenv</span> package, which we've already included above.</p>
 
 						<br>
+						<a id="app-file" style="position: relative; top: -90px; visibility: hidden;"></a>
 						<div id="app-file" class="blg-sub-header">
 							<h2 style="color: #2c3e50; font-size: 22px;">🖥️ 3.3 Create <span class="code-soft">app.py</span> - The Required Entry Point</h2>
 						</div>
@@ -453,9 +459,10 @@ if __name__ == "__main__":
 					<!-- End of 3. Set Up the Gradio App -->
 					
 					<!-- Start of 4. Deployment to Hugging Face -->
-					<div id="deployment" style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
 
-						<div class="blg-main-header">
+						<a id="deployment" style="position: relative; top: -110px; visibility: hidden;"></a>
+						<div id="deployment" class="blg-main-header">
 							<h1 style="color: #2c3e50; font-size: 28px;">4. Step-by-Step Deployment to Hugging Face</h1>
 						</div>
 
@@ -464,6 +471,7 @@ if __name__ == "__main__":
 						<p>This section breaks down the entire deployment workflow into simple, actionable steps. From creating your Hugging Face account to uploading your project and going live, we've kept everything beginner-friendly and easy to follow.</p>
 
 						<br>
+						<a id="create-account" style="position: relative; top: -90px; visibility: hidden;"></a>
 						<div id="create-account" class="blg-sub-header">
 							<h2 style="color: #2c3e50; font-size: 22px;">🧑‍💻 4.1 Create a Hugging Face Account</h2>
 						</div>
@@ -497,6 +505,7 @@ if __name__ == "__main__":
 						<p>This is your main hub for creating, deploying, and managing all your hosted Gradio apps — including our <b>RAGent Chatbot</b>.</p>
 
 						<br>
+						<a id="create-space" style="position: relative; top: -90px; visibility: hidden;"></a>
 						<div id="create-space" class="blg-sub-header">
 							<h2 style="color: #2c3e50; font-size: 22px;">🏗️ 4.2 Create a New Space</h2>
 						</div>
@@ -542,6 +551,7 @@ if __name__ == "__main__":
 						</div>
 
 						<br>
+						<a id="secrets" style="position: relative; top: -90px; visibility: hidden;"></a>
 						<div id="secrets" class="blg-sub-header">
 							<h2 style="color: #2c3e50; font-size: 22px;">🔐 4.3 Configure Secrets</h2>
 						</div>
@@ -578,6 +588,7 @@ if __name__ == "__main__":
 
 						<br>
 
+						<a id="upload-code" style="position: relative; top: -90px; visibility: hidden;"></a>
 						<div id="upload-code" class="blg-sub-header">
 							<h2 style="color: #2c3e50; font-size: 22px;">📤 4.4 Upload Source Code</h2>
 						</div>
@@ -670,6 +681,7 @@ git push
 					<!-- Start of 5. Build and Run App -->
 					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
 
+						<a id="build-run" style="position: relative; top: -110px; visibility: hidden;"></a>
 						<div id="build-run" class="blg-main-header">
 							<h1 style="color: #2c3e50; font-size: 28px;">5. Build and Run App</h1>
 						</div>
@@ -740,6 +752,7 @@ git push
 					<!-- Start of 6. Writing the README File -->
 					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
 
+						<a id="readme" style="position: relative; top: -110px; visibility: hidden;"></a>
 						<div id="readme" class="blg-main-header">
 							<h1 style="color: #2c3e50; font-size: 28px;">6. Writing the README File</h1>
 						</div>
@@ -864,6 +877,7 @@ RAGent Chatbot is an intelligent retrieval-augmented agent assistant powered by 
 					<!-- Start of 7. Share and Showcase Your App -->
 					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
 
+						<a id="share-app" style="position: relative; top: -110px; visibility: hidden;"></a>
 						<div id="share-app" class="blg-main-header">
 							<h1 style="color: #2c3e50; font-size: 28px;">7. Share and Showcase Your App</h1>
 						</div>
@@ -925,6 +939,7 @@ RAGent Chatbot is an intelligent retrieval-augmented agent assistant powered by 
 					<!-- Start of 8. Conclusion -->
 					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
 
+						<a id="conclusion" style="position: relative; top: -110px; visibility: hidden;"></a>
 						<div id="conclusion" class="blg-main-header">
 							<h1 style="color: #2c3e50; font-size: 28px;">8. Conclusion</h1>
 						</div>
