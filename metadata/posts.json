@@ -53,6 +53,17 @@
         "date": "18 Jul 2025",
         "description": "This comprehensive guide provides a step-by-step approach to deploying a Gradio application on Hugging Face Spaces. It covers project preparation, dependency management, and Space configuration to ensure a smooth deployment experience. Readers will learn how to structure their code, handle runtime settings, and troubleshoot common issues. By the end, you will have a fully functional Gradio app publicly accessible and hosted on a reliable platform.",
         "readMoreUrl": "./blogs/blog_5.html"
+    },
+    {
+        "id": 6,
+        "author": "MD SHAFIQUL ISLAM",
+        "author_img": "../img/author/shafiqul.jpg",
+        "category": ["RAG", "Agent", "Chatbot", "LangChain"],
+        "image": "./img/blog_6/thumbnail.webp",
+        "title": "Build a Smart RAGent Chatbot: Combine RAG and ReAct Agent with Tools in One Powerful App",
+        "date": "25 Jul 2025",
+        "description": "In this blog post, you'll learn how to build a powerful AI chatbot that combines Retrieval-Augmented Generation (RAG) with the ReAct agent framework. This system lets users upload documents (PDF, DOCX, CSV, etc.) and ask questions based on the content or even outside it. If the answer isn't found in the document vector database (Qdrant), the chatbot intelligently switches to external tools like web search, Wikipedia, weather, and calculator. The app is powered by Gemini LLM and features a Gradio web interface for seamless interaction. We'll guide you step by step—from setting up the environment to implementing each component and integrating all parts into a unified AI assistant.",
+        "readMoreUrl": "./blogs/blog_6.html"
     }
     
 ]

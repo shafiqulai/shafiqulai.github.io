@@ -247,11 +247,14 @@ function getCategoryIcons() {
     return {
         "All": "./img/category/all.png",
         "Agent": "./img/category/agent.png",
+        "Chatbot": "./img/category/chatbot.png",
         "Streamlit": "./img/category/streamlit.svg",
         "Hugging Face": "./img/category/huggingface.svg",
         "Docker": "./img/category/docker.svg",
         "Git": "./img/category/git.svg",
-        "Gradio": "./img/category/gradio.svg"
+        "Gradio": "./img/category/gradio.svg",
+        "RAG": "./img/category/rag.png",
+        "LangChain": "./img/category/langchain.svg"
     };
 }
 

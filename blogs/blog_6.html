@@ -1,0 +1,2249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+	<!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-6SEFZQJHM1"></script>
+	<script>
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+
+	gtag('config', 'G-6SEFZQJHM1', {
+    	cookie_domain: 'shafiqulai.github.io'
+  	});
+	</script>
+
+	<meta charset="utf-8">
+	<title>Build a RAGent Chatbot: Combine RAG and ReAct Agent with Tools in One Smart App</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="In this blog post, you'll learn how to build a powerful AI chatbot that combines Retrieval-Augmented Generation (RAG) with the ReAct agent framework. This system lets users upload documents (PDF, DOCX, CSV, etc.) and ask questions based on the content or even outside it. If the answer isn't found in the document vector database (Qdrant), the chatbot intelligently switches to external tools like web search, Wikipedia, weather, and calculator. The app is powered by Gemini LLM and features a Gradio web interface for seamless interaction. We'll guide you step by step—from setting up the environment to implementing each component and integrating all parts into a unified AI assistant." />
+	<meta name="author" content="MD SHAFIQUL ISLAM" />
+	<link rel="icon" href="../img/others/favicon.ico" type="image/x-icon">
+
+	<!-- css -->
+	<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="../css/font-awesome.css" />
+	<link rel="stylesheet" type="text/css" href="../css/slick.css" />
+	<link rel="stylesheet" type="text/css" href="../css/slick-theme.css" />
+	<link rel="stylesheet" type="text/css" href="../css/tabulator_site.min.css" />
+	<link rel="stylesheet" type="text/css" href="../css/prism.css" />
+	<link rel="stylesheet" type="text/css" href="../css/style.css" />
+
+</head>
+
+<body>
+	<div id="wrapper">
+		<!-- start header -->
+		<header>
+			<div class="navbar navbar-default custom-sticky-navbar">
+				<div class="container">
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle" data-toggle="collapse"
+							data-target=".navbar-collapse">
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+						<a class="navbar-brand" href="../index.html"><img src="../img/others/logo.png" alt="logo" class="navbar-logo" /></a>
+					</div>
+					<div class="navbar-collapse collapse ">
+						<ul class="nav navbar-nav">
+							<li><a href="../index.html"><img src="../img/others/home.svg" alt="Home" style="width:24px; height:auto; vertical-align:middle; margin-right:10px;">Home</a></li>
+							<li><a href="../about.html"><img src="../img/others/about.svg" alt="About" style="width:24px; height:auto; vertical-align:middle; margin-right:10px;">About</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</header>
+		<!-- end header -->
+
+		<section id="content">
+			<div class="container">
+
+				<!-- blog details -->
+				<div id="blogContainer">
+					<!-- blog title -->
+					<div class="container blg-title-container">
+						<h2 class="blg-title">Build a Smart RAGent Chatbot: Combine RAG and ReAct Agent with Tools in One Powerful App</h2>
+					</div>
+
+					<!-- Author Info -->
+					<div class="author_section">
+						<img id="author_img" src="" alt="Author Photo" class="author_img">
+						<div class="author_details">
+							<span id="author_name" class="author_name"></span>
+							<span id="published_date" class="published_date"></span>
+						</div>
+					</div>
+
+					<div class="blg-img-container">
+						<img src="../img/blog_6/thumbnail.webp" alt="Build a RAGent Chatbot - Combine RAG and ReAct Agent with Tools in One Smart App" style="width: 70%;"/>
+					</div>
+
+
+					<!-- Start of Preface -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<p>🤖 Building AI applications is no longer just for big tech giants. With the right tools and a bit of guidance, anyone can craft smart, useful systems that tackle real-world problems with ease. This blog post is a practical, hands-on guide to building one such system — a chatbot that blends document understanding with intelligent tool-based reasoning.</p>
+
+						<p>Meet <b><a href="https://github.com/shafiqul-islam-sumon/ragent-chatbot" target="_blank" style="text-decoration: underline;">RAGent</a></b>, a smart assistant that brings together the power of <b>Retrieval-Augmented Generation (RAG)</b> and the <b>ReAct Agent</b> framework. But it's not just another chatbot. RAGent can read and answer questions from your uploaded documents — whether it's a PDF, Excel file, or Word doc — and if needed, it knows when to search the web, use a calculator, or check the weather to get the right answer.</p>
+
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							🧠 Think of it as your intelligent co-pilot — one that knows when to read, when to think, and when to act.
+						</blockquote>
+						<br>
+
+						<p>If you're curious to see it in action, you can try the app live on <b><a href="https://huggingface.co/spaces/shafiqul1357/ragent-chatbot" target="_blank" style="text-decoration: underline;">Hugging Face Spaces</a></b>. And if you want to dive into the code and build it yourself, everything is open-sourced on <b><a href="https://github.com/shafiqul-islam-sumon/ragent-chatbot" target="_blank" style="text-decoration: underline;">GitHub</a></b>.</p>
+
+						<p>This guide will walk you through the process — not just how to build it, but how to make it smart, useful, and ready for real-world tasks. Let's get started! 🚀</p>
+
+					</div>
+					<!-- End of Preface -->
+
+
+					<!-- Table of Contents -->
+					<div class="blg-toc-container">
+						<h1>📚 Table of Contents</h1>
+						<ol class="blg-toc-ol">
+							<li class="blg-toc-li"><a href="#introduction">📘 Introduction</a></li>
+
+							<li class="blg-toc-li"><a href="#project-overview">📌 Project Overview</a></li>
+							<ul class="blg-toc-ul">
+								<li class="blg-toc-li"><a href="#key-features">Key Features</a></li>
+								<li class="blg-toc-li"><a href="#supported-files">Supported File Types</a></li>
+								<li class="blg-toc-li"><a href="#workflow-summary">Workflow Summary</a></li>
+							</ul>
+
+							<li class="blg-toc-li"><a href="#project-structure">🗂️ RAGent Project Structure</a></li>
+							<ul class="blg-toc-ul">
+								<li class="blg-toc-li"><a href="#directory-overview">High-Level Directory Overview</a></li>
+								<li class="blg-toc-li"><a href="#folder-purpose">Purpose of Key Folders and Files</a></li>
+							</ul>
+
+							<li class="blg-toc-li"><a href="#setup-environment">⚙️ Setting Up the Environment</a></li>
+							<ul class="blg-toc-ul">
+								<li class="blg-toc-li"><a href="#install-dependencies">Installing Dependencies</a></li>
+								<li class="blg-toc-li"><a href="#env-file">Setting Up the .env File</a></li>
+							</ul>
+
+							<li class="blg-toc-li"><a href="#llm-gemini">🧠 Implementing the LLM</a></li>
+							<ul class="blg-toc-ul">
+								<li class="blg-toc-li"><a href="#gemini-overview">Google Gemini Overview</a></li>
+								<li class="blg-toc-li"><a href="#gemini-integration">How Gemini is Integrated into the Agent</a></li>
+							</ul>
+
+							<li class="blg-toc-li"><a href="#prompts">📜 Understanding the Prompts</a></li>
+							<ul class="blg-toc-ul">
+								<li class="blg-toc-li"><a href="#agent-prompt">Agent Prompt - Tool Reasoning Format</a></li>
+								<li class="blg-toc-li"><a href="#rag-prompt">RAG Prompt - Document Answering Logic</a></li>
+							</ul>
+
+							<li class="blg-toc-li"><a href="#rag-pipeline">🔗 Building the RAG Pipeline</a></li>
+							<ul class="blg-toc-ul">
+								<li class="blg-toc-li"><a href="#chunking">Chunking and Embedding Documents</a></li>
+								<li class="blg-toc-li"><a href="#qdrant-storage">Storing Chunks in Qdrant DB</a></li>
+								<li class="blg-toc-li"><a href="#retrieval-logic">Retrieval Logic in RAG</a></li>
+							</ul>
+
+							<li class="blg-toc-li"><a href="#retrieval">📦 Retrieval with Qdrant</a></li>
+							<ul class="blg-toc-ul">
+								<li class="blg-toc-li"><a href="#qdrant-retriever">Qdrant Retriever and Hybrid Search</a></li>
+								<li class="blg-toc-li"><a href="#vector-db-query">How Chunks are Retrieved from Vector DB</a></li>
+							</ul>
+
+							<li class="blg-toc-li"><a href="#react-agent">🧭 Designing the ReAct Agent</a></li>
+							<ul class="blg-toc-ul">
+								<li class="blg-toc-li"><a href="#react-loop">ReAct Loop: Thought → Action → Observation → Final Answer</a></li>
+								<li class="blg-toc-li"><a href="#prompt-format">Prompt Format in Agent Prompt</a></li>
+								<li class="blg-toc-li"><a href="#agent-logic">Agent Workflow</a></li>
+							</ul>
+
+							<li class="blg-toc-li"><a href="#custom-tools">🛠️ Developing Custom Tools</a></li>
+							<ul class="blg-toc-ul">
+								<li class="blg-toc-li"><a href="#basetool">BaseTool Architecture</a></li>
+								<li class="blg-toc-li"><a href="#tools-overview">Overview of Tools</a></li>
+								<li class="blg-toc-li"><a href="#tool-registry">Registering Tools Dynamically</a></li>
+							</ul>
+
+							<li class="blg-toc-li"><a href="#memory">🧵 Memory Management</a></li>
+							<ul class="blg-toc-ul">
+								<li class="blg-toc-li"><a href="#chat-memory">Role of Chat Memory</a></li>
+								<li class="blg-toc-li"><a href="#chat-context">Keeping Chat Context Across Queries</a></li>
+							</ul>
+							
+							<li class="blg-toc-li"><a href="#gradio-ui">💬 Gradio Web UI</a></li>
+							<ul class="blg-toc-ul">
+								<li class="blg-toc-li"><a href="#file-upload">File Upload Interface</a></li>
+								<li class="blg-toc-li"><a href="#chat-ui">Chat Logic Interface</a></li>
+								<li class="blg-toc-li"><a href="#tool-response-display">Tool Responses and Chat History</a></li>
+								<li class="blg-toc-li"><a href="#try-live">Try Live RAGent App: GitHub & Hugging Face</a></li>
+							</ul>
+
+							<li class="blg-toc-li"><a href="#conclusion">🎯 Conclusion</a></li>
+						</ol>
+					</div>
+
+					<br>
+
+					<!-- 1. Start of Introduction -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<a id="introduction" style="position: relative; top: -110px; visibility: hidden;"></a>
+						<div id="introduction" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">📘 1. Introduction</h1>
+						</div>
+
+						<p>Modern users expect more from AI chatbots. It's no longer enough to just generate clever text — they want assistants that understand uploaded files, fetch live information from the web, calculate results, and even explain complex topics — all in one smooth conversation.</p>
+
+						<p>This is exactly what <b>RAGent</b> delivers — a smart hybrid chatbot built by combining <b>Retrieval-Augmented Generation (RAG)</b> with the powerful reasoning flow of a <b>ReAct Agent</b>. In this blog post, we'll walk through how to build such a system from scratch and show you how it thinks, retrieves, and acts to serve intelligent answers.</p>
+
+						<br>
+						<p><b>🤖 What is RAGent Chatbot?</b></p>
+						<p><b>RAGent</b> is a thinking assistant that goes far beyond static search. It allows users to upload files — such as PDFs, Excel sheets, Word documents, CSVs, and JSON — and ask natural language questions about the content. If the answer can't be found in the documents, it automatically knows how to switch gears: it can search the web, calculate math, check the weather, or even summarize using a general-purpose LLM.</p>
+
+						<p>The chatbot operates using a simple yet powerful loop:</p>
+						<p><span class="code-soft">Thought → Action → Observation → Final Answer</span></p>
+						<p>This loop makes it capable of step-by-step reasoning — much like how a human assistant would think through a task before responding.</p>
+
+						<br>
+						<p><b>🧠 Why Combine RAG and ReAct Agent?</b></p>
+						<p>RAG is perfect when the answer exists in a document. But when the answer isn't there — RAG can't help. Meanwhile, ReAct-style agents are great at using tools to reason and fetch live information, but they don't directly process user-uploaded files. When you combine both, magic happens.</p>
+
+						<p><b>RAGent</b> intelligently chooses between:</p>
+
+						<ul style="padding-left: 40px;">
+							<li>📄 Reading and searching your uploaded documents</li>
+							<li>🌐 Searching the internet when documents fall short</li>
+							<li>➗ Performing real-time calculations</li>
+							<li>🌦️ Fetching up-to-date weather data</li>
+							<li>🧠 Using an LLM to summarize or explain information</li>
+						</ul>
+
+						<p>All of this is done automatically — based on the question you ask — without you needing to specify the method. It's an elegant mix of retrieval, logic, and action that feels truly intelligent.</p>
+
+						<hr class="blg-hr">
+					</div>
+					<!-- End of Introduction -->
+
+					<!-- 2. Start of Project Overview -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<a id="project-overview" style="position: relative; top: -110px; visibility: hidden;"></a>
+						<div id="project-overview" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">📌 2. Project Overview</h1>
+						</div>
+
+						<p>Before jumping into the code, let's pause and explore what we're about to build. This section outlines the core capabilities of the <b>RAGent Chatbot</b>, the types of files it supports, and how the entire system flows from start to finish. Getting this big-picture view helps us appreciate how all the components work together like clockwork. 🕰️</p>
+
+						<br>
+						<a id="key-features" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="key-features" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">🔑 2.1 Key Features</h2>
+						</div>
+
+						<p>What makes <b>RAGent</b> special? It's not just another chatbot. Here's what sets it apart:</p>
+
+						<ul style="padding-left: 40px;">
+							<li>🧠 <b>Understands Documents:</b> Upload a file and ask anything — RAGent can summarize, extract insights, or fetch exact data from your documents.</li>
+							<li>🧰 <b>Uses Tools When Needed:</b> If the document doesn't contain the answer, it intelligently switches to tools like 🌐 Web Search, 📚 Wikipedia, ☁️ Weather, ➗ Calculator, or 📝 LLM-based helpers.</li>
+							<li>🔄 <b>Thinks Step-by-Step:</b> Follows a thoughtful reasoning loop:
+								<br><span class="code-soft">Thought → Action → Observation → Final Answer</span>
+							</li>
+							<li>🔗 <b>Powered by Gemini LLM:</b> Uses Google's Gemini model to generate smart and fluent responses.</li>
+							<li>💻 <b>Runs on a Clean Web UI:</b> Built using Gradio, so everything works seamlessly in the browser.</li>
+						</ul>
+
+						<br>
+						<a id="supported-files" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="supported-files" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">📂 2.2 Supported File Types</h2>
+						</div>
+
+						<p><b>RAGent</b> can work with a variety of document formats — so whether you're a researcher, a student, or a data analyst, uploading your files is quick and simple:</p>
+
+						<ul style="padding-left: 40px;">
+							<li>📄 PDF (<span class="code-soft">.pdf</span>)</li>
+							<li>📝 Word (<span class="code-soft">.docx</span>)</li>
+							<li>📊 Excel (<span class="code-soft">.xlsx</span>)</li>
+							<li>📈 PowerPoint (<span class="code-soft">.pptx</span>)</li>
+							<li>📎 CSV (<span class="code-soft">.csv</span>)</li>
+							<li>🧾 JSON (<span class="code-soft">.json</span>)</li>
+							<li>📃 Plain Text (<span class="code-soft">.txt</span>)</li>
+						</ul>
+
+						<p>Once uploaded, the content is automatically chunked and embedded into a vector database, so it's searchable and context-aware during conversations.</p>
+
+						<br>
+						<a id="workflow-summary" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="workflow-summary" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">🔄 2.3 Workflow Summary</h2>
+						</div>
+
+						<p>Let's walk through how <b>RAGent</b> operates behind the scenes:</p>
+
+						<ul style="padding-left: 40px;">
+							<li>📤 Upload documents via the Gradio interface</li>
+							<li>🧩 Documents are chunked and embedded using a vector model</li>
+							<li>📦 Chunks are stored in <b>Qdrant</b>, a fast and scalable vector database</li>
+							<li>❓ Ask your question in natural language</li>
+							<li>🔍 The RAG system tries to retrieve the answer from the uploaded chunks</li>
+							<li>🔄 If RAG fails, the ReAct Agent triggers a relevant tool (like a web search or calculator)</li>
+							<li>✅ The final answer is presented, along with the reasoning that led to it</li>
+						</ul>
+
+						<p>This hybrid pipeline ensures that no matter the query — whether it's document-based or external, you always get the best possible answer. 📈</p>
+
+						<hr class="blg-hr">
+					</div>
+					<!-- End of Project Overview -->
+					
+					<!-- 3. Start of RAGent Project Structure -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<a id="project-structure" style="position: relative; top: -110px; visibility: hidden;"></a>
+						<div id="project-structure" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">🗂️ 3. RAGent Project Structure</h1>
+						</div>
+
+						<p>To keep things clean, modular, and scalable, the <b>RAGent Chatbot</b> is carefully structured into folders and modules — each handling a specific part of the system. This section breaks down the project layout so you can see how everything fits together behind the scenes.</p>
+
+						<br>
+						<a id="directory-overview" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="directory-overview" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">📁 3.1 High-Level Directory Overview</h2>
+						</div>
+
+						<p>Here's a snapshot of the entire project structure:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+ragent_chatbot/
+│
+├── app.py
+├── agent.py
+├── rag.py
+├── config.py
+├── tool_registry.py
+├── requirements.txt
+├── README.md
+├── .env
+│
+├── retriever/
+│   ├── __init__.py
+│   └── qdrant_retriever.py
+│
+├── tools/
+│   ├── __init__.py
+│   ├── base_tool.py
+│   ├── calculator_tool.py
+│   ├── llm_tool.py
+│   ├── rag_tool.py
+│   ├── weather_tool.py
+│   ├── web_search_tool.py
+│   └── wikipedia_tool.py
+│
+├── vector_db/
+│   ├── __init__.py
+│   ├── chunker.py
+│   ├── data_embedder.py
+│   └── qdrant_db.py
+│
+├── prompts/
+│   ├── agent_prompt.txt
+│   └── rag_prompt.txt
+│
+├── llm/
+│   ├── __init__.py
+│   └── gemini_llm.py
+│
+├── memory/
+│   ├── __init__.py
+│   └── chat_memory.py
+│
+├── data/
+├── doc_chunks/
+├── questions/
+│   └── test_questions.txt
+├── nltk_words/
+│
+├── utils/
+│   ├── __init__.py
+│   ├── html_template.py
+│   ├── nltk.py
+│   └── normalizer.py
+│
+├── figure/
+├── icons/
+</code>
+							</pre>
+						</div>
+
+						<p>Each folder and file plays a dedicated role. Let's explore them more closely.</p>
+
+						<br>
+						<a id="folder-purpose" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="folder-purpose" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">📦 3.2 Purpose of Key Folders and Files</h2>
+						</div>
+
+						<p>The RAGent project is structured to be clear, modular, and easy to maintain. Below is a detailed breakdown of all the files and folders, grouped by their purpose. This will help you navigate the codebase and understand the role of each component.</p>
+						<br>
+
+						<!-- Root-Level Files -->
+						<p><b>📄 Root-Level Files</b></p>
+						<ul style="padding-left: 40px;">
+							<li><span class="code-soft">app.py</span> — The main entry point for the Gradio web UI. It manages file uploads, user queries, and connects the frontend to the agent logic.</li>
+							<li><span class="code-soft">agent.py</span> — Contains the core reasoning logic based on the ReAct framework. It decides whether to answer from documents or invoke a tool.</li>
+							<li><span class="code-soft">rag.py</span> — Coordinates the RAG pipeline, including document chunking, embedding, and retrieving relevant context.</li>
+							<li><span class="code-soft">config.py</span> — Stores configuration variables like model names, API keys, and file paths — centralized for easy updates.</li>
+							<li><span class="code-soft">tool_registry.py</span> — Dynamically discovers and registers all available tools from the <span class="code-soft">tools/</span> folder, enabling plug-and-play extensibility.</li>
+							<li><span class="code-soft">requirements.txt</span> — Lists all Python dependencies needed to install and run the app properly.</li>
+							<li><span class="code-soft">README.md</span> — Project documentation that explains how to install, configure, and use the chatbot system.</li>
+							<li><span class="code-soft">.env</span> — Stores private credentials, API keys, and model configuration values that shouldn't be hardcoded.</li>
+						</ul>
+						<br>
+
+						<!-- Folder-Based Files -->
+						<p><b>📁 Files within Folders</b></p>
+
+						<div style="margin-top: 15px;"><b>🔍 <span class="code-soft">retriever/</span></b> — Manages vector and hybrid search</div>
+						<ul style="padding-left: 40px;">
+							<li><span class="code-soft">__init__.py</span> — Initializes the retriever module.</li>
+							<li><span class="code-soft">qdrant_retriever.py</span> — Performs similarity search using vector embeddings, including hybrid BM25-based queries from Qdrant.</li>
+						</ul>
+
+						<div style="margin-top: 15px;"><b>🛠️ <span class="code-soft">tools/</span></b> — Contains modular tools used by the agent</div>
+						<ul style="padding-left: 40px;">
+							<li><span class="code-soft">base_tool.py</span> — Defines the abstract base class for tools. All tools inherit from this.</li>
+							<li><span class="code-soft">calculator_tool.py</span> — Solves mathematical expressions parsed from user queries.</li>
+							<li><span class="code-soft">llm_tool.py</span> — Leverages Gemini LLM for summarization, rewriting, and general instructions.</li>
+							<li><span class="code-soft">rag_tool.py</span> — Interfaces with the RAG pipeline to answer document-based questions.</li>
+							<li><span class="code-soft">weather_tool.py</span> — Fetches current weather information using location-based queries.</li>
+							<li><span class="code-soft">web_search_tool.py</span> — Sends real-time search queries to a web search engine.</li>
+							<li><span class="code-soft">wikipedia_tool.py</span> — Retrieves short definitions and summaries from Wikipedia.</li>
+						</ul>
+
+						<div style="margin-top: 15px;"><b>🧠 <span class="code-soft">vector_db/</span></b> — Embedding, chunking, and DB operations</div>
+						<ul style="padding-left: 40px;">
+							<li><span class="code-soft">chunker.py</span> — Splits long document text into digestible chunks that are embedding-ready.</li>
+							<li><span class="code-soft">data_embedder.py</span> — Converts text chunks into dense vector representations using embedding models.</li>
+							<li><span class="code-soft">qdrant_db.py</span> — Handles storing and querying chunk embeddings in the Qdrant vector database.</li>
+						</ul>
+
+						<div style="margin-top: 15px;"><b>📝 <span class="code-soft">prompts/</span></b> — Contains prompt files that guide reasoning</div>
+						<ul style="padding-left: 40px;">
+							<li><span class="code-soft">agent_prompt.txt</span> — Defines the exact format of reasoning: Thought → Action → Observation → Final Answer.</li>
+							<li><span class="code-soft">rag_prompt.txt</span> — Provides clear instructions for answering questions using retrieved document context.</li>
+						</ul>
+
+						<div style="margin-top: 15px;"><b>🤖 <span class="code-soft">llm/</span></b> — LLM wrapper and integration logic</div>
+						<ul style="padding-left: 40px;">
+							<li><span class="code-soft">gemini_llm.py</span> — Integrates Gemini model APIs for both chat and embedding functionality.</li>
+						</ul>
+
+						<div style="margin-top: 15px;"><b>🧵 <span class="code-soft">memory/</span></b> — Stores session history to maintain context</div>
+						<ul style="padding-left: 40px;">
+							<li><span class="code-soft">chat_memory.py</span> — Maintains chat history using LangChain-compatible message formats.</li>
+						</ul>
+
+						<div style="margin-top: 15px;"><b>📂 <span class="code-soft">data/</span></b> — Stores demo or sample input files for testing</div>
+						<div style="margin-top: 10px;"><b>📂 <span class="code-soft">doc_chunks/</span></b> — Saves intermediate chunks created from uploaded documents</div>
+						<div style="margin-top: 10px;"><b>📁 <span class="code-soft">questions/</span></b>
+							<ul style="padding-left: 40px;">
+								<li><span class="code-soft">test_questions.txt</span> — Sample QA pairs for evaluating the system's responses.</li>
+							</ul>
+						</div>
+
+						<div style="margin-top: 15px;"><b>🧠 <span class="code-soft">nltk_words/</span></b> — NLP support files for tokenization and stopword removal</div>
+
+						<div style="margin-top: 15px;"><b>🧰 <span class="code-soft">utils/</span></b> — Helper scripts for formatting and preprocessing</div>
+						<ul style="padding-left: 40px;">
+							<li><span class="code-soft">html_template.py</span> — Generates styled UI responses using markdown and HTML.</li>
+							<li><span class="code-soft">nltk.py</span> — Tokenizes and processes text using NLTK tools.</li>
+							<li><span class="code-soft">normalizer.py</span> — Cleans and standardizes raw document content before chunking.</li>
+						</ul>
+
+						<div style="margin-top: 15px;"><b>🖼️ <span class="code-soft">figure/</span> and 🧩 <span class="code-soft">icons/</span></b> — Store images, UI assets, and visual components used in the app and README</div>
+
+						<p style="margin-top: 20px;">By organizing the project in this modular way, development becomes easier, debugging becomes faster, and scaling becomes much more manageable. Every component has a clear job — and all of them work together like a well-coordinated team. 🧩</p>
+
+						<hr class="blg-hr">
+					</div>
+					<!-- End of Project Structure -->
+
+					<!-- 4. Start of Setting Up the Environment -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<a id="setup-environment" style="position: relative; top: -110px; visibility: hidden;"></a>
+						<div id="setup-environment" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">⚙️ 4. Setting Up the Environment</h1>
+						</div>
+
+						<p>Before running the <b>RAGent Chatbot</b>, it's important to set up a clean and well-configured development environment. This step ensures all dependencies are correctly installed, environment variables are securely managed, and the system is ready to run the app smoothly.</p>
+
+						<p>We recommend using <b>Python 3.12</b> for compatibility and performance. Make sure it's installed on your machine before proceeding. You can use <span class="code-soft">pyenv</span> or your OS's package manager to manage versions.</p>
+
+						<br>
+						<a id="install-dependencies" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="install-dependencies" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">📦 4.1 Installing Dependencies</h2>
+						</div>
+
+						<p>All required Python packages for the chatbot are listed in the <span class="code-soft">requirements.txt</span> file. It includes everything from document loaders and vector DB clients to UI libraries and language model integrations.</p>
+
+						<p>To install them all at once, run the following command in your terminal:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">pip install -r requirements.txt</code>
+							</pre>
+						</div>
+
+						<p>Here's a snapshot of what's inside the file:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-python">
+streamlit==1.46.1
+langchain==0.3.26
+langchain-community==0.3.26
+langchain-google-genai==2.1.5
+qdrant-client==1.14.3
+pdfplumber==0.11.7
+unstructured==0.18.3
+python-docx==1.2.0
+python-pptx==1.0.2
+openpyxl==3.1.5
+jq==1.9.1
+python-dotenv==1.1.1
+sentence-transformers==4.1.0
+transformers==4.53.0
+tavily-python==0.7.9
+wikipedia-api==0.8.1
+nltk==3.9.1
+numexpr==2.11.0
+</code>
+							</pre>
+						</div>
+
+						<p>These libraries collectively enable:</p>
+						<ul style="padding-left: 40px;">
+							<li>📄 Parsing and reading documents like PDF, DOCX, PPTX, CSV, and Excel</li>
+							<li>🧠 Generating and handling embeddings</li>
+							<li>🔗 Integrating with Qdrant for vector storage</li>
+							<li>🧰 Using tools such as weather APIs, calculators, and LLMs</li>
+							<li>💻 Building the web UI with Streamlit</li>
+						</ul>
+
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							👉 <b>Tip:</b> It's highly recommended to install everything inside a virtual environment using <span class="code-soft">venv</span> or <span class="code-soft">virtualenv</span> to avoid conflicts with global packages.
+						</blockquote>
+
+						<br>
+						<a id="env-file" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="env-file" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">🔐 4.2 Setting Up the <span class="code-soft">.env</span> File</h2>
+						</div>
+
+						<p>The chatbot relies on several external APIs and configurations. To keep these secure and manageable, we use a <span class="code-soft">.env</span> file at the root level to store sensitive data such as API keys and cloud endpoints.</p>
+
+						<p>Create a new file named <span class="code-soft">.env</span> and add the following entries:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers">
+								<code class="language-bash">
+GOOGLE_API_KEY=your_gemini_api_key
+OPENWEATHER_API_KEY=your_open_weather_api_key
+TAVILY_API_KEY=your_tavily_search_api_key
+QDRANT_URL=your_qdrant_cloud_url
+QDRANT_API_KEY=your_qdrant_api_key
+</code>
+							</pre>
+						</div>
+
+						<p>Here's a breakdown of what each key is used for:</p>
+
+						<ul style="padding-left: 40px;">
+							<li><b>GOOGLE_API_KEY:</b> Grants access to Google's Gemini LLM for chatting and embedding.</li>
+							<li><b>OPENWEATHER_API_KEY:</b> Used by the weather tool to fetch real-time forecasts.</li>
+							<li><b>TAVILY_API_KEY:</b> Enables fast and accurate web search results via the Tavily API.</li>
+							<li><b>QDRANT_URL</b> & <b>QDRANT_API_KEY:</b> Connect the app to your Qdrant cloud instance for vector storage and retrieval.</li>
+						</ul>
+
+						<p>With <span class="code-soft">python-dotenv</span> already included in the dependencies, the app will automatically load these values at runtime without you needing to hardcode them anywhere.</p>
+
+						<hr class="blg-hr">
+					</div>
+					<!-- End of Environment Setup -->
+
+					<!-- 5. Start of Implementing the LLM -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<a id="llm-gemini" style="position: relative; top: -110px; visibility: hidden;"></a>
+						<div id="llm-gemini" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">🧠 5. Implementing the LLM</h1>
+						</div>
+
+						<p>At the heart of <b>RAGent</b> is Google's Gemini — a powerful and reliable language model that drives intelligent conversations, structured reasoning, and contextual document answering. In this section, we'll look at how Gemini is configured and used differently in the agent and the RAG pipeline.</p>
+
+						<br>
+						<a id="gemini-overview" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="gemini-overview" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">🧠 5.1 Google Gemini Overview</h2>
+						</div>
+
+						<p>The file <span class="code-soft">gemini_llm.py</span> wraps around the Gemini LLM using LangChain's <span class="code-soft">ChatGoogleGenerativeAI</span> and makes it easy to access the model throughout the app.</p>
+
+						<p>Here's how it's implemented:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+import os
+from config import Config
+from dotenv import load_dotenv
+from langchain_core.messages import HumanMessage
+from langchain_google_genai import ChatGoogleGenerativeAI
+
+load_dotenv()
+
+class GeminiLLM:
+	def __init__(self):
+		self.api_key = os.getenv("GOOGLE_API_KEY")
+		if not self.api_key:
+			raise ValueError("GOOGLE_API_KEY not found in environment variables")
+
+		self.model_name = Config.LLM_MODEL
+		self.temperature = Config.TEMPERATURE
+		self.gemini_client = self._initialize_client()
+
+	def _initialize_client(self):
+		return ChatGoogleGenerativeAI(
+			google_api_key=self.api_key,
+			model=self.model_name,
+			temperature=self.temperature
+		)
+
+	def get_client(self):
+		return self.gemini_client
+</code>
+							</pre>
+						</div>
+
+						<p>This class ensures that Gemini is securely initialized and available using <span class="code-soft">get_client()</span>. You can also test it standalone like this:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+if __name__ == "__main__":
+	gemini_llm = GeminiLLM()
+	llm = gemini_llm.get_client()
+	response = llm.invoke([HumanMessage(content="Explain LangChain in 5 sentences")])
+	print("### Gemini Response:\n", response.content)
+</code>
+							</pre>
+						</div>
+
+						<br>
+						<a id="gemini-integration" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="gemini-integration" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">🤖 5.2 How Gemini is Integrated into the Agent and RAG</h2>
+						</div>
+
+						<p>Gemini plays two different roles in the system — as a reasoning engine for the agent and as a document-answering model in the RAG pipeline.</p>
+
+						<div style="margin-top: 20px;"><b>🧠 In the ReAct Agent</b></div>
+						<ul style="padding-left: 40px;">
+							<li>🔹 Gemini is initialized with a system prompt from <span class="code-soft">agent_prompt.txt</span>:
+								<br><span class="code-soft">Thought → Action → Observation → Final Answer</span>
+								<br>This defines how the agent should think and respond.
+							</li>
+							<li>🔹 Tools are registered dynamically using <span class="code-soft">ToolRegistry()</span>. These include:
+								<ul style="padding-left: 40px;">
+									<li>🌐 Web search</li>
+									<li>📚 Wikipedia</li>
+									<li>🌦️ Weather API</li>
+									<li>➗ Calculator</li>
+									<li>📝 LLM summarization</li>
+									<li>📦 RAG tool</li>
+								</ul>
+							</li>
+							<li>🔹 A ReAct agent is created using:
+								<span class="code-soft">initialize_agent(...)</span> with Gemini and the tool list
+							</li>
+							<li>🔹 When running, the agent handles reasoning using:
+								<span class="code-soft">self.react_agent.invoke(messages)</span>
+							</li>
+							<li>📌 If parsing fails, it falls back to Gemini directly:
+								<span class="code-soft">self.llm.invoke(messages)</span>
+							</li>
+						</ul>
+
+						<br>
+						<div style="margin-top: 20px;"><b>📚 In the RAG Pipeline</b></div>
+						<ul style="padding-left: 40px;">
+							<li>🔹 Gemini is initialized for direct question-answering on document chunks:
+								<span class="code-soft">self.llm = GeminiLLM().get_client()</span>
+							</li>
+							<li>🔹 A prompt from <span class="code-soft">rag_prompt.txt</span> is loaded to guide responses using only retrieved content.</li>
+							<li>🔹 A retrieval + QA chain is built:
+								<br><span class="code-soft">self.chain = create_retrieval_chain(self.retriever, self.qa_chain)</span>
+							</li>
+							<li>🔹 Final answer is returned and stored:
+								<span class="code-soft">response = self.chain.invoke(inputs)</span>
+							</li>
+							<li>🧠 Chat context is updated using <span class="code-soft">MemoryManager</span>.</li>
+						</ul>
+
+						<p>While both use the same Gemini client, they follow different flows — one supports reasoning and tool invocation, the other focuses on contextual answering from documents. This dual setup is what gives <b>RAGent</b> its flexibility and intelligence. 🔄</p>
+
+						<hr class="blg-hr">
+					</div>
+					<!-- End of Implementing the LLM -->
+
+
+					<!-- 6. Start of Understanding the Prompts -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<a id="prompts" style="position: relative; top: -110px; visibility: hidden;"></a>
+						<div id="prompts" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">📜 6. Understanding the Prompts</h1>
+						</div>
+
+						<p>Prompts are the silent architects behind any LLM-based system. They shape how the model interprets the task, guides its reasoning, and decides what kind of answer to produce. In the <b>RAGent</b> system, two carefully written prompts control the entire experience — one dedicated to tool-driven reasoning, and the other to document-based answering.</p>
+
+						<p>Let's take a closer look at how each prompt works and how they contribute to making the chatbot smart, structured, and reliable.</p>
+
+						<br>
+						<a id="agent-prompt" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="agent-prompt" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">🧠 6.1 Agent Prompt — Tool Reasoning Format</h2>
+						</div>
+
+						<p>The <span class="code-soft">agent_prompt.txt</span> file defines the reasoning structure for the ReAct-style agent. It trains the LLM to <b>think step-by-step</b> instead of jumping straight to answers. This helps the agent behave more like an investigator — breaking down the problem, using tools when needed, and always justifying its decisions.</p>
+
+						<p>Here's the core format that the prompt enforces:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-text">
+Thought: Explain what you are thinking.
+Action: {"action": "tool_name", "action_input": "input string"}
+Observation: Describe the result from the tool.
+...
+Final Answer: &lt;your answer here&gt;
+</code>
+							</pre>
+						</div>
+
+						<p>🔍 Some key rules included in this prompt:</p>
+						<ul style="padding-left: 40px;">
+							<li>Never guess — always rely on tools for facts</li>
+							<li>Explain reasoning before and after using any tool</li>
+							<li>Always try <span class="code-soft">rag_search</span> first for factual or document-related queries</li>
+							<li>Use other tools like <span class="code-soft">web_search</span>, <span class="code-soft">wikipedia</span>, <span class="code-soft">calculator</span> only if RAG fails</li>
+							<li>Actions must be formatted as single-line JSON — no code blocks or backticks</li>
+						</ul>
+
+						<br>
+						<p>📚 Here's an example of how the reasoning cycle looks in action:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-text">
+Thought: The question might be answered using documents.
+Action: {"action": "rag_search", "action_input": "What is K12HSN?"}
+Observation: K12HSN stands for K-12 High-Speed Network, a California education network.
+Thought: I now know the answer.
+Final Answer: K12HSN stands for K-12 High-Speed Network, a California initiative for education connectivity.
+</code>
+							</pre>
+						</div>
+
+						<p>This prompt transforms the LLM into a logical, tool-using assistant that can explore and reason rather than respond blindly.</p>
+
+						<br>
+						<a id="rag-prompt" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="rag-prompt" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">📄 6.2 RAG Prompt — Document Answering Logic</h2>
+						</div>
+
+						<p>The <span class="code-soft">rag_prompt.txt</span> is used in the RAG pipeline. Its goal is simple but strict: only allow the LLM to answer based on the uploaded documents — no hallucination, no external assumptions.</p>
+
+						<p>The input to this prompt typically follows this structure:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-text">
+Chat History:
+{chat_history}
+
+User Question:
+{input}
+
+Relevant Context:
+{context}
+</code>
+							</pre>
+						</div>
+
+						<p>🧷 The following rules are enforced to maintain accuracy:</p>
+						<ul style="padding-left: 40px;">
+							<li>Use only the given context to answer</li>
+							<li>Do not rely on external facts, even if they seem obvious</li>
+							<li>Always write clearly and naturally</li>
+							<li>If the answer isn't found, say:
+								<br><span class="code-soft">"I don't know based on the document and our previous conversation."</span>
+							</li>
+						</ul>
+
+						<br>
+						<p>📚 Imagine a user uploads a PDF about a school's budget and asks:</p>
+						<div style="margin-left: 20px;">
+							<span class="code-soft">“What was the total IT spending in 2023?”</span>
+						</div>
+						<p>The system will:</p>
+						<ul style="padding-left: 40px;">
+							<li>Retrieve relevant chunks about "IT" and "budget"</li>
+							<li>Insert them into <span class="code-soft">{context}</span></li>
+							<li>Let Gemini answer strictly using that context</li>
+						</ul>
+
+						<p>This approach ensures every response is grounded in facts and traceable to a document source — no guessing allowed.</p>
+
+						<p>Together, these two prompts — <span class="code-soft">agent_prompt.txt</span> and <span class="code-soft">rag_prompt.txt</span> — give <b>RAGent</b> its core superpowers: the ability to reason through tools and respond truthfully from documents. This is what makes it not just a chatbot, but a reliable AI assistant. 💡</p>
+
+						<hr class="blg-hr">
+					</div>
+					<!-- End of Understanding the Prompts -->
+
+					<!-- 7. Start of Building the RAG Pipeline -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<a id="rag-pipeline" style="position: relative; top: -110px; visibility: hidden;"></a>
+						<div id="rag-pipeline" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">🔗 7. Building the RAG Pipeline</h1>
+						</div>
+
+						<p>The RAG pipeline — short for <b>Retrieval-Augmented Generation</b> — is what allows <b>RAGent</b> to understand and answer questions from user-uploaded documents. It forms the intelligent bridge between stored content and natural language queries.</p>
+
+						<p>This pipeline is built around three major components:</p>
+						<ul style="padding-left: 40px;">
+							<li>✂️ Chunking and embedding documents</li>
+							<li>🧠 Storing chunks in Qdrant DB</li>
+							<li>🔍 Retrieving and answering using Gemini</li>
+						</ul>
+
+						<p>Let's dive into each of these steps in detail.</p>
+
+						<br>
+						<a id="chunking" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="chunking" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">✂️ 7.1 Chunking and Embedding Documents</h2>
+						</div>
+
+						<p>Since large documents can't be passed directly to an LLM, we first break them into overlapping chunks and embed each one as a dense vector for efficient retrieval later on.</p>
+
+						<div style="margin-top: 20px;"><b>📁 Chunking with <span class="code-soft">DocumentChunker</span></b></div>
+						<p>The <span class="code-soft">DocumentChunker</span> class (in <span class="code-soft">chunker.py</span>) uses LangChain's splitter to divide text into overlapping pieces.</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+self.splitter = RecursiveCharacterTextSplitter(
+	chunk_size=Config.CHUNK_SIZE,
+	chunk_overlap=Config.CHUNK_OVERLAP
+)
+</code>
+							</pre>
+						</div>
+
+						<ul style="padding-left: 40px;">
+							<li><b>Chunk size</b> defines the length of each text segment</li>
+							<li><b>Overlap</b> ensures continuity of context between adjacent chunks</li>
+						</ul>
+
+						<p>To avoid duplicate processing (common across similar documents), each chunk is hashed:</p>
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+chunk_hash = hashlib.md5(text.encode('utf-8')).hexdigest()
+</code>
+							</pre>
+						</div>
+
+						<br>
+						<div style="margin-top: 20px;"><b>🔢 Embedding with <span class="code-soft">BAAIEmbedder</span></b></div>
+						<p>Once chunked, the text is converted into vector form using a sentence transformer model (like <span class="code-soft">BAAI/bge-base-en-v1.5</span>):</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+from sentence_transformers import SentenceTransformer
+
+self.model = SentenceTransformer(Config.EMBEDDING_MODEL_NAME)
+def embed_documents(self, texts: List[str]):
+	return self.model.encode(texts, convert_to_numpy=True).tolist()
+</code>
+							</pre>
+						</div>
+
+						<p>Each chunk is now a list of float values — a semantic fingerprint of its content.</p>
+
+						<br>
+						<a id="qdrant-storage" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="qdrant-storage" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">🧠 7.2 Storing Chunks in Qdrant DB</h2>
+						</div>
+
+						<p>Once embedded, chunks are stored in Qdrant — a high-performance vector database. This allows fast and scalable semantic retrieval across large document sets.</p>
+
+						<div style="margin-top: 20px;"><b>🗂️ Loading Documents from Any Format</b></div>
+						<p>Inside <span class="code-soft">qdrant_db.py</span>, the method <span class="code-soft">load_and_chunk_docs()</span> automatically selects the right loader based on file type:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+if ext == ".pdf":
+	docs = PDFPlumberLoader(file_path).load()
+elif ext == ".docx":
+	docs = UnstructuredWordDocumentLoader(file_path).load()
+...
+</code>
+							</pre>
+						</div>
+
+						<p>Supported formats include:</p>
+						<ul style="padding-left: 40px;">
+							<li>📄 PDF, Word, Excel, PowerPoint</li>
+							<li>📎 CSV, JSON (with dynamic schema detection using jq)</li>
+							<li>📃 Plain Text</li>
+						</ul>
+
+						<br>
+						<div style="margin-top: 20px;"><b>📌 Tokenization for Hybrid Search</b></div>
+						<p>Each chunk is also tokenized for keyword-based BM25 retrieval:</p>
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+tokenized_text = self.tokenize_for_bm25(text)
+</code>
+							</pre>
+						</div>
+
+						<p>Qdrant indexes these tokens using a dedicated payload field:</p>
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+self.client.create_payload_index(
+	collection_name=self.collection_name,
+	field_name="tokenized_text",
+	field_schema=TextIndexParams(...)
+)
+</code>
+							</pre>
+						</div>
+
+						<br>
+						<div style="margin-top: 20px;"><b>📥 Inserting Chunks into Qdrant</b></div>
+						<p>Each chunk is inserted as a <span class="code-soft">PointStruct</span>, containing the vector, raw text, tokens, and metadata:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+PointStruct(
+	id=chunk["id"],
+	vector=embeddings[i],
+	payload={
+		"text": text,
+		"tokenized_text": tokenized_text,
+		**chunk["metadata"]
+	}
+)
+</code>
+							</pre>
+						</div>
+
+						<p>To optimize performance, batches of points are uploaded at once:</p>
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+for i in range(0, len(all_points), Config.BATCH_SIZE):
+	self.client.upsert(...)
+</code>
+							</pre>
+						</div>
+
+						<br>
+						<a id="retrieval-logic" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="retrieval-logic" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">🔍 7.3 Retrieval Logic in RAG</h2>
+						</div>
+
+						<p>Once the vector database is populated, the RAG pipeline comes to life — retrieving relevant chunks and generating answers using Gemini.</p>
+
+						<div style="margin-top: 20px;"><b>🧠 Step 1: Get the Question and Chat History</b></div>
+						<p>Using <span class="code-soft">MemoryManager</span>, we load past messages to preserve context:</p>
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+self.memory = MemoryManager()
+history_messages = self.memory.get(session_id)
+</code>
+							</pre>
+						</div>
+
+						<p>This supports follow-up questions like “What about next year?” by understanding prior exchanges.</p>
+
+						<br>
+						<div style="margin-top: 20px;"><b>🔎 Step 2: Retrieve Relevant Chunks</b></div>
+						<p>The query is passed to <span class="code-soft">QdrantRetriever()</span> which performs both semantic and keyword search:</p>
+						<ul style="padding-left: 40px;">
+							<li>📐 Vector search → based on meaning</li>
+							<li>📃 BM25 search → based on keywords</li>
+						</ul>
+
+						<p>Hybrid scoring merges both results for better relevance:</p>
+						<span class="code-soft">final_score = α * bm25_score + (1 - α) * vector_score</span>
+
+						<br><br>
+						<div style="margin-top: 20px;"><b>🤖 Step 3: Answer with Gemini + Prompt</b></div>
+						<p>The relevant chunks are passed to Gemini using a structured prompt loaded from <span class="code-soft">rag_prompt.txt</span>:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+self.prompt = ChatPromptTemplate.from_messages([
+	("system", "{chat_history}\n\n" + system_prompt),
+	("human", "{input}")
+])
+</code>
+							</pre>
+						</div>
+
+						<p>The chain is built and executed:</p>
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+self.qa_chain = create_stuff_documents_chain(self.llm, self.prompt)
+response = self.chain.invoke(inputs)
+</code>
+							</pre>
+						</div>
+
+						<p>This ensures that Gemini answers only using context — no hallucinations, no external guessing.</p>
+
+						<br>
+						<div style="margin-top: 20px;"><b>💾 Step 4: Store the Result in Memory</b></div>
+						<p>To maintain context, both the query and response are saved:</p>
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+self.memory.add(session_id, HumanMessage(content=query))
+self.memory.add(session_id, AIMessage(content=answer))
+</code>
+							</pre>
+						</div>
+
+						<p>This enables smooth, multi-turn conversations across multiple files — without losing track.</p>
+
+						<p>With the RAG pipeline in place, <b>RAGent</b> becomes a fully functional knowledge assistant that can extract accurate answers, understand natural language, and keep track of long conversations — all grounded in real data. 📄🔍</p>
+
+						<hr class="blg-hr">
+					</div>
+					<!-- End of RAG Pipeline -->
+
+					<!-- 8. Start of Retrieval with Qdrant -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<a id="retrieval" style="position: relative; top: -110px; visibility: hidden;"></a>
+						<div id="retrieval" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">📦 8. Retrieval with Qdrant</h1>
+						</div>
+
+						<p>Retrieval is the core engine of any <b>Retrieval-Augmented Generation (RAG)</b> system. It's what transforms a static knowledge base into a dynamic, searchable brain. In the case of <b>RAGent</b>, we use <b>Qdrant</b>, a powerful open-source vector database, to fetch relevant document chunks using a combination of semantic search (via dense vectors) and lexical keyword search (via BM25).</p>
+
+						<p>Let's explore exactly how this retrieval process is built, from document preprocessing to real-time query matching.</p>
+
+						<br>
+						<a id="qdrant-retriever" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="qdrant-retriever" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">🗃️ 8.1 Qdrant Retriever and Hybrid Search</h2>
+						</div>
+
+						<p>The main gateway between our app and Qdrant is the <span class="code-soft">QdrantRetriever</span> class. This class inherits from LangChain's <span class="code-soft">BaseRetriever</span> and serves as the plug-and-play retriever for any user query.</p>
+
+						<p>Here's the basic structure:</p>
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+class QdrantRetriever(BaseRetriever):
+	def __init__(self):
+		super().__init__()
+		self._qdrant_client = QdrantDBClient()
+		self._k = Config.TOP_K
+
+	def _get_relevant_documents(self, input: str, *, config: Optional[RunnableConfig] = None) -> List[Document]:
+		return self._qdrant_client.search(query=input, top_k=self._k)
+</code>
+							</pre>
+						</div>
+
+						<p>This retriever class delegates the real work to <span class="code-soft">QdrantDBClient</span>, which handles the entire lifecycle of document processing: from chunking and embedding to upserting and querying.</p>
+
+						<br>
+						<div style="margin-top: 20px;"><b>🧩 Document Chunking and Embedding</b></div>
+						<p>Before any document can be retrieved, it must be broken down into manageable pieces. We use <span class="code-soft">DocumentChunker</span> to divide large documents into overlapping chunks that preserve contextual continuity.</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+class DocumentChunker:
+	def __init__(self):
+		self.splitter = RecursiveCharacterTextSplitter(
+			chunk_size=Config.CHUNK_SIZE,
+			chunk_overlap=Config.CHUNK_OVERLAP
+		)
+</code>
+							</pre>
+						</div>
+
+						<ul style="padding-left: 40px;">
+							<li>📏 <b>Chunk size</b>: Controls how much text each chunk contains</li>
+							<li>🔗 <b>Overlap</b>: Ensures context flows between chunks</li>
+							<li>🧼 <b>Normalization</b>: Removes noise and standardizes formatting</li>
+							<li>🧠 <b>Deduplication</b>: Each chunk is hashed to avoid storing repeated content</li>
+						</ul>
+
+						<p>📄 Example chunk output:</p>
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-json">
+{
+"id": 123456789,
+"text": "The IT budget for 2023 was increased by 30%.",
+"metadata": {
+	"source": "financial_report.pdf",
+	"chunk_order": 5
+}
+}
+</code>
+							</pre>
+						</div>
+
+						<br>
+						<div style="margin-top: 20px;"><b>🧠 Embedding with BAAI/bge-base-en-v1.5</b></div>
+						<p>Once chunked, each piece of text is converted into a dense vector using <span class="code-soft">BAAIEmbedder</span>, which wraps a sentence-transformer model from Hugging Face:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+class BAAIEmbedder(Embeddings):
+	def embed_documents(self, texts: List[str]) -> List[List[float]]:
+		return self.model.encode(texts, convert_to_numpy=True).tolist()
+</code>
+							</pre>
+						</div>
+
+						<p>These vectors capture the semantic meaning of the text and allow similarity comparisons during retrieval. We also tokenize the original text for keyword matching using BM25.</p>
+
+						<br>
+						<div style="margin-top: 20px;"><b>🧵 Inserting into Qdrant</b></div>
+						<p>Chunks are inserted into Qdrant using <span class="code-soft">PointStruct</span>. Each entry includes the following:</p>
+						<ul style="padding-left: 40px;">
+							<li>📊 <b>Vector</b>: For semantic search</li>
+							<li>📝 <b>Tokenized text</b>: For keyword-based BM25 search</li>
+							<li>📦 <b>Metadata</b>: Source file, chunk order, etc.</li>
+						</ul>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+self.client.upsert(
+	collection_name=self.collection_name,
+	points=[
+		PointStruct(
+			id=chunk["id"],
+			vector=embeddings[i],
+			payload={
+				"text": normalized_text,
+				"tokenized_text": bm25_tokens,
+				**chunk["metadata"]
+			}
+		)
+	]
+)
+</code>
+							</pre>
+						</div>
+
+						<p>Qdrant also supports:</p>
+						<ul style="padding-left: 40px;">
+							<li>🧮 Payload indexing using whitespace tokenizer</li>
+							<li>🎯 Filtering with <span class="code-soft">FieldCondition</span> queries</li>
+							<li>⚡ Fast batch uploads for scalability</li>
+						</ul>
+
+						<br>
+						<a id="vector-db-query" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="vector-db-query" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">🔎 8.2 How Chunks Are Retrieved from the Vector DB</h2>
+						</div>
+
+						<p>Once the chunks are stored in Qdrant, they can be retrieved using a hybrid approach that combines semantic similarity and exact keyword match. This improves robustness and helps capture both context and specificity.</p>
+
+						<div style="margin-top: 20px;"><b>🧮 BM25 Keyword Search</b></div>
+						<p>The first pass uses tokenized text to match keywords using Qdrant's <span class="code-soft">scroll()</span> method:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+bm25_results = self.client.scroll(
+	scroll_filter=Filter(
+		should=[
+			FieldCondition(key="tokenized_text", match=MatchText(text=token))
+			for token in query_tokens
+		]
+	)
+)
+</code>
+							</pre>
+						</div>
+
+						<br>
+						<div style="margin-top: 20px;"><b>📈 Vector Similarity Search</b></div>
+						<p>In parallel, we compute the embedding of the query and perform vector similarity search:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+vector_results = self.client.query_points(
+	query=query_embedding,
+	limit=top_k,
+	with_payload=True
+)
+</code>
+							</pre>
+						</div>
+
+						<br>
+						<div style="margin-top: 20px;"><b>🔗 Combining and Scoring Results</b></div>
+						<ul style="padding-left: 40px;">
+							<li>Results from BM25 and vector search are merged</li>
+							<li>Duplicates are removed using content hashes</li>
+							<li>A final hybrid score is calculated using a tunable formula:</li>
+						</ul>
+
+						<p><span class="code-soft">final_score = ALPHA * bm25_score + (1 - ALPHA) * vector_score</span></p>
+
+						<p>The top results are then wrapped as LangChain <span class="code-soft">Document</span> objects for use in downstream pipelines.</p>
+
+						<br>
+						<div style="margin-top: 20px;"><b>💾 Additional Features</b></div>
+						<ul style="padding-left: 40px;">
+							<li>🔁 <b>Deduplication</b>: Prevents storing repeated content</li>
+							<li>📊 <b>Excel row support</b>: Converts spreadsheet rows into paragraphs for better QA</li>
+							<li>📤 <b>Chunk export</b>: Useful for reviewing or debugging stored content</li>
+							<li>🧹 <b>DB clearing</b>: Removes all stored vectors using <span class="code-soft">clear_qdrant_db()</span></li>
+						</ul>
+
+						<br>
+						<div style="margin-top: 20px;"><b>🚀 End-to-End Flow Summary</b></div>
+						<ul style="padding-left: 40px;">
+							<li>1️⃣ Load and normalize documents using the correct loader</li>
+							<li>2️⃣ Split into chunks using <span class="code-soft">DocumentChunker</span></li>
+							<li>3️⃣ Embed each chunk using the BAAI model</li>
+							<li>4️⃣ Tokenize for BM25 and store all in Qdrant</li>
+							<li>5️⃣ On query, run both BM25 and vector search</li>
+							<li>6️⃣ Merge results, calculate scores, return top matches</li>
+						</ul>
+
+						<p>This hybrid retrieval mechanism gives RAGent both depth and precision — it can understand nuanced questions and find the best answers across a wide range of documents, formats, and phrasings. 🧠📁</p>
+
+						<hr class="blg-hr">
+					</div>
+					<!-- End of Retrieval with Qdrant -->
+
+					<!-- 9. Start of Designing the ReAct Agent -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<a id="react-agent" style="position: relative; top: -110px; visibility: hidden;"></a>
+						<div id="react-agent" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">🧭 9. Designing the ReAct Agent</h1>
+						</div>
+
+						<p>At the heart of <b>RAGent</b> lies the ReAct agent — a reasoning engine that decides how to respond to any user query. This agent doesn't just “answer” questions — it analyzes the type of query, determines the best course of action, and calls on the appropriate tools or documents before producing a response. In short, the ReAct agent is the thinking brain behind the chatbot's intelligence.</p>
+
+						<p>Whether it needs to fetch information from uploaded files, look something up online, run calculations, or simply generate a helpful reply, the ReAct agent handles all of it — step-by-step, logically, and transparently.</p>
+
+						<br>
+						<a id="react-loop" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="react-loop" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">🔁 9.1 ReAct Loop: Thought → Action → Observation → Final Answer</h2>
+						</div>
+
+						<p>The agent's reasoning is based on a deliberate format known as the <b>ReAct loop</b> — short for <i>Reasoning and Acting</i>. This format forces the model to explain what it's doing at each step before reaching a final answer. This not only improves accuracy but also makes the chatbot's logic visible and verifiable.</p>
+
+						<p>Here's the core structure:</p>
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-text">
+Thought: What am I trying to do?
+Action: {"action": "tool_name", "action_input": "user query"}
+Observation: What did the tool return?
+...
+Final Answer: <response to the user>
+</code>
+							</pre>
+						</div>
+
+						<p>This format ensures that the model does not jump to conclusions or hallucinate responses. It uses actual tool outputs and walks through the logic before producing a final answer.</p>
+
+						<p>📚 Example:</p>
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-text">
+Thought: The question asks for a document-based fact.
+Action: {"action": "rag_search", "action_input": "What is K12HSN?"}
+Observation: K12HSN refers to the California K-12 High-Speed Network.
+Thought: This seems sufficient to answer the question.
+Final Answer: K12HSN refers to the California K-12 High-Speed Network.
+</code>
+							</pre>
+						</div>
+
+						<p>If the first tool doesn't help, the agent can continue the loop and try another tool. This chaining capability allows for layered and dynamic reasoning — a big leap beyond static question answering.</p>
+
+						<br>
+						<a id="prompt-format" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="prompt-format" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">🧾 9.2 Prompt Format in <span class="code-soft">agent_prompt.txt</span></h2>
+						</div>
+
+						<p>This ReAct structure is strictly enforced by a carefully crafted prompt file: <span class="code-soft">agent_prompt.txt</span>. This file contains instructions that tell the language model exactly how to behave, format outputs, and select tools.</p>
+
+						<p>Here are some of the important rules defined in the prompt:</p>
+						<ul style="padding-left: 40px;">
+							<li>🧠 Always begin with a <span class="code-soft">Thought</span></li>
+							<li>🧰 Use tools using valid JSON:
+								<br><span class="code-soft">{"action": "wikipedia", "action_input": "LangChain"}</span>
+							</li>
+							<li>⛔ Never answer immediately after an <span class="code-soft">Observation</span></li>
+							<li>📦 Always try <span class="code-soft">rag_search</span> first for factual or document-based questions</li>
+							<li>🔁 Fall back to tools such as:
+								<ul style="padding-left: 40px;">
+									<li>🌐 <b>web_search</b></li>
+									<li>📚 <b>wikipedia</b></li>
+									<li>☀️ <b>weather</b></li>
+									<li>➗ <b>calculator</b></li>
+									<li>✍️ <b>llm_instruction</b> (for rewriting, summarizing, or explanation)</li>
+								</ul>
+							</li>
+							<li>🙅‍♂️ Never guess — respond only with observed or retrieved data</li>
+							<li>🛑 If no tool works, reply:
+								<br><span class="code-soft">Final Answer: I couldn't find enough information.</span>
+							</li>
+						</ul>
+
+						<p>This prompt enforces discipline, ensuring the model behaves like a careful analyst instead of a speculative chatbot.</p>
+
+						<br>
+						<a id="agent-logic" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="agent-logic" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">🧠 9.3 Agent Workflow</h2>
+						</div>
+
+						<p>Let's now break down how the ReAct agent is actually implemented inside the <span class="code-soft">Agent</span> class — the true entry point for every user query in RAGent.</p>
+
+						<div style="margin-top: 20px;"><b>🔹 Step 1: Load and Apply the Prompt</b></div>
+						<p>First, we load the prompt content and configure Gemini with it as a system message:</p>
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+prompt_content = self.load_prompt(Config.AGENT_PROMPT)
+system_prompt = SystemMessage(content=prompt_content)
+
+self.llm = GeminiLLM().get_client().with_config({
+	"system_message": system_prompt
+})
+</code>
+							</pre>
+						</div>
+
+						<br>
+						<div style="margin-top: 20px;"><b>🔹 Step 2: Load Available Tools</b></div>
+						<p>All tools — like <span class="code-soft">rag_search</span>, <span class="code-soft">web_search</span>, <span class="code-soft">weather</span> — are loaded dynamically via a tool registry:</p>
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+registry = ToolRegistry()
+tools = registry.get_all_tools()
+</code>
+							</pre>
+						</div>
+
+						<br>
+						<div style="margin-top: 20px;"><b>🔹 Step 3: Initialize the ReAct Agent</b></div>
+						<p>Now we combine the LLM and tools into a ReAct-style agent using LangChain's built-in initializer:</p>
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+self.react_agent = initialize_agent(
+	tools=tools,
+	llm=self.llm,
+	agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION,
+	verbose=True,
+	handle_parsing_errors=True
+)
+</code>
+							</pre>
+						</div>
+
+						<br>
+						<div style="margin-top: 20px;"><b>🔹 Step 4: Run the Agent on a User Query</b></div>
+						<p>Finally, we pass the query and chat history into the agent and let it reason:</p>
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+def run(self, query: str, history: list[BaseMessage] = None) -> str:
+	messages = history.copy() if history else []
+	messages.append(HumanMessage(content=query))
+	return self.react_agent.invoke(messages)
+</code>
+							</pre>
+						</div>
+
+						<p>💡 <b>Key idea:</b> This is the first stop for any user query. The agent decides which tool to use, how to use it, and what to return — all based on logic, not guesswork.</p>
+
+						<br>
+						<div style="margin-top: 20px;"><b>🔁 ReAct in Action: Example Use Cases</b></div>
+						<p>Let's look at how real user queries are processed through this loop:</p>
+
+						<p><b>Example 1: Weather Lookup</b></p>
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-text">
+User: "What is the current temperature in Tokyo?"
+
+Thought: This is a weather-related question.
+Action: {"action": "weather", "action_input": "Tokyo"}
+Observation: 26°C, partly cloudy.
+Final Answer: It's currently 26°C and partly cloudy in Tokyo.
+</code>
+							</pre>
+						</div>
+
+						<br>
+						<p><b>Example 2: Document-Based Answer</b></p>
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-text">
+User: "How much was the IT budget in 2023?"
+
+Thought: This should be found in the uploaded documents.
+Action: {"action": "rag_search", "action_input": "IT budget in 2023"}
+Observation: The IT budget for 2023 was $1.2 million.
+Final Answer: The IT budget in 2023 was $1.2 million.
+</code>
+							</pre>
+						</div>
+
+						<p>By following this structure, <b>RAGent</b> becomes a truly intelligent assistant — not just a chatbot. It can think, explain, explore multiple options, and always back its answers with verifiable logic.</p>
+
+						<hr class="blg-hr">
+					</div>
+					<!-- End of ReAct Agent -->
+
+					<!-- 10. Start of Developing Custom Tools -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<a id="custom-tools" style="position: relative; top: -110px; visibility: hidden;"></a>
+						<div id="custom-tools" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">🛠️ 10. Developing Custom Tools</h1>
+						</div>
+
+						<p>What gives <b>RAGent</b> its power and flexibility isn't just the LLM or document retrieval — it's the suite of custom-built tools the agent can call on. These tools extend the assistant's abilities beyond static answers, allowing it to search the web, calculate numbers, fetch definitions, summarize input, and much more — all based on what the user asks.</p>
+
+						<p>In this section, we'll dive into how these tools are structured, how they interact with the agent, and how they're discovered and used dynamically at runtime.</p>
+
+						<br>
+						<a id="basetool" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="basetool" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">🧱 10.1 BaseTool Architecture</h2>
+						</div>
+
+						<p>Every tool in RAGent is built on top of a shared foundation: the <span class="code-soft">BaseTool</span> class. This abstract class defines the standard interface and expected behavior for all tools, ensuring that the ReAct agent can treat them interchangeably.</p>
+
+						<p>Here's what it looks like:</p>
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+class BaseTool(ABC):
+	def __init__(self, name: str, description: str):
+		self._name = name.lower()
+		self._description = description
+
+	@abstractmethod
+	def run(self, query: str) -> str:
+		pass
+</code>
+							</pre>
+						</div>
+
+						<p>🛠️ Every tool must implement:</p>
+						<ul style="padding-left: 40px;">
+							<li><b>name</b>: A unique identifier used by the agent (e.g., <span class="code-soft">"calculator"</span>)</li>
+							<li><b>description</b>: A brief explanation used by the LLM to decide when to call the tool</li>
+							<li><b>run()</b>: The method that actually performs the tool's task and returns a response</li>
+						</ul>
+
+						<p>This makes tools pluggable and reusable across the system.</p>
+
+						<br>
+						<a id="tools-overview" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="tools-overview" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">🔎 10.2 Overview of Tools</h2>
+						</div>
+
+						<p>Let's explore the specific tools implemented in RAGent, what they do, and when they are used by the agent.</p>
+
+						<div style="margin-top: 20px;"><b>📚 RAG Tool</b> - <span class="code-soft">rag_search</span></div>
+						<p>This tool runs the document retrieval pipeline using Qdrant and Gemini.</p>
+						<ul style="padding-left: 40px;">
+							<li><b>Used for</b>: Questions related to uploaded documents</li>
+							<li><b>Backed by</b>: RAGPipeline (retriever + LLM)</li>
+							<li><b>Example</b>: “What is the IT budget in 2023?” → calls <span class="code-soft">rag_search</span></li>
+						</ul>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+class RAGTool(BaseTool):
+	def __init__(self):
+		super().__init__(
+			name="rag_search",
+			description="Searches internal documents using vector database."
+		)
+		self.rag = RAGPipeline()
+</code>
+							</pre>
+						</div>
+
+						<br>
+						<div style="margin-top: 20px;"><b>🌐 Web Search Tool</b> - <span class="code-soft">web_search</span></div>
+						<p>Connects to the Tavily API to retrieve real-time data from the internet.</p>
+						<ul style="padding-left: 40px;">
+							<li><b>Used for</b>: Current events, news, updates outside of the uploaded content</li>
+							<li><b>Example</b>: “Who won the F1 World Championship in 2024?”</li>
+						</ul>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+class WebSearchTool(BaseTool):
+	def __init__(self):
+		super().__init__(
+			name="web_search",
+			description="Finds up-to-date info from the web using Tavily API."
+		)
+		self.api_key = os.getenv("TAVILY_API_KEY")
+		self.tavily_client = TavilyClient(api_key=self.api_key)
+</code>
+							</pre>
+						</div>
+
+						<br>
+						<div style="margin-top: 20px;"><b>📖 Wikipedia Tool</b> - <span class="code-soft">wikipedia</span></div>
+						<p>Queries Wikipedia for definitions and general knowledge.</p>
+						<ul style="padding-left: 40px;">
+							<li><b>Used for</b>: Well-known concepts or topics</li>
+							<li><b>Example</b>: “What is quantum computing?”</li>
+						</ul>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+class WikipediaTool(BaseTool):
+	def __init__(self):
+		super().__init__(
+			name="wikipedia",
+			description="Fetches definitions and general knowledge from Wikipedia."
+		)
+		self.wiki_api = wikipediaapi.Wikipedia(user_agent="chatbot_user")
+</code>
+							</pre>
+						</div>
+
+						<br>
+						<div style="margin-top: 20px;"><b>☀️ Weather Tool</b> - <span class="code-soft">weather</span></div>
+						<p>Uses the OpenWeather API to retrieve current weather data for a city.</p>
+						<ul style="padding-left: 40px;">
+							<li><b>Used for</b>: Questions about current weather + location</li>
+							<li><b>Example</b>: “What's the weather in Tokyo today?”</li>
+						</ul>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+class WeatherTool(BaseTool):
+	def __init__(self):
+		super().__init__(
+			name="weather",
+			description="Provides current weather for a given city."
+		)
+		self.api_key = os.getenv("OPENWEATHER_API_KEY")
+		self.base_url = "http://api.openweathermap.org/data/2.5/weather"
+</code>
+							</pre>
+						</div>
+
+						<br>
+						<div style="margin-top: 20px;"><b>➗ Calculator Tool</b> - <span class="code-soft">calculator</span></div>
+						<p>Safely evaluates math expressions using <span class="code-soft">numexpr</span>.</p>
+						<ul style="padding-left: 40px;">
+							<li><b>Used for</b>: Simple or advanced numeric questions</li>
+							<li><b>Example</b>: “What is 2 to the power of 5?”</li>
+						</ul>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+class CalculatorTool(BaseTool):
+	def __init__(self):
+		super().__init__(
+			name="calculator",
+			description="Evaluates math like '2**5', 'pi * 2**2', etc."
+		)
+		self.local_dict = {"pi": math.pi, "e": math.e}
+</code>
+							</pre>
+						</div>
+
+						<br>
+						<div style="margin-top: 20px;"><b>✍️ LLM Instruction Tool</b> - <span class="code-soft">llm_instruction</span></div>
+						<p>This tool uses Gemini to perform creative and instructional tasks that don't involve searching documents or the web.</p>
+						<ul style="padding-left: 40px;">
+							<li><b>Used for</b>: Summarization, rewriting, storytelling, tone changes</li>
+							<li><b>Example</b>: “Rewrite this: Hey there, thanks for your help!”</li>
+						</ul>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+class LLMInstructionTool(BaseTool):
+	def __init__(self):
+		super().__init__(
+			name="llm_instruction",
+			description="Handles summarization, rewriting, storytelling, and more."
+		)
+		self.llm = ChatGoogleGenerativeAI(
+			google_api_key=os.environ["GOOGLE_API_KEY"],
+			model=Config.LLM_MODEL,
+			temperature=Config.TEMPERATURE
+		)
+</code>
+							</pre>
+						</div>
+
+						<br>
+						<a id="tool-registry" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="tool-registry" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">🧩 10.3 Registering Tools Dynamically</h2>
+						</div>
+
+						<p>Rather than hardcoding all tools, RAGent uses dynamic discovery via the <span class="code-soft">ToolRegistry</span> class. This lets you plug in new tools by simply dropping them into the <span class="code-soft">tools/</span> folder — no extra wiring required.</p>
+
+						<p>Here's the logic behind it:</p>
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+def register_tools(self):
+	"""Dynamically registers all available tools in the tools package."""
+	tool_modules = [name for _, name, _ in pkgutil.iter_modules([self.tools_package])]
+
+	for module_name in tool_modules:
+		try:
+			module = importlib.import_module(f"{self.tools_package}.{module_name}")
+			for attr_name in dir(module):
+				attr = getattr(module, attr_name)
+				if (
+					isinstance(attr, type)
+					and issubclass(attr, BaseTool)
+					and attr is not BaseTool
+				):
+					tool_instance = attr()
+					self.tools[tool_instance.name.lower()] = tool_instance
+		except Exception as e:
+			print(f"[ERROR] Failed to register tool '{module_name}': {e}")
+</code>
+							</pre>
+						</div>
+
+						<ul style="padding-left: 40px;">
+							<li>🧩 Scans the entire <span class="code-soft">tools/</span> folder</li>
+							<li>📦 Loads any class that inherits from <span class="code-soft">BaseTool</span></li>
+							<li>🚀 Registers the tool automatically — no need to import manually</li>
+						</ul>
+
+						<p>This system makes it easy to scale the assistant's capabilities by simply adding new tools.</p>
+
+						<br>
+						<div style="margin-top: 20px;"><b>⚙️ Using Tools in the ReAct Agent</b></div>
+						<p>Once registered, the tools are passed to the agent using:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+tools = registry.get_all_tools()
+</code>
+							</pre>
+						</div>
+
+						<p>Each tool is added to the agent as:</p>
+						<span class="code-soft">Tool(name, description, func)</span>
+
+						<p>When the user submits a query, the agent chooses the right tool based on its description and the ReAct reasoning format.</p>
+
+						<div style="margin-top: 20px;"><b>✅ Real Example: Full Tool Chain in Action</b></div>
+						<p><b>User:</b> “What's the full form of K12HSN and the weather in Tokyo?”</p>
+
+						<ul style="padding-left: 40px;">
+							<li>🔍 Agent first uses <span class="code-soft">rag_search</span> → "K12HSN stands for K-12 High-Speed Network"</li>
+							<li>🌦️ Then it uses <span class="code-soft">weather</span> → "26°C, partly cloudy in Tokyo"</li>
+							<li>✅ Combines results into a final answer:</li>
+						</ul>
+
+						<p><b>Final Answer:</b><br>
+						K12HSN stands for K-12 High-Speed Network. The current weather in Tokyo is 26°C and partly cloudy.</p>
+
+						<p>This flexible tool architecture makes RAGent adaptable, intelligent, and capable of answering any query with precision and logic. 🧠🔧</p>
+
+						<hr class="blg-hr">
+					</div>
+					<!-- End of Custom Tools -->
+
+					<!-- 11. Start of Memory Management -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<a id="memory" style="position: relative; top: -110px; visibility: hidden;"></a>
+						<div id="memory" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">🧵 11. Memory Management</h1>
+						</div>
+
+						<p>One of the key traits of a truly helpful assistant is the ability to remember past conversations. In <b>RAGent</b>, we've built in-memory session tracking to enable follow-up questions, context retention, and smooth multi-turn interactions.</p>
+
+						<p>This capability is powered by a class called <span class="code-soft">MemoryManager</span> located in <span class="code-soft">chat_memory.py</span>. It ensures that every chat session has its own memory and that both the user's questions and the assistant's answers are stored in a structured way.</p>
+
+						<br>
+						<a id="chat-memory" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="chat-memory" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">💾 11.1 Role of Chat Memory</h2>
+						</div>
+
+						<p>The <span class="code-soft">MemoryManager</span> class is designed to manage multiple chat sessions simultaneously. Each session is identified by a <span class="code-soft">session_id</span>, and the memory for that session is a chronological list of messages exchanged between the user and the assistant.</p>
+
+						<p>Here's how the class is structured:</p>
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+class MemoryManager:
+	def __init__(self):
+		self.sessions: Dict[str, List[BaseMessage]] = {}
+
+	def get(self, session_id: str = "default") -> List[BaseMessage]:
+		if session_id not in self.sessions:
+			self.sessions[session_id] = []
+		return self.sessions[session_id]
+
+	def add(self, session_id: str, message: BaseMessage):
+		if session_id not in self.sessions:
+			self.sessions[session_id] = []
+		self.sessions[session_id].append(message)
+
+	def clear(self, session_id: str = "default"):
+		self.sessions[session_id] = []
+
+	def list_sessions(self) -> List[str]:
+		return list(self.sessions.keys())
+</code>
+							</pre>
+						</div>
+
+						<p>Internally, the memory is a simple dictionary that maps each session ID to a list of LangChain-compatible message types:</p>
+						<ul style="padding-left: 40px;">
+							<li><span class="code-soft">HumanMessage</span> — represents user input</li>
+							<li><span class="code-soft">AIMessage</span> — stores assistant replies</li>
+							<li><span class="code-soft">SystemMessage</span> — used for custom instructions or role prompts</li>
+						</ul>
+
+						<br>
+						<p>📌 Example usage:</p>
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+memory = MemoryManager()
+memory.add("test1", HumanMessage(content="What's the weather today?"))
+memory.add("test1", AIMessage(content="It's sunny in Tokyo."))
+</code>
+							</pre>
+						</div>
+
+						<p>This makes your chatbot feel more like a real assistant — capable of holding long conversations, referring back to previous questions, and making responses feel coherent and continuous.</p>
+
+						<br>
+						<a id="chat-context" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="chat-context" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">🧵 11.2 Keeping Chat Context Across Queries</h2>
+						</div>
+
+						<p>Memory isn't useful unless it's actively integrated into the reasoning pipeline. In RAGent, memory is used throughout the <span class="code-soft">RAGPipeline</span> to give Gemini the context it needs to answer accurately in multi-turn scenarios.</p>
+
+						<div style="margin-top: 20px;"><b>Step 1: Fetch Chat History</b></div>
+						<p>Each time a query comes in, the memory system retrieves the conversation history for the session:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+history_messages = self.memory.get(session_id)
+chat_history_str = self.messages_to_string(history_messages)
+</code>
+							</pre>
+						</div>
+
+						<p>The <span class="code-soft">messages_to_string()</span> method converts this history into a readable string for prompt injection:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-text">
+user: What is K12HSN?
+assistant: It stands for K-12 High-Speed Network.
+user: What does the abbreviation stand for?
+</code>
+							</pre>
+						</div>
+
+						<br>
+						<div style="margin-top: 20px;"><b>Step 2: Inject Context into Prompt</b></div>
+						<p>This formatted chat history is injected into Gemini's system prompt, ensuring the LLM has full context when generating the next answer:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+ChatPromptTemplate.from_messages([
+	("system", "{chat_history}\n\n" + system_prompt),
+	("human", "{input}")
+])
+</code>
+							</pre>
+						</div>
+
+						<br>
+						<div style="margin-top: 20px;"><b>Step 3: Save Each Exchange After Response</b></div>
+						<p>Once Gemini responds, the assistant saves both the user question and the AI answer back to memory:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+self.memory.add(session_id, HumanMessage(content=query))
+self.memory.add(session_id, AIMessage(content=answer))
+</code>
+							</pre>
+						</div>
+
+						<p>This allows the assistant to stay in sync with the user across follow-up queries, even if they refer to things mentioned several messages earlier.</p>
+
+						<p>🧠 Example interaction:</p>
+						<ul style="padding-left: 40px;">
+							<li><b>Q1:</b> What is the full form of K12HSN?</li>
+							<li><b>A1:</b> K12HSN stands for K-12 High-Speed Network.</li>
+							<li><b>Q2:</b> What does the abbreviation stand for?</li>
+							<li><b>A2:</b> It stands for K-12 High-Speed Network.</li>
+						</ul>
+
+						<p>By maintaining full chat history per session, <b>RAGent</b> becomes smarter and more natural — capable of drawing context from earlier interactions and providing coherent responses even in complex, branching conversations.</p>
+
+						<hr class="blg-hr">
+					</div>
+					<!-- End of Memory Management -->
+
+					<!-- 12. Start of Gradio Web UI -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+
+						<a id="gradio-ui" style="position: relative; top: -110px; visibility: hidden;"></a>
+						<div id="gradio-ui" class="blg-main-header">
+							<h1 style="color: #2c3e50; font-size: 28px;">💬 12. Gradio Web UI</h1>
+						</div>
+
+						<p>To make the RAGent Chatbot accessible and easy to use, we've built a clean, interactive interface using <b>Gradio</b>. The application is split into two major panels:</p>
+
+						<ul style="padding-left: 40px;">
+							<li><b>📂 Left Panel — File Upload:</b> Upload documents like PDFs, Excel, Word, etc.</li>
+							<li><b>💬 Right Panel — Chat Interface:</b> Ask natural language questions and get intelligent answers powered by RAG + tools.</li>
+						</ul>
+
+						<p>Together, these panels form a seamless workflow where users can upload knowledge sources and query them instantly — all without any coding or configuration.</p>
+
+						<br>
+						<a id="file-upload" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="file-upload" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">📂 12.1 File Upload Interface</h2>
+						</div>
+
+						<p>The left panel allows users to upload one or more documents in the following supported formats:</p>
+						<ul style="padding-left: 40px;">
+							<li><b>PDF:</b> Standard document reports and articles</li>
+							<li><b>DOCX:</b> Microsoft Word files</li>
+							<li><b>XLSX:</b> Excel spreadsheets</li>
+							<li><b>PPTX:</b> Presentation slides</li>
+							<li><b>CSV, TXT, JSON:</b> Structured and unstructured text data</li>
+						</ul>
+
+						<br>
+						<p>Once the user clicks the <b>Upload Files</b> button, the system processes each file in the background:</p>
+						<ul style="padding-left: 40px;">
+							<li>📄 File type detection and format-specific parsing</li>
+							<li>✂️ Content chunking using <span class="code-soft">DocumentChunker</span></li>
+							<li>🧼 Text normalization and deduplication</li>
+							<li>🧠 Embedding each chunk using <span class="code-soft">BAAIEmbedder</span></li>
+							<li>🧩 BM25 tokenization for hybrid search</li>
+							<li>📥 Final storage in <b>QdrantDB</b> with vector + text + metadata</li>
+						</ul>
+
+						<p>The actual upload logic in <span class="code-soft">app.py</span> uses chained callbacks to show progress and handle errors gracefully:</p>
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+self.upload_btn.click(
+	fn=self.clear_outputs,
+	inputs=[],
+	outputs=[self.progress_output, self.status_output]
+).then(
+	fn=self.upload_and_process,
+	inputs=self.uploaded_files,
+	outputs=[self.progress_output, self.status_output],
+	show_progress="hidden"
+)
+</code>
+							</pre>
+						</div>
+
+						<p>✅ After successful upload, the UI confirms with:</p>
+						<p style="background: #fef9e7; border-left: 4px solid #f1c40f; padding: 10px; margin-top: 10px;">
+							<b>3/3 file(s) processed and stored in DB!</b>
+						</p>
+
+						<br>
+						<a id="chat-ui" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="chat-ui" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">🤖 12.2 Chat Interface Logic</h2>
+						</div>
+
+						<p>The right panel is where the magic happens — the actual conversation with the RAGent assistant.</p>
+						<p>Behind the scenes, this chat interface calls the ReAct agent, which determines how to answer each question by combining reasoning and tool use:</p>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+response = self.agent.run(query, past_messages)
+</code>
+							</pre>
+						</div>
+
+						<p>The decision flow works like this:</p>
+						<ul style="padding-left: 40px;">
+							<li><b>🔍 Step 1:</b> Try <span class="code-soft">rag_search</span> to look up answers from uploaded documents via Qdrant</li>
+							<li><b>🌐 Step 2:</b> If nothing relevant is found, try external tools:
+								<ul style="padding-left: 40px;">
+									<li><span class="code-soft">web_search</span> for current events</li>
+									<li><span class="code-soft">wikipedia</span> for factual definitions</li>
+									<li><span class="code-soft">weather</span> for city-specific updates</li>
+									<li><span class="code-soft">calculator</span> for math problems</li>
+								</ul>
+							</li>
+							<li><b>🧠 Step 3:</b> As a last resort, use <span class="code-soft">llm_instruction</span> for summarization, rewriting, or creative tasks</li>
+						</ul>
+
+						<p>All of this happens without the user needing to specify which tool to use — the agent decides based on the query type.</p>
+
+						<br>
+						<a id="tool-response-display" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="tool-response-display" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">🧾 12.3 Tool Responses and Chat History</h2>
+						</div>
+
+						<p>Every response from the assistant includes the <b>final answer</b> produced by one or more tools. In addition:</p>
+
+						<ul style="padding-left: 40px;">
+							<li>💾 <b>All messages</b> are saved in session memory using <span class="code-soft">MemoryManager</span></li>
+							<li>🔁 <b>Full chat history</b> is preserved, so follow-up questions remain context-aware</li>
+						</ul>
+
+						<div class="blg-code-container">
+							<pre class="line-numbers"><code class="language-python">
+self.memory.add(session_id, HumanMessage(content=query))
+self.memory.add(session_id, AIMessage(content=answer))
+</code>
+							</pre>
+						</div>
+
+						<p>🧪 Example Multi-Tool Query:</p>
+						<div style="background: #fef9e7; padding: 10px; border-left: 4px solid #f1c40f; margin-top: 10px;">
+							<b>User:</b> What is the salary of Deborah Downs? Also, what's the weather like in Tokyo?
+							<br><b>→ Agent uses:</b> <span class="code-soft">rag_search</span> for salary + <span class="code-soft">weather</span> for city weather
+							<br><b>→ Final Answer:</b> Deborah Downs earns $72,600. The temperature in Tokyo is 25°C with light rain and 78% humidity.
+						</div>
+
+						<br><br>
+						<a id="try-live" style="position: relative; top: -90px; visibility: hidden;"></a>
+						<div id="try-live" class="blg-sub-header">
+							<h2 style="color: #2c3e50; font-size: 22px;">🔗 12.4 Try Live RAGent App: GitHub & Hugging Face</h2>
+						</div>
+
+						<p>Want to try RAGent in action or explore the code?</p>
+						<ul style="padding-left: 40px;">
+							<li>🧠 <b>GitHub Repository:</b><br>
+							👉 <a href="https://github.com/shafiqul-islam-sumon/ragent-chatbot" target="_blank">github.com/shafiqul-islam-sumon/ragent-chatbot</a></li>
+
+							<li>🚀 <b>Live Hugging Face App:</b><br>
+							👉 <a href="https://huggingface.co/spaces/shafiqul1357/ragent-chatbot" target="_blank">huggingface.co/spaces/shafiqul1357/ragent-chatbot</a></li>
+						</ul>
+
+						<p>With the live app, you can:</p>
+						<ul style="padding-left: 40px;">
+							<li>📄 Upload your own files</li>
+							<li>💬 Ask real-world questions</li>
+							<li>🧠 Watch the agent think and reason</li>
+							<li>🔧 See tools like weather, Wikipedia, and search in action</li>
+						</ul>
+
+						<br>
+						<p>🖼️ App Preview:</p>
+						<div class="blg-img-container">
+							<img src="../img/blog_6/app.png" alt="RAGent Chatbot UI" style="width: 70%; margin-bottom: 20px;"/>
+							<br>
+							<p><b>Figure 1 : RAGent Chatbot UI</b></p>
+						</div>
+						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
+							👆 This is what the interface looks like. Upload docs, ask questions, and let the agent do the thinking!
+						</blockquote>
+
+						<hr class="blg-hr">
+					</div>
+					<!-- End of Gradio Web UI -->
+
+					<!-- 13. Conclusion -->
+					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 40px;">
+
+					<a id="conclusion" style="position: relative; top: -110px; visibility: hidden;"></a>
+					<div id="conclusion" class="blg-main-header">
+						<h1 style="color: #2c3e50; font-size: 28px;">🎯 13. Conclusion</h1>
+					</div>
+
+					<p>The <b>RAGent Chatbot</b> is more than just another AI chatbot — it's a full-fledged intelligent assistant built around a modular, explainable, and extensible architecture. By smartly combining several key technologies, RAGent delivers an experience that's both powerful and practical.</p>
+
+					<p>Here's a quick recap of what makes this system unique:</p>
+
+					<ul style="padding-left: 40px;">
+						<li>🔍 <b>Retrieval-Augmented Generation (RAG):</b> Enables accurate, document-grounded responses based on user-uploaded files</li>
+						<li>🛠️ <b>Dynamic Tool Integration:</b> Lets the agent solve a wide range of tasks — from weather to Wikipedia to math</li>
+						<li>🧠 <b>LLM-Based Fallback:</b> Handles open-ended, creative, or general queries when retrieval tools don't apply</li>
+						<li>💾 <b>Chat Memory:</b> Maintains context throughout the conversation, enabling natural, multi-turn interactions</li>
+						<li>🖥️ <b>Gradio Web UI:</b> Provides a clean and intuitive interface for users to upload documents and chat effortlessly</li>
+					</ul>
+
+					<br>
+					<p>From answering factual queries to integrating external knowledge and using logical reasoning steps — everything is stitched together in one seamless loop. 
+						The system is highly customizable and can be extended in many ways:</p>
+					<ul style="padding-left: 40px;">
+						<li>➕ Add new tools — like <span class="code-soft">SQL executor</span>, <span class="code-soft">code runner</span>, or <span class="code-soft">finance APIs</span></li>
+						<li>🔄 Swap in other models — use different embedding models or LLMs based on your budget or preference</li>
+						<li>📈 Boost accuracy — apply re-ranking or response rephrasing for even smarter outputs</li>
+						<li>☁️ Deploy anywhere — Hugging Face, Streamlit Cloud, or private servers for full control</li>
+					</ul>
+
+					<p style="margin-top: 25px;"><b>🔮 In short:</b> RAGent isn't just a chatbot — it's a template for intelligent, tool-augmented assistants. A blueprint for modular AI applications that are practical, explainable, and extensible.</p>
+
+					</div>
+					<!-- End of Conclusion -->
+
+
+
+					<!-- Start of Technical stacks -->
+					<div class="reference-container">
+						<hr class="blg-hr">
+						<h2><img src="../img/technical_stack/stack.png" alt="Technical Stack Icon" style="width: 48px; vertical-align: middle; margin-right: 6px;"> <b>Technical Stacks</b></h2>
+						<ul class="blg-ul">
+							<li class="blg-li">
+								<img src="../img/technical_stack/python.svg" alt="Python" width="32" style="vertical-align: middle; margin-right: 6px;">
+								<b>Python</b> 
+							</li>
+							<li class="blg-li">
+								<img src="../img/technical_stack/gradio.svg" alt="Gradio" width="32" style="vertical-align: middle; margin-right: 6px;">
+								<b>Gradio</b> 
+							</li>
+							<li class="blg-li">
+								<img src="../img/technical_stack/huggingface.svg" alt="Hugging Face" width="32" style="vertical-align: middle; margin-right: 6px;">
+								<b>Hugging Face</b> 
+							</li>
+							<li class="blg-li">
+								<img src="../img/technical_stack/rag.png" alt="RAG" width="32" style="vertical-align: middle; margin-right: 6px;">
+								<b>RAG</b> 
+							</li>
+							<li class="blg-li">
+								<img src="../img/technical_stack/gemini.svg" alt="Gemini" width="32" style="vertical-align: middle; margin-right: 6px;">
+								<b>Google Gemini</b> 
+							</li>
+							<li class="blg-li">
+								<img src="../img/technical_stack/qdrant.svg" alt="Qdrant" width="32" style="vertical-align: middle; margin-right: 6px;">
+								<b>Qdrant</b> 
+							</li>
+							<li class="blg-li">
+								<img src="../img/technical_stack/langchain.svg" alt="LangChain" width="32" style="vertical-align: middle; margin-right: 6px;">
+								<b>LangChain</b> 
+							</li>
+							<li class="blg-li">
+								<img src="../img/technical_stack/prompt.png" alt="Prompt Engineering" width="32" style="vertical-align: middle; margin-right: 6px;">
+								<b>Prompt Engineering</b> 
+							</li>
+							<li class="blg-li">
+								<img src="../img/technical_stack/wikipedia.svg" alt="Wikipedia" width="32" style="vertical-align: middle; margin-right: 6px;">
+								<b>Wikipedia</b> 
+							</li>
+							<li class="blg-li">
+								<img src="../img/technical_stack/tavily.png" alt="Tavily API" width="32" style="vertical-align: middle; margin-right: 6px;">
+								<b>Tavily API</b> 
+							</li>
+							<li class="blg-li">
+								<img src="../img/technical_stack/open_weather.png" alt="OpenWeatherMap API" width="32" style="vertical-align: middle; margin-right: 6px;">
+								<b>OpenWeatherMap API</b> 
+							</li>
+						</ul>
+						<br>
+					</div>
+					<!-- End of Technical stacks -->
+
+					<!-- Download Source Code -->
+
+					<h1>
+						<a href="https://github.com/shafiqul-islam-sumon/ragent-chatbot" target="_blank" style="text-decoration: none;">
+							<img src="../img/others/download.svg" alt="Download" style="width: 48px; height: 48px; vertical-align: middle; margin-right: 5px;"/>
+						</a>
+						Download Source Code : 
+						<a href="https://github.com/shafiqul-islam-sumon/ragent-chatbot" target="_blank" style="text-decoration: underline;">RAGent Chatbot</a>
+					</h1>
+					<br>
+
+					<div class="reference-container">
+						<hr class="blg-hr">
+						<h2>📚 <b>References</b></h2>
+						<ul class="blg-ul">
+							<li class="blg-li">🔗 <b>GitHub Repository:</b> 
+								<a target="_blank" style="text-decoration: underline;" href="https://github.com/shafiqul-islam-sumon/ragent-chatbot">
+									RAGent Chatbot
+								</a>
+							</li>
+							<li class="blg-li">🤗 <b>Live App in Hugging Face Space:</b> 
+								<a target="_blank" style="text-decoration: underline;" href="https://huggingface.co/spaces/shafiqul1357/ragent-chatbot">
+									RAGent Chatbot App
+								</a>
+							</li>
+							<li class="blg-li">
+								<img src="../img/technical_stack/python.svg" alt="Python Icon" width="24" style="vertical-align: middle; margin-right: 6px;">
+								<b>Python:</b> 
+								<a target="_blank" style="text-decoration: underline;" href="https://www.python.org/">
+									Python Website
+								</a>
+							</li>
+							<li class="blg-li">
+								<img src="../img/technical_stack/gradio.svg" alt="Gradio Icon" width="24" style="vertical-align: middle; margin-right: 6px;">
+								<b>Gradio:</b> 
+								<a target="_blank" style="text-decoration: underline;" href="https://www.gradio.app/">
+									Gradio Website
+								</a>
+							</li>
+							<li class="blg-li">
+								<img src="../img/technical_stack/medium.svg" alt="Medium Icon" width="24" style="vertical-align: middle; margin-right: 6px;">
+								<b>Medium Article:</b> 
+								<a target="_blank" style="text-decoration: underline;" href="https://medium.com/@shafiqul-islam/build-a-ragent-chatbot-combine-rag-and-react-agent-with-tools-in-one-smart-app-76f913dc86df">
+									Read the Blog on Medium
+								</a>
+							</li>
+							<li class="blg-li">
+								<img src="../img/technical_stack/gemini.svg" alt="Google Gemini" width="24" style="vertical-align: middle; margin-right: 6px;">
+								<b>Google Gemini:</b> 
+								<a target="_blank" style="text-decoration: underline;" href="https://gemini.google.com/app">
+									Try Gemini
+								</a>
+							</li>
+							<li class="blg-li">
+								<img src="../img/technical_stack/langchain.svg" alt="LangChain" width="24" style="vertical-align: middle; margin-right: 6px;">
+								<b>LangChain:</b> 
+								<a target="_blank" style="text-decoration: underline;" href="https://www.langchain.com/">
+									LangChain Website
+								</a>
+							</li>
+							<li class="blg-li">
+								<img src="../img/technical_stack/qdrant.svg" alt="Qdrant" width="24" style="vertical-align: middle; margin-right: 6px;">
+								<b>Qdrant:</b> 
+								<a target="_blank" style="text-decoration: underline;" href="https://qdrant.tech/">
+									Qdrant Website
+								</a>
+							</li>
+						</ul>
+					</div>
+
+					<br><br>
+
+					<div class="blg-center-txt">
+						<h1>Related Blog Posts</h1>
+					</div>
+
+				<!-- End of blog posts container -->
+				
+				<!-- blog posts in slick slider -->
+				<div id="postContainer" class="row">
+					<!-- Blog posts will be dynamically generated here -->
+				</div>
+
+				<!-- Slide Counter -->
+				<div class="blg-slide-counter">
+					<span id="currentSlide">1</span> / <span id="totalSlides">1</span>
+				</div>
+				<br>
+
+			</div>
+		</section>
+		
+		<section class="footer-section">
+			<div class="container footer">
+				<div class="row footer">
+					<div class="col-md-8">
+						<div class="copyright">
+							<div class="logo-circle">
+								<img src="../img/others/blog_logo.svg" alt="Shafiqul AI" style="height:24px; vertical-align:middle;">
+							</div>
+							<span> &copy; <span id="currentYear"></span> Shafiqul AI | All rights reserved. Developed by Md Shafiqul Islam</span>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<ul class="social-network">
+							<li>
+								<a target="_blank" href="mailto:mdshafiqul.islam603@gmail.com" data-placement="top" title="Gmail">
+									<img src="../img/contact/gmail.svg" alt="Gmail">
+									<span class="icon-label">Gmail</span>
+								</a>
+							</li>
+							<li>
+								<a target="_blank" href="https://www.linkedin.com/in/shafiqul-islam-sumon/" data-placement="top" title="LinkedIn">
+									<img src="../img/contact/linkedin.svg" alt="LinkedIn">
+									<span class="icon-label">LinkedIn</span>
+								</a>
+							</li>
+							<li>
+								<a target="_blank" href="https://github.com/shafiqulislamsumon" data-placement="top" title="GitHub">
+									<img src="../img/contact/github.svg" alt="GitHub">
+									<span class="icon-label">GitHub</span>
+								</a>
+							</li>
+							<li>
+								<a target="_blank" href="https://leetcode.com/u/shafiqul/" data-placement="top" title="LeetCode">
+									<img src="../img/contact/leetcode.svg" alt="LeetCode">
+									<span class="icon-label">LeetCode</span>
+								</a>
+							</li>
+							<li>
+								<a target="_blank" href="https://huggingface.co/shafiqul1357" data-placement="top" title="Hugging Face">
+									<img src="../img/contact/huggingface.svg" alt="Hugging Face">
+									<span class="icon-label">Hugging Face</span>
+								</a>
+							</li>
+							<li>
+								<a target="_blank" href="https://medium.com/@shafiqul-islam" data-placement="top" title="Medium">
+									<img src="../img/contact/medium.svg" alt="Medium">
+									<span class="icon-label">Medium</span>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</section>
+
+
+	</div> <!-- end wrapper -->
+
+	<a href="#" class="scrollup"><i class="fa fa-angle-up active"></i></a>
+
+	<!-- javascript -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script type="text/javascript" src="../js/jquery-3.7.1.min.js"></script>
+	<script type="text/javascript" src="../js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="../js/slick.min.js"></script>
+	<script type="text/javascript" src="../js/tabulator.min.js"></script>
+	<script type="text/javascript" src="../js/prism.js"></script>
+	<script type="text/javascript" src="../js/smooth-scroll.polyfills.min.js"></script>
+	<script type="text/javascript" src="../js/detail.js"></script>
+
+	<script>
+		document.getElementById("currentYear").textContent = new Date().getFullYear();
+	</script>	
+
+</body>
+
+</html>

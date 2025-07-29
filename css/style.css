@@ -500,6 +500,8 @@ select.selectmenu {
 	text-align: left;
     margin-top: 10px;
     margin-bottom: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
     background-color: #ebf4fa;
     border-bottom: 5px solid #358ccb;
     box-sizing: border-box;
