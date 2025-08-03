@@ -1,3 +1,4 @@
 User-agent: *
+Disallow: /*?id=
 Allow: /
 Sitemap: https://shafiqulai.github.io/sitemap.xml
