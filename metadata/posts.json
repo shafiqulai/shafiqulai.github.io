@@ -2,7 +2,7 @@
     {
         "id": 1,
         "author": "MD SHAFIQUL ISLAM",
-        "author_img": "../img/author/shafiqul.jpg",
+        "author_img": "../img/author/shafiqul.png",
         "category": ["Docker"],
         "image": "./img/blog_1/thumbnail.webp",
         "title": "Protect Sensitive Information in Docker: Accessing .env Credentials Without Exposing Them",
@@ -13,7 +13,7 @@
     {
         "id": 2,
         "author": "MD SHAFIQUL ISLAM",
-        "author_img": "../img/author/shafiqul.jpg",
+        "author_img": "../img/author/shafiqul.png",
         "category": ["Git"],
         "image": "./img/blog_2/thumbnail.webp",
         "title": "How to Generate an SSH Key and Add It to GitHub for Secure Git Operations",
@@ -24,8 +24,8 @@
     {
         "id": 3,
         "author": "MD SHAFIQUL ISLAM",
-        "author_img": "../img/author/shafiqul.jpg",
-        "category": ["Agent"],
+        "author_img": "../img/author/shafiqul.png",
+        "category": ["Agent", "OpenAI"],
         "image": "./img/blog_3/thumbnail.webp",
         "title": "Create ReAct AI Agent from Scratch using Python Without any Framework: A Step-by-Step Guide",
         "date": "15 Mar 2025",
@@ -35,35 +35,46 @@
     {
         "id": 4,
         "author": "MD SHAFIQUL ISLAM",
-        "author_img": "../img/author/shafiqul.jpg",
+        "author_img": "../img/author/shafiqul.png",
         "category": ["Hugging Face", "Streamlit"],
         "image": "./img/blog_4/thumbnail.png",
         "title": "Deploy Streamlit App to Hugging Face Space - A Complete Guide",
-        "date": "24 May 2025",
+        "date": "24 Apr 2025",
         "description": "Deploying a machine learning app should be straightforward and accessible. This article demonstrates how to turn a local Streamlit application into a publicly accessible web app using Hugging Face Spaces, without the need for complex infrastructure. It's ideal for showcasing projects, sharing with stakeholders, or building an interactive portfolio.",
         "readMoreUrl": "./blogs/blog_4.html"
     },
     {
         "id": 5,
         "author": "MD SHAFIQUL ISLAM",
-        "author_img": "../img/author/shafiqul.jpg",
+        "author_img": "../img/author/shafiqul.png",
         "category": ["Hugging Face", "Gradio"],
         "image": "./img/blog_5/thumbnail.png",
         "title": "Deploy Gradio App to Hugging Face Space - Full Step by Step Guide",
-        "date": "18 Jul 2025",
+        "date": "18 May 2025",
         "description": "This comprehensive guide provides a step-by-step approach to deploying a Gradio application on Hugging Face Spaces. It covers project preparation, dependency management, and Space configuration to ensure a smooth deployment experience. Readers will learn how to structure their code, handle runtime settings, and troubleshoot common issues. By the end, you will have a fully functional Gradio app publicly accessible and hosted on a reliable platform.",
         "readMoreUrl": "./blogs/blog_5.html"
     },
     {
         "id": 6,
         "author": "MD SHAFIQUL ISLAM",
-        "author_img": "../img/author/shafiqul.jpg",
-        "category": ["RAG", "Agent", "Chatbot", "LangChain"],
+        "author_img": "../img/author/shafiqul.png",
+        "category": ["RAG", "Agent", "Chatbot", "LangChain", "Qdrant", "Gemini"],
         "image": "./img/blog_6/thumbnail.webp",
         "title": "Build a Smart RAGent Chatbot: Combine RAG and ReAct Agent with Tools in One Powerful App",
-        "date": "25 Jul 2025",
+        "date": "25 Jun 2025",
         "description": "In this blog post, you'll learn how to build a powerful AI chatbot that combines Retrieval-Augmented Generation (RAG) with the ReAct agent framework. This system lets users upload documents (PDF, DOCX, CSV, etc.) and ask questions based on the content or even outside it. If the answer isn't found in the document vector database (Qdrant), the chatbot intelligently switches to external tools like web search, Wikipedia, weather, and calculator. The app is powered by Gemini LLM and features a Gradio web interface for seamless interaction. We'll guide you step by step—from setting up the environment to implementing each component and integrating all parts into a unified AI assistant.",
         "readMoreUrl": "./blogs/blog_6.html"
+    },
+    {
+        "id": 7,
+        "author": "MD SHAFIQUL ISLAM",
+        "author_img": "../img/author/shafiqul.png",
+        "category": ["RAG", "Recommendation", "ChromaDB", "Llama"],
+        "image": "./img/blog_7/thumbnail.webp",
+        "title": "AI-Powered Fashion Recommendation System: Smart Product Discovery Using RAG from Metadata",
+        "date": "28 Jul 2025",
+        "description": "An AI-powered fashion recommendation system helps users find the right products using natural language queries. It leverages Retrieval-Augmented Generation (RAG) to connect user intent with relevant product metadata. Product information is embedded and stored in a vector database for efficient retrieval. A re-ranking model improves the relevance of results based on user preferences. The system is wrapped in a clean, user-friendly web interface for easy exploration.",
+        "readMoreUrl": "./blogs/blog_7.html"
     }
     
 ]

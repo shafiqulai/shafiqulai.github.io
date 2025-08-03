@@ -69,7 +69,7 @@ function displayTopBlogPost(post) {
     imgContainer.className = 'col-md-6 top-blg-img-container';
 
     const imgLink = document.createElement('a');
-    imgLink.href = `${post.readMoreUrl}?id=${post.id}`;
+    imgLink.href = `${post.readMoreUrl}`;
     imgLink.target = '_blank';
     imgLink.rel = 'noopener noreferrer';
 
@@ -85,7 +85,7 @@ function displayTopBlogPost(post) {
     descContainer.className = 'col-md-6 top-blg-desc-container';
 
     const titleLink = document.createElement('a');
-    titleLink.href = `${post.readMoreUrl}?id=${post.id}`;
+    titleLink.href = `${post.readMoreUrl}`;
     titleLink.target = '_blank';
     titleLink.rel = 'noopener noreferrer';
 
@@ -109,7 +109,7 @@ function displayTopBlogPost(post) {
     readMoreButton.innerHTML = `<img src="${iconPath}" alt="Read More" style="width:24px; height:auto; vertical-align:middle; margin-right:10px;">Read More`;
 
     readMoreButton.addEventListener('click', () => {
-        window.open(`${post.readMoreUrl}?id=${post.id}`, '_blank', 'noopener');
+        window.open(`${post.readMoreUrl}`, '_blank', 'noopener');
     });
     descContainer.appendChild(readMoreButton);
 
@@ -125,7 +125,7 @@ function createPostElements(post, postDiv) {
     imageContainer.className = 'image-container';
 
     const imageLink = document.createElement('a');
-    imageLink.href = `${post.readMoreUrl}?id=${post.id}`;
+    imageLink.href = `${post.readMoreUrl}`;
     imageLink.target = "_blank";
     imageLink.rel = "noopener noreferrer";
 
@@ -137,7 +137,7 @@ function createPostElements(post, postDiv) {
     postDiv.appendChild(imageContainer);
 
     const titleLink = document.createElement('a');
-    titleLink.href = `${post.readMoreUrl}?id=${post.id}`;
+    titleLink.href = `${post.readMoreUrl}`;
     titleLink.target = "_blank";
     titleLink.rel = "noopener noreferrer";
 
@@ -162,7 +162,7 @@ function createPostElements(post, postDiv) {
     readMoreButton.innerHTML = `<img src="${iconPath}" alt="Read More" style="width:24px; height:auto; vertical-align:middle; margin-right:10px;">Read More`;
 
     readMoreButton.addEventListener('click', () => {
-        window.open(`${post.readMoreUrl}?id=${post.id}`, '_blank', 'noopener');
+        window.open(`${post.readMoreUrl}`, '_blank', 'noopener');
     });
     postDiv.appendChild(readMoreButton);
 }
@@ -245,16 +245,22 @@ function filterPostsByCategory(category) {
 
 function getCategoryIcons() {
     return {
-        "All": "./img/category/all.png",
-        "Agent": "./img/category/agent.png",
-        "Chatbot": "./img/category/chatbot.png",
-        "Streamlit": "./img/category/streamlit.svg",
-        "Hugging Face": "./img/category/huggingface.svg",
-        "Docker": "./img/category/docker.svg",
-        "Git": "./img/category/git.svg",
-        "Gradio": "./img/category/gradio.svg",
-        "RAG": "./img/category/rag.png",
-        "LangChain": "./img/category/langchain.svg"
+        "All": "./img/others/all.png",
+        "Agent": "./img/technical_stack/agent.png",
+        "Chatbot": "./img/technical_stack/chatbot.png",
+        "Streamlit": "./img/technical_stack/streamlit.svg",
+        "Hugging Face": "./img/technical_stack/huggingface.svg",
+        "Docker": "./img/technical_stack/docker.svg",
+        "Git": "./img/technical_stack/git.svg",
+        "Gradio": "./img/technical_stack/gradio.svg",
+        "RAG": "./img/technical_stack/rag.png",
+        "LangChain": "./img/technical_stack/langchain.svg",
+        "Qdrant": "./img/technical_stack/qdrant.svg",
+        "ChromaDB": "./img/technical_stack/chroma.svg",
+        "OpenAI": "./img/technical_stack/openai.svg",
+        "Gemini": "./img/technical_stack/gemini.svg",
+        "Llama": "./img/technical_stack/llama.png",
+        "Recommendation": "./img/technical_stack/recommendation.png"
     };
 }
 

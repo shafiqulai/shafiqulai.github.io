@@ -34,7 +34,6 @@ function populateAuthorInfo(post) {
     }
 
     if (post.author_img) {
-        console.log(post.author_img);
         authorImgElem.src = post.author_img;
     } else {
         authorImgElem.src = "../img/author/shafiqul.jpg"; // fallback image
@@ -84,7 +83,7 @@ function createPostElement(post) {
     imageContainer.className = 'image-container';
 
     const imageLink = document.createElement('a');
-    imageLink.href = `${post.readMoreUrl}?id=${post.id}`;
+    imageLink.href = `${post.readMoreUrl}`;
     imageLink.target = "_blank"; // Ensure it opens in a new tab
     imageLink.rel = "noopener noreferrer"; // Security reasons
 
@@ -97,7 +96,7 @@ function createPostElement(post) {
     postDiv.appendChild(imageContainer);
 
     const titleLink = document.createElement('a');
-    titleLink.href = `${post.readMoreUrl}?id=${post.id}`;
+    titleLink.href = `${post.readMoreUrl}`;
     titleLink.target = "_blank"; // Ensure it opens in a new tab
     titleLink.rel = "noopener noreferrer"; // Security reasons
 
@@ -121,7 +120,7 @@ function createPostElement(post) {
     readMoreButton.innerHTML = `<img src="${iconPath}" alt="Read More" style="width:24px; height:auto; vertical-align:middle; margin-right:10px;">Read More`;
 
     readMoreButton.addEventListener('click', () => {
-        window.open(`${post.readMoreUrl}?id=${post.id}`, '_blank', 'noopener');
+        window.open(`${post.readMoreUrl}`, '_blank', 'noopener');
     });
     postDiv.appendChild(readMoreButton);
 
@@ -188,11 +187,16 @@ function getSmoothScrol() {
 }
 
 window.onload = function () {
-    // Get the blog ID from the URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const currentPostId = parseInt(urlParams.get('id'), 10); // Assuming IDs are integers
+    // Extract post ID from URL path, e.g., blog_6.html
+    const path = window.location.pathname;
+    const filename = path.substring(path.lastIndexOf('/') + 1);  // e.g., blog_6.html
+    const idMatch = filename.match(/blog_(\d+)\.html/);
 
-    fetchPosts(currentPostId);
-    getSmoothScrol()
-
+    if (idMatch && idMatch[1]) {
+        const currentPostId = parseInt(idMatch[1], 10);
+        fetchPosts(currentPostId);
+        getSmoothScrol();
+    } else {
+        console.error("❌ Could not extract blog ID from URL.");
+    }
 };
