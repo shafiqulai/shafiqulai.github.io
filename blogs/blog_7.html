@@ -1,1318 +1,1365 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+	<head>
+		<!-- Google tag (gtag.js) -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-6SEFZQJHM1"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
 
-<head>
+			gtag("config", "G-6SEFZQJHM1", {
+				cookie_domain: "shafiqulai.github.io",
+			});
+		</script>
 
-	<!-- Google tag (gtag.js) -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-6SEFZQJHM1"></script>
-	<script>
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag('js', new Date());
+		<meta charset="utf-8" />
+		<title>AI-Powered Fashion Recommendation System: Smart Product Discovery Using RAG from Metadata</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="An AI-powered fashion recommendation system helps users find the right products using natural language queries. It leverages Retrieval-Augmented Generation (RAG) to connect user intent with relevant product metadata. Product information is embedded and stored in a vector database for efficient retrieval. A re-ranking model improves the relevance of results based on user preferences. The system is wrapped in a clean, user-friendly web interface for easy exploration."
+		/>
+		<meta name="author" content="MD SHAFIQUL ISLAM" />
+		<link rel="icon" href="../img/others/favicon.ico" type="image/x-icon" />
 
-	gtag('config', 'G-6SEFZQJHM1', {
-    	cookie_domain: 'shafiqulai.github.io'
-  	});
-	</script>
+		<!-- css -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
 
-	<meta charset="utf-8">
-	<title>AI-Powered Fashion Recommendation System: Smart Product Discovery Using RAG from Metadata</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<meta name="description" content="An AI-powered fashion recommendation system helps users find the right products using natural language queries. It leverages Retrieval-Augmented Generation (RAG) to connect user intent with relevant product metadata. Product information is embedded and stored in a vector database for efficient retrieval. A re-ranking model improves the relevance of results based on user preferences. The system is wrapped in a clean, user-friendly web interface for easy exploration." />
-	<meta name="author" content="MD SHAFIQUL ISLAM" />
-	<link rel="icon" href="../img/others/favicon.ico" type="image/x-icon">
+		<link rel="stylesheet" href="../css/swiper-bundle.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/style.css" />
+		<link rel="stylesheet" type="text/css" href="../css/prism.css" />
+	</head>
 
-	<!-- css -->
-	<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
-	<link rel="stylesheet" type="text/css" href="../css/font-awesome.css" />
-	<link rel="stylesheet" type="text/css" href="../css/slick.css" />
-	<link rel="stylesheet" type="text/css" href="../css/slick-theme.css" />
-	<link rel="stylesheet" type="text/css" href="../css/tabulator_site.min.css" />
-	<link rel="stylesheet" type="text/css" href="../css/prism.css" />
-	<link rel="stylesheet" type="text/css" href="../css/style.css" />
+	<body>
+		<!-- Reading Progress Bar -->
+		<div id="reading-progress"></div>
+		<div id="wrapper">
+			<div id="site-header"></div>
 
-</head>
-
-<body>
-	<div id="wrapper">
-		<!-- start header -->
-		<header>
-			<div class="navbar navbar-default custom-sticky-navbar">
+			<section id="content">
 				<div class="container">
-					<div class="navbar-header">
-						<button type="button" class="navbar-toggle" data-toggle="collapse"
-							data-target=".navbar-collapse">
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-						</button>
-						<a class="navbar-brand" href="../index.html"><img src="../img/others/logo.png" alt="logo" class="navbar-logo" /></a>
-					</div>
-					<div class="navbar-collapse collapse ">
-						<ul class="nav navbar-nav">
-							<li><a href="../index.html"><img src="../img/others/home.svg" alt="Home" style="width:24px; height:auto; vertical-align:middle; margin-right:10px;">Home</a></li>
-							<li><a href="../about.html"><img src="../img/others/about.svg" alt="About" style="width:24px; height:auto; vertical-align:middle; margin-right:10px;">About</a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</header>
-		<!-- end header -->
-
-		<section id="content">
-			<div class="container">
-
-				<!-- blog details -->
-				<div id="blogContainer">
-					<!-- blog title -->
-					<div class="container blg-title-container">
-						<h2 class="blg-title">AI-Powered Fashion Recommendation System: Smart Product Discovery Using RAG from Metadata</h2>
-					</div>
-
-					<!-- Author Info -->
-					<div class="author_section">
-						<img id="author_img" src="" alt="Author Photo" class="author_img">
-						<div class="author_details">
-							<span id="author_name" class="author_name"></span>
-							<span id="published_date" class="published_date"></span>
-						</div>
-					</div>
-
-					<div class="blg-img-container">
-						<img src="../img/blog_7/thumbnail.webp" alt="AI-Powered Fashion Recommendation System: Smart Product Discovery Using RAG from Metadata" style="width: 70%;"/>
-					</div>
-
-
-					<!-- Start of Preface -->
-					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
-
-						<p>🧭 Finding the right fashion product through traditional search interfaces often feels limiting — especially when users want to describe their needs in natural language. Filters and checkboxes can only go so far when what you really want is to say, “Show me a warm, lightweight jacket under ¥5000 for early spring.”</p>
-
-						<p>🎯 To address this challenge, we developed <b><a href="https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation" target="_blank" style="text-decoration: underline;">RAG Fashion Recommender</a></b>, an AI-powered system that allows users to search for fashion items just by typing what they’re looking for — no need to scroll endlessly or guess the right keywords. The system understands your intent and matches it with the most relevant products using metadata.</p>
-
-						<p>💡 In this blog, we’ll walk through how we built the <b>RAG Fashion Recommender</b> — a smart recommendation system based on <b>Retrieval-Augmented Generation (RAG)</b>, semantic embeddings, and large language models, all wrapped in a simple <b>Streamlit</b> interface.</p>
-
-						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
-							🔍 Whether you’re interested in AI applications, smart search systems, or building real-world projects using open datasets — this guide will walk you through every step.
-						</blockquote>
-						<br>
-					</div>
-					<!-- End of Preface -->
-
-
-					<!-- Table of Contents -->
-					<div class="blg-toc-container">
-						<h1>📚 Table of Contents</h1>
-						<ol class="blg-toc-ol">
-							<li class="blg-toc-li"><a href="#introduction">📘 Introduction</a></li>
-
-							<li class="blg-toc-li"><a href="#project-overview">📌 Project Overview</a></li>
-							<ul class="blg-toc-ul">
-								<li class="blg-toc-li"><a href="#key-features">Key Features</a></li>
-								<li class="blg-toc-li"><a href="#how-it-works">How It Works at a Glance</a></li>
+					<div class="blog-detail-layout">
+						<!-- Left: Sticky TOC Sidebar -->
+						<aside class="toc-sidebar" id="tocSidebar">
+							<div class="toc-sidebar-header">
+								<p class="toc-sidebar-title">Contents</p>
+							</div>
+							<ul class="toc-sidebar-list">
+								<li><a href="#introduction">Introduction</a></li>
+								<li><a href="#project-overview">Project Overview</a></li>
+								<li class="toc-sidebar-sub"><a href="#key-features">Key Features</a></li>
+								<li class="toc-sidebar-sub"><a href="#how-it-works">How It Works</a></li>
+								<li><a href="#project-structure">Project Structure</a></li>
+								<li class="toc-sidebar-sub"><a href="#directory-layout">Directory Layout</a></li>
+								<li class="toc-sidebar-sub"><a href="#file-purpose">Key Files & Modules</a></li>
+								<li><a href="#dataset-summary">Dataset Summary</a></li>
+								<li class="toc-sidebar-sub"><a href="#data-source">Source & Scale</a></li>
+								<li class="toc-sidebar-sub"><a href="#metadata-fields">Metadata Attributes</a></li>
+								<li class="toc-sidebar-sub"><a href="#data-usage">How We Use the Data</a></li>
+								<li><a href="#setup-environment">Environment Setup</a></li>
+								<li class="toc-sidebar-sub"><a href="#install-dependencies">Installing Dependencies</a></li>
+								<li class="toc-sidebar-sub"><a href="#env-file">Preparing .env File</a></li>
+								<li class="toc-sidebar-sub"><a href="#run-locally">Running Locally</a></li>
+								<li><a href="#metadata-embedding">Metadata & Embedding</a></li>
+								<li class="toc-sidebar-sub"><a href="#description-cleaning">Cleaning Descriptions</a></li>
+								<li class="toc-sidebar-sub"><a href="#paragraph-generation">Paragraph Generation</a></li>
+								<li class="toc-sidebar-sub"><a href="#vector-embedding">Vector Embedding</a></li>
+								<li><a href="#vector-db">Vector Database</a></li>
+								<li class="toc-sidebar-sub"><a href="#store-vectors">Storing Embeddings</a></li>
+								<li class="toc-sidebar-sub"><a href="#query-vectors">Querying Products</a></li>
+								<li><a href="#search-rerank">Semantic Search & Re-Rank</a></li>
+								<li class="toc-sidebar-sub"><a href="#initial-retrieval">Initial Retrieval</a></li>
+								<li class="toc-sidebar-sub"><a href="#reranking-llm">Re-Ranking with LLM</a></li>
+								<li class="toc-sidebar-sub"><a href="#final-output">Final Output</a></li>
+								<li><a href="#prompt-engineering">Prompt Engineering</a></li>
+								<li class="toc-sidebar-sub"><a href="#html-prompt">HTML Cleaning Prompt</a></li>
+								<li class="toc-sidebar-sub"><a href="#paragraph-prompt">Paragraph Prompt</a></li>
+								<li class="toc-sidebar-sub"><a href="#rerank-prompt">Re-Ranking Prompt</a></li>
+								<li><a href="#streamlit-ui">Streamlit Web UI</a></li>
+								<li class="toc-sidebar-sub"><a href="#left-panel">Left Panel</a></li>
+								<li class="toc-sidebar-sub"><a href="#middle-panel">Middle Panel</a></li>
+								<li class="toc-sidebar-sub"><a href="#right-panel">Right Panel</a></li>
+								<li class="toc-sidebar-sub"><a href="#search-box">Search Input</a></li>
+								<li><a href="#example-queries">Example Queries</a></li>
+								<li class="toc-sidebar-sub"><a href="#simple-queries">Simple Queries</a></li>
+								<li class="toc-sidebar-sub"><a href="#complex-queries">Complex Queries</a></li>
+								<li><a href="#conclusion">Conclusion</a></li>
 							</ul>
-
-							<li class="blg-toc-li"><a href="#project-structure">🗂️ Project Structure</a></li>
-							<ul class="blg-toc-ul">
-								<li class="blg-toc-li"><a href="#directory-layout">Directory Layout</a></li>
-								<li class="blg-toc-li"><a href="#file-purpose">Purpose of Key Files and Modules</a></li>
-							</ul>
-
-							<li class="blg-toc-li"><a href="#dataset-summary">🧾 Dataset Summary</a></li>
-							<ul class="blg-toc-ul">
-								<li class="blg-toc-li"><a href="#data-source">Source and Scale of the Data</a></li>
-								<li class="blg-toc-li"><a href="#metadata-fields">Metadata Attributes Provided</a></li>
-								<li class="blg-toc-li"><a href="#data-usage">How We Use the Data</a></li>
-							</ul>
-
-							<li class="blg-toc-li"><a href="#setup-environment">⚙️ Setting Up the Environment</a></li>
-							<ul class="blg-toc-ul">
-								<li class="blg-toc-li"><a href="#install-dependencies">Installing Dependencies</a></li>
-								<li class="blg-toc-li"><a href="#env-file">Preparing the .env File</a></li>
-								<li class="blg-toc-li"><a href="#run-locally">Running the App Locally</a></li>
-							</ul>
-
-							<li class="blg-toc-li"><a href="#metadata-embedding">🧠 Metadata Extraction & Embedding</a></li>
-							<ul class="blg-toc-ul">
-								<li class="blg-toc-li"><a href="#description-cleaning">Cleaning Product Descriptions with LLM</a></li>
-								<li class="blg-toc-li"><a href="#paragraph-generation">Generating Paragraphs from Metadata</a></li>
-								<li class="blg-toc-li"><a href="#vector-embedding">Embedding Metadata into Vectors</a></li>
-							</ul>
-
-							<li class="blg-toc-li"><a href="#vector-db">🗃️ Vector Database with ChromaDB</a></li>
-							<ul class="blg-toc-ul">
-								<li class="blg-toc-li"><a href="#store-vectors">Storing Product Embeddings</a></li>
-								<li class="blg-toc-li"><a href="#query-vectors">Querying Products by Vector Similarity</a></li>
-							</ul>
-
-							<li class="blg-toc-li"><a href="#search-rerank">🔍 Semantic Search & Re-Ranking</a></li>
-							<ul class="blg-toc-ul">
-								<li class="blg-toc-li"><a href="#initial-retrieval">User Query Embedding and Initial Retrieval</a></li>
-								<li class="blg-toc-li"><a href="#reranking-llm">Re‑Ranking Results with LLM</a></li>
-								<li class="blg-toc-li"><a href="#final-output">Final Output Returned to UI</a></li>
-							</ul>
-
-							<li class="blg-toc-li"><a href="#prompt-engineering">📜 Prompt Engineering</a></li>
-							<ul class="blg-toc-ul">
-								<li class="blg-toc-li"><a href="#html-prompt">HTML Cleaning Prompt</a></li>
-								<li class="blg-toc-li"><a href="#paragraph-prompt">Paragraph Generation Prompt</a></li>
-								<li class="blg-toc-li"><a href="#rerank-prompt">Re‑Ranking Prompt for Matching</a></li>
-							</ul>
-
-							<li class="blg-toc-li"><a href="#streamlit-ui">💻 Streamlit Web UI</a></li>
-							<ul class="blg-toc-ul">
-								<li class="blg-toc-li"><a href="#left-panel">Left Panel — Category Navigation</a></li>
-								<li class="blg-toc-li"><a href="#middle-panel">Middle Panel — Product Grid View</a></li>
-								<li class="blg-toc-li"><a href="#right-panel">Right Panel — Product Details</a></li>
-								<li class="blg-toc-li"><a href="#search-box">Bottom — Natural Language Search Input</a></li>
-							</ul>
-
-							<li class="blg-toc-li"><a href="#example-queries">🧪 Example Queries & Output</a></li>
-							<ul class="blg-toc-ul">
-								<li class="blg-toc-li"><a href="#simple-queries">Simple Queries</a></li>
-								<li class="blg-toc-li"><a href="#complex-queries">Complex Multi-Category Queries</a></li>
-							</ul>
-
-							<li class="blg-toc-li"><a href="#conclusion">🎯 Conclusion</a></li>
-						</ol>
-					</div>
-					<br>
-					<!-- End of Table of Contents -->
-
-					<!-- 1. Start of Introduction -->
-					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
-
-						<a id="introduction" style="position: relative; top: -110px; visibility: hidden;"></a>
-						<div id="introduction" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">📘 1. Introduction</h1>
-						</div>
-
-						<p>🧥 In the world of online fashion, product discovery often feels clunky and outdated. Most platforms still rely on keyword-based search or fixed filters that don’t align with how people actually describe what they want.</p>
-
-						<p>🧍‍♂️ For example, a user might search:</p>
-
-						<blockquote style="background: #fdf2e9; padding: 10px; border-left: 5px solid #e67e22;">
-							“Looking for comfortable summer t-shirts under ¥1000 in white or navy, suitable for everyday wear.”
-						</blockquote>
-
-						<p>But traditional search systems struggle to interpret and return relevant results for such expressive, natural-language queries.</p>
-
-						<p>This project introduces a modern solution — the <b>🧠 RAG Fashion Recommender</b> — an AI-powered product discovery tool that allows users to search for fashion items using plain English. Rather than relying on fixed keywords or rigid tags, the system understands the intent behind a query and links it to relevant product metadata.</p>
-
-						<br>
-						<p><b>🔧 Key Technologies Used:</b></p>
-						<ul style="padding-left: 40px;">
-							<li>✨ <span class="code-soft">Semantic embeddings</span> — to represent both metadata and user queries in a shared vector space</li>
-							<li>📦 <span class="code-soft">ChromaDB</span> — to store and search these embeddings efficiently</li>
-							<li>🤖 <span class="code-soft">LLMs via LangChain-Groq</span> — to re-rank and refine the most relevant search results</li>
-							<li>💻 <span class="code-soft">Streamlit</span> — for building an interactive, user-friendly web UI</li>
-						</ul>
-
-						<p>📊 The recommendation engine uses a publicly available fashion dataset from Kaggle containing over 40,000 products. Each item includes metadata such as category, brand, gender, season, and price — all of which are processed, embedded, and indexed for semantic search.</p>
-
-						<p>By the end of this blog, you’ll see how raw fashion metadata can be transformed into an intelligent recommendation system that understands natural language and delivers relevant product suggestions — fast and intuitively.</p>
-
-						<hr class="blg-hr">
-					</div>
-					<!-- End of Introduction -->
-					
-					<!-- 2. Start of Project Overview -->
-					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
-
-						<a id="project-overview" style="position: relative; top: -110px; visibility: hidden;"></a>
-						<div id="project-overview" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">📌 2. Project Overview</h1>
-						</div>
-
-						<p>The <b>RAG Fashion Recommender</b> is designed to make product discovery easier and more intuitive by allowing users to express their needs in natural language. Rather than relying on dropdown filters or exact keyword matches, this system uses semantic understanding and LLM-powered re-ranking to deliver results that feel more relevant, contextual, and human-aware.</p>
-
-						<br>
-						<a id="key-features" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id="key-features" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">🧩 2.1 Key Features</h2>
-						</div>
-
-						<p>Here’s what makes this system powerful and unique:</p>
-
-						<ul style="padding-left: 40px;">
-							<li>💬 <b>Natural Language Search:</b> Users can type full-sentence queries like <span class="code-soft">“show me casual shoes for men under ¥2000”</span>, and the system understands the intent.</li>
-							<li>🧠 <b>LLM-Based Re-Ranking:</b> Initial search results are refined using a large language model to better match the user's true needs.</li>
-							<li>📦 <b>Real-World Fashion Metadata:</b> The system is powered by a Kaggle dataset containing detailed product attributes like category, gender, color, brand, season, and price.</li>
-							<li>💻 <b>Interactive Web App:</b> Built with Streamlit, the UI is clean, responsive, and easy to use for searching and browsing.</li>
-							<li>⚙️ <b>Modular Architecture:</b> Each component — from embedding and storage to retrieval and display — is independently structured and easily reusable.</li>
-						</ul>
-
-						<br>
-						<a id="how-it-works" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id="how-it-works" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">📁 2.2 How It Works at a Glance</h2>
-						</div>
-
-						<p>Here’s a high-level view of how the system processes and serves fashion recommendations:</p>
-
-						<ul style="padding-left: 40px;">
-							<li>🧾 <b>Metadata Extraction:</b> Product descriptions and structured attributes are parsed and cleaned.</li>
-							<li>🪄 <b>Paragraph Generation:</b> The cleaned metadata is converted into descriptive paragraphs using an LLM.</li>
-							<li>🧠 <b>Vector Embedding:</b> These paragraphs are embedded using Sentence Transformers to place them in a semantic vector space.</li>
-							<li>📥 <b>Storage in ChromaDB:</b> The vectors and metadata are saved in ChromaDB for fast and accurate similarity search.</li>
-							<li>🔍 <b>User Query:</b> Users enter plain English queries describing their product needs.</li>
-							<li>🧲 <b>Semantic Search:</b> The system retrieves the most relevant items based on vector similarity to the query.</li>
-							<li>🧠 <b>LLM Re-Ranking:</b> A language model evaluates the initial results and reorders them based on deeper contextual matching.</li>
-							<li>📱 <b>Display:</b> Final recommendations are shown in a clean, scrollable gallery along with product metadata.</li>
-						</ul>
-
-						<hr class="blg-hr">
-					</div>
-					<!-- End of Project Overview -->
-					
-					<!-- 3. Start of Project Structure -->
-					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
-
-						<a id="project-structure" style="position: relative; top: -110px; visibility: hidden;"></a>
-						<div id="project-structure" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">🗂️ 3. Project Structure</h1>
-						</div>
-
-						<p>To keep the system modular and maintainable, the <b>RAG Fashion Recommender</b> is organized into clearly separated folders and files — each one focused on a specific responsibility, from data processing and embedding to semantic search and UI rendering.</p>
-
-						<br>
-						<a id="directory-layout" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id="directory-layout" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">📁 3.1 Directory Layout</h2>
-						</div>
-
-						<p>Below is the high-level folder and file structure of the project:</p>
-
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-rag-fashion-recommendation/
-├── chroma_store/                ← Persisted vector DB (auto-generated)
-├── data/                        ← Raw metadata and CSV files
-│   ├── metadata/                ← JSON metadata files (1 per product)
-│   ├── styles.csv               ← Style-level metadata (brand, color, etc.)
-│   └── images.csv               ← Image URL and filename mapping
-├── prompt/                      ← Prompt templates for LLM
-│   ├── html_prompt.txt
-│   ├── paragraph_prompt.txt
-│   └── rerank_prompt.txt
-├── utils/                       ← Utility modules
-│   ├── category.py              ← Hardcoded category/sub-category tree with icons
-│   └── metadata_fields.py       ← Metadata display field definitions
-├── config.py                    ← All global paths, constants, and model settings
-├── data_embedder.py            ← Embeds metadata and stores it in ChromaDB
-├── data_retriever.py           ← Retrieves relevant products based on user queries
-├── metadata_extractor.py       ← Cleans and parses metadata from JSON & CSV
-├── re_ranker.py                ← Re-ranks initial search results using LLM
-├── vector_db.py                ← ChromaDB wrapper for insert/query/export
-├── web_app.py                  ← Streamlit-based frontend UI
-├── requirements.txt            ← Python dependencies
-├── .env                        ← API keys and environment variables
-└── README.md                   ← Project documentation
-</code>
-							</pre>
-						</div>
-
-						<br>
-						<a id="file-purpose" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id="file-purpose" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">📦 3.2 Purpose of Key Files and Modules</h2>
-						</div>
-
-						<p>Here’s a brief description of what each major file and module is responsible for:</p>
-
-						<ul style="padding-left: 40px;">
-							<li><span class="code-soft">config.py</span> — Central configuration for paths, constants, models, and prompt locations.</li>
-							<li><span class="code-soft">data_embedder.py</span> — Loads metadata, generates paragraphs using LLM, encodes them into vectors, and stores them in ChromaDB.</li>
-							<li><span class="code-soft">metadata_extractor.py</span> — Cleans raw product data from JSON and CSV using prompts, including HTML stripping and LLM formatting.</li>
-							<li><span class="code-soft">vector_db.py</span> — Wrapper around ChromaDB with methods to insert, query, and export data.</li>
-							<li><span class="code-soft">data_retriever.py</span> — Handles user query embedding and initial semantic retrieval from the vector store.</li>
-							<li><span class="code-soft">re_ranker.py</span> — Re-ranks top-k search results using a dedicated LLM prompt.</li>
-							<li><span class="code-soft">web_app.py</span> — Streamlit UI with left-side category navigation, middle product gallery, right-side detail view, and bottom chat input.</li>
-							<li><span class="code-soft">utils/category.py</span> — Defines a custom category and sub-category tree for the UI, along with emoji icons.</li>
-							<li><span class="code-soft">utils/metadata_fields.py</span> — Defines which metadata fields to display and their display names.</li>
-							<li><span class="code-soft">prompt/html_prompt.txt</span> — Cleans raw HTML descriptions using LLM instruction.</li>
-							<li><span class="code-soft">prompt/paragraph_prompt.txt</span> — Generates descriptive paragraphs from key-value metadata.</li>
-							<li><span class="code-soft">prompt/rerank_prompt.txt</span> — Refines and ranks search results using LLM-based semantic alignment.</li>
-						</ul>
-
-						<p>Keeping this modular file organization helps ensure the system remains extensible and easy to maintain as it scales.</p>
-
-						<hr class="blg-hr">
-					</div>
-					<!-- End of Project Structure -->
-					
-					<!-- 4. Start of Dataset Summary -->
-					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
-
-						<a id="dataset-summary" style="position: relative; top: -110px; visibility: hidden;"></a>
-						<div id="dataset-summary" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">🧾 4. Dataset Summary</h1>
-						</div>
-
-						<p>The performance and flexibility of this recommendation system heavily depend on the quality and richness of the dataset. For this project, we use the open-source <b>Fashion Product Images (Small)</b> dataset from Kaggle — a clean, well-labeled dataset that's widely used in both academic research and real-world fashion tech applications.</p>
-
-						<br>
-						<a id="data-source" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id="data-source" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">📦 4.1 Source and Scale of the Data</h2>
-						</div>
-
-						<ul style="padding-left: 40px;">
-							<li><b>Dataset Name:</b> <span class="code-soft">Fashion Product Images (Small)</span></li>
-							<li><b>Source:</b> Kaggle — <span class="code-soft">paramaggarwal/fashion-product-images-small</span></li>
-							<li><b>Total Products:</b> ~44,000 fashion items</li>
-							<li><b>Images:</b> One high-resolution image per product <span class="code-soft">(images/xxxx.jpg)</span></li>
-							<li><b>Metadata Files:</b>
-								<ul style="padding-left: 20px;">
-									<li><span class="code-soft">styles.csv</span> — Primary file containing structured product information</li>
-									<li><span class="code-soft">images.csv</span> — Maps product IDs to image filenames and hosted URLs</li>
-								</ul>
-							</li>
-						</ul>
-
-						<p>This dataset closely mirrors a real-world e-commerce catalog and provides enough variety and structure to power intelligent recommendation systems.</p>
-
-						<br>
-						<a id="metadata-fields" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id="metadata-fields" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">🧾 4.2 Metadata Attributes Provided</h2>
-						</div>
-
-						<p>The <span class="code-soft">styles.csv</span> file includes several structured fields:</p>
-
-						<ul style="padding-left: 40px;">
-							<li>🏷️ <span class="code-soft">product_name</span> — Name or title of the product</li>
-							<li>👗 <span class="code-soft">master_category</span>, <span class="code-soft">sub_category</span>, <span class="code-soft">product_type</span> — Hierarchical category structure</li>
-							<li>🎨 <span class="code-soft">base_colour</span> — Main color of the item</li>
-							<li>🏷️ <span class="code-soft">brand</span> — Brand or manufacturer</li>
-							<li>💸 <span class="code-soft">price</span> — Price of the product</li>
-							<li>🧥 <span class="code-soft">season</span>, <span class="code-soft">year</span> — Temporal context</li>
-							<li>🚻 <span class="code-soft">gender</span> — Intended audience (Men, Women, Unisex)</li>
-							<li>🧰 <span class="code-soft">usage</span> — Context or activity where the item is commonly used</li>
-						</ul>
-
-						<p>These fields are used to generate descriptive paragraph embeddings and enable intelligent filtering and matching through the vector search system.</p>
-
-						<br>
-						<a id="data-usage" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id="data-usage" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">🧰 4.3 How We Use the Data</h2>
-						</div>
-
-						<p>In our system:</p>
-
-						<ul style="padding-left: 40px;">
-							<li><span class="code-soft">styles.csv</span> — Loads core metadata fields such as brand, gender, product type, color, season, and price.</li>
-							<li><span class="code-soft">images.csv</span> — Associates each product ID with its corresponding image file or hosted image URL.</li>
-							<li><span class="code-soft">data/metadata/*.json</span> — Contains detailed descriptors like:
-								<ul style="padding-left: 20px;">
-									<li>📝 <span class="code-soft">description</span> — Often in HTML format</li>
-									<li>💡 <span class="code-soft">style_note</span> — Style or design suggestions</li>
-									<li>🧼 <span class="code-soft">materials_care_desc</span> — Care instructions and materials info</li>
-								</ul>
-							</li>
-						</ul>
-
-						<blockquote style="background: #fdf2e9; padding: 10px; border-left: 5px solid #e67e22;">
-							🔄 All this data is preprocessed, cleaned using LLM prompts, and transformed into unified product descriptions before being embedded and indexed for fast, intelligent search.
-						</blockquote>
-
-						<hr class="blg-hr">
-					</div>
-					<!-- End of Dataset Summary -->
-
-					<!-- 5. Start of Environment Setup -->
-					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
-
-						<a id="setup-environment" style="position: relative; top: -110px; visibility: hidden;"></a>
-						<div id="setup-environment" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">⚙️ 5. Setting Up the Environment</h1>
-						</div>
-
-						<p>Before running the system, you need to set up the environment with the correct Python version, install the necessary dependencies, and configure your API key. The project is lightweight and runs smoothly on most modern machines.</p>
-
-						<br>
-						<a id="install-dependencies" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id="install-dependencies" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">🐍 5.1 Installing Dependencies</h2>
-						</div>
-
-						<p>We recommend using <b>Python 3.12</b>, which was used during development. To get started, create and activate a virtual environment:</p>
-
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-python3.12 -m venv venv
-source venv/bin/activate  # or venv\Scripts\activate on Windows
-</code>
-							</pre>
-						</div>
-
-						<p>Then install all required libraries using:</p>
-
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-pip install -r requirements.txt
-</code>
-							</pre>
-						</div>
-
-						<p><b>Key Python packages:</b></p>
-						<ul style="padding-left: 40px;">
-							<li><span class="code-soft">streamlit</span></li>
-							<li><span class="code-soft">torch</span></li>
-							<li><span class="code-soft">sentence-transformers</span></li>
-							<li><span class="code-soft">python-dotenv</span></li>
-							<li><span class="code-soft">langchain-groq</span></li>
-							<li><span class="code-soft">chromadb</span></li>
-							<li><span class="code-soft">watchdog</span></li>
-						</ul>
-
-						<blockquote style="background: #fdf2e9; padding: 10px; border-left: 5px solid #e67e22;">
-							💡 If you’re deploying to Hugging Face Spaces, <span class="code-soft">requirements.txt</span> will be automatically detected and used during the build.
-						</blockquote>
-
-						<br>
-						<a id="env-file" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id="env-file" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">🔐 5.2 Preparing the .env File</h2>
-						</div>
-
-						<p>To use the Groq LLM for HTML cleaning and re-ranking, you’ll need to set your <b>GROQ API key</b>. Create a file named <span class="code-soft">.env</span> in the root directory and add the following line:</p>
-
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-GROQ_API_KEY=your_groq_api_key_here
-</code>
-							</pre>
-						</div>
-
-						<p>This file is automatically loaded at runtime using the <span class="code-soft">python-dotenv</span> package.</p>
-
-						<br>
-						<a id="run-locally" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id="run-locally" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">▶️ 5.3 Running the App Locally</h2>
-						</div>
-
-						<p>Once setup is complete, launch the app using Streamlit:</p>
-
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-streamlit run web_app.py
-</code>
-							</pre>
-						</div>
-
-						<p>This will open your browser at <span class="code-soft">http://localhost:8501</span> and load the app interface.</p>
-
-						<p>The interface is divided into four main parts:</p>
-						<ul style="padding-left: 40px;">
-							<li>🛍️ <b>Left:</b> Category browser</li>
-							<li>🖼️ <b>Center:</b> Product gallery</li>
-							<li>📋 <b>Right:</b> Product detail viewer</li>
-							<li>💬 <b>Bottom:</b> Natural language search bar</li>
-						</ul>
-
-						<p>With this setup, you're ready to explore and interact with your RAG-based fashion recommendation system in real time.</p>
-
-						<hr class="blg-hr">
-					</div>
-					<!-- End of Environment Setup -->
-
-					<!-- 6. Start of Metadata Extraction & Embedding -->
-					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
-
-						<a id="metadata-embedding" style="position: relative; top: -110px; visibility: hidden;"></a>
-						<div id="metadata-embedding" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">🧠 6. Metadata Extraction & Embedding</h1>
-						</div>
-
-						<p>To enable meaningful semantic search, raw product metadata must first be transformed into clear, natural language descriptions. These are then embedded into vector form so they can live in a searchable space. This transformation pipeline happens in three key steps:</p>
-
-						<br>
-						<a id="description-cleaning" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id="description-cleaning" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">🧽 6.1 Cleaning Product Descriptions with LLM</h2>
-						</div>
-
-						<p>Many product descriptions are in HTML or split across multiple fields such as <span class="code-soft">description</span>, <span class="code-soft">style_note</span>, and <span class="code-soft">materials_care_desc</span>. Instead of relying on manual cleanup or brittle parsing rules, we use an LLM to clean and merge them.</p>
-
-						<p>The prompt in <span class="code-soft">prompt/html_prompt.txt</span> guides the LLM to:</p>
-						<ul style="padding-left: 40px;">
-							<li>🧹 Remove all HTML tags</li>
-							<li>🧾 Extract meaningful, clean text</li>
-							<li>🪄 Combine all fields into a natural-sounding paragraph</li>
-						</ul>
-
-						<p><b>✅ Example (from <span class="code-soft">metadata_extractor.py</span>):</b></p>
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-python">
-description_paragraph = self._clean_html_with_llm(descriptors.get("description", {}).get("value", ""))
-</code>
-							</pre>
-						</div>
-
-						<p>This ensures consistency and clarity — crucial for generating high-quality embeddings later on.</p>
-
-						<br>
-						<a id="paragraph-generation" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id="paragraph-generation" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">📝 6.2 Generating Paragraphs from Metadata</h2>
-						</div>
-
-						<p>Once the raw metadata fields are cleaned, we generate a search-optimized paragraph that captures the essence of each product. This is done using the prompt from <span class="code-soft">prompt/paragraph_prompt.txt</span>.</p>
-
-						<p><b>Goals of this step:</b></p>
-						<ul style="padding-left: 40px;">
-							<li>🧠 Create a cohesive description using available metadata</li>
-							<li>🔎 Ensure all relevant fields (brand, color, season, gender, etc.) are naturally represented</li>
-						</ul>
-
-						<p><b>✅ Example (from <span class="code-soft">convert_to_paragraph()</span>):</b></p>
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-python">
-label_string = ". ".join(f"{k}: {v}" for k, v in metadata.items())
+						</aside>
+
+						<!-- Right: Blog Content -->
+						<div class="blog-detail-main">
+							<!-- blog details -->
+							<div id="blogContainer">
+								<!-- blog title -->
+								<div class="container blg-title-container">
+									<h2 class="blg-title">AI-Powered Fashion Recommendation System: Smart Product Discovery Using RAG from Metadata</h2>
+								</div>
+
+								<!-- Author Info -->
+								<div class="author_section">
+									<img id="author_img" alt="Author Photo" class="author_img" />
+									<div class="author_details">
+										<span id="author_name" class="author_name"></span>
+										<span id="published_date" class="published_date"></span>
+									</div>
+								</div>
+
+								<!-- Intro: image left, description right -->
+								<div class="blg-intro">
+									<div class="blg-intro-img">
+										<img src="../img/blog_7/thumbnail.webp" alt="AI-Powered Fashion Recommendation System: Smart Product Discovery Using RAG from Metadata" />
+									</div>
+									<div class="blg-intro-text">
+										<p>
+											🧭 Finding the right fashion product through traditional search interfaces often feels limiting — especially when users want to describe their needs in natural language. Filters
+											and checkboxes can only go so far when what you really want is to say, "Show me a warm, lightweight jacket under ¥5000 for early spring."
+										</p>
+
+										<p>
+											🎯 To address this challenge, we developed
+											<strong
+												><a href="https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation" class="blg-link" target="_blank" rel="noopener noreferrer">RAG Fashion Recommender</a></strong
+											>, an AI-powered system that allows users to search for fashion items just by typing what they're looking for — no need to scroll endlessly or guess the right keywords.
+										</p>
+
+										<p>
+											💡 In this blog, we'll walk through how we built the <strong>RAG Fashion Recommender</strong> — a smart recommendation system based on
+											<strong>Retrieval-Augmented Generation (RAG)</strong>, semantic embeddings, and large language models, all wrapped in a simple <strong>Streamlit</strong> interface.
+										</p>
+
+										<blockquote class="blg-callout-purple">
+											🔍 Whether you're interested in AI applications, smart search systems, or building real-world projects using open datasets — this guide will walk you through every step.
+										</blockquote>
+									</div>
+								</div>
+
+								<!-- Table of Contents -->
+								<div class="blg-toc-container">
+									<h2>📚 Table of Contents</h2>
+									<ol class="blg-toc-ol">
+										<li class="blg-toc-li"><a href="#introduction">📘 Introduction</a></li>
+
+										<li class="blg-toc-li"><a href="#project-overview">📌 Project Overview</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#key-features">Key Features</a></li>
+											<li class="blg-toc-li"><a href="#how-it-works">How It Works at a Glance</a></li>
+										</ul>
+
+										<li class="blg-toc-li"><a href="#project-structure">🗂️ Project Structure</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#directory-layout">Directory Layout</a></li>
+											<li class="blg-toc-li"><a href="#file-purpose">Purpose of Key Files and Modules</a></li>
+										</ul>
+
+										<li class="blg-toc-li"><a href="#dataset-summary">🧾 Dataset Summary</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#data-source">Source and Scale of the Data</a></li>
+											<li class="blg-toc-li"><a href="#metadata-fields">Metadata Attributes Provided</a></li>
+											<li class="blg-toc-li"><a href="#data-usage">How We Use the Data</a></li>
+										</ul>
+
+										<li class="blg-toc-li"><a href="#setup-environment">⚙️ Setting Up the Environment</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#install-dependencies">Installing Dependencies</a></li>
+											<li class="blg-toc-li"><a href="#env-file">Preparing the .env File</a></li>
+											<li class="blg-toc-li"><a href="#run-locally">Running the App Locally</a></li>
+										</ul>
+
+										<li class="blg-toc-li"><a href="#metadata-embedding">🧠 Metadata Extraction & Embedding</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#description-cleaning">Cleaning Product Descriptions with LLM</a></li>
+											<li class="blg-toc-li"><a href="#paragraph-generation">Generating Paragraphs from Metadata</a></li>
+											<li class="blg-toc-li"><a href="#vector-embedding">Embedding Metadata into Vectors</a></li>
+										</ul>
+
+										<li class="blg-toc-li"><a href="#vector-db">🗃️ Vector Database with ChromaDB</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#store-vectors">Storing Product Embeddings</a></li>
+											<li class="blg-toc-li"><a href="#query-vectors">Querying Products by Vector Similarity</a></li>
+										</ul>
+
+										<li class="blg-toc-li"><a href="#search-rerank">🔍 Semantic Search & Re-Ranking</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#initial-retrieval">User Query Embedding and Initial Retrieval</a></li>
+											<li class="blg-toc-li"><a href="#reranking-llm">Re‑Ranking Results with LLM</a></li>
+											<li class="blg-toc-li"><a href="#final-output">Final Output Returned to UI</a></li>
+										</ul>
+
+										<li class="blg-toc-li"><a href="#prompt-engineering">📜 Prompt Engineering</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#html-prompt">HTML Cleaning Prompt</a></li>
+											<li class="blg-toc-li"><a href="#paragraph-prompt">Paragraph Generation Prompt</a></li>
+											<li class="blg-toc-li"><a href="#rerank-prompt">Re‑Ranking Prompt for Matching</a></li>
+										</ul>
+
+										<li class="blg-toc-li"><a href="#streamlit-ui">💻 Streamlit Web UI</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#left-panel">Left Panel — Category Navigation</a></li>
+											<li class="blg-toc-li"><a href="#middle-panel">Middle Panel — Product Grid View</a></li>
+											<li class="blg-toc-li"><a href="#right-panel">Right Panel — Product Details</a></li>
+											<li class="blg-toc-li"><a href="#search-box">Bottom — Natural Language Search Input</a></li>
+										</ul>
+
+										<li class="blg-toc-li"><a href="#example-queries">🧪 Example Queries & Output</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#simple-queries">Simple Queries</a></li>
+											<li class="blg-toc-li"><a href="#complex-queries">Complex Multi-Category Queries</a></li>
+										</ul>
+
+										<li class="blg-toc-li"><a href="#conclusion">🎯 Conclusion</a></li>
+									</ol>
+								</div>
+								<!-- End of Table of Contents -->
+
+								<!-- 1. Introduction -->
+								<div class="blg-section">
+									<a id="introduction" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>📘 1. Introduction</h2>
+									</div>
+
+									<p>
+										🧥 In the world of online fashion, product discovery often feels clunky and outdated. Most platforms still rely on keyword-based search or fixed filters that don't align with how
+										people actually describe what they want.
+									</p>
+
+									<p>🧍‍♂️ For example, a user might search:</p>
+
+									<blockquote class="blg-callout-quote">"Looking for comfortable summer t-shirts under ¥1000 in white or navy, suitable for everyday wear."</blockquote>
+
+									<p>But traditional search systems struggle to interpret and return relevant results for such expressive, natural-language queries.</p>
+
+									<p>
+										This project introduces a modern solution — the <strong>🧠 RAG Fashion Recommender</strong> — an AI-powered product discovery tool that allows users to search for fashion items
+										using plain English. Rather than relying on fixed keywords or rigid tags, the system understands the intent behind a query and links it to relevant product metadata.
+									</p>
+
+									<p><strong>🔧 Key Technologies Used:</strong></p>
+									<ul class="blg-ul">
+										<li class="blg-li">✨ <span class="code-soft">Semantic embeddings</span> — to represent both metadata and user queries in a shared vector space</li>
+										<li class="blg-li">📦 <span class="code-soft">ChromaDB</span> — to store and search these embeddings efficiently</li>
+										<li class="blg-li">🤖 <span class="code-soft">LLMs via LangChain-Groq</span> — to re-rank and refine the most relevant search results</li>
+										<li class="blg-li">💻 <span class="code-soft">Streamlit</span> — for building an interactive, user-friendly web UI</li>
+									</ul>
+
+									<p>
+										📊 The recommendation engine uses a publicly available fashion dataset from Kaggle containing over 40,000 products. Each item includes metadata such as category, brand, gender,
+										season, and price — all of which are processed, embedded, and indexed for semantic search.
+									</p>
+
+									<p>
+										By the end of this blog, you'll see how raw fashion metadata can be transformed into an intelligent recommendation system that understands natural language and delivers relevant
+										product suggestions — fast and intuitively.
+									</p>
+
+									<hr class="blg-hr" />
+								</div>
+								<!-- End: Introduction -->
+
+								<!-- 2. Project Overview -->
+								<div class="blg-section">
+									<a id="project-overview" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>📌 2. Project Overview</h2>
+									</div>
+
+									<p>
+										The <strong>RAG Fashion Recommender</strong> is designed to make product discovery easier and more intuitive by allowing users to express their needs in natural language. Rather
+										than relying on dropdown filters or exact keyword matches, this system uses <span class="code-soft">semantic understanding</span> and
+										<span class="code-soft">LLM-powered re-ranking</span> to deliver results that feel more relevant, contextual, and human-aware.
+									</p>
+
+									<a id="key-features" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">2.1</span>
+										<h3>🧩 Key Features</h3>
+									</div>
+
+									<div class="blg-feature-grid">
+										<div class="blg-feature-card card-blue">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">💬</span>
+												<h4>Natural Language Search</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Users can type full-sentence queries like <span class="code-soft">"show me casual shoes for men under ¥2000"</span>, and the system understands the intent.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-purple">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">🧠</span>
+												<h4>LLM-Based Re-Ranking</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Initial search results are refined using a large language model to better match the user's true needs.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-green">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">📦</span>
+												<h4>Real-World Fashion Metadata</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Powered by a Kaggle dataset with detailed product attributes — category, gender, color, brand, season, and price.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-teal">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">💻</span>
+												<h4>Interactive Web App</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Built with Streamlit, the UI is clean, responsive, and easy to use for searching and browsing.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-orange">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">⚙️</span>
+												<h4>Modular Architecture</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Each component — from embedding and storage to retrieval and display — is independently structured and easily reusable.</p>
+											</div>
+										</div>
+									</div>
+
+									<a id="how-it-works" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">2.2</span>
+										<h3>📁 How It Works at a Glance</h3>
+									</div>
+
+									<div class="blg-arch-stack">
+										<div class="blg-arch-layer al-amber">
+											<span class="blg-arch-icon">🧾</span>
+											<span class="blg-arch-name">Metadata Extraction</span>
+											<span class="blg-arch-desc">Product descriptions and structured attributes are parsed and cleaned.</span>
+										</div>
+										<div class="blg-arch-layer al-purple">
+											<span class="blg-arch-icon">🪄</span>
+											<span class="blg-arch-name">Paragraph Generation</span>
+											<span class="blg-arch-desc">Cleaned metadata is converted into descriptive paragraphs using an LLM.</span>
+										</div>
+										<div class="blg-arch-layer al-blue">
+											<span class="blg-arch-icon">🧠</span>
+											<span class="blg-arch-name">Vector Embedding</span>
+											<span class="blg-arch-desc">Paragraphs are embedded using <span class="code-soft">Sentence Transformers</span> into a semantic vector space.</span>
+										</div>
+										<div class="blg-arch-layer al-teal">
+											<span class="blg-arch-icon">📥</span>
+											<span class="blg-arch-name">Storage in ChromaDB</span>
+											<span class="blg-arch-desc">Vectors and metadata are saved in <span class="code-soft">ChromaDB</span> for fast and accurate similarity search.</span>
+										</div>
+										<div class="blg-arch-layer al-green">
+											<span class="blg-arch-icon">🔍</span>
+											<span class="blg-arch-name">User Query</span>
+											<span class="blg-arch-desc">Users enter plain English queries describing their product needs.</span>
+										</div>
+										<div class="blg-arch-layer al-blue">
+											<span class="blg-arch-icon">🧲</span>
+											<span class="blg-arch-name">Semantic Search</span>
+											<span class="blg-arch-desc">The system retrieves the most relevant items based on vector similarity to the query.</span>
+										</div>
+										<div class="blg-arch-layer al-purple">
+											<span class="blg-arch-icon">🧠</span>
+											<span class="blg-arch-name">LLM Re-Ranking</span>
+											<span class="blg-arch-desc">A language model evaluates and reorders results based on deeper contextual matching.</span>
+										</div>
+										<div class="blg-arch-layer al-orange">
+											<span class="blg-arch-icon">📱</span>
+											<span class="blg-arch-name">Display</span>
+											<span class="blg-arch-desc">Final recommendations are shown in a clean, scrollable gallery with product metadata.</span>
+										</div>
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+								<!-- End: Project Overview -->
+
+								<!-- 3. Project Structure -->
+								<div class="blg-section">
+									<a id="project-structure" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>🗂️ 3. Project Structure</h2>
+									</div>
+
+									<p>
+										To keep the system modular and maintainable, the <strong>RAG Fashion Recommender</strong> is organized into clearly separated folders and files — each one focused on a specific
+										responsibility, from data processing and embedding to semantic search and UI rendering.
+									</p>
+
+									<a id="directory-layout" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">3.1</span>
+										<h3>📁 Directory Layout</h3>
+									</div>
+
+									<p>Below is the high-level folder and file structure of the project:</p>
+
+									<div class="blg-tree"><span class="tree-root">rag-fashion-recommendation/</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">chroma_store/</span>              <span class="tree-comment"># Persisted vector DB (auto-generated)</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">data/</span>                      <span class="tree-comment"># Raw metadata and CSV files</span>
+<span class="tree-pipe">│ ├── </span><span class="tree-dir">metadata/</span>                <span class="tree-comment"># JSON metadata files (1 per product)</span>
+<span class="tree-pipe">│ ├── </span><span class="tree-file">styles.csv</span>               <span class="tree-comment"># Style-level metadata (brand, color, etc.)</span>
+<span class="tree-pipe">│ └── </span><span class="tree-file">images.csv</span>               <span class="tree-comment"># Image URL and filename mapping</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">prompt/</span>                    <span class="tree-comment"># Prompt templates for LLM</span>
+<span class="tree-pipe">│ ├── </span><span class="tree-file">html_prompt.txt</span>
+<span class="tree-pipe">│ ├── </span><span class="tree-file">paragraph_prompt.txt</span>
+<span class="tree-pipe">│ └── </span><span class="tree-file">rerank_prompt.txt</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">utils/</span>                     <span class="tree-comment"># Utility modules</span>
+<span class="tree-pipe">│ ├── </span><span class="tree-file">category.py</span>              <span class="tree-comment"># Hardcoded category/sub-category tree with icons</span>
+<span class="tree-pipe">│ └── </span><span class="tree-file">metadata_fields.py</span>       <span class="tree-comment"># Metadata display field definitions</span>
+<span class="tree-pipe">├── </span><span class="tree-file">config.py</span>                  <span class="tree-comment"># All global paths, constants, and model settings</span>
+<span class="tree-pipe">├── </span><span class="tree-file">data_embedder.py</span>           <span class="tree-comment"># Embeds metadata and stores it in ChromaDB</span>
+<span class="tree-pipe">├── </span><span class="tree-file">data_retriever.py</span>          <span class="tree-comment"># Retrieves relevant products based on user queries</span>
+<span class="tree-pipe">├── </span><span class="tree-file">metadata_extractor.py</span>      <span class="tree-comment"># Cleans and parses metadata from JSON & CSV</span>
+<span class="tree-pipe">├── </span><span class="tree-file">re_ranker.py</span>               <span class="tree-comment"># Re-ranks initial search results using LLM</span>
+<span class="tree-pipe">├── </span><span class="tree-file">vector_db.py</span>               <span class="tree-comment"># ChromaDB wrapper for insert/query/export</span>
+<span class="tree-pipe">├── </span><span class="tree-file">web_app.py</span>                 <span class="tree-comment"># Streamlit-based frontend UI</span>
+<span class="tree-pipe">├── </span><span class="tree-file">requirements.txt</span>           <span class="tree-comment"># Python dependencies</span>
+<span class="tree-pipe">├── </span><span class="tree-spec">.env</span>                       <span class="tree-comment"># API keys and environment variables</span>
+<span class="tree-pipe">└── </span><span class="tree-file">README.md</span>                  <span class="tree-comment"># Project documentation</span></div>
+
+									<a id="file-purpose" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">3.2</span>
+										<h3>📦 Purpose of Key Files and Modules</h3>
+									</div>
+
+									<p>Here's a brief description of what each major file and module is responsible for:</p>
+
+									<ul class="blg-ul">
+										<li class="blg-li"><span class="code-soft">config.py</span> — Central configuration for paths, constants, models, and prompt locations.</li>
+										<li class="blg-li"><span class="code-soft">data_embedder.py</span> — Loads metadata, generates paragraphs using LLM, encodes them into vectors, and stores them in ChromaDB.</li>
+										<li class="blg-li"><span class="code-soft">metadata_extractor.py</span> — Cleans raw product data from JSON and CSV using prompts, including HTML stripping and LLM formatting.</li>
+										<li class="blg-li"><span class="code-soft">vector_db.py</span> — Wrapper around ChromaDB with methods to insert, query, and export data.</li>
+										<li class="blg-li"><span class="code-soft">data_retriever.py</span> — Handles user query embedding and initial semantic retrieval from the vector store.</li>
+										<li class="blg-li"><span class="code-soft">re_ranker.py</span> — Re-ranks top-k search results using a dedicated LLM prompt.</li>
+										<li class="blg-li">
+											<span class="code-soft">web_app.py</span> — Streamlit UI with left-side category navigation, middle product gallery, right-side detail view, and bottom chat input.
+										</li>
+										<li class="blg-li"><span class="code-soft">utils/category.py</span> — Defines a custom category and sub-category tree for the UI, along with emoji icons.</li>
+										<li class="blg-li"><span class="code-soft">utils/metadata_fields.py</span> — Defines which metadata fields to display and their display names.</li>
+										<li class="blg-li"><span class="code-soft">prompt/html_prompt.txt</span> — Cleans raw HTML descriptions using LLM instruction.</li>
+										<li class="blg-li"><span class="code-soft">prompt/paragraph_prompt.txt</span> — Generates descriptive paragraphs from key-value metadata.</li>
+										<li class="blg-li"><span class="code-soft">prompt/rerank_prompt.txt</span> — Refines and ranks search results using LLM-based semantic alignment.</li>
+									</ul>
+
+									<p>Keeping this modular file organization helps ensure the system remains extensible and easy to maintain as it scales.</p>
+
+									<hr class="blg-hr" />
+								</div>
+								<!-- End: Project Structure -->
+
+								<!-- 4. Dataset Summary -->
+								<div class="blg-section">
+									<a id="dataset-summary" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>🧾 4. Dataset Summary</h2>
+									</div>
+
+									<p>
+										The performance and flexibility of this recommendation system heavily depend on the quality and richness of the dataset. For this project, we use the open-source
+										<strong>Fashion Product Images (Small)</strong> dataset from Kaggle — a clean, well-labeled dataset that's widely used in both academic research and real-world fashion tech
+										applications.
+									</p>
+
+									<a id="data-source" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">4.1</span>
+										<h3>📦 Source and Scale of the Data</h3>
+									</div>
+
+									<ul class="blg-ul">
+										<li class="blg-li"><strong>Dataset Name:</strong> <span class="code-soft">Fashion Product Images (Small)</span></li>
+										<li class="blg-li"><strong>Source:</strong> Kaggle — <span class="code-soft">paramaggarwal/fashion-product-images-small</span></li>
+										<li class="blg-li"><strong>Total Products:</strong> ~44,000 fashion items</li>
+										<li class="blg-li"><strong>Images:</strong> One high-resolution image per product <span class="code-soft">(images/xxxx.jpg)</span></li>
+										<li class="blg-li">
+											<strong>Metadata Files:</strong>
+											<ul class="blg-ul">
+												<li class="blg-li"><span class="code-soft">styles.csv</span> — Primary file containing structured product information</li>
+												<li class="blg-li"><span class="code-soft">images.csv</span> — Maps product IDs to image filenames and hosted URLs</li>
+											</ul>
+										</li>
+									</ul>
+
+									<p>This dataset closely mirrors a real-world e-commerce catalog and provides enough variety and structure to power intelligent recommendation systems.</p>
+
+									<a id="metadata-fields" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">4.2</span>
+										<h3>🧾 Metadata Attributes Provided</h3>
+									</div>
+
+									<p>The <span class="code-soft">styles.csv</span> file includes several structured fields:</p>
+
+									<ul class="blg-ul">
+										<li class="blg-li">🏷️ <span class="code-soft">product_name</span> — Name or title of the product</li>
+										<li class="blg-li">
+											👗 <span class="code-soft">master_category</span>, <span class="code-soft">sub_category</span>, <span class="code-soft">product_type</span> — Hierarchical category structure
+										</li>
+										<li class="blg-li">🎨 <span class="code-soft">base_colour</span> — Main color of the item</li>
+										<li class="blg-li">🏷️ <span class="code-soft">brand</span> — Brand or manufacturer</li>
+										<li class="blg-li">💸 <span class="code-soft">price</span> — Price of the product</li>
+										<li class="blg-li">🧥 <span class="code-soft">season</span>, <span class="code-soft">year</span> — Temporal context</li>
+										<li class="blg-li">🚻 <span class="code-soft">gender</span> — Intended audience (Men, Women, Unisex)</li>
+										<li class="blg-li">🧰 <span class="code-soft">usage</span> — Context or activity where the item is commonly used</li>
+									</ul>
+
+									<p>
+										These fields are used to generate descriptive paragraph embeddings and enable intelligent filtering and matching through the <span class="code-soft">vector search</span> system.
+									</p>
+
+									<a id="data-usage" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">4.3</span>
+										<h3>🧰 How We Use the Data</h3>
+									</div>
+
+									<p>In our system:</p>
+
+									<ul class="blg-ul">
+										<li class="blg-li"><span class="code-soft">styles.csv</span> — Loads core metadata fields such as brand, gender, product type, color, season, and price.</li>
+										<li class="blg-li"><span class="code-soft">images.csv</span> — Associates each product ID with its corresponding image file or hosted image URL.</li>
+										<li class="blg-li">
+											<span class="code-soft">data/metadata/*.json</span> — Contains detailed descriptors like:
+											<ul class="blg-ul">
+												<li class="blg-li">📝 <span class="code-soft">description</span> — Often in HTML format</li>
+												<li class="blg-li">💡 <span class="code-soft">style_note</span> — Style or design suggestions</li>
+												<li class="blg-li">🧼 <span class="code-soft">materials_care_desc</span> — Care instructions and materials info</li>
+											</ul>
+										</li>
+									</ul>
+
+									<blockquote class="blg-callout-note">
+										📌 All this data is preprocessed, cleaned using LLM prompts, and transformed into unified product descriptions before being embedded and indexed for fast, intelligent search.
+									</blockquote>
+
+									<hr class="blg-hr" />
+								</div>
+								<!-- End: Dataset Summary -->
+
+								<!-- 5. Environment Setup -->
+								<div class="blg-section">
+									<a id="setup-environment" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>⚙️ 5. Setting Up the Environment</h2>
+									</div>
+
+									<p>
+										Before running the system, you need to set up the environment with the correct Python version, install the necessary dependencies, and configure your API key. The project is
+										lightweight and runs smoothly on most modern machines.
+									</p>
+
+									<a id="install-dependencies" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">5.1</span>
+										<h3>🐍 Installing Dependencies</h3>
+									</div>
+
+									<p>We recommend using <strong>Python 3.12</strong>, which was used during development. To get started, create and activate a virtual environment:</p>
+
+									<div class="blg-code-block" data-lang="bash">python3.12 -m venv venv
+source venv/bin/activate  # or venv\Scripts\activate on Windows</div>
+
+									<p>Then install all required libraries using:</p>
+
+									<div class="blg-code-block" data-lang="bash">pip install -r requirements.txt</div>
+
+									<p><strong>Key Python packages:</strong></p>
+									<ul class="blg-ul">
+										<li class="blg-li"><span class="code-soft">streamlit</span></li>
+										<li class="blg-li"><span class="code-soft">torch</span></li>
+										<li class="blg-li"><span class="code-soft">sentence-transformers</span></li>
+										<li class="blg-li"><span class="code-soft">python-dotenv</span></li>
+										<li class="blg-li"><span class="code-soft">langchain-groq</span></li>
+										<li class="blg-li"><span class="code-soft">chromadb</span></li>
+										<li class="blg-li"><span class="code-soft">watchdog</span></li>
+									</ul>
+
+									<blockquote class="blg-callout-tip">
+										💡 If you're deploying to Hugging Face Spaces, <span class="code-soft">requirements.txt</span> will be automatically detected and used during the build.
+									</blockquote>
+
+									<a id="env-file" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">5.2</span>
+										<h3>🔐 Preparing the .env File</h3>
+									</div>
+
+									<p>
+										To use the Groq LLM for HTML cleaning and re-ranking, you'll need to set your <strong>GROQ API key</strong>. Create a file named <span class="code-soft">.env</span> in the root
+										directory and add the following line:
+									</p>
+
+									<div class="blg-code-block" data-lang="properties">GROQ_API_KEY=your_groq_api_key_here</div>
+
+									<p>This file is automatically loaded at runtime using the <span class="code-soft">python-dotenv</span> package.</p>
+
+									<a id="run-locally" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">5.3</span>
+										<h3>▶️ Running the App Locally</h3>
+									</div>
+
+									<p>Once setup is complete, launch the app using Streamlit:</p>
+
+									<div class="blg-code-block" data-lang="bash">streamlit run web_app.py</div>
+
+									<p>This will open your browser at <span class="code-soft">http://localhost:8501</span> and load the app interface.</p>
+
+									<p>The interface is divided into four main parts:</p>
+									<ul class="blg-ul">
+										<li class="blg-li">🛍️ <strong>Left:</strong> Category browser</li>
+										<li class="blg-li">🖼️ <strong>Center:</strong> Product gallery</li>
+										<li class="blg-li">📋 <strong>Right:</strong> Product detail viewer</li>
+										<li class="blg-li">💬 <strong>Bottom:</strong> Natural language search bar</li>
+									</ul>
+
+									<p>With this setup, you're ready to explore and interact with your <span class="code-soft">RAG</span>-based fashion recommendation system in real time.</p>
+
+									<hr class="blg-hr" />
+								</div>
+								<!-- End: Environment Setup -->
+
+								<!-- 6. Metadata Extraction & Embedding -->
+								<div class="blg-section">
+									<a id="metadata-embedding" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>🧠 6. Metadata Extraction & Embedding</h2>
+									</div>
+
+									<p>
+										To enable meaningful semantic search, raw product metadata must first be transformed into clear, natural language descriptions. These are then embedded into vector form so they can
+										live in a searchable space. This transformation pipeline happens in three key steps:
+									</p>
+
+									<a id="description-cleaning" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">6.1</span>
+										<h3>🧽 Cleaning Product Descriptions with LLM</h3>
+									</div>
+
+									<p>
+										Many product descriptions are in HTML or split across multiple fields such as <span class="code-soft">description</span>, <span class="code-soft">style_note</span>, and
+										<span class="code-soft">materials_care_desc</span>. Instead of relying on manual cleanup or brittle parsing rules, we use an <span class="highlight-purple">LLM</span> to clean and
+										merge them.
+									</p>
+
+									<p>The prompt in <span class="code-soft">prompt/html_prompt.txt</span> guides the LLM to:</p>
+									<ul class="blg-ul">
+										<li class="blg-li">🧹 Remove all HTML tags</li>
+										<li class="blg-li">🧾 Extract meaningful, clean text</li>
+										<li class="blg-li">🪄 Combine all fields into a natural-sounding paragraph</li>
+									</ul>
+
+									<p>
+										<strong>✅ Example (from <span class="code-soft">metadata_extractor.py</span>):</strong>
+									</p>
+									<div class="blg-code-block" data-lang="python">description_paragraph = self._clean_html_with_llm(descriptors.get(&quot;description&quot;, {}).get(&quot;value&quot;, &quot;&quot;))</div>
+
+									<p>This ensures consistency and clarity — crucial for generating high-quality <span class="highlight-green">embeddings</span> later on.</p>
+
+									<a id="paragraph-generation" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">6.2</span>
+										<h3>📝 Generating Paragraphs from Metadata</h3>
+									</div>
+
+									<p>
+										Once the raw metadata fields are cleaned, we generate a search-optimized paragraph that captures the essence of each product. This is done using the prompt from
+										<span class="code-soft">prompt/paragraph_prompt.txt</span>.
+									</p>
+
+									<p><strong>Goals of this step:</strong></p>
+									<ul class="blg-ul">
+										<li class="blg-li">🧠 Create a cohesive description using available metadata</li>
+										<li class="blg-li">🔎 Ensure all relevant fields (brand, color, season, gender, etc.) are naturally represented</li>
+									</ul>
+
+									<p>
+										<strong>✅ Example (from <span class="code-soft">convert_to_paragraph()</span>):</strong>
+									</p>
+									<div class="blg-code-block" data-lang="python">label_string = &quot;. &quot;.join(f&quot;{k}: {v}&quot; for k, v in metadata.items())
 prompt = self.paragraph_prompt_template.format(label_string=label_string)
-response = self.llm.invoke(prompt)
-</code>
-							</pre>
-						</div>
+response = self.llm.invoke(prompt)</div>
 
-						<p><b>Sample Output:</b></p>
-						<blockquote style="background: #fdf2e9; padding: 10px; border-left: 5px solid #e67e22;">
-							“This men’s cotton t-shirt from Adidas is perfect for casual summer wear. Available in navy blue with short sleeves and lightweight fabric.”
-						</blockquote>
+									<p><strong>Sample Output:</strong></p>
+									<blockquote class="blg-callout-info">
+										"This men's cotton t-shirt from Adidas is perfect for casual summer wear. Available in navy blue with short sleeves and lightweight fabric."
+									</blockquote>
 
-						<p>This paragraph becomes the product's semantic fingerprint.</p>
+									<p>This paragraph becomes the product's <span class="highlight-teal">semantic fingerprint</span>.</p>
 
-						<br>
-						<a id="vector-embedding" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id="vector-embedding" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">🔢 6.3 Embedding Metadata into Vectors</h2>
-						</div>
+									<a id="vector-embedding" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">6.3</span>
+										<h3>🔢 Embedding Metadata into Vectors</h3>
+									</div>
 
-						<p>The final step is embedding. We use <span class="code-soft">BAAI/bge-base-en-v1.5</span> — a SentenceTransformer model — to convert the paragraph into a dense vector.</p>
+									<p>
+										The final step is embedding. We use <span class="code-soft">BAAI/bge-base-en-v1.5</span> — a <span class="highlight-green">SentenceTransformer</span> model — to convert the
+										paragraph into a dense vector.
+									</p>
 
-						<p><b>✅ Example (from <span class="code-soft">data_embedder.py → process_and_store()</span>):</b></p>
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-python">
-embedding = self.embedding_model.encode(paragraph).tolist()
+									<p>
+										<strong>✅ Example (from <span class="code-soft">data_embedder.py → process_and_store()</span>):</strong>
+									</p>
+									<div class="blg-code-block" data-lang="python">embedding = self.embedding_model.encode(paragraph).tolist()
 self.vector_db_client.add_to_vector_db(
 	ids=[product_id],
 	embeddings=[embedding],
 	documents=[paragraph],
 	metadatas=[metadata]
-)
-</code>
-							</pre>
-						</div>
+)</div>
 
-						<p>The entire process is batch-optimized for speed. Duplicate entries are automatically skipped using <span class="code-soft">get_by_id()</span>.</p>
+									<p>The entire process is batch-optimized for speed. Duplicate entries are automatically skipped using <span class="code-soft">get_by_id()</span>.</p>
 
-						<p>💾 Once embedded, each product exists in three forms:</p>
-						
-						<p>▪ A descriptive paragraph (<span class="code-soft">document</span>)<br></p>
-						<p>▪ A numerical vector (<span class="code-soft">embedding</span>)<br></p>
-						<p>▪ Structured metadata (<span class="code-soft">metadatas</span>)<br></p>
-						<p>All are stored in ChromaDB and made searchable through semantic similarity.</p>
+									<p>💾 Once embedded, each product exists in three forms:</p>
+									<ul class="blg-ul">
+										<li class="blg-li">A descriptive paragraph — <span class="code-soft">document</span></li>
+										<li class="blg-li">A numerical vector — <span class="code-soft">embedding</span></li>
+										<li class="blg-li">Structured metadata — <span class="code-soft">metadatas</span></li>
+									</ul>
+									<p>All are stored in <span class="highlight-teal">ChromaDB</span> and made searchable through <span class="highlight-purple">semantic similarity</span>.</p>
 
-						<hr class="blg-hr">
-					</div>
-					<!-- End of Metadata Extraction & Embedding -->
+									<hr class="blg-hr" />
+								</div>
+								<!-- End: Metadata Extraction & Embedding -->
 
-					<!-- 7. Start of Vector Database with ChromaDB -->
-					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+								<!-- 7. Vector Database with ChromaDB -->
+								<div class="blg-section">
+									<a id="vector-db" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>🗃️ 7. Vector Database with ChromaDB</h2>
+									</div>
 
-						<a id="vector-db" style="position: relative; top: -110px; visibility: hidden;"></a>
-						<div id="vector-db" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">🗃️ 7. Vector Database with ChromaDB</h1>
-						</div>
+									<p>
+										Once each product is converted into a semantic vector, it must be stored in a database optimized for similarity search. For this project, we use <strong>ChromaDB</strong> — a
+										lightweight, high-performance vector database tailored for AI workflows.
+									</p>
 
-						<p>Once each product is converted into a semantic vector, it must be stored in a database optimized for similarity search. For this project, we use <b>ChromaDB</b> — a lightweight, high-performance vector database tailored for AI workflows.</p>
+									<a id="store-vectors" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">7.1</span>
+										<h3>💾 Storing Product Embeddings</h3>
+									</div>
 
-						<br>
-						<a id="store-vectors" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id="store-vectors" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">💾 7.1 Storing Product Embeddings</h2>
-						</div>
+									<p>Each product is stored in ChromaDB with the following components:</p>
+									<ul class="blg-ul">
+										<li class="blg-li">🔢 <strong>ID:</strong> Unique product identifier</li>
+										<li class="blg-li">📝 <strong>Document:</strong> Natural language paragraph of the product</li>
+										<li class="blg-li">🧠 <strong>Embedding:</strong> 512-dimensional vector representing semantic meaning</li>
+										<li class="blg-li">🏷️ <strong>Metadata:</strong> Original structured fields such as brand, price, category, etc.</li>
+									</ul>
 
-						<p>Each product is stored in ChromaDB with the following components:</p>
-						<ul style="padding-left: 40px;">
-							<li>🔢 <b>ID:</b> Unique product identifier</li>
-							<li>📝 <b>Document:</b> Natural language paragraph of the product</li>
-							<li>🧠 <b>Embedding:</b> 512-dimensional vector representing semantic meaning</li>
-							<li>🏷️ <b>Metadata:</b> Original structured fields such as brand, price, category, etc.</li>
-						</ul>
+									<p>
+										Insertion is handled by the <span class="code-soft">ChromaDBClient</span> class in <span class="code-soft">vector_db.py</span> using the
+										<span class="code-soft">add_to_vector_db()</span> method.
+									</p>
 
-						<p>Insertion is handled by the <span class="code-soft">ChromaDBClient</span> class in <span class="code-soft">vector_db.py</span> using the <span class="code-soft">add_to_vector_db()</span> method.</p>
-
-						<p><b>✅ Code Example:</b></p>
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-python">
-self.collection.add(
+									<p><strong>✅ Code Example:</strong></p>
+									<div class="blg-code-block" data-lang="python">self.collection.add(
 	ids=ids,
 	embeddings=embeddings,
 	documents=documents,
 	metadatas=metadatas
-)
-</code>
-							</pre>
-						</div>
+)</div>
 
-						<p>This method is called in batches during the embedding process. Duplicate entries are automatically skipped using <span class="code-soft">get_by_id()</span>.</p>
+									<p>This method is called in batches during the embedding process. Duplicate entries are automatically skipped using <span class="code-soft">get_by_id()</span>.</p>
 
-						<p><b>✅ Batch insertion logic:</b></p>
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-python">
-if len(ids) >= self.batch_size:
+									<p><strong>✅ Batch insertion logic:</strong></p>
+									<div class="blg-code-block" data-lang="python">if len(ids) &gt;= self.batch_size:
 	self.vector_db_client.add_to_vector_db(
 		ids=ids,
 		embeddings=embeddings,
 		documents=documents,
 		metadatas=metadatas
-	)
-</code>
-							</pre>
-						</div>
+	)</div>
 
-						<br>
-						<a id="query-vectors" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id="query-vectors" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">🔍 7.2 Querying Products by Vector Similarity</h2>
-						</div>
+									<a id="query-vectors" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">7.2</span>
+										<h3>🔍 Querying Products by Vector Similarity</h3>
+									</div>
 
-						<p>When a user enters a query, it’s embedded into a vector and compared against the stored vectors in ChromaDB. Retrieval is based on cosine similarity, with optional support for structured filters.</p>
+									<p>
+										When a user enters a query, it's embedded into a vector and compared against the stored vectors in ChromaDB. Retrieval is based on
+										<span class="highlight-blue">cosine similarity</span>, with optional support for structured filters.
+									</p>
 
-						<p><b>✅ Query Example (from <span class="code-soft">vector_db.py</span>):</b></p>
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-python">
-results = self.collection.query(
+									<p>
+										<strong>✅ Query Example (from <span class="code-soft">vector_db.py</span>):</strong>
+									</p>
+									<div class="blg-code-block" data-lang="python">results = self.collection.query(
 	query_embeddings=[query_embedding],
 	n_results=5,
-	include=["metadatas", "documents"]
-)
-</code>
-							</pre>
-						</div>
+	include=[&quot;metadatas&quot;, &quot;documents&quot;]
+)</div>
 
-						<p>To filter results by fields such as sub-category or season, use the <span class="code-soft">where</span> clause:</p>
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-python">
-where = {"sub_category": "Tshirts", "season": "Summer"}
-</code>
-							</pre>
-						</div>
+									<p>To filter results by fields such as sub-category or season, use the <span class="code-soft">where</span> clause:</p>
+									<div class="blg-code-block" data-lang="python">where = {&quot;sub_category&quot;: &quot;Tshirts&quot;, &quot;season&quot;: &quot;Summer&quot;}</div>
 
-						<blockquote style="background: #fef9e7; padding: 10px; border-left: 5px solid #d4ac0d;">
-							🧠 This hybrid of semantic similarity and structured filtering makes the system both flexible and precise — ideal for large fashion catalogs with varied search criteria.
-						</blockquote>
+									<blockquote class="blg-callout-purple">
+										🧠 This hybrid of semantic similarity and structured filtering makes the system both flexible and precise — ideal for large fashion catalogs with varied search criteria.
+									</blockquote>
 
-						<hr class="blg-hr">
-					</div>
-					<!-- End of Vector Database with ChromaDB -->
-					
-					<!-- 8. Start of Semantic Search & Re-Ranking -->
-					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+									<hr class="blg-hr" />
+								</div>
+								<!-- End: Vector Database with ChromaDB -->
 
-						<a id="search-rerank" style="position: relative; top: -110px; visibility: hidden;"></a>
-						<div id="search-rerank" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">🔍 8. Semantic Search & Re-Ranking</h1>
-						</div>
+								<!-- 8. Semantic Search & Re-Ranking -->
+								<div class="blg-section">
+									<a id="search-rerank" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>🔍 8. Semantic Search & Re-Ranking</h2>
+									</div>
 
-						<p>Once all product metadata is embedded and stored in ChromaDB, the next phase is interpreting the user’s query. Our goal is to return the most relevant fashion items based on free-text input like:</p>
+									<p>
+										Once all product metadata is embedded and stored in ChromaDB, the next phase is interpreting the user's query. Our goal is to return the most relevant fashion items based on
+										free-text input like:
+									</p>
 
-						<blockquote style="background: #fdf2e9; padding: 10px; border-left: 5px solid #e67e22;">
-							“Show me some casual white t-shirts for summer under ¥1000.”
-						</blockquote>
+									<blockquote class="blg-callout-warning">"Show me some casual white t-shirts for summer under ¥1000."</blockquote>
 
-						<p>This search process is broken down into two stages: initial retrieval using vector similarity, and re-ranking using an LLM for deeper understanding and alignment.</p>
+									<p>This search process is broken down into two stages: initial retrieval using vector similarity, and re-ranking using an LLM for deeper understanding and alignment.</p>
 
-						<br>
-						<a id="initial-retrieval" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id="initial-retrieval" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">🧭 8.1 User Query Embedding and Initial Retrieval</h2>
-						</div>
+									<a id="initial-retrieval" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">8.1</span>
+										<h3>🧭 User Query Embedding and Initial Retrieval</h3>
+									</div>
 
-						<p>When a query is submitted, we embed it using the same SentenceTransformer model — <span class="code-soft">BAAI/bge-base-en-v1.5</span> — that was used to embed product metadata. The resulting query vector is passed to ChromaDB to find the top-k most similar product vectors.</p>
+									<p>
+										When a query is submitted, we embed it using the same SentenceTransformer model — <span class="code-soft">BAAI/bge-base-en-v1.5</span> — that was used to embed product metadata.
+										The resulting query vector is passed to ChromaDB to find the <span class="highlight-orange">top-k</span> most similar product vectors.
+									</p>
 
-						<p><b>✅ Code from <span class="code-soft">data_retriever.py</span>:</b></p>
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-python">
-query_embedding = self.embedding_model.encode(query).tolist()
+									<p>
+										<strong>✅ Code from <span class="code-soft">data_retriever.py</span>:</strong>
+									</p>
+									<div class="blg-code-block" data-lang="python">query_embedding = self.embedding_model.encode(query).tolist()
 results = self.vector_db_client.query(
 	query_embedding=query_embedding,
 	n_results=self.top_k,
-	include=["metadatas"]
-)
-</code>
-							</pre>
-						</div>
+	include=[&quot;metadatas&quot;]
+)</div>
 
-						<p>At this stage, results are returned based solely on vector similarity. It’s fast and often accurate — but it doesn’t yet capture subtle preferences like tone, context, or occasion.</p>
+									<p>
+										At this stage, results are returned based solely on vector similarity. It's fast and often accurate — but it doesn't yet capture subtle preferences like tone, context, or occasion.
+									</p>
 
-						<br>
-						<a id="reranking-llm" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id="reranking-llm" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">🧠 8.2 Re‑Ranking Results with LLM</h2>
-						</div>
+									<a id="reranking-llm" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">8.2</span>
+										<h3>🧠 Re‑Ranking Results with LLM</h3>
+									</div>
 
-						<p>To improve contextual understanding, we use a large language model (Groq + LLaMA 3 via LangChain) to re-rank the top-k retrieved items. This helps surface results that better align with user intent — even if they're not the closest match in vector space.</p>
+									<p>
+										To improve contextual understanding, we use a <span class="highlight-purple">large language model</span> (Groq + LLaMA 3 via LangChain) to re-rank the top-k retrieved items. This
+										helps surface results that better align with user intent — even if they're not the closest match in vector space.
+									</p>
 
-						<p>The <span class="code-soft">ReRanker</span> class prepares a prompt using the retrieved product list and the original user query. The LLM then filters and reorders them intelligently.</p>
+									<p>
+										The <span class="code-soft">ReRanker</span> class prepares a prompt using the retrieved product list and the original user query. The LLM then filters and reorders them
+										intelligently.
+									</p>
 
-						<p><b>✅ Prompt pattern from <span class="code-soft">rerank_prompt.txt</span>:</b></p>
-						<blockquote style="background: #effaf0; padding: 10px; border-left: 5px solid #27ae60;">
-							You are a fashion assistant.<br>
-							A user has searched for: "{query}"<br>
-							You are given a list of retrieved fashion product entries...<br>
-							Return only the matching items in the same format as provided...
-						</blockquote>
-
-						<p><b>✅ Code from <span class="code-soft">re_ranker.py</span>:</b></p>
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-python">
-prompt = self.prompt_template.format(query=query, results=json.dumps(metadatas, indent=2))
+									<p>
+										<strong>✅ Prompt pattern from <span class="code-soft">rerank_prompt.txt</span>:</strong>
+									</p>
+									<div class="blg-code-block" data-lang="python">prompt = self.prompt_template.format(query=query, results=json.dumps(metadatas, indent=2))
 response = self.llm.invoke(prompt)
-reranked_metadatas = json.loads(response.content.strip())
-</code>
-							</pre>
-						</div>
+reranked_metadatas = json.loads(response.content.strip())</div>
 
-						<p>This results in much higher-quality output that captures deeper relevance factors not captured by vector similarity alone.</p>
+									<p>
+										<strong>✅ Code from <span class="code-soft">re_ranker.py</span>:</strong>
+									</p>
+									<div class="blg-code-block" data-lang="python">final_output = self.ranker.rerank_with_llm(query, top_matches)
+return final_output</div>
 
-						<br>
-						<a id="final-output" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id="final-output" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">🧾 8.3 Final Output Returned to UI</h2>
-						</div>
+									<p>This results in much higher-quality output that captures deeper relevance factors not captured by vector similarity alone.</p>
 
-						<p>The final re-ranked list is passed back to the Streamlit UI and rendered as interactive product cards. Each product card displays:</p>
-						<ul style="padding-left: 40px;">
-							<li>🖼️ Product image</li>
-							<li>🏷️ Name and brand</li>
-							<li>💰 Price and category</li>
-							<li>🔍 “View Details” button to explore more information</li>
-						</ul>
+									<a id="final-output" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">8.3</span>
+										<h3>🧾 Final Output Returned to UI</h3>
+									</div>
 
-						<p><b>✅ Code from <span class="code-soft">data_retriever.py</span>:</b></p>
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-python">
-final_output = self.ranker.rerank_with_llm(query, top_matches)
-return final_output
-</code>
-							</pre>
-						</div>
+									<p>The final re-ranked list is passed back to the Streamlit UI and rendered as interactive product cards. Each product card displays:</p>
+									<ul class="blg-ul">
+										<li class="blg-li">🖼️ Product image</li>
+										<li class="blg-li">🏷️ Name and brand</li>
+										<li class="blg-li">💰 Price and category</li>
+										<li class="blg-li">🔍 "View Details" button to explore more information</li>
+									</ul>
 
-						<p>🎯 At this stage, a plain-text search query is transformed into a curated list of semantically matched and contextually relevant product suggestions — no filters or advanced search required.</p>
-
-						<hr class="blg-hr">
-					</div>
-					<!-- End of Semantic Search & Re-Ranking -->
-
-					<!-- 9. Start of Prompt Engineering -->
-					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
-
-						<a id="prompt-engineering" style="position: relative; top: -110px; visibility: hidden;"></a>
-						<div id="prompt-engineering" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">📜 9. Prompt Engineering</h1>
-						</div>
-
-						<p>A key part of this system’s intelligence comes from how we guide the large language model (LLM) using carefully crafted prompts. Prompts are responsible for transforming messy inputs into clean, structured outputs — and ensuring consistent formatting, rephrasing, or filtering of data.</p>
-
-						<p>Our project uses three dedicated prompt templates, each stored as a <span class="code-soft">.txt</span> file inside the <span class="code-soft">prompt/</span> directory.</p>
-
-						<br>
-						<a id="html-prompt" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id="html-prompt" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">🧽 9.1 HTML Cleaning Prompt</h2>
-						</div>
-
-						<p>The raw product metadata often contains embedded HTML and formatting inconsistencies. To clean this data, we use <span class="code-soft">html_prompt.txt</span> to instruct the LLM to:</p>
-
-						<ul style="padding-left: 40px;">
-							<li>🧹 Remove HTML tags</li>
-							<li>🔍 Extract only the key content (e.g., name, brand, description, style note)</li>
-							<li>🪄 Output a single, readable paragraph</li>
-						</ul>
-
-						<p><b>📝 Prompt Behavior:</b></p>
-						<ul style="padding-left: 40px;">
-							<li>❌ Never show field names like <span class="code-soft">brand:</span> or <span class="code-soft">style_note:</span></li>
-							<li>✔️ Only include fields that exist — skip empty ones</li>
-							<li>🚫 Do not invent or alter details</li>
-							<li>🧾 Output just one paragraph — no lists or bullet points</li>
-						</ul>
-
-						<p><b>✅ Prompt snippet:</b></p>
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-text">
-Your task is to:
+									<p>
+										<strong>✅ Code from <span class="code-soft">data_retriever.py</span>:</strong>
+									</p>
+									<div class="blg-code-block" data-lang="bash">Your task is to:
 1. Clean HTML tags from the input text.
 2. Extract the following metadata fields...
-3. Generate a single, natural-sounding paragraph.
-</code>
-							</pre>
-						</div>
+3. Generate a single, natural-sounding paragraph.</div>
 
-						<p>This ensures all product descriptions are clean, consistent, and ready for embedding.</p>
+									<p>
+										🎯 At this stage, a plain-text search query is transformed into a curated list of semantically matched and contextually relevant product suggestions — no filters or advanced search
+										required.
+									</p>
 
-						<br>
-						<a id="paragraph-prompt" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id="paragraph-prompt" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">🧾 9.2 Paragraph Generation Prompt</h2>
-						</div>
+									<hr class="blg-hr" />
+								</div>
+								<!-- End: Semantic Search & Re-Ranking -->
 
-						<p>After cleaning, we convert the metadata into a human-readable paragraph using <span class="code-soft">paragraph_prompt.txt</span>. This paragraph is then embedded for semantic search.</p>
+								<!-- 9. Prompt Engineering -->
+								<div class="blg-section">
+									<a id="prompt-engineering" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>📜 9. Prompt Engineering</h2>
+									</div>
 
-						<p><b>This step helps to:</b></p>
-						<ul style="padding-left: 40px;">
-							<li>🧠 Encode relevant fields naturally in one paragraph</li>
-							<li>🎯 Serve as high-quality input to the embedding model</li>
-							<li>🔍 Enable search by converting structure into searchable context</li>
-						</ul>
+									<p>
+										A key part of this system's intelligence comes from how we guide the large language model (LLM) using carefully crafted prompts. Prompts are responsible for transforming messy
+										inputs into clean, structured outputs — and ensuring consistent formatting, rephrasing, or filtering of data.
+									</p>
 
-						<p><b>📝 Prompt Goals:</b></p>
-						<ul style="padding-left: 40px;">
-							<li>🚫 Avoid listing keys and values</li>
-							<li>✅ Ensure grammar and readability</li>
-							<li>📦 Include all available metadata fluidly</li>
-						</ul>
+									<p>Our project uses three dedicated prompt templates, each stored as a <span class="code-soft">.txt</span> file inside the <span class="code-soft">prompt/</span> directory.</p>
 
-						<p><b>✅ Prompt snippet:</b></p>
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-text">
-You will receive product metadata as key-value pairs.
+									<a id="html-prompt" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">9.1</span>
+										<h3>🧽 HTML Cleaning Prompt</h3>
+									</div>
+
+									<p>
+										The raw product metadata often contains embedded HTML and formatting inconsistencies. To clean this data, we use <span class="code-soft">html_prompt.txt</span> to instruct the LLM
+										to:
+									</p>
+
+									<ul class="blg-ul">
+										<li class="blg-li">🧹 Remove HTML tags</li>
+										<li class="blg-li">🔍 Extract only the key content (e.g., name, brand, description, style note)</li>
+										<li class="blg-li">🪄 Output a single, readable paragraph</li>
+									</ul>
+
+									<p><strong>📝 Prompt Behavior:</strong></p>
+									<ul class="blg-ul">
+										<li class="blg-li">❌ Never show field names like <span class="code-soft">brand:</span> or <span class="code-soft">style_note:</span></li>
+										<li class="blg-li">✔️ Only include fields that exist — skip empty ones</li>
+										<li class="blg-li">🚫 Do not invent or alter details</li>
+										<li class="blg-li">🧾 Output just one paragraph — no lists or bullet points</li>
+									</ul>
+
+									<p><strong>✅ Prompt snippet:</strong></p>
+									<div class="blg-code-block" data-lang="bash">You will receive product metadata as key-value pairs.
 Convert it into a single, grammatically correct paragraph
-suitable for search embedding.
-</code>
-							</pre>
-						</div>
+suitable for search embedding.</div>
 
-						<p>This transforms structured fields into a format that’s easy for both users and the model to understand.</p>
+									<p>This ensures all product descriptions are clean, consistent, and ready for embedding.</p>
 
-						<br>
-						<a id="rerank-prompt" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id="rerank-prompt" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">🎯 9.3 Re‑Ranking Prompt for Matching</h2>
-						</div>
+									<a id="paragraph-prompt" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">9.2</span>
+										<h3>🧾 Paragraph Generation Prompt</h3>
+									</div>
 
-						<p>While vector similarity provides a strong baseline for relevance, LLM-based re-ranking further enhances quality. We use <span class="code-soft">rerank_prompt.txt</span> to identify and sort the best matches for a user query.</p>
+									<p>
+										After cleaning, we convert the metadata into a human-readable paragraph using <span class="code-soft">paragraph_prompt.txt</span>. This paragraph is then embedded for semantic
+										search.
+									</p>
 
-						<p><b>🧠 This prompt enables the LLM to:</b></p>
-						<ul style="padding-left: 40px;">
-							<li>🔎 Understand the search intent</li>
-							<li>📋 Review the top-k product entries</li>
-							<li>✅ Return only the items that match best, re-ordered by relevance</li>
-						</ul>
+									<p><strong>This step helps to:</strong></p>
+									<ul class="blg-ul">
+										<li class="blg-li">🧠 Encode relevant fields naturally in one paragraph</li>
+										<li class="blg-li">🎯 Serve as high-quality input to the embedding model</li>
+										<li class="blg-li">🔍 Enable search by converting structure into searchable context</li>
+									</ul>
 
-						<p><b>✅ Prompt snippet:</b></p>
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-text">
-You are a fashion assistant.
-A user has searched for: "{query}"...
+									<p><strong>📝 Prompt Goals:</strong></p>
+									<ul class="blg-ul">
+										<li class="blg-li">🚫 Avoid listing keys and values</li>
+										<li class="blg-li">✅ Ensure grammar and readability</li>
+										<li class="blg-li">📦 Include all available metadata fluidly</li>
+									</ul>
+
+									<p><strong>✅ Prompt snippet:</strong></p>
+									<div class="blg-code-block" data-lang="bash">You are a fashion assistant.
+A user has searched for: &quot;{query}&quot;...
 Return only the matching items in the same format as provided,
-without any explanation.
-</code>
-							</pre>
-						</div>
+without any explanation.</div>
 
-						<p>Together, these three prompts form the backbone of our language pipeline — enabling clean preprocessing, meaningful embeddings, and intelligent result re-ranking.</p>
+									<p>This transforms structured fields into a format that's easy for both users and the model to understand.</p>
 
-						<hr class="blg-hr">
-					</div>
-					<!-- End of Prompt Engineering -->
+									<a id="rerank-prompt" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">9.3</span>
+										<h3>🎯 Re‑Ranking Prompt for Matching</h3>
+									</div>
 
-					<!-- 10. Start of Streamlit Web UI -->
-					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+									<p>
+										While vector similarity provides a strong baseline for relevance, LLM-based re-ranking further enhances quality. We use <span class="code-soft">rerank_prompt.txt</span> to identify
+										and sort the best matches for a user query.
+									</p>
 
-						<a id="streamlit-ui" style="position: relative; top: -110px; visibility: hidden;"></a>
-						<div id="streamlit-ui" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">💻 10. Streamlit Web UI</h1>
-						</div>
+									<p><strong>🧠 This prompt enables the LLM to:</strong></p>
+									<ul class="blg-ul">
+										<li class="blg-li">🔎 Understand the search intent</li>
+										<li class="blg-li">📋 Review the top-k product entries</li>
+										<li class="blg-li">✅ Return only the items that match best, re-ordered by relevance</li>
+									</ul>
 
-						<p>The front end of the <b>RAG Fashion Recommendation System</b> is built entirely with <b>Streamlit</b>. It provides a clean, single-page interface where users can browse by category, view detailed product info, and search using full natural language queries — all with real-time updates.</p>
+									<p><strong>✅ Prompt snippet:</strong></p>
+									<div class="blg-code-block" data-lang="bash">You are a fashion assistant.
+A user has searched for: &quot;{query}&quot;...
+Return only the matching items in the same format as provided,
+without any explanation.</div>
 
-						<br>
-						<div id="web-ui-preview" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">🖼️ Web Interface Preview</h2>
-						</div>
+									<p>Together, these three prompts form the backbone of our language pipeline — enabling clean preprocessing, meaningful embeddings, and intelligent result re-ranking.</p>
 
-						<div class="blg-img-container">
-							<img src="../img/blog_7/app.png" alt="RAG Fashion Recommendation Web UI" style="width: 70%;"/>
-							<p>Figure 1: Fashion Recommendation Web UI</p>
-						</div>
-						
+									<hr class="blg-hr" />
+								</div>
+								<!-- End: Prompt Engineering -->
 
-						<br>
-						<a id="left-panel" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id="left-panel" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">🧭 10.1 Left Panel — Category Navigation</h2>
-						</div>
+								<!-- 10. Streamlit Web UI -->
+								<div class="blg-section">
+									<a id="streamlit-ui" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>💻 10. Streamlit Web UI</h2>
+									</div>
 
-						<ul style="padding-left: 40px;">
-							<li>📂 Displays a collapsible list of fashion categories and sub-categories</li>
-							<li>👗 Users can expand master categories (e.g., <span class="code-soft">Apparel</span>) and select any sub-category (e.g., <span class="code-soft">Topwear</span>)</li>
-							<li>🎨 Emojis are used to improve visual clarity and UX friendliness</li>
-						</ul>
+									<p>
+										The front end of the <strong>RAG Fashion Recommendation System</strong> is built entirely with <span class="highlight-teal">Streamlit</span>. It provides a clean, single-page
+										interface where users can browse by category, view detailed product info, and search using full natural language queries — all with real-time updates.
+									</p>
 
-						<br>
-						<a id="middle-panel" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id="middle-panel" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">🛍️ 10.2 Middle Panel — Product Grid View</h2>
-						</div>
+									<div class="blg-sub-header">
+										<h3>🖼️ Web Interface Preview</h3>
+									</div>
 
-						<ul style="padding-left: 40px;">
-							<li>🖼️ Displays a paginated gallery of fashion products</li>
-							<li>🧾 Each card shows the image, name, brand, and price</li>
-							<li>🔍 A “View Details” button allows users to open more information in the right panel</li>
-						</ul>
+									<div class="blg-img-container" style="max-width: 70%">
+										<img src="../img/blog_7/app.png" alt="RAG Fashion Recommendation Web UI" class="blg-img" />
+										<p class="blg-img-caption">Figure 1: Fashion Recommendation Web UI</p>
+									</div>
 
-						<br>
-						<a id="right-panel" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id="right-panel" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">🧾 10.3 Right Panel — Product Details</h2>
-						</div>
+									<a id="left-panel" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">10.1</span>
+										<h3>🧭 Left Panel — Category Navigation</h3>
+									</div>
 
-						<ul style="padding-left: 40px;">
-							<li>🖼️ Shows a larger image and detailed metadata of the selected item</li>
-							<li>🏷️ Displays attributes like name, brand, price, color, category, season, etc.</li>
-							<li>♻️ Users can clear the selection to return to the grid view</li>
-						</ul>
+									<ul class="blg-ul">
+										<li class="blg-li">📂 Displays a collapsible list of fashion categories and sub-categories</li>
+										<li class="blg-li">
+											👗 Users can expand master categories (e.g., <span class="code-soft">Apparel</span>) and select any sub-category (e.g., <span class="code-soft">Topwear</span>)
+										</li>
+										<li class="blg-li">🎨 Emojis are used to improve visual clarity and UX friendliness</li>
+									</ul>
 
-						<br>
-						<a id="search-box" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id="search-box" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">💬 10.4 Bottom — Natural Language Search Input</h2>
-						</div>
+									<a id="middle-panel" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">10.2</span>
+										<h3>🛍️ Middle Panel — Product Grid View</h3>
+									</div>
 
-						<ul style="padding-left: 40px;">
-							<li>📥 Located at the bottom of the UI for direct access</li>
-							<li>✍️ Users can input descriptive queries like:<br>
-								<span class="code-soft">“Show me winter jackets for women under ¥5000.”</span></li>
-							<li>⚡ The query is embedded, matched via vector similarity, re-ranked by LLM, and displayed instantly</li>
-						</ul>
+									<ul class="blg-ul">
+										<li class="blg-li">🖼️ Displays a paginated gallery of fashion products</li>
+										<li class="blg-li">🧾 Each card shows the image, name, brand, and price</li>
+										<li class="blg-li">🔍 A "View Details" button allows users to open more information in the right panel</li>
+									</ul>
 
-						<br>
-						
-						<h2 style="color: #2c3e50; font-size: 22px;">🚀 Try It Yourself</h2>
-						<ul style="padding-left: 40px;">
-							<li>🤗 <b>Hugging Face Space:</b> <a href="https://huggingface.co/spaces/shafiqul1357/rag-fashion-recommendation" target="_blank" style="text-decoration: underline;">https://huggingface.co/spaces/shafiqul1357/rag-fashion-recommendation</a></li>
-							<li>📦 <b>GitHub Repository:</b> <a href="https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation" target="_blank" style="text-decoration: underline;">https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation</a></li>
-						</ul>
+									<a id="right-panel" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">10.3</span>
+										<h3>🧾 Right Panel — Product Details</h3>
+									</div>
 
-						<br>
-						<h2 style="color: #2c3e50; font-size: 22px;">📘 Want to Deploy It Yourself?</h2>
-						<p>If you'd like to deploy your own Streamlit app to Hugging Face Spaces, follow this step-by-step guide:</p>
+									<ul class="blg-ul">
+										<li class="blg-li">🖼️ Shows a larger image and detailed metadata of the selected item</li>
+										<li class="blg-li">🏷️ Displays attributes like name, brand, price, color, category, season, etc.</li>
+										<li class="blg-li">♻️ Users can clear the selection to return to the grid view</li>
+									</ul>
 
-						<p>🔗 <b><a href="https://shafiqulai.github.io/blogs/blog_4.html?id=4" target="_blank" style="text-decoration: underline;">How to Deploy a Streamlit App to Hugging Face</a></b></p>
+									<a id="search-box" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">10.4</span>
+										<h3>💬 Bottom — Natural Language Search Input</h3>
+									</div>
 
-						<hr class="blg-hr">
-					</div>
-					<!-- End of Streamlit Web UI -->
+									<ul class="blg-ul">
+										<li class="blg-li">📥 Located at the bottom of the UI for direct access</li>
+										<li class="blg-li">✍️ Users can input descriptive queries like: <span class="code-soft">"Show me winter jackets for women under ¥5000."</span></li>
+										<li class="blg-li">⚡ The query is embedded, matched via vector similarity, re-ranked by LLM, and displayed instantly</li>
+									</ul>
 
-					<!-- 11. Start of Example Queries & Output -->
-					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+									<div class="blg-sub-header">
+										<h3>🚀 Try It Yourself</h3>
+									</div>
+									<ul class="blg-ul">
+										<li class="blg-li">
+											🤗 <strong>Hugging Face Space:</strong>
+											<a href="https://huggingface.co/spaces/shafiqul1357/rag-fashion-recommendation" class="blg-link" target="_blank" rel="noopener noreferrer"
+												>https://huggingface.co/spaces/shafiqul1357/rag-fashion-recommendation</a
+											>
+										</li>
+										<li class="blg-li">
+											📦 <strong>GitHub Repository:</strong>
+											<a href="https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation" class="blg-link" target="_blank" rel="noopener noreferrer"
+												>https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation</a
+											>
+										</li>
+									</ul>
 
-						<a id="example-queries" style="position: relative; top: -110px; visibility: hidden;"></a>
-						<div id="example-queries" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">🧪 11. Example Queries & Output</h1>
-						</div>
+									<div class="blg-sub-header">
+										<h3>📘 Want to Deploy It Yourself?</h3>
+									</div>
+									<p>If you'd like to deploy your own Streamlit app to Hugging Face Spaces, follow this step-by-step guide:</p>
 
-						<p>To evaluate how well the system understands user intent, we tested it with a variety of natural language queries — from simple one-liners to more complex, multi-intent requests. The results are pulled from ChromaDB, re-ranked by the LLM, and displayed as interactive product cards in the Streamlit interface.</p>
+									<p>
+										🔗
+										<strong
+											><a href="https://shafiqulai.github.io/blogs/blog_4.html?id=4" class="blg-link" target="_blank" rel="noopener noreferrer"
+												>How to Deploy a Streamlit App to Hugging Face</a
+											></strong
+										>
+									</p>
 
-						<br>
-						<a id="simple-queries" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id="simple-queries" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">🧾 11.1 Simple Queries</h2>
-						</div>
+									<hr class="blg-hr" />
+								</div>
+								<!-- End: Streamlit Web UI -->
 
-						<p>These examples represent direct, single-intent queries. They typically focus on a single category, color, or usage context — and the system handles them accurately with minimal ambiguity.</p>
+								<!-- 11. Example Queries & Output -->
+								<div class="blg-section">
+									<a id="example-queries" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>🧪 11. Example Queries & Output</h2>
+									</div>
 
-						<p><b>✅ Examples:</b></p>
-						<ul style="padding-left: 40px;">
-							<li>🔎 <span class="code-soft">Query:</span> “Show me black running shoes for men.”<br>
-								🎯 <span class="code-soft">Output:</span> A list of men’s sports shoes filtered by color and category.</li><br>
+									<p>
+										To evaluate how well the system understands user intent, we tested it with a variety of natural language queries — from simple one-liners to more complex, multi-intent requests.
+										The results are pulled from ChromaDB, re-ranked by the LLM, and displayed as interactive product cards in the Streamlit interface.
+									</p>
 
-							<li>🔎 <span class="code-soft">Query:</span> “Casual red dresses for summer.”<br>
-								🎯 <span class="code-soft">Output:</span> Lightweight red dresses tagged for summer season and casual usage.</li><br>
+									<a id="simple-queries" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">11.1</span>
+										<h3>🧾 Simple Queries</h3>
+									</div>
 
-							<li>🔎 <span class="code-soft">Query:</span> “White cotton t-shirts.”<br>
-								🎯 <span class="code-soft">Output:</span> T-shirts described as cotton and white in <span class="code-soft">base_colour</span>.</li>
-						</ul>
+									<p>
+										These examples represent direct, single-intent queries. They typically focus on a single category, color, or usage context — and the system handles them accurately with minimal
+										ambiguity.
+									</p>
 
-						<p>These results confirm the system’s ability to match descriptive search phrases to relevant items — even without explicit filters.</p>
+									<div class="blg-query-list">
+										<div class="blg-query-card">
+											<div class="blg-query-q"><span class="blg-query-badge bq-query">Q</span> "Show me black running shoes for men."</div>
+											<div class="blg-query-a"><span class="blg-query-badge bq-output">A</span> A list of men's sports shoes filtered by color and category.</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q"><span class="blg-query-badge bq-query">Q</span> "Casual red dresses for summer."</div>
+											<div class="blg-query-a"><span class="blg-query-badge bq-output">A</span> Lightweight red dresses tagged for summer season and casual usage.</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q"><span class="blg-query-badge bq-query">Q</span> "White cotton t-shirts."</div>
+											<div class="blg-query-a"><span class="blg-query-badge bq-output">A</span> T-shirts described as cotton and white in <span class="code-soft">base_colour</span>.</div>
+										</div>
+									</div>
 
-						<br>
-						<a id="complex-queries" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id="complex-queries" class="blg-sub-header">
-							<h2 style="color: #2c3e50; font-size: 22px;">🧠 11.2 Complex Multi-Category Queries</h2>
-						</div>
+									<p>These results confirm the system's ability to match descriptive search phrases to relevant items — even without explicit filters.</p>
 
-						<p>We also tested more layered queries involving combinations of categories, budget constraints, seasons, and usage conditions. This is where LLM-powered re-ranking adds significant value.</p>
+									<a id="complex-queries" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">11.2</span>
+										<h3>🧠 Complex Multi-Category Queries</h3>
+									</div>
 
-						<p><b>✅ Examples:</b></p>
-						<ul style="padding-left: 40px;">
-							<li>🔎 <span class="code-soft">Query:</span> “I want a pair of white sneakers and a matching bag for summer under ¥3000.”<br>
-								🎯 <span class="code-soft">Output:</span> The system selects both shoes and bags with matching attributes and budget — even across categories.</li><br>
+									<p>
+										We also tested more layered queries involving combinations of categories, budget constraints, seasons, and usage conditions. This is where LLM-powered re-ranking adds significant
+										value.
+									</p>
 
-							<li>🔎 <span class="code-soft">Query:</span> “Looking for affordable t-shirts for both men and women that can be worn casually or during workouts.”<br>
-								🎯 <span class="code-soft">Output:</span> Gender-neutral topwear items with casual and sports usage tags are returned.</li><br>
+									<div class="blg-query-list">
+										<div class="blg-query-card">
+											<div class="blg-query-q"><span class="blg-query-badge bq-query">Q</span> "I want a pair of white sneakers and a matching bag for summer under ¥3000."</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">A</span> The system selects both shoes and bags with matching attributes and budget — even across categories.
+											</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Q</span> "Looking for affordable t-shirts for both men and women that can be worn casually or during workouts."
+											</div>
+											<div class="blg-query-a"><span class="blg-query-badge bq-output">A</span> Gender-neutral topwear items with casual and sports usage tags are returned.</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q"><span class="blg-query-badge bq-query">Q</span> "Give me lightweight accessories and innerwear suitable for hot weather."</div>
+											<div class="blg-query-a"><span class="blg-query-badge bq-output">A</span> Breathable scarves, socks, and undergarments tagged for summer or hot climate conditions.</div>
+										</div>
+									</div>
 
-							<li>🔎 <span class="code-soft">Query:</span> “Give me lightweight accessories and innerwear suitable for hot weather.”<br>
-								🎯 <span class="code-soft">Output:</span> Breathable scarves, socks, and undergarments tagged for summer or hot climate conditions.</li>
-						</ul>
+									<p>These results highlight the strength of combining vector similarity with LLM reasoning — producing recommendations that go beyond keywords and actually understand user intent.</p>
 
-						<p>These results highlight the strength of combining vector similarity with LLM reasoning — producing recommendations that go beyond keywords and actually understand user intent.</p>
+									<hr class="blg-hr" />
+								</div>
+								<!-- End: Example Queries & Output -->
 
-						<hr class="blg-hr">
-					</div>
-					<!-- End of Example Queries & Output -->
-					
-					<!-- 12. Start of Conclusion -->
-					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+								<!-- 12. Conclusion -->
+								<div class="blg-section">
+									<a id="conclusion" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>🎯 12. Conclusion</h2>
+									</div>
 
-						<a id="conclusion" style="position: relative; top: -110px; visibility: hidden;"></a>
-						<div id="conclusion" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">🎯 12. Conclusion</h1>
-						</div>
+									<p>
+										In this project, we built a complete <strong>RAG-powered Fashion Recommendation System</strong> that brings natural language understanding into product discovery. By blending
+										semantic embeddings, vector search, and large language models, we created an experience where users can simply describe what they need — without relying on traditional filters or
+										complex UIs.
+									</p>
 
-						<p>In this project, we built a complete <b>RAG-powered Fashion Recommendation System</b> that brings natural language understanding into product discovery. By blending semantic embeddings, vector search, and large language models, we created an experience where users can simply describe what they need — without relying on traditional filters or complex UIs.</p>
+									<p>
+										From cleaning raw metadata and generating descriptive paragraphs, to embedding them into a vector space and re-ranking results with an LLM, each step in the pipeline reflects how
+										real users naturally search and think. The clean, intuitive interface built with Streamlit ensures that the power of the system remains accessible to everyone.
+									</p>
 
-						<p>From cleaning raw metadata and generating descriptive paragraphs, to embedding them into a vector space and re-ranking results with an LLM, each step in the pipeline reflects how real users naturally search and think. The clean, intuitive interface built with Streamlit ensures that the power of the system remains accessible to everyone.</p>
+									<p>
+										💡 Whether you're building a fashion tech product, exploring LLM-powered recommendation systems, or looking for a real-world use case for RAG — this project offers a practical and
+										extensible blueprint for modern AI-driven discovery.
+									</p>
+								</div>
+								<!-- End: Conclusion -->
 
-						<p>💡 Whether you're building a fashion tech product, exploring LLM-powered recommendation systems, or looking for a real-world use case for RAG — this project offers a practical and extensible blueprint for modern AI-driven discovery.</p>
+								<!-- 13. Technical Stacks -->
+								<div class="blg-trailing-section">
+									<div class="blg-trailing-header">
+										<img src="../img/technical_stack/stack.png" alt="Technical Stacks" />
+										<h2>Technical Stacks</h2>
+									</div>
+									<div class="blg-tech-grid">
+										<div class="blg-tech-card"><img src="../img/technical_stack/python.svg" alt="Python" /> Python</div>
+										<div class="blg-tech-card"><img src="../img/technical_stack/streamlit.svg" alt="Streamlit" /> Streamlit</div>
+										<div class="blg-tech-card"><img src="../img/technical_stack/huggingface.svg" alt="Hugging Face" /> Hugging Face</div>
+										<div class="blg-tech-card"><img src="../img/technical_stack/rag.png" alt="RAG" /> RAG</div>
+										<div class="blg-tech-card"><img src="../img/technical_stack/llama.png" alt="Llama" /> Llama</div>
+										<div class="blg-tech-card"><img src="../img/technical_stack/chroma.svg" alt="ChromaDB" /> ChromaDB</div>
+										<div class="blg-tech-card"><img src="../img/technical_stack/langchain.svg" alt="LangChain" /> LangChain</div>
+										<div class="blg-tech-card"><img src="../img/technical_stack/prompt.png" alt="Prompt Engineering" /> Prompt Engineering</div>
+									</div>
+								</div>
+								<!-- End: Technical Stacks -->
 
-						<br>
-					</div>
-					<!-- End of Conclusion -->
+								<!-- 14. Download Source Code -->
+								<div class="blg-download-card">
+									<img src="../img/others/download.svg" alt="Download" />
+									<div class="blg-download-info">
+										<h3>Download Source Code</h3>
+										<p>RAG Fashion Recommendation System</p>
+									</div>
+									<a href="https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation" class="blg-download-btn" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+								</div>
+								<!-- End: Download Source Code -->
 
-
-					<!-- Start of Technical stacks -->
-					<div class="reference-container">
-						<hr class="blg-hr">
-						<h2><img src="../img/technical_stack/stack.png" alt="Technical Stack Icon" style="width: 48px; vertical-align: middle; margin-right: 6px;"> <b>Technical Stacks</b></h2>
-						<ul class="blg-ul">
-							<li class="blg-li">
-								<img src="../img/technical_stack/python.svg" alt="Python" width="32" style="vertical-align: middle; margin-right: 6px;">
-								<b>Python</b> 
-							</li>
-							<li class="blg-li">
-								<img src="../img/technical_stack/streamlit.svg" alt="Streamlit" width="32" style="vertical-align: middle; margin-right: 6px;">
-								<b>Streamlit</b> 
-							</li>
-							<li class="blg-li">
-								<img src="../img/technical_stack/huggingface.svg" alt="Hugging Face" width="32" style="vertical-align: middle; margin-right: 6px;">
-								<b>Hugging Face</b> 
-							</li>
-							<li class="blg-li">
-								<img src="../img/technical_stack/rag.png" alt="RAG" width="32" style="vertical-align: middle; margin-right: 6px;">
-								<b>RAG</b> 
-							</li>
-							<li class="blg-li">
-								<img src="../img/technical_stack/llama.png" alt="Llama" width="32" style="vertical-align: middle; margin-right: 6px;">
-								<b>Llama</b> 
-							</li>
-							<li class="blg-li">
-								<img src="../img/technical_stack/chroma.svg" alt="ChromaDB" width="32" style="vertical-align: middle; margin-right: 6px;">
-								<b>ChromaDB</b> 
-							</li>
-							<li class="blg-li">
-								<img src="../img/technical_stack/langchain.svg" alt="LangChain" width="32" style="vertical-align: middle; margin-right: 6px;">
-								<b>LangChain</b> 
-							</li>
-							<li class="blg-li">
-								<img src="../img/technical_stack/prompt.png" alt="Prompt Engineering" width="32" style="vertical-align: middle; margin-right: 6px;">
-								<b>Prompt Engineering</b> 
-							</li>							
-						</ul>
-						<br>
-					</div>
-					<!-- End of Technical stacks -->
-
-					<!-- Download Source Code -->
-
-					<h2>
-						<a href="https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation" target="_blank" style="text-decoration: none;">
-							<img src="../img/others/download.svg" alt="Download" style="width: 48px; height: 48px; vertical-align: middle; margin-right: 5px;"/>
-						</a>
-						Download Source Code : 
-						<a href="https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation" target="_blank" style="text-decoration: underline;">RAG Fashion Recommendation System</a>
-					</h2>
-					<br>
-
-					<div class="reference-container">
-						<hr class="blg-hr">
-						<h2>📚 <b>References</b></h2>
-						<ul class="blg-ul">
-							<li class="blg-li">🔗 <b>GitHub Repository:</b> 
-								<a target="_blank" style="text-decoration: underline;" href="https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation">
-									RAG Fashion Recommendation System
-								</a>
-							</li>
-							<li class="blg-li">🤗 <b>Live App in Hugging Face Space:</b> 
-								<a target="_blank" style="text-decoration: underline;" href="https://huggingface.co/spaces/shafiqul1357/rag-fashion-recommendation">
-									Fasion Recommendation App
-								</a>
-							</li>
-							<li class="blg-li">
-								<img src="../img/technical_stack/python.svg" alt="Python Icon" width="24" style="vertical-align: middle; margin-right: 6px;">
-								<b>Python:</b> 
-								<a target="_blank" style="text-decoration: underline;" href="https://www.python.org/">
-									Python Website
-								</a>
-							</li>
-							<li class="blg-li">
-								<img src="../img/technical_stack/streamlit.svg" alt="Streamlit Icon" width="24" style="vertical-align: middle; margin-right: 6px;">
-								<b>Streamlit:</b> 
-								<a target="_blank" style="text-decoration: underline;" href="https://streamlit.io/">
-									Streamlit Website
-								</a>
-							</li>
-							<li class="blg-li">
-								<img src="../img/technical_stack/medium.svg" alt="Medium Icon" width="24" style="vertical-align: middle; margin-right: 6px;">
-								<b>Medium Article:</b> 
-								<a target="_blank" style="text-decoration: underline;" href="https://medium.com/@shafiqul-islam/rag-fashion-recommendation-system-ai-powered-product-discovery-from-metadata-5d68f55c77cb">
-									Read the Blog on Medium
-								</a>
-							</li>
-							<li class="blg-li">
-								<img src="../img/technical_stack/llama.png" alt="Llama" width="24" style="vertical-align: middle; margin-right: 6px;">
-								<b>Llama:</b> 
-								<a target="_blank" style="text-decoration: underline;" href="https://www.llama.com/">
-									Try Llama
-								</a>
-							</li>
-							<li class="blg-li">
-								<img src="../img/technical_stack/langchain.svg" alt="LangChain" width="24" style="vertical-align: middle; margin-right: 6px;">
-								<b>LangChain:</b> 
-								<a target="_blank" style="text-decoration: underline;" href="https://www.langchain.com/">
-									LangChain Website
-								</a>
-							</li>
-							<li class="blg-li">
-								<img src="../img/technical_stack/chroma.svg" alt="ChromaDB" width="24" style="vertical-align: middle; margin-right: 6px;">
-								<b>ChromaDB:</b> 
-								<a target="_blank" style="text-decoration: underline;" href="https://www.trychroma.com/">
-									ChromaDB Website
-								</a>
-							</li>
-						</ul>
-					</div>
-
-					<br><br>
-
-					<div class="blg-center-txt">
-						<h1>Related Blog Posts</h1>
-					</div>
-
-				<!-- End of blog posts container -->
-				
-				<!-- blog posts in slick slider -->
-				<div id="postContainer" class="row">
-					<!-- Blog posts will be dynamically generated here -->
-				</div>
-
-				<!-- Slide Counter -->
-				<div class="blg-slide-counter">
-					<span id="currentSlide">1</span> / <span id="totalSlides">1</span>
-				</div>
-				<br>
-
-			</div>
-		</section>
-		
-		<section class="footer-section">
-			<div class="container footer">
-				<div class="row footer">
-					<div class="col-md-8">
-						<div class="copyright">
-							<div class="logo-circle">
-								<img src="../img/others/blog_logo.svg" alt="Shafiqul AI" style="height:24px; vertical-align:middle;">
+								<!-- 15. References -->
+								<div class="blg-trailing-section">
+									<div class="blg-trailing-header">
+										<span style="font-size: 22px; line-height: 1">📚</span>
+										<h2>References</h2>
+									</div>
+									<ul class="blg-ul">
+										<li class="blg-li">
+											<img src="../img/technical_stack/github.svg" alt="GitHub" width="18" style="vertical-align: middle; margin-right: 6px" /><strong>GitHub Repository:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation">RAG Fashion Recommendation System</a>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/huggingface.svg" alt="Hugging Face" width="18" style="vertical-align: middle; margin-right: 6px" /><strong>Live App:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://huggingface.co/spaces/shafiqul1357/rag-fashion-recommendation"
+												>Fashion Recommendation on Hugging Face</a
+											>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/python.svg" alt="Python" width="18" style="vertical-align: middle; margin-right: 6px" /><strong>Python:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://www.python.org/">python.org</a>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/streamlit.svg" alt="Streamlit" width="18" style="vertical-align: middle; margin-right: 6px" /><strong>Streamlit:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://streamlit.io/">streamlit.io</a>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/medium.svg" alt="Medium" width="18" style="vertical-align: middle; margin-right: 6px" /><strong>Medium Article:</strong>
+											<a
+												class="blg-link"
+												target="_blank"
+												rel="noopener noreferrer"
+												href="https://medium.com/@shafiqul-islam/rag-fashion-recommendation-system-ai-powered-product-discovery-from-metadata-5d68f55c77cb"
+												>Read on Medium</a
+											>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/llama.png" alt="Llama" width="18" style="vertical-align: middle; margin-right: 6px" /><strong>Llama:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://www.llama.com/">llama.com</a>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/langchain.svg" alt="LangChain" width="18" style="vertical-align: middle; margin-right: 6px" /><strong>LangChain:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://www.langchain.com/">langchain.com</a>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/chroma.svg" alt="ChromaDB" width="18" style="vertical-align: middle; margin-right: 6px" /><strong>ChromaDB:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://www.trychroma.com/">trychroma.com</a>
+										</li>
+									</ul>
+								</div>
+								<!-- End: References -->
 							</div>
-							<span> &copy; <span id="currentYear"></span> Shafiqul AI | All rights reserved. Developed by Md Shafiqul Islam</span>
+							<!-- End: blog content -->
+						</div>
+						<!-- end .blog-detail-main -->
+					</div>
+					<!-- end .blog-detail-layout -->
+
+					<!-- Related Blog Posts -->
+					<div class="related-posts-section">
+						<div class="blog-title-bar">
+							<img src="../img/others/blog.png" alt="blog post" style="width: 24px; height: auto" />
+							<h2>Related Blog Posts</h2>
+						</div>
+						<div class="related-posts-wrapper">
+							<div class="related-posts-swiper-area">
+								<div class="swiper" id="postContainer">
+									<div class="swiper-wrapper">
+										<!-- Blog posts will be dynamically generated here -->
+									</div>
+								</div>
+								<div class="swiper-button-prev"></div>
+								<div class="swiper-button-next"></div>
+							</div>
+							<div class="blg-slide-counter">
+								<div class="slide-progress-bar">
+									<div class="slide-progress-fill" id="slideProgressFill"></div>
+								</div>
+								<div class="slide-counter-label"><span id="currentSlide">1</span> / <span id="totalSlides">1</span></div>
+							</div>
 						</div>
 					</div>
-					<div class="col-md-4">
-						<ul class="social-network">
-							<li>
-								<a target="_blank" href="mailto:mdshafiqul.islam603@gmail.com" data-placement="top" title="Gmail">
-									<img src="../img/contact/gmail.svg" alt="Gmail">
-									<span class="icon-label">Gmail</span>
-								</a>
-							</li>
-							<li>
-								<a target="_blank" href="https://www.linkedin.com/in/shafiqul-islam-sumon/" data-placement="top" title="LinkedIn">
-									<img src="../img/contact/linkedin.svg" alt="LinkedIn">
-									<span class="icon-label">LinkedIn</span>
-								</a>
-							</li>
-							<li>
-								<a target="_blank" href="https://github.com/shafiqulislamsumon" data-placement="top" title="GitHub">
-									<img src="../img/contact/github.svg" alt="GitHub">
-									<span class="icon-label">GitHub</span>
-								</a>
-							</li>
-							<li>
-								<a target="_blank" href="https://leetcode.com/u/shafiqul/" data-placement="top" title="LeetCode">
-									<img src="../img/contact/leetcode.svg" alt="LeetCode">
-									<span class="icon-label">LeetCode</span>
-								</a>
-							</li>
-							<li>
-								<a target="_blank" href="https://huggingface.co/shafiqul1357" data-placement="top" title="Hugging Face">
-									<img src="../img/contact/huggingface.svg" alt="Hugging Face">
-									<span class="icon-label">Hugging Face</span>
-								</a>
-							</li>
-							<li>
-								<a target="_blank" href="https://medium.com/@shafiqul-islam" data-placement="top" title="Medium">
-									<img src="../img/contact/medium.svg" alt="Medium">
-									<span class="icon-label">Medium</span>
-								</a>
-							</li>
-						</ul>
-					</div>
 				</div>
-			</div>
-		</section>
+			</section>
+			<div id="site-footer"></div>
+		</div>
 
-
-	</div> <!-- end wrapper -->
-
-	<a href="#" class="scrollup"><i class="fa fa-angle-up active"></i></a>
-
-	<!-- javascript -->
-	<!-- Placed at the end of the document so the pages load faster -->
-	<script type="text/javascript" src="../js/jquery-3.7.1.min.js"></script>
-	<script type="text/javascript" src="../js/bootstrap.min.js"></script>
-	<script type="text/javascript" src="../js/slick.min.js"></script>
-	<script type="text/javascript" src="../js/tabulator.min.js"></script>
-	<script type="text/javascript" src="../js/prism.js"></script>
-	<script type="text/javascript" src="../js/smooth-scroll.polyfills.min.js"></script>
-	<script type="text/javascript" src="../js/detail.js"></script>
-
-	<script>
-		document.getElementById("currentYear").textContent = new Date().getFullYear();
-	</script>	
-
-</body>
-
+		<!-- javascript -->
+		<!-- Placed at the end of the document so the pages load faster -->
+		<script type="text/javascript" src="../js/bootstrap.bundle.min.js"></script>
+		<script type="text/javascript" src="../js/components.js"></script>
+		<script type="text/javascript" src="../js/site.js"></script>
+		<script src="../js/swiper-bundle.min.js"></script>
+		<script src="../js/prism.js" data-manual></script>
+		<script type="text/javascript" src="../js/code-highlight.js"></script>
+		<script type="text/javascript" src="../js/detail.js"></script>
+	</body>
 </html>

@@ -1,424 +1,322 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+	<head>
+		<!-- Google tag (gtag.js) -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-6SEFZQJHM1"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
 
-<head>
+			gtag("config", "G-6SEFZQJHM1", {
+				cookie_domain: "shafiqulai.github.io",
+			});
+		</script>
 
-	<!-- Google tag (gtag.js) -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-6SEFZQJHM1"></script>
-	<script>
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag('js', new Date());
+		<meta charset="utf-8" />
+		<link rel="canonical" href="https://shafiqulai.github.io/blogs/blog_1.html" />
+		<title>Manage .env Files in Docker</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="description" content="Manage .env Files in Docker" />
+		<meta name="author" content="MD SHAFIQUL ISLAM" />
+		<link rel="icon" href="../img/others/favicon.ico" type="image/x-icon" />
 
-	gtag('config', 'G-6SEFZQJHM1', {
-    	cookie_domain: 'shafiqulai.github.io'
-  	});
-	</script>
+		<!-- css -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
 
-	<meta charset="utf-8">
-	<link rel="canonical" href="https://shafiqulai.github.io/blogs/blog_1.html" />
-	<title>Manage .env Files in Docker</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<meta name="description" content="Manage .env Files in Docker" />
-	<meta name="author" content="MD SHAFIQUL ISLAM" />
-	<link rel="icon" href="../img/others/favicon.ico" type="image/x-icon">
+		<link rel="stylesheet" href="../css/swiper-bundle.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/style.css" />
+		<link rel="stylesheet" type="text/css" href="../css/prism.css" />
+	</head>
 
-	<!-- css -->
-	<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
-	<link rel="stylesheet" type="text/css" href="../css/font-awesome.css" />
-	<link rel="stylesheet" type="text/css" href="../css/slick.css" />
-	<link rel="stylesheet" type="text/css" href="../css/slick-theme.css" />
-	<link rel="stylesheet" type="text/css" href="../css/tabulator_site.min.css" />
-	<link rel="stylesheet" type="text/css" href="../css/prism.css" />
-	<link rel="stylesheet" type="text/css" href="../css/style.css" />
+	<body>
+		<!-- Reading Progress Bar -->
+		<div id="reading-progress"></div>
+		<div id="wrapper">
+			<div id="site-header"></div>
 
-</head>
-
-<body>
-	<div id="wrapper">
-		<!-- start header -->
-		<header>
-			<div class="navbar navbar-default custom-sticky-navbar">
+			<section id="content">
 				<div class="container">
-					<div class="navbar-header">
-						<button type="button" class="navbar-toggle" data-toggle="collapse"
-							data-target=".navbar-collapse">
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-						</button>
-						<a class="navbar-brand" href="../index.html"><img src="../img/others/logo.png" alt="logo" class="navbar-logo" /></a>
-					</div>
-					<div class="navbar-collapse collapse ">
-						<ul class="nav navbar-nav">
-							<li><a href="../index.html"><img src="../img/others/home.svg" alt="Home" style="width:24px; height:auto; vertical-align:middle; margin-right:10px;">Home</a></li>
-							<li><a href="../about.html"><img src="../img/others/about.svg" alt="About" style="width:24px; height:auto; vertical-align:middle; margin-right:10px;">About</a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</header>
-		<!-- end header -->
-
-		<section id="content">
-			<div class="container">
-
-				<!-- blog details -->
-				<div id="blogContainer">
-					<!-- blog title -->
-					<div class="container blg-title-container">
-						<h2 class="blg-title">Protect Sensitive Information in Docker: Accessing .env Credentials Without Exposing Them</h2>
-					</div>
-
-					<!-- Author Info -->
-					<div class="author_section">
-						<img id="author_img" src="" alt="Author Photo" class="author_img">
-						<div class="author_details">
-							<span id="author_name" class="author_name"></span>
-							<span id="published_date" class="published_date"></span>
-						</div>
-					</div>
-
-					<div class="blg-img-container">
-						<img src="../img/blog_1/thumbnail.webp" alt="Protect Sensitive Information in Docker" style="width: 70%;"/>
-					</div>
-
-					<div class="blg-paragraph">
-						<p> 
-							Managing sensitive information like API keys and credentials is crucial in modern application development. 
-							While Docker simplifies containerization, mishandling <span style="background-color: #efefef;">.env</span> files can expose secrets and compromise security. 
-							This blog will guide you through securely managing <span style="background-color: #efefef;">.env</span> files in Docker, preventing them from being embedded 
-							in images, and dynamically injecting credentials at runtime. By following these steps, you'll ensure your 
-							applications remain secure and production-ready.
-						</p>
-						<br>
-					</div>
-
-					<!-- Table of Contents -->
-					<div class="blg-toc-container">
-						<h1>Table of Contents</h1>
-						<ol class="blg-toc-ol">
-							<li class="blg-toc-li"><a href="#introduction">Introduction</a></li>
-							<li class="blg-toc-li"><a href="#security-risk">Why Excluding .env Files from Docker Images is Crucial</a></li>
-							<ul class="blg-toc-ul">
-								<li class="blg-toc-li"><a href="#risk-including-env">Security Risks of Including .env Files</a></li>
-								<li class="blg-toc-li"><a href="#violate-security">Violates Security Best Practices</a></li>
-								<li class="blg-toc-li"><a href="#docker-example">Practical Docker Example</a></li>
-								<li class="blg-toc-li"><a href="#best-practice">Best Practices: Exclude .env Files</a></li>
+					<div class="blog-detail-layout">
+						<!-- Left: Sticky TOC Sidebar -->
+						<aside class="toc-sidebar" id="tocSidebar">
+							<div class="toc-sidebar-header">
+								<p class="toc-sidebar-title">Contents</p>
+							</div>
+							<ul class="toc-sidebar-list">
+								<li><a href="#introduction">Introduction</a></li>
+								<li><a href="#security-risk">Why Exclude .env Files</a></li>
+								<li class="toc-sidebar-sub"><a href="#risk-including-env">Security Risks</a></li>
+								<li class="toc-sidebar-sub"><a href="#violate-security">Violates Best Practices</a></li>
+								<li class="toc-sidebar-sub"><a href="#docker-example">Docker Example</a></li>
+								<li class="toc-sidebar-sub"><a href="#best-practice">Best Practices</a></li>
+								<li><a href="#approach">Approach</a></li>
+								<li class="toc-sidebar-sub"><a href="#approach1">Dockerfile with --env-file</a></li>
+								<li class="toc-sidebar-sub"><a href="#approach2">Docker Compose</a></li>
+								<li><a href="#comparison">Comparison</a></li>
+								<li><a href="#conclusion">Conclusion</a></li>
 							</ul>
-							<li class="blg-toc-li"><a href="#approach">Approach</a></li>
-							<ul class="blg-toc-ul">
-								<li class="blg-toc-li"><a href="#approach1">Using Only Dockerfile with --env-file</a></li>
-								<li class="blg-toc-li"><a href="#approach2">Using Docker Compose</a></li>
-							</ul>
-							<li class="blg-toc-li"><a href="#comparison">Comparison of different approaches</a></li>
-							<li class="blg-toc-li"><a href="#conclusion">Conclusion</a></li>
-						</ol>
-					</div>
-					<br>
+						</aside>
 
-					<a id="introduction" style="position: relative; top: -110px; visibility: hidden;"></a>
-					<div id = "introduction" class="blg-main-header">
-						<h1 style="color: #2c3e50; font-size: 28px;">1. Introduction</h1>
-					</div>
-					<div class="blg-paragraph">
-						<p> 
-							When building modern applications, managing sensitive information such as API keys, tokens, and 
-							database credentials is a critical aspect of development. Developers often store these credentials 
-							in <span style="background-color: #efefef;">.env</span> files for simplicity, but improper handling 
-							of these files in Dockerized environments can lead to severe security risks.
-						</p>
-						<p>
-							Including <span style="background-color: #efefef;">.env</span> files in Docker images may expose 
-							sensitive data through shared images or repositories, increasing the likelihood of accidental leaks. 
-							Additionally, this practice violates the best principles of secrets management, which emphasize separating 
-							application code from credentials.
-						</p>
-						<p>
-							To address this, we'll explore how to securely pass <span style="background-color: #efefef;">.env</span> files 
-							to Docker containers without embedding them in the image. This method ensures that sensitive credentials remain 
-							external to the Docker image, protecting them from unauthorized access while maintaining flexibility for updates.
-						</p>
-						<br>
-						<p>In this blog, we'll cover:</p>
-						<ul>
-							<li class="blg-li">Why embedding <span style="background-color: #efefef;">.env</span> files in Docker images is a bad idea.</li>
-							<li class="blg-li">A step-by-step guide to securely accessing <span style="background-color: #efefef;">.env</span> credentials at runtime.</li>
-							<li class="blg-li">Practical code examples to demonstrate the process.</li>
-							<li class="blg-li">Common pitfalls to avoid and tips for enhancing security.</li>
-						</ul>
-						<p>By the end, you'll have a clear understanding of how to manage sensitive data in Docker containers without compromising security.</p>
-						<br>
-					</div>
-					<br>
-					
-					<a id="security-risk" style="position: relative; top: -110px; visibility: hidden;"></a>
-					<div id = "security-risk" class="blg-main-header">
-						<h1 style="color: #2c3e50; font-size: 28px;">2. Why Excluding .env Files from Docker Images is Crucial</h1>
-					</div>
-					<div class="blg-paragraph">
-						<p> 
-							When managing sensitive information such as API keys, database credentials, or tokens in 
-							applications, storing them in <span style="background-color: #efefef;">.env</span> files is a 
-							common practice. However, including <span style="background-color: #efefef;">.env</span> files in 
-							Docker images can lead to severe security risks, compromising your application's sensitive data. Let's explore 
-							why excluding <span style="background-color: #efefef;">.env</span> files from Docker images is essential.
-						</p>
-					</div>
-					<br>
+						<!-- Right: Blog Content -->
+						<div class="blog-detail-main">
+							<!-- blog details -->
+							<div id="blogContainer">
+								<!-- blog title -->
+								<div class="container blg-title-container">
+									<h2 class="blg-title">Protect Sensitive Information in Docker: Accessing .env Credentials Without Exposing Them</h2>
+								</div>
 
-					<a id="risk-including-env" style="position: relative; top: -90px; visibility: hidden;"></a>
-					<div id = "risk-including-env"class="blg-sub-header">
-						<h2> 2.1 Security Risks of Including .env Files</h2>
-					</div>
-					<div class="blg-paragraph">
-						<p>Here is summary of possible security risks of including .env file in docker image.</p>
-					</div>
+								<!-- Author Info -->
+								<div class="author_section">
+									<img id="author_img" alt="Author Photo" class="author_img" />
+									<div class="author_details">
+										<span id="author_name" class="author_name"></span>
+										<span id="published_date" class="published_date"></span>
+									</div>
+								</div>
 
-					<ul>
-						<li class="blg-li" style="font-weight: bold;">Accidental Exposure in Shared Images</li>
-						<div class="blg-paragraph">
-							<p>
-								Docker images are often pushed to repositories like Docker Hub or shared within teams. 
-								If <span style="background-color: #efefef;">.env</span> files are included in the image, 
-								their sensitive contents become part of the image layers. These layers can be inspected using tools 
-								like <span style="background-color: #efefef;">docker history</span> or extracted 
-								with <span style="background-color: #efefef;">docker save</span>, making 
-								secrets accessible to anyone with access to the image.
-							</p>
-							<p>For instance:</p>
-						</div>
+								<div class="blg-intro">
+									<div class="blg-intro-img">
+										<img src="../img/blog_1/thumbnail.webp" alt="Protect Sensitive Information in Docker" class="blg-thumbnail" />
+									</div>
+									<div class="blg-intro-text">
+										<p>
+											Managing sensitive information like API keys and credentials is crucial in modern application development. While Docker simplifies containerization, mishandling
+											<span class="code-soft">.env</span> files can expose secrets and compromise security. This blog will guide you through securely managing <span class="code-soft">.env</span> files
+											in Docker, preventing them from being embedded in images, and dynamically injecting credentials at runtime. By following these steps, you'll ensure your applications remain
+											secure and production-ready.
+										</p>
+									</div>
+								</div>
 
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-docker pull your-repo/your-image:latest
-docker history your-repo/your-image:latest</code>
-							</pre>							
-						</div>
+								<!-- Table of Contents -->
+								<div class="blg-toc-container">
+									<h2>📚 Table of Contents</h2>
+									<ol class="blg-toc-ol">
+										<li class="blg-toc-li"><a href="#introduction">Introduction</a></li>
+										<li class="blg-toc-li"><a href="#security-risk">Why Excluding .env Files from Docker Images is Crucial</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#risk-including-env">Security Risks of Including .env Files</a></li>
+											<li class="blg-toc-li"><a href="#violate-security">Violates Security Best Practices</a></li>
+											<li class="blg-toc-li"><a href="#docker-example">Practical Docker Example</a></li>
+											<li class="blg-toc-li"><a href="#best-practice">Best Practices: Exclude .env Files</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#approach">Approach</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#approach1">Using Only Dockerfile with --env-file</a></li>
+											<li class="blg-toc-li"><a href="#approach2">Using Docker Compose</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#comparison">Comparison of different approaches</a></li>
+										<li class="blg-toc-li"><a href="#conclusion">Conclusion</a></li>
+									</ol>
+								</div>
 
-						<div class="blg-paragraph">
-							<p>The command might expose a layer that reveals:</p>
-						</div>
+								<!-- 1. Introduction -->
+								<div class="blg-section">
+									<a id="introduction" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>1. Introduction</h2>
+									</div>
+									<p>
+										When building modern applications, managing sensitive information such as API keys, tokens, and database credentials is a critical aspect of development. Developers often store
+										these credentials in <span class="code-soft">.env</span> files for simplicity, but improper handling of these files in Dockerized environments can lead to severe security risks.
+									</p>
+									<p>
+										Including <span class="code-soft">.env</span> files in Docker images may expose sensitive data through shared images or repositories, increasing the likelihood of accidental leaks.
+										Additionally, this practice violates the best principles of secrets management, which emphasize separating application code from credentials.
+									</p>
+									<p>
+										To address this, we'll explore how to securely pass <span class="code-soft">.env</span> files to Docker containers without embedding them in the image. This method ensures that
+										sensitive credentials remain external to the Docker image, protecting them from unauthorized access while maintaining flexibility for updates.
+									</p>
+									<p>In this blog, we'll cover:</p>
+									<ul>
+										<li class="blg-li">Why embedding <span class="code-soft">.env</span> files in Docker images is a bad idea.</li>
+										<li class="blg-li">A step-by-step guide to securely accessing <span class="code-soft">.env</span> credentials at runtime.</li>
+										<li class="blg-li">Practical code examples to demonstrate the process.</li>
+										<li class="blg-li">Common pitfalls to avoid and tips for enhancing security.</li>
+									</ul>
+									<p>By the end, you'll have a clear understanding of how to manage sensitive data in Docker containers without compromising security.</p>
+								</div>
+								<!-- End: Introduction -->
 
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-ADD file:3be2f00a0db1d6... in /app/.env</code>
-							</pre>							
-						</div>
+								<!-- 2. Why Excluding .env Files -->
+								<div class="blg-section">
+									<a id="security-risk" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>2. Why Excluding .env Files from Docker Images is Crucial</h2>
+									</div>
+									<p>
+										When managing sensitive information such as API keys, database credentials, or tokens in applications, storing them in <span class="code-soft">.env</span> files is a common
+										practice. However, including <span class="code-soft">.env</span> files in Docker images can lead to severe security risks, compromising your application's sensitive data. Let's
+										explore why excluding <span class="code-soft">.env</span> files from Docker images is essential.
+									</p>
 
-						<li class="blg-li" style="font-weight: bold;">Persistent Secrets in Image Layers</li>
-						<div class="blg-paragraph">
-							<p>
-								Once a <span style="background-color: #efefef;">.env</span> file is embedded in an image, it becomes a part of the image history. 
-								Even if you later remove or replace it, the older layers will still contain the sensitive data 
-								unless you rebuild the image from scratch. This creates long-term security risks.
-							</p>
-						</div>
-					</ul>
-					<br>
+									<a id="risk-including-env" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">2.1</span>
+										<h3>Security Risks of Including .env Files</h3>
+									</div>
 
-					<a id="violate-security" style="position: relative; top: -90px; visibility: hidden;"></a>
-					<div id="violate-security" class="blg-sub-header">
-						<h2> 2.2 Violates Security Best Practices</h2>
-					</div>
-					<div class="blg-paragraph">
-						<p>
-							Modern security standards recommend separating sensitive credentials from application code. 
-							Including <span style="background-color: #efefef;">.env</span> files in Docker images contradicts 
-							this principle and introduces several challenges:
-						</p>
-					</div>
-					
-					<ul>
-						<li class="blg-li"><span style="font-weight: bold;">Static Secrets:</span> Secrets embedded into images 
-							become static. To update a credential, you need to rebuild and 
-							redeploy the image, which is time-consuming and inefficient.</li>
-						<li class="blg-li"><span style="font-weight: bold;">Environment-Specific Configurations:</span> Embedding 
-							<span style="background-color: #efefef;">.env</span> files in the image ties the container to a specific 
-							environment, making it harder to manage different credentials for development, staging, and production.</li>
-						
-					</ul>
-					<br>
+									<p>Here is summary of possible security risks of including .env file in docker image.</p>
 
-					<a id="docker-example" style="position: relative; top: -90px; visibility: hidden;"></a>
-					<div id="docker-example" class="blg-sub-header">
-						<h2> 2.3 Practical Docker Example</h2>
-					</div>
+									<blockquote class="blg-callout-warning">
+										⚠️ Embedding <span class="code-soft">.env</span> files in Docker images makes your secrets part of the image layers. These layers can be inspected with
+										<span class="code-soft">docker history</span> or extracted with <span class="code-soft">docker save</span>, exposing credentials to anyone with access to the image — even after the
+										file is removed.
+									</blockquote>
 
-					<div class="blg-paragraph">
-						<p>
-							Here's a practical scenario illustrating why including .env files is risky:
-						</p>
-						<p>
-							<span style="font-weight: bold;">Dockerfile (Bad Practice):</span>
-						</p>
-					</div>
+									<ul>
+										<li class="blg-li"><strong>Accidental Exposure in Shared Images</strong></li>
+										<p>
+											Docker images are often pushed to repositories like Docker Hub or shared within teams. If <span class="code-soft">.env</span> files are included in the image, their sensitive
+											contents become part of the image layers. These layers can be inspected using tools like <span class="code-soft">docker history</span> or extracted with
+											<span class="code-soft">docker save</span>, making secrets accessible to anyone with access to the image.
+										</p>
+										<p>For instance:</p>
 
-					<!-- Code -->
-					<div class="blg-code-container">
-						<pre class="line-numbers">
-							<code class="language-docker">
-FROM python:3.10-slim
+										<div class="blg-code-block" data-lang="bash">docker pull your-repo/your-image:latest
+docker history your-repo/your-image:latest</div>
+
+										<p>The command might expose a layer that reveals:</p>
+
+										<div class="blg-code-block" data-lang="docker">ADD file:3be2f00a0db1d6... in /app/.env</div>
+
+										<li class="blg-li"><strong>Persistent Secrets in Image Layers</strong></li>
+										<p>
+											Once a <span class="code-soft">.env</span> file is embedded in an image, it becomes a part of the image history. Even if you later remove or replace it, the older layers will
+											still contain the sensitive data unless you rebuild the image from scratch. This creates long-term security risks.
+										</p>
+									</ul>
+
+									<a id="violate-security" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">2.2</span>
+										<h3>Violates Security Best Practices</h3>
+									</div>
+
+									<p>
+										Modern security standards recommend separating sensitive credentials from application code. Including <span class="code-soft">.env</span> files in Docker images contradicts this
+										principle and introduces several challenges:
+									</p>
+
+									<ul>
+										<li class="blg-li">
+											<strong>Static Secrets:</strong> Secrets embedded into images become static. To update a credential, you need to rebuild and redeploy the image, which is time-consuming and
+											inefficient.
+										</li>
+										<li class="blg-li">
+											<strong>Environment-Specific Configurations:</strong> Embedding <span class="code-soft">.env</span> files in the image ties the container to a specific environment, making it
+											harder to manage different credentials for development, staging, and production.
+										</li>
+									</ul>
+
+									<a id="docker-example" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">2.3</span>
+										<h3>Practical Docker Example</h3>
+									</div>
+
+									<p>Here's a practical scenario illustrating why including .env files is risky:</p>
+									<p>
+										<strong>Dockerfile (Bad Practice):</strong>
+									</p>
+
+									<div class="blg-code-block" data-lang="docker">FROM python:3.10-slim
 
 WORKDIR /app
 
 # This copies everything, including the .env file
 COPY . /app
 
-CMD ["python", "main.py"]</code>
-						</pre>							
-					</div>
-					
-					<div class="blg-paragraph">
-						<p>
-							<span style="font-weight: bold;">.env File:</span>
-						</p>
-					</div>
+CMD [&quot;python&quot;, &quot;main.py&quot;]</div>
 
-					<!-- Code -->
-					<div class="blg-code-container">
-						<pre class="line-numbers">
-							<code class="language-dotenv">
-SLACK_BOT_TOKEN=my-slack-token
-SLACK_SIGNING_SECRET=my-slack-secret</code>
-						</pre>							
-					</div>
+									<p>
+										<strong>.env File:</strong>
+									</p>
 
-					<div class="blg-paragraph">
-						<p>
-							Building and pushing this image embeds the <span style="background-color: #efefef;">.env</span>  file 
-							into the image layers. Anyone with access to the image can inspect it:
-						</p>
-					</div>
+									<div class="blg-code-block" data-lang="properties">SLACK_BOT_TOKEN=my-slack-token
+SLACK_SIGNING_SECRET=my-slack-secret</div>
 
-					<!-- Code -->
-					<div class="blg-code-container">
-						<pre class="line-numbers">
-							<code class="language-bash">
-docker save my-image > image.tar
+									<p>Building and pushing this image embeds the <span class="code-soft">.env</span> file into the image layers. Anyone with access to the image can inspect it:</p>
+
+									<div class="blg-code-block" data-lang="bash">docker save my-image &gt; image.tar
 tar -xf image.tar
-grep -r "SLACK_BOT_TOKEN" .</code>
-						</pre>							
-					</div>
+grep -r &quot;SLACK_BOT_TOKEN&quot; .</div>
 
-					<div class="blg-paragraph">
-						<p>
-							<span style="font-weight: bold;">Output:</span>
-						</p>
-					</div>
+									<p>
+										<strong>Output:</strong>
+									</p>
 
-					<!-- Code -->
-					<div class="blg-code-container">
-						<pre class="line-numbers">
-							<code class="language-text">
-SLACK_BOT_TOKEN=my-slack-token
-SLACK_SIGNING_SECRET=my-slack-secret</code>
-						</pre>							
-					</div>
-					<br>
+									<div class="blg-code-block" data-lang="properties">SLACK_BOT_TOKEN=my-slack-token
+SLACK_SIGNING_SECRET=my-slack-secret</div>
 
-					<a id="best-practice" style="position: relative; top: -90px; visibility: hidden;"></a>
-					<div id="best-practice" class="blg-sub-header">
-						<h2> 2.4 Best Practices: Exclude .env Files</h2>
-					</div>
+									<a id="best-practice" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">2.4</span>
+										<h3>Best Practices: Exclude <span class="code-soft">.env</span> Files</h3>
+									</div>
 
-					<div class="blg-paragraph">
-						<p>
-							To prevent these risks, you should always exclude <span style="background-color: #efefef;">.env</span> files 
-							from Docker images using a <span style="background-color: #efefef;">.dockerignore</span> file:
-						</p>
-						<p>
-							<span style="background-color: #efefef;">.dockerignore:</span>
-						</p>
-					</div>
+									<p>To prevent these risks, you should always exclude <span class="code-soft">.env</span> files from Docker images using a <span class="code-soft">.dockerignore</span> file:</p>
+									<p>
+										<span class="code-soft">.dockerignore:</span>
+									</p>
 
-					<!-- Code -->
-					<div class="blg-code-container">
-						<pre class="line-numbers">
-							<code class="language-text">
-.env</code>
-						</pre>							
-					</div>
+									<div class="blg-code-block" data-lang="bash">.env</div>
 
-					<div class="blg-paragraph">
-						<p>
-							<span style="font-weight: bold;">Improved Dockerfile:</span>
-						</p>
-					</div>
+									<p>
+										<strong>Improved Dockerfile:</strong>
+									</p>
 
-					<!-- Code -->
-					<div class="blg-code-container">
-						<pre class="line-numbers">
-							<code class="language-docker">
-FROM python:3.10-slim
+									<div class="blg-code-block" data-lang="docker">FROM python:3.10-slim
 
 WORKDIR /app
 
 # This copies everything, excluding the .env file due to .dockerignore
 COPY . /app
 
-CMD ["python", "main.py"]</code>
-						</pre>							
-					</div>
+CMD [&quot;python&quot;, &quot;main.py&quot;]</div>
 
-					<div class="blg-paragraph">
-						<p>
-							Now the <span style="background-color: #efefef;">.env</span> file remains external and is not part of the 
-							image. You can inject its values dynamically at runtime 
-							using <span style="background-color: #efefef;">docker-compose</span> or 
-							the <span style="background-color: #efefef;">--env-file</span> flag, ensuring secrets are handled securely.
-						</p>
-					</div>
-					<br><br>
+									<blockquote class="blg-callout-tip">
+										💡 Now the <span class="code-soft">.env</span> file remains external and is not part of the image. You can inject its values dynamically at runtime using
+										<span class="code-soft">docker-compose</span> or the <span class="code-soft">--env-file</span> flag, ensuring secrets are handled securely.
+									</blockquote>
+								</div>
+								<!-- End: Why Excluding .env Files -->
 
-					<!-- 3rd Section -->
-					<a id="approach" style="position: relative; top: -110px; visibility: hidden;"></a>
-					<div id = "approach" class="blg-main-header">
-						<h1 style="color: #2c3e50; font-size: 28px;">3. Approach</h1>
-					</div>
-					<div class="blg-paragraph">
-						<p> 
-							In this section, we'll explore how to securely 
-							manage <span style="background-color: #efefef;">.env</span> files with Docker by following a 
-							step-by-step procedure. We will cover two approaches:
-						</p>
-						<ol>
-							<li class="blg-li">Using only a <span style="background-color: #efefef;">Dockerfile</span> with the <span style="background-color: #efefef;">--env-file</span> option</li>
-							<li class="blg-li">Using <span style="background-color: #efefef;">docker-compose</span> to simplify handling environment variables.</li>
-							
-						</ol>
-						<p>
-							Both approaches ensure sensitive credentials in <span style="background-color: #efefef;">.env</span> files 
-							are passed to the container at runtime, without embedding them in the Docker image.
-						</p>
-					</div>
-					<br>
+								<!-- 3. Approach -->
+								<div class="blg-section">
+									<a id="approach" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>3. Approach</h2>
+									</div>
+									<p>
+										In this section, we'll explore how to securely manage <span class="code-soft">.env</span> files with Docker by following a step-by-step procedure. We will cover two approaches:
+									</p>
+									<ol>
+										<li class="blg-li">Using only a <span class="code-soft">Dockerfile</span> with the <span class="code-soft">--env-file</span> option</li>
+										<li class="blg-li">Using <span class="code-soft">docker-compose</span> to simplify handling environment variables.</li>
+									</ol>
+									<p>Both approaches ensure sensitive credentials in <span class="code-soft">.env</span> files are passed to the container at runtime, without embedding them in the Docker image.</p>
 
-					<a id="approach1" style="position: relative; top: -90px; visibility: hidden;"></a>
-					<div id="approach1" class="blg-sub-header">
-						<h2> Approach 1: Using Only Dockerfile with <span style="background-color: #efefef;">--env-file</span></h2>
-					</div>
+									<a id="approach1" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<h3>Approach 1: Using Only Dockerfile with <span class="code-soft">--env-file</span></h3>
+									</div>
 
-					<div class="blg-paragraph">
-						<p>
-							<span style="font-weight: bold;">🔹 Step 1: Prepare Application</span>
-						</p>
-						<p>
-							Create a simple Python script (<span style="background-color: #efefef;">main.py</span>) that reads and prints environment variables.
-						</p>
-						<p>
-							<span style="font-weight: bold;">main.py</span>
-						</p>
+									<p><strong>🔹 Step 1: Prepare Application</strong></p>
+									<p>Create a simple Python script (<span class="code-soft">main.py</span>) that reads and prints environment variables.</p>
+									<p>
+										<strong>main.py</strong>
+									</p>
 
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-python">
-import os
+									<div class="blg-code-block" data-lang="python">import os
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -426,68 +324,46 @@ load_dotenv()
 
 
 def check_credentials():
-	token = os.getenv('SLACK_BOT_TOKEN')
-	secret = os.getenv('SLACK_SIGNING_SECRET')
-	key = os.getenv('OPENAI_API_KEY')
+	token = os.getenv(&#x27;SLACK_BOT_TOKEN&#x27;)
+	secret = os.getenv(&#x27;SLACK_SIGNING_SECRET&#x27;)
+	key = os.getenv(&#x27;OPENAI_API_KEY&#x27;)
 
-	print("### SLACK_BOT_TOKEN : ", token)
-	print("### SLACK_SIGNING_SECRET : ", secret)
-	print("### OPENAI_API_KEY : ", key)
+	print(&quot;### SLACK_BOT_TOKEN : &quot;, token)
+	print(&quot;### SLACK_SIGNING_SECRET : &quot;, secret)
+	print(&quot;### OPENAI_API_KEY : &quot;, key)
 
 
-if __name__ == "__main__":
-	check_credentials()</code>
-							</pre>							
-						</div>
+if __name__ == &quot;__main__&quot;:
+	check_credentials()</div>
 
-						<p>
-							This script uses <span style="background-color: #efefef;">os.getenv()</span> to fetch the <span style="background-color: #efefef;">SLACK_BOT_TOKEN</span> and <span style="background-color: #efefef;">SLACK_SIGNING_SECRET</span> environment variables.
-						</p>
+									<p>
+										This script uses <span class="code-soft">os.getenv()</span> to fetch the <span class="code-soft">SLACK_BOT_TOKEN</span> and
+										<span class="code-soft">SLACK_SIGNING_SECRET</span> environment variables.
+									</p>
 
-					</div>
-					<br>
+									<p>
+										<strong>🔹 Step 2: Create a Secure <span class="code-soft">.env</span> File</strong>
+									</p>
+									<p>In the same directory where <span class="code-soft">main.py</span> exists, create a <span class="code-soft">.env</span> file with the following content:</p>
+									<p>
+										<strong>.env file</strong>
+									</p>
 
-					<div class="blg-paragraph">
-						<p>
-							<span style="font-weight: bold;">🔹 Step 2: Create a Secure <span style="background-color: #efefef;">.env</span> File</span>
-						</p>
-						<p>
-							In the same directory where <span style="background-color: #efefef;">main.py</span> exists, create a <span style="background-color: #efefef;">.env</span> file with the following content:
-						</p>
-						<p>
-							<span style="font-weight: bold;">.env file</span>
-						</p>
-
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-text">
-SLACK_BOT_TOKEN=your-slack-bot-token
+									<div class="blg-code-block" data-lang="properties">SLACK_BOT_TOKEN=your-slack-bot-token
 SLACK_SIGNING_SECRET=your-signing-secret
-OPENAI_API_KEY=your openai api key</code>
-							</pre>							
-						</div>
-					</div>
-					<br>
+OPENAI_API_KEY=your openai api key</div>
 
-					<div class="blg-paragraph">
-						<p>
-							<span style="font-weight: bold;">🔹 Step 3: Create a Minimal Dockerfile</span>
-						</p>
-						<p>
-							Create a <span style="background-color: #efefef;">requirements.txt</span> file in the same directory where <span style="background-color: #efefef;">main.py</span> exists. 
-							It contains list of python libraries which needs to be installed while creating docker image. For example, <span style="background-color: #efefef;">python-dotenv</span>.
-							Here's a simple <span style="background-color: #efefef;">Dockerfile</span> that excludes the <span style="background-color: #efefef;">.env</span> file:
-						</p>
-						<p>
-							<span style="font-weight: bold;">Dockerfile</span>
-						</p>
+									<p><strong>🔹 Step 3: Create a Minimal Dockerfile</strong></p>
+									<p>
+										Create a <span class="code-soft">requirements.txt</span> file in the same directory where <span class="code-soft">main.py</span> exists. It contains list of python libraries which
+										needs to be installed while creating docker image. For example, <span class="code-soft">python-dotenv</span>. Here's a simple <span class="code-soft">Dockerfile</span> that
+										excludes the <span class="code-soft">.env</span> file:
+									</p>
+									<p>
+										<strong>Dockerfile</strong>
+									</p>
 
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-FROM python:3.10-slim
+									<div class="blg-code-block" data-lang="docker">FROM python:3.10-slim
 
 # Set working directory
 WORKDIR /app
@@ -496,460 +372,322 @@ WORKDIR /app
 COPY . /app
 
 # Install dependencies, curl, and procps (for ps command)
-RUN apt-get update && apt-get install -y curl procps && \
+RUN apt-get update &amp;&amp; apt-get install -y curl procps &amp;&amp; \
 	pip install -r requirements.txt
 
-CMD ["python", "-u", "main.py"]</code>
-							</pre>							
-						</div>
-					</div>
-					<br>
+CMD [&quot;python&quot;, &quot;-u&quot;, &quot;main.py&quot;]</div>
 
-					<div class="blg-paragraph">
-						<p>
-							<span style="font-weight: bold;">🔹 Step 4: Exclude <span style="background-color: #efefef;">.env</span> with <span style="background-color: #efefef;">.dockerignore</span></span>
-						</p>
-						<p>
-							Create a <span style="background-color: #efefef;">.dockerignore</span> file to ensure the <span style="background-color: #efefef;">.env</span> file is not included in the image:
-						</p>
-						<p>
-							<span style="font-weight: bold;">.dockerignore file</span>
-						</p>
+									<p>
+										<strong>🔹 Step 4: Exclude <span class="code-soft">.env</span> with <span class="code-soft">.dockerignore</span></strong>
+									</p>
+									<p>Create a <span class="code-soft">.dockerignore</span> file to ensure the <span class="code-soft">.env</span> file is not included in the image:</p>
+									<p>
+										<strong>.dockerignore file</strong>
+									</p>
 
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-text">
-.env</code>
-							</pre>							
-						</div>
+									<div class="blg-code-block" data-lang="bash">.env</div>
 
-						<p>
-							This prevents <span style="background-color: #efefef;">.env</span> from being copied into the Docker image during the <span style="background-color: #efefef;">COPY</span> step in the <span style="background-color: #efefef;">Dockerfile</span>.
-						</p>
+									<p>
+										This prevents <span class="code-soft">.env</span> from being copied into the Docker image during the <span class="code-soft">COPY</span> step in the
+										<span class="code-soft">Dockerfile</span>.
+									</p>
 
-					</div>
-					<br>
+									<p><strong>🔹 Step 5: Build the Docker Image</strong></p>
+									<p>Build the Docker image:</p>
 
-					<div class="blg-paragraph">
-						<p>
-							<span style="font-weight: bold;">🔹 Step 5: Build the Docker Image</span>
-						</p>
-						<p>
-							Build the Docker image:
-						</p>
+									<div class="blg-code-block" data-lang="bash">docker build -t my-app .</div>
 
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-docker build -t my-app .</code>
-							</pre>							
-						</div>
+									<p>
+										<strong>🔹 Step 6: Run the Container with <span class="code-soft">--env-file</span></strong>
+									</p>
+									<p>Pass the <span class="code-soft">.env</span> file to the container at runtime using the <span class="code-soft">--env-file</span> option:</p>
 
-					</div>
-					<br>
+									<div class="blg-code-block" data-lang="bash">docker run --env-file .env my-app</div>
 
-					<div class="blg-paragraph">
-						<p>
-							<span style="font-weight: bold;">🔹 Step 6: Run the Container with <span style="background-color: #efefef;">--env-file</span></span>
-						</p>
-						<p>
-							Pass the <span style="background-color: #efefef;">.env</span> file to the container at runtime using the <span style="background-color: #efefef;">--env-file</span> option:
-						</p>
+									<p>
+										<strong>Expected Output:</strong>
+									</p>
 
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-docker run --env-file .env my-app</code>
-							</pre>							
-						</div>
-						<br>
-
-						<p>
-							<span style="font-weight: bold;">Expected Output:</span>
-						</p>
-
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-text">
-### SLACK_BOT_TOKEN :  your-slack-bot-token
+									<div class="blg-code-block" data-lang="bash">### SLACK_BOT_TOKEN :  your-slack-bot-token
 ### SLACK_SIGNING_SECRET :  your-signing-secret
-### OPENAI_API_KEY :  your openai api key</code>
-							</pre>							
-						</div>
+### OPENAI_API_KEY :  your openai api key</div>
 
-					</div>
-					<br>
+									<a id="approach2" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<h3>Approach 2: Using Docker Compose</h3>
+									</div>
 
-					<a id="approach2" style="position: relative; top: -90px; visibility: hidden;"></a>
-					<div id="approach2" class="blg-sub-header">
-						<h2> Approach 2: Using Docker Compose</h2>
-					</div>
+									<p>
+										If you prefer a simpler system to manage environment variables, you can use <span class="code-soft">docker-compose</span>. This approach eliminates the need to pass
+										<span class="code-soft">--env-file</span> explicitly, as Docker Compose can automatically load <span class="code-soft">.env</span> files.
+									</p>
 
-					<div class="blg-paragraph">
-						<p>
-							If you prefer a simpler system to manage environment variables, you can use <span style="background-color: #efefef;">docker-compose</span>. 
-							This approach eliminates the need to pass <span style="background-color: #efefef;">--env-file</span> explicitly, as Docker Compose can automatically load <span style="background-color: #efefef;">.env</span> files.
-						</p>
-					</div>
-					<br>
+									<p><strong>🔹 Step 1: Prepare Application</strong></p>
+									<p>Use the same <span class="code-soft">main.py</span> and <span class="code-soft">.env</span> files as in Approach 1.</p>
 
-					<div class="blg-paragraph">
-						<p>
-							<span style="font-weight: bold;">🔹 Step 1: Prepare Application</span>
-						</p>
-						<p>
-							Use the same <span style="background-color: #efefef;">main.py</span> and <span style="background-color: #efefef;">.env</span> files as in Approach 1.
-						</p>
-					</div>
-					<br>
+									<p><strong>🔹 Step 2: Create a Dockerfile</strong></p>
+									<p>
+										Use the same <span class="code-soft">Dockerfile</span> as in Approach 1, ensuring <span class="code-soft">.env</span> is excluded with <span class="code-soft">.dockerignore</span>.
+									</p>
 
-					<div class="blg-paragraph">
-						<p>
-							<span style="font-weight: bold;">🔹 Step 2: Create a Dockerfile</span>
-						</p>
-						<p>
-							Use the same <span style="background-color: #efefef;">Dockerfile</span> as in Approach 1, ensuring <span style="background-color: #efefef;">.env</span> is excluded with <span style="background-color: #efefef;">.dockerignore</span>.
-						</p>
-					</div>
-					<br>
+									<p>
+										<strong>🔹 Step 3: Create a <span class="code-soft">docker-compose.yml</span> File</strong>
+									</p>
+									<p>Create a <span class="code-soft">docker-compose.yml</span> file to define the service and reference the <span class="code-soft">.env</span> file:</p>
+									<p>docker-compose.yml:</p>
 
-					<div class="blg-paragraph">
-						<p>
-							<span style="font-weight: bold;">🔹 Step 3: Create a <span style="background-color: #efefef;">docker-compose.yml</span> File</span>
-						</p>
-						<p>
-							Create a <span style="background-color: #efefef;">docker-compose.yml</span> file to define the service and reference the <span style="background-color: #efefef;">.env</span> file:
-						</p>
-						<p>
-							docker-compose.yml:
-						</p>
-
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-services:
+									<div class="blg-code-block" data-lang="yaml">services:
 	app:
 		build:
 			context: .
 			dockerfile: Dockerfile
 		env_file:
-			- .env</code>
-							</pre>							
-						</div>
+			- .env</div>
 
-					</div>
-					<br>
+									<p><strong>🔹 Step 4: Build and Run the Application</strong></p>
+									<p>Build the docker image and and run the container using following commands.</p>
 
-					<div class="blg-paragraph">
-						<p>
-							<span style="font-weight: bold;">🔹 Step 4: Build and Run the Application</span>
-						</p>
-						<p>
-							Build the docker image and and run the container using following commands.
-						</p>
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-# build docker image
+									<div class="blg-code-block" data-lang="bash"># build docker image
 docker-compose build
 
 # run container
-docker-compose up</code>
-							</pre>							
-						</div>
-						<br>
+docker-compose up</div>
 
-						<p>
-							<span style="font-weight: bold;">Expected Output:</span>
-						</p>
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-text">
-### SLACK_BOT_TOKEN :  your-slack-bot-token
+									<p>
+										<strong>Expected Output:</strong>
+									</p>
+
+									<div class="blg-code-block" data-lang="bash">### SLACK_BOT_TOKEN :  your-slack-bot-token
 ### SLACK_SIGNING_SECRET :  your-signing-secret
-### OPENAI_API_KEY :  your openai api key</code>
-							</pre>							
-						</div>
-					
-					</div>
-					<br>
+### OPENAI_API_KEY :  your openai api key</div>
 
-					<div class="blg-paragraph">
-						<p>
-							<span style="font-weight: bold;">Notes</span>
-						</p>
-						<p>
-							We can override the <span style="background-color: #efefef;">.env</span> file by using the <span style="background-color: #efefef;">--env-file</span> flag when running <span style="background-color: #efefef;">docker-compose</span> commands.
-							Suppose we want to use a different <span style="background-color: #efefef;">.env</span> file, such as <span style="background-color: #efefef;">custom.env</span>. We can pass it like this:
-						</p>
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-docker-compose --env-file custom.env up</code>
-							</pre>							
-						</div>
-						<p>
-							This will instruct Docker Compose to load environment variables from <span style="background-color: #efefef;">custom.env</span> instead of the default <span style="background-color: #efefef;">.env</span>.
-						</p>
-						
-					</div>
-					<br>
+									<p>
+										<strong>Notes</strong>
+									</p>
+									<p>
+										We can override the <span class="code-soft">.env</span> file by using the <span class="code-soft">--env-file</span> flag when running
+										<span class="code-soft">docker-compose</span> commands. Suppose we want to use a different <span class="code-soft">.env</span> file, such as
+										<span class="code-soft">custom.env</span>. We can pass it like this:
+									</p>
 
-					<div class="blg-paragraph">
-						<p>
-							<span style="font-weight: bold;">Best Practices</span>
-						</p>
-						<ul>
-							<li class="blg-li">Use the <span style="background-color: #efefef;">--env-file</span> option when you need flexibility in choosing <span style="background-color: #efefef;">.env</span> files for different environments (e.g., <span style="background-color: #efefef;">dev.env</span>, <span style="background-color: #efefef;">prod.env</span>).</li>
-							<li class="blg-li">Avoid hardcoding the <span style="background-color: #efefef;">env_file</span> path in <span style="background-color: #efefef;">docker-compose.yml</span> for maximum runtime flexibility.</li>
-						</ul>
-						
-					</div>
-					<br><br>
+									<div class="blg-code-block" data-lang="bash">docker-compose --env-file custom.env up</div>
 
-					<!-- 4th Section -->
-					<a id="comparison" style="position: relative; top: -110px; visibility: hidden;"></a>
-					<div id = "comparison" class="blg-main-header">
-						<h1 style="color: #2c3e50; font-size: 28px;">4. Comparison of Docker (<span style="background-color: #efefef;">--env-file</span>) vs. Docker Compose Approaches</h1>
-					</div>
-					<div class="blg-paragraph">
-						<p> 
-							Both Docker (<span style="background-color: #efefef;">--env-file</span>) and Docker Compose (<span style="background-color: #efefef;">env_file</span>) provide ways to pass <span style="background-color: #efefef;">.env</span> files at runtime while 
-							keeping them out of the Docker image. However, they have distinct advantages depending on your use case. 
-							Below is a detailed comparison based on key benefits:
-						</p>
-					</div>
+									<p>This will instruct Docker Compose to load environment variables from <span class="code-soft">custom.env</span> instead of the default <span class="code-soft">.env</span>.</p>
 
-					<!-- Table -->
-					<div class="blg-table-container"></div>
-					<div class="blg-center-txt">
-						<h3> Table 1 : Comparison of different approaches</h3>
-					</div>
-					<br>
+									<p>
+										<strong>Best Practices</strong>
+									</p>
+									<ul>
+										<li class="blg-li">
+											Use the <span class="code-soft">--env-file</span> option when you need flexibility in choosing <span class="code-soft">.env</span> files for different environments (e.g.,
+											<span class="code-soft">dev.env</span>, <span class="code-soft">prod.env</span>).
+										</li>
+										<li class="blg-li">Avoid hardcoding the <span class="code-soft">env_file</span> path in <span class="code-soft">docker-compose.yml</span> for maximum runtime flexibility.</li>
+									</ul>
+								</div>
+								<!-- End: Approach -->
 
-					<div class="blg-paragraph">
-						<p> 
-							<span style="font-weight: bold;">📌 When to use Docker (<span style="background-color: #efefef;">--env-file</span>) approach?</span>
-						</p>
-						<ul>
-							<li class="blg-li">You have a <span style="font-weight: bold;">single-container</span> application.</li>
-							<li class="blg-li">You need <span style="font-weight: bold;">explicit control</span> over environment variable injection.</li>
-							<li class="blg-li">You want the flexibility to dynamically specify different <span style="background-color: #efefef;">.env</span> files at runtime.</li>
-							<li class="blg-li">You prefer a <span style="font-weight: bold;">minimal setup</span> without additional YAML configuration.</li>
-						</ul>
-					</div>
-					<br>
+								<!-- 4. Comparison -->
+								<div class="blg-section">
+									<a id="comparison" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>4. Comparison of Docker (<span class="code-soft">--env-file</span>) vs. Docker Compose Approaches</h2>
+									</div>
+									<p>
+										Both Docker (<span class="code-soft">--env-file</span>) and Docker Compose (<span class="code-soft">env_file</span>) provide ways to pass <span class="code-soft">.env</span> files
+										at runtime while keeping them out of the Docker image. However, they have distinct advantages depending on your use case. Below is a detailed comparison based on key benefits:
+									</p>
 
-					<div class="blg-paragraph">
-						<p> 
-							<span style="font-weight: bold;">📌 When to use Docker Compose (<span style="background-color: #efefef;">env-file</span>) approach?</span>
-						</p>
-						<ul>
-							<li class="blg-li">You have <span style="font-weight: bold;">multiple services</span> (e.g., web app, database, cache) that need shared environment variables.</li>
-							<li class="blg-li">You want <span style="font-weight: bold;">automatic networking</span> and container orchestration.</li>
-							<li class="blg-li">You don't want to manually specify the <span style="background-color: #efefef;">.env</span> file path every time you start a container.</li>
-							<li class="blg-li">You need a <span style="font-weight: bold;">simplified deployment</span> and scaling process for development environments.</li>
-						</ul>
-					</div>
-					<br><br>
+									<div class="blg-table">
+										<table>
+											<thead>
+												<tr>
+													<th>Feature</th>
+													<th>Docker (<span class="code-soft">--env-file</span>)</th>
+													<th>Docker Compose (<span class="code-soft">env_file</span>)</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td>Ease of Use</td>
+													<td>Requires manually specifying <span class="code-soft">--env-file</span> when running the container.</td>
+													<td>Automatically loads <span class="code-soft">.env</span> file when running <span class="code-soft">docker-compose up</span>.</td>
+												</tr>
+												<tr>
+													<td>Multiple Services Support</td>
+													<td>Best suited for single-container applications.</td>
+													<td>Ideal for multi-container applications where multiple services share environment variables.</td>
+												</tr>
+												<tr>
+													<td>Explicit Control</td>
+													<td>Each <span class="code-soft">docker run</span> command explicitly specifies the <span class="code-soft">.env</span> file, avoiding unintended overrides.</td>
+													<td>Variables are implicitly loaded from <span class="code-soft">.env</span>, which may cause conflicts if multiple <span class="code-soft">.env</span> files exist.</td>
+												</tr>
+												<tr>
+													<td>Runtime Flexibility</td>
+													<td>Allows dynamic selection of <span class="code-soft">.env</span> files using <span class="code-soft">--env-file /path/to/env</span>.</td>
+													<td>
+														Requires modifying <span class="code-soft">docker-compose.yml</span> to change the <span class="code-soft">.env</span> file path (unless overridden with
+														<span class="code-soft">--env-file</span>).
+													</td>
+												</tr>
+												<tr>
+													<td>File Location</td>
+													<td>The <span class="code-soft">.env</span> file can be located anywhere and explicitly passed at runtime.</td>
+													<td>The <span class="code-soft">.env</span> file must be in the location specified in <span class="code-soft">docker-compose.yml</span> or the default project directory.</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
 
-					<a id="conclusion" style="position: relative; top: -110px; visibility: hidden;"></a>
-					<div id = "conclusion" class="blg-main-header">
-						<h1 style="color: #2c3e50; font-size: 28px;">5. Conclusion</h1>
-					</div>
-					<div class="blg-paragraph">
-						<p> 
-							Managing sensitive information securely in Dockerized environments is crucial for preventing credential 
-							leaks and maintaining best security practices. Including <span style="background-color: #efefef;">.env</span> files in Docker images can expose sensitive 
-							data, making it vulnerable to unauthorized access. Instead, a better approach is to keep secrets external 
-							and inject them dynamically at runtime.
-						</p>
-						<p>
-							We explored two secure ways to handle <span style="background-color: #efefef;">.env</span> files:
-						</p>
-						<ul>
-							<li class="blg-li"><span style="font-weight: bold;">Using</span> <span style="background-color: #efefef;">--env-file</span> with Docker: This approach offers explicit control and flexibility, allowing you to pass different <span style="background-color: #efefef;">.env</span> files dynamically at runtime.</li>
-							<li class="blg-li"><span style="font-weight: bold;">Using</span> <span style="background-color: #efefef;">env-file</span> with Docker Compose: This simplifies environment management for multi-container applications, ensuring secrets are loaded automatically without manual configuration.</li>
-						</ul>
-						<p>
-							Both methods ensure that <span style="background-color: #efefef;">.env</span> files remain outside the 
-							Docker image while providing a secure way to access credentials inside containers. Choosing the right approach 
-							depends on your project's needs. <span style="font-weight: bold;">Docker's <span style="background-color: #efefef;">--env-file</span> is great for single-container setups, while Docker Compose is ideal for multi-service applications.</span>
-						</p>
-						<p>
-							By following these best practices, you can safeguard sensitive credentials while maintaining flexibility, scalability, and security in your Docker deployments.
-						</p>
-					</div>
-					<br>
+									<p>
+										<strong>📌 When to use Docker (<span class="code-soft">--env-file</span>) approach?</strong>
+									</p>
+									<ul>
+										<li class="blg-li">You have a <strong>single-container</strong> application.</li>
+										<li class="blg-li">You need <strong>explicit control</strong> over environment variable injection.</li>
+										<li class="blg-li">You want the flexibility to dynamically specify different <span class="code-soft">.env</span> files at runtime.</li>
+										<li class="blg-li">You prefer a <strong>minimal setup</strong> without additional YAML configuration.</li>
+									</ul>
 
-					<!-- Start of Technical stacks -->
-					<div class="reference-container">
-						<hr class="blg-hr">
-						<h2><img src="../img/technical_stack/stack.png" alt="Technical Stack Icon" style="width: 48px; vertical-align: middle; margin-right: 6px;"> <b>Technical Stacks</b></h2>
-						<ul class="blg-ul">
-							<li class="blg-li">
-								<img src="../img/technical_stack/docker.svg" alt="Docker" width="32" style="vertical-align: middle; margin-right: 6px;">
-								<b>Docker</b> 
-							</li>
-						</ul>
-						<br>
-					</div>
-					<!-- End of Technical stacks -->
+									<p>
+										<strong>📌 When to use Docker Compose (<span class="code-soft">env-file</span>) approach?</strong>
+									</p>
+									<ul>
+										<li class="blg-li">You have <strong>multiple services</strong> (e.g., web app, database, cache) that need shared environment variables.</li>
+										<li class="blg-li">You want <strong>automatic networking</strong> and container orchestration.</li>
+										<li class="blg-li">You don't want to manually specify the <span class="code-soft">.env</span> file path every time you start a container.</li>
+										<li class="blg-li">You need a <strong>simplified deployment</strong> and scaling process for development environments.</li>
+									</ul>
+								</div>
+								<!-- End: Comparison -->
 
-				</div>
+								<!-- 5. Conclusion -->
+								<div class="blg-section">
+									<a id="conclusion" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>5. Conclusion</h2>
+									</div>
+									<p>
+										Managing sensitive information securely in Dockerized environments is crucial for preventing credential leaks and maintaining best security practices. Including
+										<span class="code-soft">.env</span> files in Docker images can expose sensitive data, making it vulnerable to unauthorized access. Instead, a better approach is to keep secrets
+										external and inject them dynamically at runtime.
+									</p>
+									<p>We explored two secure ways to handle <span class="code-soft">.env</span> files:</p>
+									<ul>
+										<li class="blg-li">
+											<strong>Using</strong> <span class="code-soft">--env-file</span> with Docker: This approach offers explicit control and flexibility, allowing you to pass different
+											<span class="code-soft">.env</span> files dynamically at runtime.
+										</li>
+										<li class="blg-li">
+											<strong>Using</strong> <span class="code-soft">env-file</span> with Docker Compose: This simplifies environment management for multi-container applications, ensuring secrets are
+											loaded automatically without manual configuration.
+										</li>
+									</ul>
+									<p>
+										Both methods ensure that <span class="code-soft">.env</span> files remain outside the Docker image while providing a secure way to access credentials inside containers. Choosing
+										the right approach depends on your project's needs.
+										<strong>Docker's <span class="code-soft">--env-file</span> is great for single-container setups, while Docker Compose is ideal for multi-service applications.</strong>
+									</p>
+									<p>By following these best practices, you can safeguard sensitive credentials while maintaining flexibility, scalability, and security in your Docker deployments.</p>
+								</div>
+								<!-- End: Conclusion -->
 
-				<!-- Download Source Code -->
+								<!-- 5. Technical Stacks -->
+								<div class="blg-trailing-section">
+									<div class="blg-trailing-header">
+										<img src="../img/technical_stack/stack.png" alt="Technical Stacks" />
+										<h2>Technical Stacks</h2>
+									</div>
+									<div class="blg-tech-grid">
+										<div class="blg-tech-card"><img src="../img/technical_stack/docker.svg" alt="Docker" /> Docker</div>
+										<div class="blg-tech-card"><img src="../img/technical_stack/python.svg" alt="Python" /> Python</div>
+									</div>
+								</div>
+								<!-- End: Technical Stacks -->
 
-				<h1>
-					<a href="https://github.com/shafiqul-islam-sumon/SecureDockerEnv" target="_blank" style="text-decoration: none;">
-						<img src="../img/others/download.svg" alt="Download" style="width: 48px; height: 48px; vertical-align: middle; margin-right: 5px;"/>
-					</a>
-					Download Full Source Code : 
-					<a href="https://github.com/shafiqul-islam-sumon/SecureDockerEnv" target="_blank" style="text-decoration: underline;">SecureDockerEnv</a>
-				</h1>
-				<br>
+								<!-- 6. Download Source Code -->
+								<div class="blg-download-card">
+									<img src="../img/others/download.svg" alt="Download" />
+									<div class="blg-download-info">
+										<h3>Download Source Code</h3>
+										<p>SecureDockerEnv</p>
+									</div>
+									<a href="https://github.com/shafiqul-islam-sumon/SecureDockerEnv" class="blg-download-btn" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+								</div>
+								<!-- End: Download Source Code -->
 
-				<div class="reference-container">
-					<hr class="blg-hr">
-					<h2>📚 References</h2>
-					<ul class="blg-ul">
-						<li class="blg-li"><a target="_blank" href="https://docs.docker.com/compose/how-tos/environment-variables/set-environment-variables/">https://docs.docker.com/compose/how-tos/environment-variables/set-environment-variables/</a></li>
-						<li class="blg-li"><a target="_blank" href="https://stackoverflow.com/questions/77465947/using-env-file-with-docker-compose">https://stackoverflow.com/questions/77465947/using-env-file-with-docker-compose</a></li>
-						<li class="blg-li"><a target="_blank" href="https://qiita.com/SolKul/items/989727aeeafcae28ecf7">https://qiita.com/SolKul/items/989727aeeafcae28ecf7</a></li>
-					</ul>
-				</div>
-				<br><br>
-
-				<div class="blg-center-txt">
-					<h1>Related Blog Posts</h1>
-				</div>
-
-				<!-- blog posts in slick slider -->
-				<div id="postContainer" class="row">
-					<!-- Blog posts will be dynamically generated here -->
-				</div>
-
-				<!-- Slide Counter -->
-				<div class="blg-slide-counter">
-					<span id="currentSlide">1</span> / <span id="totalSlides">1</span>
-				</div>
-				<br>
-
-			</div>
-		</section>
-		
-		<section class="footer-section">
-			<div class="container footer">
-				<div class="row footer">
-					<div class="col-md-8">
-						<div class="copyright">
-							<div class="logo-circle">
-								<img src="../img/others/blog_logo.svg" alt="Shafiqul AI" style="height:24px; vertical-align:middle;">
+								<!-- 7. References -->
+								<div class="blg-trailing-section">
+									<div class="blg-trailing-header">
+										<span style="font-size: 22px; line-height: 1">📚</span>
+										<h2>References</h2>
+									</div>
+									<ul class="blg-ul">
+										<li class="blg-li">
+											<img src="../img/technical_stack/docker.svg" alt="Docker" width="18" style="vertical-align: middle; margin-right: 6px" />
+											<strong>Docker Docs:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://docs.docker.com/compose/how-tos/environment-variables/set-environment-variables/"
+												>Set environment variables in Docker Compose</a
+											>
+										</li>
+										<li class="blg-li">
+											<strong>Stack Overflow:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://stackoverflow.com/questions/77465947/using-env-file-with-docker-compose"
+												>Using env-file with docker-compose</a
+											>
+										</li>
+										<li class="blg-li">
+											<strong>Qiita:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://qiita.com/SolKul/items/989727aeeafcae28ecf7">https://qiita.com/SolKul/items/989727aeeafcae28ecf7</a>
+										</li>
+									</ul>
+								</div>
+								<!-- End: References -->
 							</div>
-							<span> &copy; <span id="currentYear"></span> Shafiqul AI | All rights reserved. Developed by Md Shafiqul Islam</span>
+							<!-- end blogContainer -->
+						</div>
+						<!-- end .blog-detail-main -->
+					</div>
+					<!-- end .blog-detail-layout -->
+
+					<!-- Related Blog Posts -->
+					<div class="related-posts-section">
+						<div class="blog-title-bar">
+							<img src="../img/others/blog.png" alt="blog post" style="width: 24px; height: auto" />
+							<h2>Related Blog Posts</h2>
+						</div>
+						<div class="related-posts-wrapper">
+							<div class="related-posts-swiper-area">
+								<div class="swiper" id="postContainer">
+									<div class="swiper-wrapper">
+										<!-- Blog posts will be dynamically generated here -->
+									</div>
+								</div>
+								<div class="swiper-button-prev"></div>
+								<div class="swiper-button-next"></div>
+							</div>
+							<div class="blg-slide-counter">
+								<div class="slide-progress-bar">
+									<div class="slide-progress-fill" id="slideProgressFill"></div>
+								</div>
+								<div class="slide-counter-label"><span id="currentSlide">1</span> / <span id="totalSlides">1</span></div>
+							</div>
 						</div>
 					</div>
-					<div class="col-md-4">
-						<ul class="social-network">
-							<li>
-								<a target="_blank" href="mailto:mdshafiqul.islam603@gmail.com" data-placement="top" title="Gmail">
-									<img src="../img/contact/gmail.svg" alt="Gmail">
-									<span class="icon-label">Gmail</span>
-								</a>
-							</li>
-							<li>
-								<a target="_blank" href="https://www.linkedin.com/in/shafiqul-islam-sumon/" data-placement="top" title="LinkedIn">
-									<img src="../img/contact/linkedin.svg" alt="LinkedIn">
-									<span class="icon-label">LinkedIn</span>
-								</a>
-							</li>
-							<li>
-								<a target="_blank" href="https://github.com/shafiqulislamsumon" data-placement="top" title="GitHub">
-									<img src="../img/contact/github.svg" alt="GitHub">
-									<span class="icon-label">GitHub</span>
-								</a>
-							</li>
-							<li>
-								<a target="_blank" href="https://leetcode.com/u/shafiqul/" data-placement="top" title="LeetCode">
-									<img src="../img/contact/leetcode.svg" alt="LeetCode">
-									<span class="icon-label">LeetCode</span>
-								</a>
-							</li>
-							<li>
-								<a target="_blank" href="https://huggingface.co/shafiqul1357" data-placement="top" title="Hugging Face">
-									<img src="../img/contact/huggingface.svg" alt="Hugging Face">
-									<span class="icon-label">Hugging Face</span>
-								</a>
-							</li>
-							<li>
-								<a target="_blank" href="https://medium.com/@shafiqul-islam" data-placement="top" title="Medium">
-									<img src="../img/contact/medium.svg" alt="Medium">
-									<span class="icon-label">Medium</span>
-								</a>
-							</li>
-						</ul>
-					</div>
 				</div>
-			</div>
-		</section>
+			</section>
+			<div id="site-footer"></div>
+		</div>
 
-
-	</div> <!-- end wrapper -->
-
-	<a href="#" class="scrollup"><i class="fa fa-angle-up active"></i></a>
-
-	<!-- javascript -->
-	<!-- Placed at the end of the document so the pages load faster -->
-	<script type="text/javascript" src="../js/jquery-3.7.1.min.js"></script>
-	<script type="text/javascript" src="../js/bootstrap.min.js"></script>
-	<script type="text/javascript" src="../js/slick.min.js"></script>
-	<script type="text/javascript" src="../js/tabulator.min.js"></script>
-	<script type="text/javascript" src="../js/prism.js"></script>
-	<script type="text/javascript" src="../js/smooth-scroll.polyfills.min.js"></script>
-	<script type="text/javascript" src="../js/detail.js"></script>
-
-	<script>
-		document.getElementById("currentYear").textContent = new Date().getFullYear();
-	</script>	
-
-	<script>
-		document.addEventListener('DOMContentLoaded', function () {
-			var tabledata = [
-				{ feature: "Ease of Use", docker: "Requires manually specifying --env-file when running the container.", docker_container: "Automatically loads .env file when running docker-compose up." },
-				{ feature: "Multiple Services Support", docker: "Best suited for single-container applications.", docker_container: "Ideal for multi-container applications where multiple services share environment variables."},
-				{ feature: "Explicit Control", docker: "Each docker run command explicitly specifies the .env file, avoiding unintended overrides.", docker_container: "Variables are implicitly loaded from .env, which may cause conflicts if multiple .env files exist."},
-				{ feature: "Runtime Flexibility", docker: "Allows dynamic selection of .env files using --env-file /path/to/env.", docker_container: "Requires modifying docker-compose.yml to change the .env file path (unless overridden with --env-file)."},
-				{ feature: "File Location", docker: "The .env file can be located anywhere and explicitly passed at runtime.", docker_container: "The .env file must be in the location specified in docker-compose.yml or the default project directory."},
-				
-			];
-
-			var columns = [
-				{ title: "Feature", field: "feature" },
-				{ title: "Docker (--env-file)", field: "docker", hozAlign: "left", sorter: "number" },
-				{ title: "Docker Compose (env_file)", field: "docker_container" },
-			];
-
-			// Create a Tabulator on an element with id "example-table"
-			new Tabulator(".blg-table-container", {
-				data: tabledata, //assign data to table
-				columns: columns, //create columns from data field names automatically
-				layout: "fitColumns",
-				pagination: "local",
-				paginationSize: 6,
-				paginationSizeSelector: [3, 6, 8, 10],
-				paginationCounter: "rows",
-			});
-		});
-	</script>
-
-</body>
-
+		<!-- javascript -->
+		<!-- Placed at the end of the document so the pages load faster -->
+		<script type="text/javascript" src="../js/bootstrap.bundle.min.js"></script>
+		<script type="text/javascript" src="../js/components.js"></script>
+		<script type="text/javascript" src="../js/site.js"></script>
+		<script src="../js/swiper-bundle.min.js"></script>
+		<script src="../js/prism.js" data-manual></script>
+		<script type="text/javascript" src="../js/code-highlight.js"></script>
+		<script type="text/javascript" src="../js/detail.js"></script>
+	</body>
 </html>

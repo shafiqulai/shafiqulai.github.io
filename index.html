@@ -1,187 +1,86 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+	<head>
+		<!-- Google tag (gtag.js) -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-6SEFZQJHM1"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
 
-<head>
-
-	<!-- Google tag (gtag.js) -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-6SEFZQJHM1"></script>
-	<script>
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag('js', new Date());
-
-	gtag('config', 'G-6SEFZQJHM1', {
-    	cookie_domain: 'shafiqulai.github.io'
-  	});
-	</script>
-
-	<meta charset="utf-8">
-	<title>Shafiqul AI - Technical Blog</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<meta name="description" content="Shafiqul AI - Technical Blog" />
-	<meta name="author" content="MD SHAFIQUL ISLAM" />
-	<link rel="icon" href="./img/others/favicon.ico" type="image/x-icon">
-
-	<!-- css -->
-	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />    
-	<link rel="stylesheet" type="text/css" href="css/font-awesome.css" />
-	<link rel="stylesheet" type="text/css" href="css/style.css" />
-
-</head>
-
-<body>
-	<div id="wrapper">
-		<!-- start header -->
-		<header>
-			<div class="navbar navbar-default custom-sticky-navbar">
-				<div class="container">
-					<div class="navbar-header">
-						<button type="button" class="navbar-toggle" data-toggle="collapse"
-							data-target=".navbar-collapse">
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-						</button>
-						<a class="navbar-brand" href="index.html"><img src="img/others/logo.png" alt="logo" class="navbar-logo" /></a>
-					</div>
-					<div class="navbar-collapse collapse ">
-						<ul class="nav navbar-nav">
-							<li class="active"><a href="index.html"><img src="./img/others/home.svg" alt="Home" style="width:24px; height:auto; vertical-align:middle; margin-right:10px;">Home</a></li>
-							<li><a href="about.html"><img src="./img/others/about.svg" alt="About" style="width:24px; height:auto; vertical-align:middle; margin-right:10px;">About</a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</header>
-		<!-- end header -->
-
-		<section id="featured">
-			<div class="container">
-				<div id="top-blg-container" class="row">
-					<!-- Top Blog post will be dynamically generated here -->
-				</div>
-			</div>
-		</section>
-
-		<section class="blog-title">
-			<div class="container title">
-				<div class="col-md-12 blog-title-flex">
-					<img src="./img/others/blog.png" alt="blog post" style="width: 24px; height: auto;">
-					<h2>Recent Blog Posts</h2>
-				</div>
-			</div>
-		</section>
-
-		<section id="content">
-			<div class="container">
-				<div class="row">
-					<!-- blog posts -->
-					<div class="col-md-9">
-						<div id="postContainer" class="row">
-							<!-- Blog posts will be dynamically generated here -->
-						</div>
-						<div class="load-more">
-							<a href="#" id="loadMoreLink" class="load-more-button">Load More</a>
-						</div>
-					</div>
-
-					<!-- Categories -->
-					<div class="col-md-3 categories">
-						<div class="category-header">
-							<img src="./img/others/categories.png" alt="categories" style="width: 24px; height: auto;">
-							<h3>Categories</h3>
-						</div>
-						<ul id="categoryList">
-							<!-- Categories will be generated dynamically with JavaScript -->
-						</ul>
-					</div>
-
-				</div>
-			</div>
-		</section>
-		
-		<section class="footer-section">
-			<div class="container footer">
-				<div class="row footer">
-					<div class="col-md-8">
-						<div class="copyright">
-							<div class="logo-circle">
-								<img src="./img/others/blog_logo.svg" alt="Shafiqul AI" style="height:24px; vertical-align:middle;">
-							</div>
-							<span> &copy; <span id="currentYear"></span> Shafiqul AI | All rights reserved. Developed by Md Shafiqul Islam</span>
-						</div>
-					</div>
-					<div class="col-md-4">
-						<ul class="social-network">
-							<li>
-								<a target="_blank" href="mailto:mdshafiqul.islam603@gmail.com" data-placement="top" title="Gmail">
-									<img src="img/contact/gmail.svg" alt="Gmail">
-									<span class="icon-label">Gmail</span>
-								</a>
-							</li>
-							<li>
-								<a target="_blank" href="https://www.linkedin.com/in/shafiqul-islam-sumon/" data-placement="top" title="LinkedIn">
-									<img src="img/contact/linkedin.svg" alt="LinkedIn">
-									<span class="icon-label">LinkedIn</span>
-								</a>
-							</li>
-							<li>
-								<a target="_blank" href="https://github.com/shafiqulislamsumon" data-placement="top" title="GitHub">
-									<img src="img/contact/github.svg" alt="GitHub">
-									<span class="icon-label">GitHub</span>
-								</a>
-							</li>
-							<li>
-								<a target="_blank" href="https://leetcode.com/u/shafiqul/" data-placement="top" title="LeetCode">
-									<img src="img/contact/leetcode.svg" alt="LeetCode">
-									<span class="icon-label">LeetCode</span>
-								</a>
-							</li>
-							<li>
-								<a target="_blank" href="https://huggingface.co/shafiqul1357" data-placement="top" title="Hugging Face">
-									<img src="img/contact/huggingface.svg" alt="Hugging Face">
-									<span class="icon-label">Hugging Face</span>
-								</a>
-							</li>
-							<li>
-								<a target="_blank" href="https://medium.com/@shafiqul-islam" data-placement="top" title="Medium">
-									<img src="img/contact/medium.svg" alt="Medium">
-									<span class="icon-label">Medium</span>
-								</a>
-							</li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</section>
-
-	</div> <!-- end wrapper -->
-
-	<a href="#" class="scrollup"><i class="fa fa-angle-up active"></i></a>
-	<!-- javascript -->
-	<!-- Placed at the end of the document so the pages load faster -->
-	<script type="text/javascript" src="js/jquery-3.7.1.min.js"></script>
-	<script type="text/javascript" src="js/imagesloaded.pkgd.min.js"></script>
-	<script type="text/javascript" src="js/bootstrap.min.js"></script>
-	<script type="text/javascript" src="js/smooth-scroll.polyfills.min.js"></script>
-	<script type="text/javascript" src="js/main.js"></script>
-
-	<script>
-		document.addEventListener('DOMContentLoaded', function () {
-			// Initialize SmoothScroll specifically for the scroll-up link
-			var scrollUp = new SmoothScroll('.scrollup', {
-				speed: 800,  // The speed of the scroll in milliseconds
-				easing: 'easeInOutCubic' // Easing pattern to use
+			gtag("config", "G-6SEFZQJHM1", {
+				cookie_domain: "shafiqulai.github.io",
 			});
-		});
+		</script>
 
-	</script>
+		<meta charset="utf-8" />
+		<title>Shafiqul AI - Technical Blog</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="description" content="Shafiqul AI - Technical Blog" />
+		<meta name="author" content="MD SHAFIQUL ISLAM" />
+		<link rel="icon" href="./img/others/favicon.ico" type="image/x-icon" />
 
-	<script>
-		document.getElementById("currentYear").textContent = new Date().getFullYear();
-	</script>
+		<!-- css -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/style.css" />
+	</head>
 
+	<body>
+		<div id="wrapper">
+			<div id="site-header"></div>
 
-</body>
+			<section id="main-content">
+				<div class="container">
+					<div class="row main-content-row">
+						<!-- Featured post column -->
+						<div class="col-lg-9" id="featured-section">
+							<div id="top-blg-container" class="row">
+								<!-- Top Blog post will be dynamically generated here -->
+							</div>
+						</div>
 
+						<!-- Right column: categories sidebar -->
+						<div class="col-lg-3 categories">
+							<div class="categories-card" id="categories-sidebar">
+								<div class="category-header">
+									<img src="./img/others/categories.png" alt="categories" style="width: 24px; height: auto" />
+									<h3>Categories</h3>
+								</div>
+								<ul id="categoryList">
+									<!-- Categories will be generated dynamically with JavaScript -->
+								</ul>
+							</div>
+						</div>
+
+						<!-- Blog grid column -->
+						<div class="col-lg-9" id="left-main">
+							<div class="blog-title-bar">
+								<img src="./img/others/blog.png" alt="blog post" style="width: 24px; height: auto" />
+								<h2>Recent Blog Posts</h2>
+							</div>
+							<div id="postContainer" class="row">
+								<!-- Blog posts will be dynamically generated here -->
+							</div>
+							<div class="load-more">
+								<a href="#" id="loadMoreLink" class="load-more-button">Load More</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+			<div id="site-footer"></div>
+		</div>
+		<!-- end wrapper -->
+		<!-- javascript -->
+		<!-- Placed at the end of the document so the pages load faster -->
+		<script type="text/javascript" src="js/bootstrap.bundle.min.js"></script>
+		<script type="text/javascript" src="js/components.js"></script>
+		<script type="text/javascript" src="js/site.js"></script>
+		<script type="text/javascript" src="js/main.js"></script>
+	</body>
 </html>

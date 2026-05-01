@@ -1,584 +1,612 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+	<head>
+		<!-- Google tag (gtag.js) -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-6SEFZQJHM1"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
 
-<head>
+			gtag("config", "G-6SEFZQJHM1", {
+				cookie_domain: "shafiqulai.github.io",
+			});
+		</script>
 
-	<!-- Google tag (gtag.js) -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-6SEFZQJHM1"></script>
-	<script>
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag('js', new Date());
+		<meta charset="utf-8" />
+		<link rel="canonical" href="https://shafiqulai.github.io/blogs/blog_4.html" />
+		<title>Deploy Streamlit App to Hugging Face Spaces - A Complete Guide</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="Deploying a machine learning app should be straightforward and accessible. This article demonstrates how to turn a local Streamlit application into a publicly accessible web app using Hugging Face Spaces, without the need for complex infrastructure. It's ideal for showcasing projects, sharing with stakeholders, or building an interactive portfolio."
+		/>
+		<meta name="author" content="MD SHAFIQUL ISLAM" />
+		<link rel="icon" href="../img/others/favicon.ico" type="image/x-icon" />
 
-	gtag('config', 'G-6SEFZQJHM1', {
-    	cookie_domain: 'shafiqulai.github.io'
-  	});
-	</script>
+		<!-- css -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
 
-	<meta charset="utf-8">
-	<link rel="canonical" href="https://shafiqulai.github.io/blogs/blog_4.html" />
-	<title>Deploy Streamlit App to Hugging Face Spaces - A Complete Guide</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<meta name="description" content="Deploying a machine learning app should be straightforward and accessible. This article demonstrates how to turn a local Streamlit application into a publicly accessible web app using Hugging Face Spaces, without the need for complex infrastructure. It's ideal for showcasing projects, sharing with stakeholders, or building an interactive portfolio." />
-	<meta name="author" content="MD SHAFIQUL ISLAM" />
-	<link rel="icon" href="../img/others/favicon.ico" type="image/x-icon">
+		<link rel="stylesheet" href="../css/swiper-bundle.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/style.css" />
+		<link rel="stylesheet" type="text/css" href="../css/prism.css" />
+	</head>
 
-	<!-- css -->
-	<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
-	<link rel="stylesheet" type="text/css" href="../css/font-awesome.css" />
-	<link rel="stylesheet" type="text/css" href="../css/slick.css" />
-	<link rel="stylesheet" type="text/css" href="../css/slick-theme.css" />
-	<link rel="stylesheet" type="text/css" href="../css/tabulator_site.min.css" />
-	<link rel="stylesheet" type="text/css" href="../css/prism.css" />
-	<link rel="stylesheet" type="text/css" href="../css/style.css" />
+	<body>
+		<!-- Reading Progress Bar -->
+		<div id="reading-progress"></div>
+		<div id="wrapper">
+			<div id="site-header"></div>
 
-</head>
-
-<body>
-	<div id="wrapper">
-		<!-- start header -->
-		<header>
-			<div class="navbar navbar-default custom-sticky-navbar">
+			<section id="content">
 				<div class="container">
-					<div class="navbar-header">
-						<button type="button" class="navbar-toggle" data-toggle="collapse"
-							data-target=".navbar-collapse">
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-						</button>
-						<a class="navbar-brand" href="../index.html"><img src="../img/others/logo.png" alt="logo" class="navbar-logo" /></a>
-					</div>
-					<div class="navbar-collapse collapse ">
-						<ul class="nav navbar-nav">
-							<li><a href="../index.html"><img src="../img/others/home.svg" alt="Home" style="width:24px; height:auto; vertical-align:middle; margin-right:10px;">Home</a></li>
-							<li><a href="../about.html"><img src="../img/others/about.svg" alt="About" style="width:24px; height:auto; vertical-align:middle; margin-right:10px;">About</a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</header>
-		<!-- end header -->
-
-		<section id="content">
-			<div class="container">
-
-				<!-- blog details -->
-				<div id="blogContainer">
-					<!-- blog title -->
-					<div class="container blg-title-container">
-						<h2 class="blg-title">Deploy Streamlit App to Hugging Face Spaces - A Complete Guide</h2>
-					</div>
-
-					<!-- Author Info -->
-					<div class="author_section">
-						<img id="author_img" src="" alt="Author Photo" class="author_img">
-						<div class="author_details">
-							<span id="author_name" class="author_name"></span>
-							<span id="published_date" class="published_date"></span>
-						</div>
-					</div>
-
-					<div class="blg-img-container">
-						<img src="../img/blog_4/thumbnail.png" alt="Deploy Streamlit App to Hugging Face Spaces" style="width: 70%;"/>
-					</div>
-
-
-					<!-- Start of Preface -->
-					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
-
-						<p>Deploying your machine learning app shouldn't be more challenging than building it. In this guide, you'll discover how to turn a local <b>Streamlit application</b> into a shareable, public-facing demo using <b>Hugging Face Spaces</b> — no DevOps expertise or cloud infrastructure setup required.</p>
-
-						<div style="background-color: #f1f6f1; padding: 15px; border-left: 5px solid #006400; margin-top: 10px;">
-							<p><b>💡 Whether you're sharing with stakeholders, showcasing your project, or creating a live portfolio — this guide will help you to deploy machine learning Streamlit web app to Hugging Face.</b></p>
-						</div>
-						<br>
-
-						<p>We'll use a <b><a href="https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation" target="_blank" style="text-decoration: underline;">Fashion Recommendation System</a> powered by Retrieval-Augmented Generation (RAG)</b> as our working example. But the deployment process outlined here is fully applicable to <b>any Streamlit-based app</b>.</p>
-
-					</div>
-					<!-- End of Preface -->
-
-					<!-- Table of Contents -->
-					<div class="blg-toc-container">
-						<h1>Table of Contents</h1>
-						<ol class="blg-toc-ol">
-							<li class="blg-toc-li"><a href="#introduction">Introduction</a></li>
-							<li class="blg-toc-li"><a href="#prerequisites">Prerequisites</a></li>
-							<li class="blg-toc-li"><a href="#deployment">Step-by-Step Deployment to Hugging Face</a></li>
-							<ul class="blg-toc-ul">
-								<li class="blg-toc-li"><a href="#create-account">Create a Hugging Face Account</a></li>
-								<li class="blg-toc-li"><a href="#create-space">Create a New Space</a></li>
-								<li class="blg-toc-li"><a href="#prepare-project">Prepare Your Project for Upload</a></li>
-								<li class="blg-toc-li"><a href="#upload-code">Upload Source Code</a></li>
+					<div class="blog-detail-layout">
+						<!-- Left: Sticky TOC Sidebar -->
+						<aside class="toc-sidebar" id="tocSidebar">
+							<div class="toc-sidebar-header">
+								<p class="toc-sidebar-title">Contents</p>
+							</div>
+							<ul class="toc-sidebar-list">
+								<li><a href="#introduction">Introduction</a></li>
+								<li><a href="#prerequisites">Prerequisites</a></li>
+								<li><a href="#deployment">Deployment to Hugging Face</a></li>
+								<li class="toc-sidebar-sub"><a href="#create-account">Create Account</a></li>
+								<li class="toc-sidebar-sub"><a href="#create-space">Create a Space</a></li>
+								<li class="toc-sidebar-sub"><a href="#prepare-project">Prepare Project</a></li>
+								<li class="toc-sidebar-sub"><a href="#upload-code">Upload Source Code</a></li>
+								<li><a href="#requirements">Updating requirements.txt</a></li>
+								<li><a href="#docker">Docker Configuration</a></li>
+								<li><a href="#build-run">Build and Run App</a></li>
+								<li><a href="#readme">Writing the README</a></li>
+								<li><a href="#search-app">Searching Your App</a></li>
+								<li><a href="#conclusion">Conclusion</a></li>
 							</ul>
-							<li class="blg-toc-li"><a href="#requirements">Updating requirements.txt</a></li>
-							<li class="blg-toc-li"><a href="#docker">Modifying the Docker Configuration</a></li>
-							<li class="blg-toc-li"><a href="#build-run">Build and Run App</a></li>
-							<li class="blg-toc-li"><a href="#readme">Writing the README file</a></li>
-							<li class="blg-toc-li"><a href="#search-app">Searching Your App</a></li>
-							<li class="blg-toc-li"><a href="#conclusion">Conclusion</a></li>
-						</ol>
-					</div>
-					<br>
-
-
-					<!-- 1. Start of Introduction -->
-					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
-
-						<a id="introduction" style="position: relative; top: -110px; visibility: hidden;"></a>
-						<div id = "introduction" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">1. Introduction</h1>
-						</div>
-
-						<p>Transitioning a machine learning app from local development to a public platform can feel overwhelming. This guide is here to simplify that process by offering a clear, step-by-step approach to deploying your <b>Streamlit application</b> using <b>Hugging Face Spaces</b>. Whether you're a developer, researcher, or student, you'll learn how to make your app available online with minimal effort.</p>
-
-						<br>
-						<p><b>🔹 Why Hugging Face Spaces?</b><br>
-						Hugging Face Spaces offers a frictionless deployment experience built specifically for machine learning and data applications. It supports popular tools like <b>Streamlit</b>, <b>Gradio</b>, and even static HTML out of the box. There's no need for DevOps setup or server management — just upload your code and get a live app with a shareable link. It's ideal for quick demos, prototyping, or showcasing your work.</p>
-
-						<br>
-						<p><b>🔹 Example Project: RAG-Based Fashion Recommendation App</b><br>
-						To illustrate the process, we'll deploy a <a href="https://huggingface.co/spaces/shafiqul1357/rag-fashion-recommendation" target="_blank" style="text-decoration: underline;">fashion recommendation app</a> that uses <b>Retrieval-Augmented Generation (RAG)</b>. The app helps users find clothing items by typing natural language queries — such as “Show me casual red dresses under ¥2000.” The app is already working locally with Streamlit, and now we'll make it available to others via Hugging Face Spaces.</p>
-						<hr class="blg-hr">
-					</div>
-					<!-- End of Introduction -->
-
-					<!-- Start of 2. Prerequisites -->
-					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
-
-						<a id="prerequisites" style="position: relative; top: -110px; visibility: hidden;"></a>
-						<div id = "prerequisites" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">2. Prerequisites</h1>
-						</div>
-
-						<p>Before deploying your Streamlit app to Hugging Face Spaces, make sure the essentials are ready.</p>
-
-						<p><b>🔹 A Fully Developed Streamlit App</b><br>
-						Your application should be complete and thoroughly tested in your local environment. It must include a clear entry point like <span class="code-soft">app.py</span> or <span class="code-soft">web_app.py</span>, a <span class="code-soft">requirements.txt</span> file listing all dependencies, and any supporting configuration or utility files.</p>
-
-						<p>If your app relies on a vector database such as <b>ChromaDB</b>, ensure that the data directory — for example, <span class="code-soft">chroma_store</span> — is lightweight enough for upload. Alternatively, configure it to rebuild automatically when the app starts to avoid large file uploads.</p>
-
-						<br>
-						<p><b>🔹 A Hugging Face Account</b><br>
-						To publish your app, you'll need an active Hugging Face account. Creating one is quick and free. Once logged in, you can set up and manage your own <span class="code-soft">Spaces</span>, which serve as hosted environments for ML applications.</p>
-
-						<p>Sign up here: 
-						<a href="https://huggingface.co/join" target="_blank" style="text-decoration: underline;">https://huggingface.co/join</a></p>
-						<hr class="blg-hr">
-					</div>
-					<!-- End of Prerequisites -->
-
-
-					<!-- Start of 3. Step-by-Step Deployment -->
-					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
-
-						<a id="deployment" style="position: relative; top: -110px; visibility: hidden;"></a>
-						<div id = "deployment" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">3. Step-by-Step Deployment to Hugging Face</h1>
-						</div>
-						<p>This section walks you through the process of deploying your locally running Streamlit app to Hugging Face Spaces. From account setup to uploading your code and confirming the deployment, each step is practical and beginner-friendly.</p>
-
-						<br>
-						<a id="create-account" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id = "create-account"class="blg-sub-header">
-							<h2> 🔹 3.1 Create a Hugging Face Account</h2>
-						</div>
-						<p>Before you can deploy your app, you need to create an account on Hugging Face — the platform that provides the <b>Spaces</b> feature for hosting ML applications.</p>
-
-						<br>
-						<p><b>🔗 Step 1: Visit Hugging Face</b><br></p>
-						<p>Head over to the official website: 
-						<a href="https://huggingface.co/" target="_blank" style="text-decoration: underline;">https://huggingface.co/</a></p>
-
-						<br>
-						<p><b>📝 Step 2: Sign Up</b><br></p>
-						<p>Click <b>Sign up</b> at the top-right corner. You can register with your email or link your GitHub or Google account.</p>
-						<div class="blg-img-container">
-							<img src="../img/blog_4/sign_up.png" alt="Hugging Face Sign Up" style="width: 70%; margin-bottom: 20px;"/>
-							<br>
-							<p><b>Figure 1 : Hugging Face Sign Up</b></p>
-						</div>
-
-						<br>
-						<p><b>📩 Step 3: Verify Your Email</b><br></p>
-						<p>Once you've signed up, you'll receive a confirmation link in your inbox. Click it to verify and activate your account.</p>
-
-						<br>
-						<p><b>📁 Step 4: Access the Spaces Dashboard</b><br></p>
-						<p>After logging in, click your profile picture and select <b>Spaces</b> from the menu. Alternatively, you can go directly to 
-						<a href="https://huggingface.co/spaces" target="_blank" style="text-decoration: underline;">https://huggingface.co/spaces</a> to view and manage your hosted applications.</p>
-						<div class="blg-img-container">
-							<img src="../img/blog_4/dashboard.png" alt="Hugging Face Space Dashboard" style="width: 70%; margin-bottom: 20px;"/>
-							<p><b>Figure 2 : Hugging Face Space Dashboard</b></p>
-						</div>
-
-						<br>
-						<a id="create-space" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id = "create-space"class="blg-sub-header">
-							<h2> 🔹 3.2 Create a New Space</h2>
-						</div>
-						<p>With your Hugging Face account set up, the next step is to create a <b>Space</b> — the environment where your Streamlit app will be hosted. Follow these steps to get started:</p>
-
-						<br>
-						<p><b>🆕 Step 1: Click “Create new Space”</b><br></p>
-						<p>Visit the <b>Spaces</b> page and click the <b>+ New Space</b> button. This will open a form where you'll enter the basic information needed to set up your hosted app.</p>
-
-						<br>
-						<p><b>🗂️ Step 2: Fill in the Space Details</b><br></p>
-						<p>You'll be asked to provide the following details:</p>
-						<div class="blg-img-container">
-							<img src="../img/blog_4/create_space.png" alt="Create New Hugging Face Space" style="width: 70%; margin-bottom: 20px;"/>
-							<p><b>Figure 3 : Create New Hugging Face Space</b></p>
-						</div>
-
-						<ul style="padding-left: 40px;">
-							<li><b>Space Name:</b> Choose a unique name, such as <span class="code-soft">rag-fashion-recommendation</span>.</li>
-							<li><b>Short Description:</b> Write a concise description within 60 characters.</li>
-							<li><b>License:</b> Select a license that fits your project (e.g., <span class="code-soft">mit</span>).</li>
-							<li><b>Select the Space SDK:</b> If you're using Gradio, choose it directly. If you're using Streamlit, first click the <b>Docker</b> button to view all SDK options, then select <b>Streamlit</b> from the list.</li>
-							<div class="blg-img-container">
-								<img src="../img/blog_4/sdk.png" alt="Select Space SDK" style="width: 70%; margin-bottom: 20px;"/>
-								<p><b>Figure 4 : Select Space SDK</b></p>
-							</div>
-							<li><b>Space Hardware:</b> By default, the hardware is set to <span class="code-soft">CPU basic · 2 vCPU · 16 GB · FREE</span>. You can click the dropdown to choose upgraded hardware (note: additional costs apply).</li>
-							<li><b>Visibility:</b> Choose whether the Space will be <b>Public</b> (visible to everyone) or <b>Private</b> (restricted access). The default is Public.</li>
-							<div class="blg-img-container">
-								<img src="../img/blog_4/visibility.png" alt="Space Visibility" style="width: 70%; margin-bottom: 20px;"/>
-								<p><b>Figure 5 : Space Visibility</b></p>
-							</div>
-							<li><b>Hardware:</b> The default CPU setup is generally sufficient for most Streamlit apps unless your app requires GPU processing.</li>
-						</ul>
-
-						<br>
-						<p><b>🖱️ Step 3: Click “Create Space”</b><br></p>
-						<p>Once all required fields are complete, click the <b>Create Space</b> button. Hugging Face will generate a repository for your app and show a default placeholder application until your files are uploaded.</p>
-
-						<div class="blg-img-container">
-								<img src="../img/blog_4/default_app.png" alt="Streamlit Default App" style="width: 70%; margin-bottom: 20px;"/>
-								<p><b>Figure 6 : Streamlit Default App</b></p>
-						</div>
-						
-						<br>
-						<a id="prepare-project" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id = "prepare-project"class="blg-sub-header">
-							<h2>🔹 3.3 Prepare Your Project for Upload</h2>
-						</div>
-						<p>Before deploying to Hugging Face Spaces, it's crucial to ensure your project is well-organized, self-contained, and optimized for cloud execution. We'll use the <b><a href="https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation" target="_blank" style="text-decoration: underline;">rag-fashion-recommendation</a></b> app as a real-world example to walk through the ideal folder structure and secure configuration.</p>
-
-						<br>
-						<p><b>📁 Example Folder Structure</b><br></p>
-						<p>Here's a typical structure for a deployment-ready app:</p>
-
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-rag-fashion-recommendation/
-├── chroma_store/             # Vector DB (can be regenerated, not mandatory to upload)
-├── data/                     # Contains product data (e.g., images, CSV, JSON)
-├── prompt/                   # Prompt templates for the LLM
-├── utils/                    # Utility scripts, helpers
-├── .env                      # DO NOT upload this file
-├── .gitignore
-├── config.py                 # Central config file (used for paths, keys, etc.)
-├── data_embedder.py
-├── data_retriever.py
-├── metadata_extractor.py
-├── re_ranker.py
-├── vector_db.py
-├── web_app.py                # ✅ Entry point for Streamlit
-├── requirements.txt          # ✅ List of dependencies
-├── README.md                 # ✅ Add description, sample query, and thumbnail
-├── LICENSE
-</code>
-							</pre>
-						</div>
-
-
-						<p>Let's break down what to include, what to exclude, and how to securely handle sensitive information.</p>
-
-						<br>
-						<p><b>✅ What You Should Include</b><br></p>
-						<p>Make sure to upload the following components to your Hugging Face Space:</p>
-
-						<ul style="padding-left: 40px;">
-							<li><b>Main app file:</b> <span class="code-soft">web_app.py</span> — your Streamlit entry point. Hugging Face will automatically detect and run this.</li>
-							<li><b>Supporting modules:</b> Python files such as <span class="code-soft">config.py</span>, <span class="code-soft">vector_db.py</span>, <span class="code-soft">data_retriever.py</span>, <span class="code-soft">re_ranker.py</span>, etc., if imported by your app.</li>
-							<li><b>Support folders:</b> Include folders like <span class="code-soft">data/</span>, <span class="code-soft">prompt/</span>, or <span class="code-soft">utils/</span> that contain templates, helper functions, or static files.</li>
-							<li><b>Dependency file:</b> <span class="code-soft">requirements.txt</span> — lists all libraries needed for your app to run. Ensure all dependencies are correctly specified with versions.</li>
-							<li><b>Documentation (optional but recommended):</b> <span class="code-soft">README.md</span> with a short app description, sample queries, and usage tips.</li>
-							<li><b>Thumbnail image (optional):</b> A visual preview like <span class="code-soft">figure/thumbnail.png</span> can be referenced in the README for a more polished look.</li>
-						</ul>
-
-						<br>
-						<p><b>❌ What You Should Exclude</b><br></p>
-						<p>Avoid uploading the following:</p>
-
-						<ul style="padding-left: 40px;">
-							<li><b>.env file:</b> This file often contains sensitive data like API keys. Never upload it to your repository — it risks exposing private credentials.</li>
-						</ul>
-
-						<br>
-						<p><b>🔐 How to Handle API Keys Securely (Using Hugging Face Secrets)</b><br></p>
-						<p>Hugging Face offers a secure way to manage sensitive credentials via environment secrets. Here's how to add them:</p>
-
-						<ol style="padding-left: 40px;">
-							<li>Navigate to your Space → <b>Settings</b> → <b>Variables and Secrets</b>.</li>
-							<div class="blg-img-container">
-								<img src="../img/blog_4/secrets.png" alt="Hugging Face Space Variables and Secrets" style="width: 70%; margin-bottom: 20px;"/>
-								<p><b>Figure 7 : Hugging Face Space Variables and Secrets</b></p>
-							</div>
-							<li>Click the <b>New Secret</b> button. In the popup, provide the secret name and its value (e.g., your API key), then click <b>Save</b>.</li>
-							<div class="blg-img-container">
-								<img src="../img/blog_4/new_secret.png" alt="Add Secrets to Face Space" style="width: 70%; margin-bottom: 20px;"/>
-								<p><b>Figure 8 : Add Secrets to Face Space</b></p>
-							</div>
-						</ol>
-
-						<p>This method keeps your secrets safe even in public repositories and eliminates the need for a <span class="code-soft">.env</span> file.</p>
-
-						<p><b>📋 Pre-Upload Checklist</b><br></p>
-						<p>Before pushing your project to Hugging Face, confirm the following:</p>
-
-						<ul style="padding-left: 40px;">
-							<li>✅ Your app runs without errors locally</li>
-							<li>✅ <span class="code-soft">web_app.py</span> is present and correctly references all necessary modules</li>
-							<li>✅ All required dependencies are listed in <span class="code-soft">requirements.txt</span></li>
-							<li>✅ Sensitive credentials are stored using Hugging Face Secrets</li>
-							<li>✅ <span class="code-soft">README.md</span> is added to help users understand your app</li>
-							<li>✅ <span class="code-soft">.env</span> and large or unnecessary local files are excluded using <span class="code-soft">.gitignore</span></li>
-						</ul>
-
-						<br>
-						<a id="upload-code" style="position: relative; top: -90px; visibility: hidden;"></a>
-						<div id = "upload-code"class="blg-sub-header">
-							<h2>🔹 3.4 Upload Source Code</h2>
-						</div>
-						<p>Once your project is organized and ready, it's time to upload it to your Hugging Face Space. You can do this in two ways: by using Git over SSH for version-controlled uploads or via a simple drag-and-drop through the web interface. Both methods work well — choose the one that suits your workflow.</p>
-
-						<br>
-						<p><b>🛠️ Option 1: Upload Using Git over SSH</b><br></p>
-						<p>If you're familiar with Git and want full control over versioning, you can push your project using SSH. Here's how:</p>
-
-						<br>
-						<p><b>🔐 Step 1: Set Up SSH Access</b></p>
-						<ol style="padding-left: 40px;">
-							<li>Generate an SSH key if you don't already have one.</li>
-
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-ssh-keygen -t ed25519 -C "your_email@example.com"
-</code>
-							</pre>
-						</div>
-
-							<li>Add the public key to your Hugging Face account under <b>Settings → SSH & GPG Keys</b>.</li>
-						</ol>
-
-						<br>
-						<p><b>📝 Step 2: Clone Your Space</b></p>
-						<ol style="padding-left: 40px;">
-							<li>Go to your newly created Space and click the three-dot menu at the top right.</li>
-							<li>Select <b>Clone repository</b> from the dropdown.</li>
-							<div class="blg-img-container">
-								<img src="../img/blog_4/clone_space.png" alt="Clone Repository" style="width: 70%; margin-bottom: 20px;"/>
-								<p><b>Figure 9 : Clone Repository</b></p>
-							</div>
-							<li>A popup will show the Git clone command. Copy and run this command to clone the repo locally.</li>
-							<div class="blg-img-container">
-								<img src="../img/blog_4/clone_command.png" alt="Clone Command" style="width: 70%; margin-bottom: 20px;"/>
-								<p><b>Figure 10 : Clone Command</b></p>
-							</div>
-						</ol>
-
-						<br>
-						<p><b>🌐 Step 3: Push Your Project</b></p>
-						<ol style="padding-left: 40px;">
-							<li>Spaces that use Streamlit with Docker have a <span class="code-soft">src</span> folder in the root directory. Place all your project files inside this <span class="code-soft">src</span> folder.</li>
-							<li>Edit the <span class="code-soft">Dockerfile</span> if necessary to customize how the app runs.</li>
-							<li>Use standard Git commands (<span class="code-soft">git add</span>, <span class="code-soft">git commit</span>, <span class="code-soft">git push</span>) to push your code to Hugging Face.</li>
-						</ol>
-
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-git add .
-git commit -m "Initial commit"
-git push -u origin main
-</code>
-							</pre>
-						</div>
-
-						<br>
-						<p><b>⚠️ Common SSH Issue: Port 22 Blocked</b><br></p>
-						<p>In some networks (like corporate or university Wi-Fi), SSH traffic on port 22 may be blocked, causing Git commands to fail.</p>
-						
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-ssh: connect to host huggingface.co port 22: Connection timed out
-fatal: Could not read from remote repository.
-</code>
-							</pre>
-						</div>
-
-						<p>If this happens, the drag-and-drop method is a great fallback — it requires no special configuration and works in any browser.</p>
-
-						<br><br>
-						<p><b>📂 Option 2: Drag-and-Drop Upload (Recommended)</b><br></p>
-						<p>This method is straightforward and ideal for users unfamiliar with Git or those operating behind restricted networks.</p>
-						
-						<br>
-						<p><b>🖱️ Steps:</b></p>
-						<ol style="padding-left: 40px;">
-							<li>Open your Hugging Face Space and go to the <b>Files and versions</b> tab.</li>
-							<li>Click the <b>+ Contribute</b> button and choose <b>Upload files</b> from the dropdown.</li>
-							<div class="blg-img-container">
-								<img src="../img/blog_4/drag_drop.png" alt="Upload files by drag and drop" style="width: 70%; margin-bottom: 20px;"/>
-								<p><b>Figure 11 : Upload files by drag and drop</b></p>
-							</div>
-							<li>Select the required files and folders, then drag and drop them into the upload area.</li>
-							<li>After upload, Hugging Face will automatically install dependencies and launch your app.</li>
-						</ol>
-
-						<br>
-						<p style="color: green;"><b>[Notes]</b><br></p>
-						<p>In some cases, specific file types may not upload correctly using drag and drop. For example, in the RAG fashion project, the ChromaDB directory (which was pre-populated) included files like <span class="code-soft">.bin</span> extensions, which caused upload errors.</p>
-
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-chroma_store/
-├── chroma.sqlite3
-└── 00868136-8c25-43a1-91fe-6849d8055e8d/
-    ├── data_level0.bin
-    ├── header.bin
-    ├── length.bin
-    └── link_lists.bin
-</code>
-							</pre>
-						</div>
-
-						<p>To solve this, the entire ChromaDB folder was zipped and uploaded to the <span class="code-soft">src</span> directory. This approach ensures all files are preserved while avoiding file-type restrictions.</p>
-
-						<hr class="blg-hr">
-					</div>
-
-					<!-- End of Step-by-Step Deployment -->
-
-					<!-- Start of 4. Updating requirements.txt -->
-					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
-
-						<a id="requirements" style="position: relative; top: -110px; visibility: hidden;"></a>
-						<div id = "requirements" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">4. Updating <span class="code-soft">requirements.txt</span></h1>
-						</div>
-
-						<p>When you create a new Space using the <b>Streamlit SDK</b> on Hugging Face, the platform automatically generates a default project structure that includes a minimal <span class="code-soft">Dockerfile</span> and a placeholder <span class="code-soft">requirements.txt</span> file. These two components play a crucial role in defining the environment your app will run in — from which Python libraries are installed to how the container is built and started.</p>
-
-						<div class="blg-img-container">
-								<img src="../img/blog_4/root_dir.png" alt="hugging face space root directory structure" style="width: 70%; margin-bottom: 20px;"/>
-								<p><b>Figure 12 : Hugging face space root directory structure</b></p>
-						</div>
-
-						<p>However, the generated <span class="code-soft">requirements.txt</span> typically includes only a few common packages and doesn't reflect the actual dependencies your app may rely on. To ensure your deployment succeeds and your app behaves exactly as it does locally, it's important to explicitly list all the libraries your code depends on.</p>
-
-						<br>
-						<p><b>🛠️ Why Updating Matters</b><br></p>
-						<p>During deployment, Hugging Face uses the <span class="code-soft">Dockerfile</span> to build a containerized version of your environment. Inside that Dockerfile, Hugging Face references your <span class="code-soft">requirements.txt</span> file to install all required Python packages. If your app imports a library that's missing from this list, the build process will either fail entirely or the app will crash at runtime with errors such as <span class="code-soft">ModuleNotFoundError</span>.</p>
-
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-RUN pip install -r requirements.txt
-</code>
-							</pre>
-						</div>
-
-						<p>So before uploading your app, take a few moments to carefully review and update <span class="code-soft">requirements.txt</span>. This small step can save hours of debugging and deployment frustration.</p>
-
-						<br>
-						<p><b>✅ Required Dependencies for This Project</b><br></p>
-						<p>Based on the RAG-powered fashion recommendation system, your app may depend on a combination of machine learning, embedding, vector search, and UI-related libraries. A typical <span class="code-soft">requirements.txt</span> for this project might include the following:</p>
-
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-streamlit
+						</aside>
+
+						<!-- Right: Blog Content -->
+						<div class="blog-detail-main">
+							<!-- blog details -->
+							<div id="blogContainer">
+								<!-- blog title -->
+								<div class="container blg-title-container">
+									<h2 class="blg-title">Deploy Streamlit App to Hugging Face Spaces - A Complete Guide</h2>
+								</div>
+
+								<!-- Author Info -->
+								<div class="author_section">
+									<img id="author_img" alt="Author Photo" class="author_img" />
+									<div class="author_details">
+										<span id="author_name" class="author_name"></span>
+										<span id="published_date" class="published_date"></span>
+									</div>
+								</div>
+
+								<!-- Intro: thumbnail left, preface right -->
+								<div class="blg-intro">
+									<div class="blg-intro-img">
+										<img src="../img/blog_4/thumbnail.webp" alt="Deploy Streamlit App to Hugging Face Spaces" class="blg-thumbnail" />
+									</div>
+									<div class="blg-intro-text">
+										<p>
+											Deploying your machine learning app shouldn't be more challenging than building it. In this guide, you'll discover how to turn a local <strong>Streamlit application</strong> into
+											a shareable, public-facing demo using <strong>Hugging Face Spaces</strong> — no DevOps expertise or cloud infrastructure setup required.
+										</p>
+
+										<blockquote class="blg-callout-tip">
+											💡 Whether you're sharing with stakeholders, showcasing your project, or creating a live portfolio — this guide will help you to deploy machine learning Streamlit web app to
+											Hugging Face.
+										</blockquote>
+
+										<p>
+											We'll use a
+											<strong
+												><a href="https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation" target="_blank" class="blg-link" rel="noopener noreferrer">Fashion Recommendation System</a>
+												powered by Retrieval-Augmented Generation (RAG)</strong
+											>
+											as our working example. But the deployment process outlined here is fully applicable to <strong>any Streamlit-based app</strong>.
+										</p>
+									</div>
+								</div>
+								<!-- End of Preface -->
+
+								<!-- Table of Contents -->
+								<div class="blg-toc-container">
+									<h2>📚 Table of Contents</h2>
+									<ol class="blg-toc-ol">
+										<li class="blg-toc-li"><a href="#introduction">Introduction</a></li>
+										<li class="blg-toc-li"><a href="#prerequisites">Prerequisites</a></li>
+										<li class="blg-toc-li"><a href="#deployment">Step-by-Step Deployment to Hugging Face</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#create-account">Create a Hugging Face Account</a></li>
+											<li class="blg-toc-li"><a href="#create-space">Create a New Space</a></li>
+											<li class="blg-toc-li"><a href="#prepare-project">Prepare Your Project for Upload</a></li>
+											<li class="blg-toc-li"><a href="#upload-code">Upload Source Code</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#requirements">Updating requirements.txt</a></li>
+										<li class="blg-toc-li"><a href="#docker">Modifying the Docker Configuration</a></li>
+										<li class="blg-toc-li"><a href="#build-run">Build and Run App</a></li>
+										<li class="blg-toc-li"><a href="#readme">Writing the README file</a></li>
+										<li class="blg-toc-li"><a href="#search-app">Searching Your App</a></li>
+										<li class="blg-toc-li"><a href="#conclusion">Conclusion</a></li>
+									</ol>
+								</div>
+
+								<!-- 1. Start of Introduction -->
+								<div class="blg-section">
+									<a id="introduction" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>1. Introduction</h2>
+									</div>
+
+									<p>
+										Transitioning a machine learning app from local development to a public platform can feel overwhelming. This guide is here to simplify that process by offering a clear,
+										step-by-step approach to deploying your <strong>Streamlit application</strong> using <strong>Hugging Face Spaces</strong>. Whether you're a developer, researcher, or student,
+										you'll learn how to make your app available online with minimal effort.
+									</p>
+
+									<p>
+										<strong>🔹 Why Hugging Face Spaces?</strong> Hugging Face Spaces offers a frictionless deployment experience built specifically for machine learning and data applications. It
+										supports popular tools like <strong>Streamlit</strong>, <strong>Gradio</strong>, and even static HTML out of the box. There's no need for DevOps setup or server management — just
+										upload your code and get a live app with a shareable link. It's ideal for quick demos, prototyping, or showcasing your work.
+									</p>
+
+									<p>
+										<strong>🔹 Example Project: RAG-Based Fashion Recommendation App</strong> To illustrate the process, we'll deploy a
+										<a href="https://huggingface.co/spaces/shafiqul1357/rag-fashion-recommendation" target="_blank" class="blg-link" rel="noopener noreferrer">fashion recommendation app</a> that uses
+										<strong>Retrieval-Augmented Generation (RAG)</strong>. The app helps users find clothing items by typing natural language queries — such as "Show me casual red dresses under
+										¥2000." The app is already working locally with Streamlit, and now we'll make it available to others via Hugging Face Spaces.
+									</p>
+									<hr class="blg-hr" />
+								</div>
+								<!-- End of Introduction -->
+
+								<!-- Start of 2. Prerequisites -->
+								<div class="blg-section">
+									<a id="prerequisites" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>2. Prerequisites</h2>
+									</div>
+
+									<p>Before deploying your Streamlit app to Hugging Face Spaces, make sure the essentials are ready.</p>
+
+									<p>
+										<strong>🔹 A Fully Developed Streamlit App</strong> Your application should be complete and thoroughly tested in your local environment. It must include a clear entry point like
+										<span class="code-soft">app.py</span> or <span class="code-soft">web_app.py</span>, a <span class="code-soft">requirements.txt</span> file listing all dependencies, and any
+										supporting configuration or utility files.
+									</p>
+
+									<p>
+										If your app relies on a vector database such as <strong>ChromaDB</strong>, ensure that the data directory — for example, <span class="code-soft">chroma_store</span> — is
+										lightweight enough for upload. Alternatively, configure it to rebuild automatically when the app starts to avoid large file uploads.
+									</p>
+
+									<p>
+										<strong>🔹 A Hugging Face Account</strong> To publish your app, you'll need an active Hugging Face account. Creating one is quick and free. Once logged in, you can set up and
+										manage your own <span class="code-soft">Spaces</span>, which serve as hosted environments for ML applications.
+									</p>
+
+									<p>Sign up here: <a href="https://huggingface.co/join" target="_blank" class="blg-link" rel="noopener noreferrer">https://huggingface.co/join</a></p>
+									<hr class="blg-hr" />
+								</div>
+								<!-- End of Prerequisites -->
+
+								<!-- Start of 3. Step-by-Step Deployment -->
+								<div class="blg-section">
+									<a id="deployment" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>3. Step-by-Step Deployment to Hugging Face</h2>
+									</div>
+									<p>
+										This section walks you through the process of deploying your locally running Streamlit app to Hugging Face Spaces. From account setup to uploading your code and confirming the
+										deployment, each step is practical and beginner-friendly.
+									</p>
+
+									<a id="create-account" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">3.1</span>
+										<h3>Create a Hugging Face Account</h3>
+									</div>
+									<p>Before you can deploy your app, you need to create an account on Hugging Face — the platform that provides the <strong>Spaces</strong> feature for hosting ML applications.</p>
+
+									<p><strong>🔗 Step 1: Visit Hugging Face</strong></p>
+									<p>Head over to the official website: <a href="https://huggingface.co/" target="_blank" class="blg-link" rel="noopener noreferrer">https://huggingface.co/</a></p>
+
+									<p><strong>📝 Step 2: Sign Up</strong></p>
+									<p>Click <strong>Sign up</strong> at the top-right corner. You can register with your email or link your GitHub or Google account.</p>
+									<div class="blg-img-container">
+										<img src="../img/blog_4/sign_up.png" alt="Hugging Face Sign Up" class="blg-img" />
+										<p class="blg-img-caption">Figure 1: Hugging Face Sign Up</p>
+									</div>
+
+									<p><strong>📩 Step 3: Verify Your Email</strong></p>
+									<p>Once you've signed up, you'll receive a confirmation link in your inbox. Click it to verify and activate your account.</p>
+
+									<p><strong>📁 Step 4: Access the Spaces Dashboard</strong></p>
+									<p>
+										After logging in, click your profile picture and select <strong>Spaces</strong> from the menu. Alternatively, you can go directly to
+										<a href="https://huggingface.co/spaces" target="_blank" class="blg-link" rel="noopener noreferrer">https://huggingface.co/spaces</a> to view and manage your hosted applications.
+									</p>
+									<div class="blg-img-container">
+										<img src="../img/blog_4/dashboard.png" alt="Hugging Face Space Dashboard" class="blg-img" />
+										<p class="blg-img-caption">Figure 2: Hugging Face Space Dashboard</p>
+									</div>
+
+									<a id="create-space" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">3.2</span>
+										<h3>Create a New Space</h3>
+									</div>
+									<p>
+										With your Hugging Face account set up, the next step is to create a <strong>Space</strong> — the environment where your Streamlit app will be hosted. Follow these steps to get
+										started:
+									</p>
+
+									<p><strong>🆕 Step 1: Click "Create new Space"</strong></p>
+									<p>
+										Visit the <strong>Spaces</strong> page and click the <strong>+ New Space</strong> button. This will open a form where you'll enter the basic information needed to set up your
+										hosted app.
+									</p>
+
+									<p><strong>🗂️ Step 2: Fill in the Space Details</strong></p>
+									<p>You'll be asked to provide the following details:</p>
+									<div class="blg-img-container">
+										<img src="../img/blog_4/create_space.png" alt="Create New Hugging Face Space" class="blg-img" />
+										<p class="blg-img-caption">Figure 3: Create New Hugging Face Space</p>
+									</div>
+
+									<ul class="blg-ul">
+										<li><strong>Space Name:</strong> Choose a unique name, such as <span class="code-soft">rag-fashion-recommendation</span>.</li>
+										<li><strong>Short Description:</strong> Write a concise description within 60 characters.</li>
+										<li><strong>License:</strong> Select a license that fits your project (e.g., <span class="code-soft">mit</span>).</li>
+										<li>
+											<strong>Select the Space SDK:</strong> If you're using Gradio, choose it directly. If you're using Streamlit, first click the <strong>Docker</strong> button to view all SDK
+											options, then select <strong>Streamlit</strong> from the list.
+										</li>
+										<div class="blg-img-container">
+											<img src="../img/blog_4/sdk.png" alt="Select Space SDK" class="blg-img" />
+											<p class="blg-img-caption">Figure 4: Select Space SDK</p>
+										</div>
+										<li>
+											<strong>Space Hardware:</strong> By default, the hardware is set to <span class="code-soft">CPU basic · 2 vCPU · 16 GB · FREE</span>. You can click the dropdown to choose
+											upgraded hardware (note: additional costs apply).
+										</li>
+										<li>
+											<strong>Visibility:</strong> Choose whether the Space will be <strong>Public</strong> (visible to everyone) or <strong>Private</strong> (restricted access). The default is
+											Public.
+										</li>
+										<div class="blg-img-container">
+											<img src="../img/blog_4/visibility.png" alt="Space Visibility" class="blg-img" />
+											<p class="blg-img-caption">Figure 5: Space Visibility</p>
+										</div>
+										<li><strong>Hardware:</strong> The default CPU setup is generally sufficient for most Streamlit apps unless your app requires GPU processing.</li>
+									</ul>
+
+									<p><strong>🖱️ Step 3: Click "Create Space"</strong></p>
+									<p>
+										Once all required fields are complete, click the <strong>Create Space</strong> button. Hugging Face will generate a repository for your app and show a default placeholder
+										application until your files are uploaded.
+									</p>
+
+									<div class="blg-img-container">
+										<img src="../img/blog_4/default_app.png" alt="Streamlit Default App" class="blg-img" />
+										<p class="blg-img-caption">Figure 6: Streamlit Default App</p>
+									</div>
+
+									<a id="prepare-project" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">3.3</span>
+										<h3>Prepare Your Project for Upload</h3>
+									</div>
+									<p>
+										Before deploying to Hugging Face Spaces, it's crucial to ensure your project is well-organized, self-contained, and optimized for cloud execution. We'll use the
+										<strong
+											><a href="https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation" target="_blank" class="blg-link" rel="noopener noreferrer">rag-fashion-recommendation</a></strong
+										>
+										app as a real-world example to walk through the ideal folder structure and secure configuration.
+									</p>
+
+									<p><strong>📁 Example Folder Structure</strong></p>
+									<p>Here's a typical structure for a deployment-ready app:</p>
+
+									<div class="blg-tree"><span class="tree-root">rag-fashion-recommendation/</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">chroma_store/</span>         <span class="tree-comment"># Vector DB (can be regenerated, not mandatory to upload)</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">data/</span>                 <span class="tree-comment"># Contains product data (e.g., images, CSV, JSON)</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">prompt/</span>               <span class="tree-comment"># Prompt templates for the LLM</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">utils/</span>                <span class="tree-comment"># Utility scripts, helpers</span>
+<span class="tree-pipe">├── </span><span class="tree-spec">.env</span>                  <span class="tree-comment"># DO NOT upload this file</span>
+<span class="tree-pipe">├── </span><span class="tree-file">.gitignore</span>
+<span class="tree-pipe">├── </span><span class="tree-file">config.py</span>             <span class="tree-comment"># Central config file (used for paths, keys, etc.)</span>
+<span class="tree-pipe">├── </span><span class="tree-file">data_embedder.py</span>
+<span class="tree-pipe">├── </span><span class="tree-file">data_retriever.py</span>
+<span class="tree-pipe">├── </span><span class="tree-file">metadata_extractor.py</span>
+<span class="tree-pipe">├── </span><span class="tree-file">re_ranker.py</span>
+<span class="tree-pipe">├── </span><span class="tree-file">vector_db.py</span>
+<span class="tree-pipe">├── </span><span class="tree-file">web_app.py</span>            <span class="tree-comment"># ✅ Entry point for Streamlit</span>
+<span class="tree-pipe">├── </span><span class="tree-file">requirements.txt</span>      <span class="tree-comment"># ✅ List of dependencies</span>
+<span class="tree-pipe">├── </span><span class="tree-file">README.md</span>             <span class="tree-comment"># ✅ Add description, sample query, and thumbnail</span>
+<span class="tree-pipe">└── </span><span class="tree-file">LICENSE</span></div>
+
+									<p>Let's break down what to include, what to exclude, and how to securely handle sensitive information.</p>
+
+									<p><strong>✅ What You Should Include</strong></p>
+									<p>Make sure to upload the following components to your Hugging Face Space:</p>
+
+									<ul class="blg-ul">
+										<li><strong>Main app file:</strong> <span class="code-soft">web_app.py</span> — your Streamlit entry point. Hugging Face will automatically detect and run this.</li>
+										<li>
+											<strong>Supporting modules:</strong> Python files such as <span class="code-soft">config.py</span>, <span class="code-soft">vector_db.py</span>,
+											<span class="code-soft">data_retriever.py</span>, <span class="code-soft">re_ranker.py</span>, etc., if imported by your app.
+										</li>
+										<li>
+											<strong>Support folders:</strong> Include folders like <span class="code-soft">data/</span>, <span class="code-soft">prompt/</span>, or <span class="code-soft">utils/</span> that
+											contain templates, helper functions, or static files.
+										</li>
+										<li>
+											<strong>Dependency file:</strong> <span class="code-soft">requirements.txt</span> — lists all libraries needed for your app to run. Ensure all dependencies are correctly
+											specified with versions.
+										</li>
+										<li><strong>Documentation (optional but recommended):</strong> <span class="code-soft">README.md</span> with a short app description, sample queries, and usage tips.</li>
+										<li>
+											<strong>Thumbnail image (optional):</strong> A visual preview like <span class="code-soft">figure/thumbnail.png</span> can be referenced in the README for a more polished look.
+										</li>
+									</ul>
+
+									<p><strong>❌ What You Should Exclude</strong></p>
+									<p>Avoid uploading the following:</p>
+
+									<ul class="blg-ul">
+										<li><strong>.env file:</strong> This file often contains sensitive data like API keys. Never upload it to your repository — it risks exposing private credentials.</li>
+									</ul>
+
+									<p><strong>🔐 How to Handle API Keys Securely (Using Hugging Face Secrets)</strong></p>
+									<p>Hugging Face offers a secure way to manage sensitive credentials via environment secrets. Here's how to add them:</p>
+
+									<ol class="blg-toc-ol">
+										<li class="blg-li">Navigate to your Space → <strong>Settings</strong> → <strong>Variables and Secrets</strong>.</li>
+										<div class="blg-img-container">
+											<img src="../img/blog_4/secrets.png" alt="Hugging Face Space Variables and Secrets" class="blg-img" />
+											<p class="blg-img-caption">Figure 7: Hugging Face Space Variables and Secrets</p>
+										</div>
+										<li class="blg-li">Click the <strong>New Secret</strong> button. In the popup, provide the secret name and its value (e.g., your API key), then click <strong>Save</strong>.</li>
+										<div class="blg-img-container">
+											<img src="../img/blog_4/new_secret.png" alt="Add Secrets to Face Space" class="blg-img" />
+											<p class="blg-img-caption">Figure 8: Add Secrets to Face Space</p>
+										</div>
+									</ol>
+
+									<p>This method keeps your secrets safe even in public repositories and eliminates the need for a <span class="code-soft">.env</span> file.</p>
+
+									<p><strong>📋 Pre-Upload Checklist</strong></p>
+									<p>Before pushing your project to Hugging Face, confirm the following:</p>
+
+									<ul class="blg-ul">
+										<li class="blg-li">✅ Your app runs without errors locally</li>
+										<li class="blg-li">✅ <span class="code-soft">web_app.py</span> is present and correctly references all necessary modules</li>
+										<li class="blg-li">✅ All required dependencies are listed in <span class="code-soft">requirements.txt</span></li>
+										<li class="blg-li">✅ Sensitive credentials are stored using Hugging Face Secrets</li>
+										<li class="blg-li">✅ <span class="code-soft">README.md</span> is added to help users understand your app</li>
+										<li class="blg-li">✅ <span class="code-soft">.env</span> and large or unnecessary local files are excluded using <span class="code-soft">.gitignore</span></li>
+									</ul>
+
+									<a id="upload-code" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">3.4</span>
+										<h3>Upload Source Code</h3>
+									</div>
+									<p>
+										Once your project is organized and ready, it's time to upload it to your Hugging Face Space. You can do this in two ways: by using Git over SSH for version-controlled uploads or
+										via a simple drag-and-drop through the web interface. Both methods work well — choose the one that suits your workflow.
+									</p>
+
+									<p><strong>🛠️ Option 1: Upload Using Git over SSH</strong></p>
+									<p>If you're familiar with Git and want full control over versioning, you can push your project using SSH. Here's how:</p>
+
+									<p><strong>🔐 Step 1: Set Up SSH Access</strong></p>
+									<ol class="blg-toc-ol">
+										<li class="blg-li">Generate an SSH key if you don't already have one.</li>
+
+										<div class="blg-code-block" data-lang="bash">ssh-keygen -t ed25519 -C &quot;your_email@example.com&quot;</div>
+
+										<li class="blg-li">Add the public key to your Hugging Face account under <strong>Settings → SSH & GPG Keys</strong>.</li>
+									</ol>
+
+									<p><strong>📝 Step 2: Clone Your Space</strong></p>
+									<ol class="blg-toc-ol">
+										<li class="blg-li">Go to your newly created Space and click the three-dot menu at the top right.</li>
+										<li class="blg-li">Select <strong>Clone repository</strong> from the dropdown.</li>
+										<div class="blg-img-container">
+											<img src="../img/blog_4/clone_space.png" alt="Clone Repository" class="blg-img" />
+											<p class="blg-img-caption">Figure 9: Clone Repository</p>
+										</div>
+										<li class="blg-li">A popup will show the Git clone command. Copy and run this command to clone the repo locally.</li>
+										<div class="blg-img-container">
+											<img src="../img/blog_4/clone_command.png" alt="Clone Command" class="blg-img" />
+											<p class="blg-img-caption">Figure 10: Clone Command</p>
+										</div>
+									</ol>
+
+									<p><strong>🌐 Step 3: Push Your Project</strong></p>
+									<ol class="blg-toc-ol">
+										<li class="blg-li">
+											Spaces that use Streamlit with Docker have a <span class="code-soft">src</span> folder in the root directory. Place all your project files inside this
+											<span class="code-soft">src</span> folder.
+										</li>
+										<li class="blg-li">Edit the <span class="code-soft">Dockerfile</span> if necessary to customize how the app runs.</li>
+										<li class="blg-li">
+											Use standard Git commands (<span class="code-soft">git add</span>, <span class="code-soft">git commit</span>, <span class="code-soft">git push</span>) to push your code to
+											Hugging Face.
+										</li>
+									</ol>
+
+									<div class="blg-code-block" data-lang="bash">git add .
+git commit -m &quot;Initial commit&quot;
+git push -u origin main</div>
+
+									<p><strong>⚠️ Common SSH Issue: Port 22 Blocked</strong></p>
+									<p>In some networks (like corporate or university Wi-Fi), SSH traffic on port 22 may be blocked, causing Git commands to fail.</p>
+
+									<div class="blg-code-block" data-lang="bash">ssh: connect to host huggingface.co port 22: Connection timed out
+fatal: Could not read from remote repository.</div>
+
+									<p>If this happens, the drag-and-drop method is a great fallback — it requires no special configuration and works in any browser.</p>
+
+									<p><strong>📂 Option 2: Drag-and-Drop Upload (Recommended)</strong></p>
+									<p>This method is straightforward and ideal for users unfamiliar with Git or those operating behind restricted networks.</p>
+
+									<p><strong>🖱️ Steps:</strong></p>
+									<ol class="blg-toc-ol">
+										<li class="blg-li">Open your Hugging Face Space and go to the <strong>Files and versions</strong> tab.</li>
+										<li class="blg-li">Click the <strong>+ Contribute</strong> button and choose <strong>Upload files</strong> from the dropdown.</li>
+										<div class="blg-img-container">
+											<img src="../img/blog_4/drag_drop.png" alt="Upload files by drag and drop" class="blg-img" />
+											<p class="blg-img-caption">Figure 11: Upload files by drag and drop</p>
+										</div>
+										<li class="blg-li">Select the required files and folders, then drag and drop them into the upload area.</li>
+										<li class="blg-li">After upload, Hugging Face will automatically install dependencies and launch your app.</li>
+									</ol>
+
+									<p>
+										In some cases, specific file types may not upload correctly using drag and drop. For example, in the RAG fashion project, the ChromaDB directory (which was pre-populated) included
+										files like <span class="code-soft">.bin</span> extensions, which caused upload errors.
+									</p>
+
+									<div class="blg-tree"><span class="tree-root">chroma_store/</span>
+<span class="tree-pipe">├── </span><span class="tree-file">chroma.sqlite3</span>
+<span class="tree-pipe">└── </span><span class="tree-dir">00868136-8c25-43a1-91fe-6849d8055e8d/</span>
+<span class="tree-pipe"> ├── </span><span class="tree-file">data_level0.bin</span>
+<span class="tree-pipe"> ├── </span><span class="tree-file">header.bin</span>
+<span class="tree-pipe"> ├── </span><span class="tree-file">length.bin</span>
+<span class="tree-pipe"> └── </span><span class="tree-file">link_lists.bin</span></div>
+
+									<p>
+										To solve this, the entire ChromaDB folder was zipped and uploaded to the <span class="code-soft">src</span> directory. This approach ensures all files are preserved while avoiding
+										file-type restrictions.
+									</p>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- End of Step-by-Step Deployment -->
+
+								<!-- Start of 4. Updating requirements.txt -->
+								<div class="blg-section">
+									<a id="requirements" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>4. Updating <span class="code-soft">requirements.txt</span></h2>
+									</div>
+
+									<p>
+										When you create a new Space using the <strong>Streamlit SDK</strong> on Hugging Face, the platform automatically generates a default project structure that includes a minimal
+										<span class="code-soft">Dockerfile</span> and a placeholder <span class="code-soft">requirements.txt</span> file. These two components play a crucial role in defining the
+										environment your app will run in — from which Python libraries are installed to how the container is built and started.
+									</p>
+
+									<div class="blg-img-container">
+										<img src="../img/blog_4/root_dir.png" alt="hugging face space root directory structure" class="blg-img" />
+										<p class="blg-img-caption">Figure 12: Hugging face space root directory structure</p>
+									</div>
+
+									<p>
+										However, the generated <span class="code-soft">requirements.txt</span> typically includes only a few common packages and doesn't reflect the actual dependencies your app may rely
+										on. To ensure your deployment succeeds and your app behaves exactly as it does locally, it's important to explicitly list all the libraries your code depends on.
+									</p>
+
+									<p><strong>🛠️ Why Updating Matters</strong></p>
+									<p>
+										During deployment, Hugging Face uses the <span class="code-soft">Dockerfile</span> to build a containerized version of your environment. Inside that Dockerfile, Hugging Face
+										references your <span class="code-soft">requirements.txt</span> file to install all required Python packages. If your app imports a library that's missing from this list, the build
+										process will either fail entirely or the app will crash at runtime with errors such as <span class="code-soft">ModuleNotFoundError</span>.
+									</p>
+
+									<div class="blg-code-block" data-lang="docker">RUN pip install -r requirements.txt</div>
+
+									<p>
+										So before uploading your app, take a few moments to carefully review and update <span class="code-soft">requirements.txt</span>. This small step can save hours of debugging and
+										deployment frustration.
+									</p>
+
+									<p><strong>✅ Required Dependencies for This Project</strong></p>
+									<p>
+										Based on the RAG-powered fashion recommendation system, your app may depend on a combination of machine learning, embedding, vector search, and UI-related libraries. A typical
+										<span class="code-soft">requirements.txt</span> for this project might include the following:
+									</p>
+
+									<div class="blg-code-block" data-lang="bash">streamlit
 torch
 sentence-transformers
 python-dotenv
 langchain-groq
 chromadb
-watchdog
-</code>
-							</pre>
-						</div>
+watchdog</div>
 
-						<p>Each of these libraries plays a specific role:</p>
-						<ul style="padding-left: 40px;">
-							<li><span class="code-soft">streamlit</span> - Renders the interactive frontend for your web app.</li>
-							<li><span class="code-soft">torch</span> - Handles deep learning and tensor operations.</li>
-							<li><span class="code-soft">sentence-transformers</span> - Generates vector embeddings from user queries and product descriptions.</li>
-							<li><span class="code-soft">python-dotenv</span> - Loads environment variables from local files or Hugging Face secrets.</li>
-							<li><span class="code-soft">langchain-groq</span> - Supports prompt chaining and LLM integration for enhanced retrieval and re-ranking.</li>
-							<li><span class="code-soft">chromadb</span> - Manages vector storage and similarity search operations.</li>
-							<li><span class="code-soft">watchdog</span> - Enables hot-reloading and file monitoring during local development.</li>
-						</ul>
+									<p>Each of these libraries plays a specific role:</p>
+									<ul class="blg-ul">
+										<li><span class="code-soft">streamlit</span> - Renders the interactive frontend for your web app.</li>
+										<li><span class="code-soft">torch</span> - Handles deep learning and tensor operations.</li>
+										<li><span class="code-soft">sentence-transformers</span> - Generates vector embeddings from user queries and product descriptions.</li>
+										<li><span class="code-soft">python-dotenv</span> - Loads environment variables from local files or Hugging Face secrets.</li>
+										<li><span class="code-soft">langchain-groq</span> - Supports prompt chaining and LLM integration for enhanced retrieval and re-ranking.</li>
+										<li><span class="code-soft">chromadb</span> - Manages vector storage and similarity search operations.</li>
+										<li><span class="code-soft">watchdog</span> - Enables hot-reloading and file monitoring during local development.</li>
+									</ul>
 
-						<p>This list can vary depending on your project's architecture, so always double-check for additional dependencies your code may be importing.</p>
+									<p>This list can vary depending on your project's architecture, so always double-check for additional dependencies your code may be importing.</p>
 
-						<br>
-						<blockquote style="background: #eff6fb; padding: 10px; border-left: 5px solid #358ccb;">
-						<p><b>🔸 Tip:</b> To ensure consistency across environments, you can pin versions to avoid compatibility issues. For example: 
-						<span class="code-soft">torch==2.1.0</span> or <span class="code-soft">streamlit==1.30.0</span>. Version pinning is especially helpful if you're collaborating with others or deploying to multiple environments.</p>
-						</blockquote>
-						<hr class="blg-hr">
-					</div>
-					<!-- End of Updating requirements.txt -->
-					
-					<!-- Start of 5. Modifying Docker Configuration -->
-					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+									<blockquote class="blg-callout-info">
+										<strong>🔸 Tip:</strong> To ensure consistency across environments, you can pin versions to avoid compatibility issues. For example: <span class="code-soft">torch==2.1.0</span> or
+										<span class="code-soft">streamlit==1.30.0</span>. Version pinning is especially helpful if you're collaborating with others or deploying to multiple environments.
+									</blockquote>
+									<hr class="blg-hr" />
+								</div>
+								<!-- End of Updating requirements.txt -->
 
-						<a id="docker" style="position: relative; top: -110px; visibility: hidden;"></a>
-						<div id = "docker" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">5. Modifying the Docker Configuration</h1>
-						</div>
+								<!-- Start of 5. Modifying Docker Configuration -->
+								<div class="blg-section">
+									<a id="docker" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>5. Modifying the Docker Configuration</h2>
+									</div>
 
-						<p>Hugging Face Spaces auto-generates a basic <span class="code-soft">Dockerfile</span> when you create a new Space using the Streamlit SDK. While this default setup works for very simple apps, it usually falls short for production-level projects that involve custom scripts, vector databases, or more advanced dependencies.</p>
+									<p>
+										Hugging Face Spaces auto-generates a basic <span class="code-soft">Dockerfile</span> when you create a new Space using the Streamlit SDK. While this default setup works for very
+										simple apps, it usually falls short for production-level projects that involve custom scripts, vector databases, or more advanced dependencies.
+									</p>
 
-						<p>In this section, we'll walk through a customized <span class="code-soft">Dockerfile</span> tailored specifically for the <b>RAG-based <a href="https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation/tree/huggingface" target="_blank" style="text-decoration: underline;">fashion recommendation</a> app</b>. We'll break down each part of the file, explaining why it's important — especially in a restricted, containerized environment like Hugging Face Spaces. Here is the docker file which is used in this project.</p>
-						
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-FROM python:3.12-slim
+									<p>
+										In this section, we'll walk through a customized <span class="code-soft">Dockerfile</span> tailored specifically for the
+										<strong
+											>RAG-based
+											<a href="https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation/tree/huggingface" target="_blank" class="blg-link" rel="noopener noreferrer"
+												>fashion recommendation</a
+											>
+											app</strong
+										>. We'll break down each part of the file, explaining why it's important — especially in a restricted, containerized environment like Hugging Face Spaces. Here is the docker file
+										which is used in this project.
+									</p>
+
+									<div class="blg-code-block" data-lang="docker">FROM python:3.12-slim
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update &amp;&amp; apt-get install -y \
     build-essential \
     curl \
     software-properties-common \
     unzip \
     git \
-    && rm -rf /var/lib/apt/lists/*
+    &amp;&amp; rm -rf /var/lib/apt/lists/*
 
 # Copy requirements and source code
 COPY requirements.txt ./
 COPY src/ ./src/
 
 # Clean old and extract chroma_store.zip directly into /tmp/
-RUN rm -rf /tmp/chroma_store && unzip ./src/chroma_store.zip -d /tmp/chroma_store && chmod -R 777 /tmp/chroma_store
+RUN rm -rf /tmp/chroma_store &amp;&amp; unzip ./src/chroma_store.zip -d /tmp/chroma_store &amp;&amp; chmod -R 777 /tmp/chroma_store
 
 
 # Install dependencies
@@ -595,289 +623,261 @@ EXPOSE 8501
 
 HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
 
-ENTRYPOINT ["streamlit", "run", "src/web_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
-</code>
-							</pre>
-						</div>
+ENTRYPOINT [&quot;streamlit&quot;, &quot;run&quot;, &quot;src/web_app.py&quot;, &quot;--server.port=8501&quot;, &quot;--server.address=0.0.0.0&quot;]</div>
 
-						<p><b>🛠️ Customized Dockerfile with Detailed Explanations</b></p>
-						<p> Here is a line by line explanation of custom docker file that is used in the app.</p>
+									<p><strong>🛠️ Customized Dockerfile with Detailed Explanations</strong></p>
+									<p>Here is a line by line explanation of custom docker file that is used in the app.</p>
 
-						<br>
-						<b>🔹 Base Image</b><br>
-						<p>A lightweight <span class="code-soft">python:3.10-slim</span> image is typically used to reduce image size and startup time. It provides a clean Python environment with minimal bloat.</p>
+									<div class="blg-sub-header">
+										<h3>🔹 Base Image</h3>
+									</div>
+									<p>
+										A lightweight <span class="code-soft">python:3.10-slim</span> image is typically used to reduce image size and startup time. It provides a clean Python environment with minimal
+										bloat.
+									</p>
 
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-FROM python:3.12-slim
-</code>
-							</pre>
-						</div>
+									<div class="blg-code-block" data-lang="docker">FROM python:3.12-slim</div>
 
-						<br>
-						<b>🔹 Working Directory</b><br>
-						<p>The command <span class="code-soft">WORKDIR /app</span> sets the working directory for all subsequent instructions. This ensures a clean and consistent context for file operations.</p>
+									<div class="blg-sub-header">
+										<h3>🔹 Working Directory</h3>
+									</div>
+									<p>
+										The command <span class="code-soft">WORKDIR /app</span> sets the working directory for all subsequent instructions. This ensures a clean and consistent context for file operations.
+									</p>
 
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-WORKDIR /app
-</code>
-							</pre>
-						</div>
+									<div class="blg-code-block" data-lang="docker">WORKDIR /app</div>
 
-						<br>
-						<b>🔹 Install OS-level Dependencies</b><br>
-						<p>To support various runtime operations, the Dockerfile installs essential system packages:</p>
-						<ul style="padding-left: 40px; margin-top: 5px;">
-							<li><b>unzip</b> - For extracting compressed files, such as <span class="code-soft">chroma_store.zip</span>.</li>
-							<li><b>curl</b> - Used for running health checks and interacting with web resources.</li>
-							<li><b>build-essential</b> - A set of tools for compiling Python packages that include native extensions.</li>
-							<li><b>git</b> - Required for downloading code from Git repositories or handling version control.</li>
-						</ul>
+									<div class="blg-sub-header">
+										<h3>🔹 Install OS-level Dependencies</h3>
+									</div>
+									<p>To support various runtime operations, the Dockerfile installs essential system packages:</p>
+									<ul class="blg-ul">
+										<li><strong>unzip</strong> - For extracting compressed files, such as <span class="code-soft">chroma_store.zip</span>.</li>
+										<li><strong>curl</strong> - Used for running health checks and interacting with web resources.</li>
+										<li><strong>build-essential</strong> - A set of tools for compiling Python packages that include native extensions.</li>
+										<li><strong>git</strong> - Required for downloading code from Git repositories or handling version control.</li>
+									</ul>
 
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-RUN apt-get update && apt-get install -y \
+									<div class="blg-code-block" data-lang="docker">RUN apt-get update &amp;&amp; apt-get install -y \
     build-essential \
     curl \
     software-properties-common \
     unzip \
     git \
-    && rm -rf /var/lib/apt/lists/*
-</code>
-							</pre>
-						</div>
+    &amp;&amp; rm -rf /var/lib/apt/lists/*</div>
 
-						<br>
-						<b>🔹 Copy App Files</b><br>
-						<p>The Dockerfile copies your Python source code and related assets into the container so the app can run inside the build environment.</p>
-						<ul style="padding-left: 20px; margin-top: 5px;">
-							<li>Make sure all necessary scripts, such as <span class="code-soft">web_app.py</span> and helper modules, are included.</li>
-							<li>Include <span class="code-soft">chroma_store.zip</span> inside the <span class="code-soft">src/</span> directory before uploading, as this file contains the prebuilt vector database.</li>
-						</ul>
+									<div class="blg-sub-header">
+										<h3>🔹 Copy App Files</h3>
+									</div>
+									<p>The Dockerfile copies your Python source code and related assets into the container so the app can run inside the build environment.</p>
+									<ul class="blg-ul">
+										<li class="blg-li">Make sure all necessary scripts, such as <span class="code-soft">web_app.py</span> and helper modules, are included.</li>
+										<li class="blg-li">
+											Include <span class="code-soft">chroma_store.zip</span> inside the <span class="code-soft">src/</span> directory before uploading, as this file contains the prebuilt vector
+											database.
+										</li>
+									</ul>
 
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-COPY requirements.txt ./
-COPY src/ ./src/
-</code>
-							</pre>
-						</div>
+									<div class="blg-code-block" data-lang="docker">COPY requirements.txt ./
+COPY src/ ./src/</div>
 
-						<br>
-						<b>🔹 Extract Vector Database</b><br>
-						<p>To ensure the ChromaDB data is available at runtime, the Dockerfile extracts the vector database from a compressed archive.</p>
-						<ul style="padding-left: 20px; margin-top: 5px;">
-							<li><span class="code-soft">chroma_store.zip</span> contains prebuilt embeddings for the vector database used by ChromaDB.</li>
-							<li>Instead of extracting it inside the <span class="code-soft">src/</span> folder or project root (which may cause permission errors), it is extracted to <span class="code-soft">/tmp/chroma_store</span> — a writable system directory.</li>
-							<li><span class="code-soft">chmod -R 777</span> is applied to ensure that all files inside are fully accessible by the container's non-root user, avoiding read/write restrictions during execution.</li>
-						</ul>
+									<div class="blg-sub-header">
+										<h3>🔹 Extract Vector Database</h3>
+									</div>
+									<p>To ensure the ChromaDB data is available at runtime, the Dockerfile extracts the vector database from a compressed archive.</p>
+									<ul class="blg-ul">
+										<li><span class="code-soft">chroma_store.zip</span> contains prebuilt embeddings for the vector database used by ChromaDB.</li>
+										<li class="blg-li">
+											Instead of extracting it inside the <span class="code-soft">src/</span> folder or project root (which may cause permission errors), it is extracted to
+											<span class="code-soft">/tmp/chroma_store</span> — a writable system directory.
+										</li>
+										<li>
+											<span class="code-soft">chmod -R 777</span> is applied to ensure that all files inside are fully accessible by the container's non-root user, avoiding read/write restrictions
+											during execution.
+										</li>
+									</ul>
 
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-# Clean old and extract chroma_store.zip directly into /tmp/
-RUN rm -rf /tmp/chroma_store && unzip ./src/chroma_store.zip -d /tmp/chroma_store && chmod -R 777 /tmp/chroma_store
-</code>
-							</pre>
-						</div>
+									<div class="blg-code-block" data-lang="docker"># Clean old and extract chroma_store.zip directly into /tmp/
+RUN rm -rf /tmp/chroma_store &amp;&amp; unzip ./src/chroma_store.zip -d /tmp/chroma_store &amp;&amp; chmod -R 777 /tmp/chroma_store</div>
 
-						<br>
-						<b>🔹 Install Python Dependencies</b><br>
-						<p>all required Python packages listed in your <span class="code-soft">requirements.txt</span> file using pip.</p>
-						<ul style="padding-left: 20px; margin-top: 5px;">
-							<li>Includes essential libraries such as <span class="code-soft">streamlit</span>, <span class="code-soft">chromadb</span>, <span class="code-soft">langchain-groq</span>, and others used in your project.</li>
-							<li>Ensures your app has the same environment on Hugging Face as it does locally.</li>
-						</ul>
+									<div class="blg-sub-header">
+										<h3>🔹 Install Python Dependencies</h3>
+									</div>
+									<p>all required Python packages listed in your <span class="code-soft">requirements.txt</span> file using pip.</p>
+									<ul class="blg-ul">
+										<li class="blg-li">
+											Includes essential libraries such as <span class="code-soft">streamlit</span>, <span class="code-soft">chromadb</span>, <span class="code-soft">langchain-groq</span>, and others
+											used in your project.
+										</li>
+										<li class="blg-li">Ensures your app has the same environment on Hugging Face as it does locally.</li>
+									</ul>
 
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-RUN pip install --no-cache-dir -r requirements.txt
-</code>
-							</pre>
-						</div>
+									<div class="blg-code-block" data-lang="docker">RUN pip install --no-cache-dir -r requirements.txt</div>
 
-						<br>
-						<b>🔹 Set Writable Directory for Streamlit</b><br>
-						<p>Streamlit stores session state and configuration files in a hidden folder, which needs to be writable.</p>
-						<ul style="padding-left: 20px; margin-top: 5px;">
-							<li>By default, it tries to create the <span class="code-soft">.streamlit</span> folder in the home directory (<span class="code-soft">/root</span>), which is not writable in Hugging Face's container environment.</li>
-							<li>Redirecting this folder to <span class="code-soft">/tmp/.streamlit</span> ensures the app can manage sessions and configuration without encountering permission issues.</li>
-						</ul>
-						
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-ENV STREAMLIT_HOME=/tmp/.streamlit
-</code>
-							</pre>
-						</div>
+									<div class="blg-sub-header">
+										<h3>🔹 Set Writable Directory for Streamlit</h3>
+									</div>
+									<p>Streamlit stores session state and configuration files in a hidden folder, which needs to be writable.</p>
+									<ul class="blg-ul">
+										<li class="blg-li">
+											By default, it tries to create the <span class="code-soft">.streamlit</span> folder in the home directory (<span class="code-soft">/root</span>), which is not writable in Hugging
+											Face's container environment.
+										</li>
+										<li class="blg-li">
+											Redirecting this folder to <span class="code-soft">/tmp/.streamlit</span> ensures the app can manage sessions and configuration without encountering permission issues.
+										</li>
+									</ul>
 
-						<br>
-						<b>🔹 Disable Analytics</b><br>
-						<p>Streamlit collects anonymous usage statistics by default, which may cause issues in restricted environments.</p>
-						<ul style="padding-left: 20px; margin-top: 5px;">
-							<li>Disabling analytics prevents unexpected network calls, improving privacy and reliability in containerized setups like Hugging Face Spaces.</li>
-							<li>It also reduces the chance of connectivity-related errors or delays during app initialization.</li>
-						</ul>
+									<div class="blg-code-block" data-lang="docker">ENV STREAMLIT_HOME=/tmp/.streamlit</div>
 
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-ENV STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
-</code>
-							</pre>
-						</div>
+									<div class="blg-sub-header">
+										<h3>🔹 Disable Analytics</h3>
+									</div>
+									<p>Streamlit collects anonymous usage statistics by default, which may cause issues in restricted environments.</p>
+									<ul class="blg-ul">
+										<li class="blg-li">Disabling analytics prevents unexpected network calls, improving privacy and reliability in containerized setups like Hugging Face Spaces.</li>
+										<li class="blg-li">It also reduces the chance of connectivity-related errors or delays during app initialization.</li>
+									</ul>
 
-						<br>
-						<b>🔹 Redirect Hugging Face Cache Directory</b><br>
-						<p>Some libraries used in LLM applications rely on local caching to store model weights and configuration files.</p>
-						<ul style="padding-left: 20px; margin-top: 5px;">
-							<li>By default, libraries like <span class="code-soft">sentence-transformers</span> and <span class="code-soft">transformers</span> store cache data in <span class="code-soft">~/.cache</span>.</li>
-							<li>In Hugging Face Spaces, writing to the home directory is restricted, which can cause permission errors during model loading.</li>
-							<li>Setting the environment variable <span class="code-soft">HF_HOME=/tmp/huggingface</span> redirects the cache location to a writable directory, ensuring smooth execution and reuse of downloaded models.</li>
-						</ul>
+									<div class="blg-code-block" data-lang="docker">ENV STREAMLIT_BROWSER_GATHER_USAGE_STATS=false</div>
 
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-ENV HF_HOME=/tmp/huggingface
-</code>
-							</pre>
-						</div>
+									<div class="blg-sub-header">
+										<h3>🔹 Redirect Hugging Face Cache Directory</h3>
+									</div>
+									<p>Some libraries used in LLM applications rely on local caching to store model weights and configuration files.</p>
+									<ul class="blg-ul">
+										<li class="blg-li">
+											By default, libraries like <span class="code-soft">sentence-transformers</span> and <span class="code-soft">transformers</span> store cache data in
+											<span class="code-soft">~/.cache</span>.
+										</li>
+										<li class="blg-li">In Hugging Face Spaces, writing to the home directory is restricted, which can cause permission errors during model loading.</li>
+										<li class="blg-li">
+											Setting the environment variable <span class="code-soft">HF_HOME=/tmp/huggingface</span> redirects the cache location to a writable directory, ensuring smooth execution and reuse
+											of downloaded models.
+										</li>
+									</ul>
 
-						<br>
-						<b>🔹 Expose the Streamlit Port</b><br>
-						<p>Streamlit runs by default on port <span class="code-soft">8501</span>, and this needs to be explicitly exposed so Hugging Face can serve the app publicly.</p>
-						<ul style="padding-left: 20px; margin-top: 5px;">
-							<li>The <span class="code-soft">EXPOSE 8501</span> command in the Dockerfile tells the container platform which port the app listens on.</li>
-							<li>Hugging Face connects this port to the public interface, allowing users to access your app from the browser.</li>
-						</ul>
+									<div class="blg-code-block" data-lang="docker">ENV HF_HOME=/tmp/huggingface</div>
 
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-EXPOSE 8501
-</code>
-							</pre>
-						</div>
+									<div class="blg-sub-header">
+										<h3>🔹 Expose the Streamlit Port</h3>
+									</div>
+									<p>Streamlit runs by default on port <span class="code-soft">8501</span>, and this needs to be explicitly exposed so Hugging Face can serve the app publicly.</p>
+									<ul class="blg-ul">
+										<li class="blg-li">The <span class="code-soft">EXPOSE 8501</span> command in the Dockerfile tells the container platform which port the app listens on.</li>
+										<li class="blg-li">Hugging Face connects this port to the public interface, allowing users to access your app from the browser.</li>
+									</ul>
 
-						<br>
-						<b>🔹 Health Check</b><br>
-						<p>A health check verifies that your app has started successfully and is responsive to incoming requests.</p>
-						<ul style="padding-left: 20px; margin-top: 5px;">
-							<li>If the app doesn't return a successful response within a certain time frame, Hugging Face considers the deployment unhealthy.</li>
-							<li>This mechanism helps catch broken builds early and prevents users from accessing a non-functional interface.</li>
-							<li>Typically, a simple <span class="code-soft">curl</span> command is used in the Dockerfile to check if the Streamlit app is running on port <span class="code-soft">8501</span>.</li>
-						</ul>
+									<div class="blg-code-block" data-lang="docker">EXPOSE 8501</div>
 
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
-</code>
-							</pre>
-						</div>
+									<div class="blg-sub-header">
+										<h3>🔹 Health Check</h3>
+									</div>
+									<p>A health check verifies that your app has started successfully and is responsive to incoming requests.</p>
+									<ul class="blg-ul">
+										<li class="blg-li">If the app doesn't return a successful response within a certain time frame, Hugging Face considers the deployment unhealthy.</li>
+										<li class="blg-li">This mechanism helps catch broken builds early and prevents users from accessing a non-functional interface.</li>
+										<li class="blg-li">
+											Typically, a simple <span class="code-soft">curl</span> command is used in the Dockerfile to check if the Streamlit app is running on port <span class="code-soft">8501</span>.
+										</li>
+									</ul>
 
-						<br>
-						<b>🔹 Entry Point</b><br>
-						<p>Defines the default command that runs when the container starts — in this case, launching the Streamlit application.</p>
-						<ul style="padding-left: 20px; margin-top: 5px;">
-							<li>Starts the Streamlit app located in the <span class="code-soft">src/</span> directory.</li>
-							<li>Specifies <span class="code-soft">8501</span> as the port and binds it to <span class="code-soft">0.0.0.0</span> to make the app publicly accessible through Hugging Face's interface.</li>
-						</ul>
+									<div class="blg-code-block" data-lang="docker">HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health</div>
 
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-docker">
-ENTRYPOINT ["streamlit", "run", "src/web_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
-</code>
-							</pre>
-						</div>
+									<div class="blg-sub-header">
+										<h3>🔹 Entry Point</h3>
+									</div>
+									<p>Defines the default command that runs when the container starts — in this case, launching the Streamlit application.</p>
+									<ul class="blg-ul">
+										<li class="blg-li">Starts the Streamlit app located in the <span class="code-soft">src/</span> directory.</li>
+										<li class="blg-li">
+											Specifies <span class="code-soft">8501</span> as the port and binds it to <span class="code-soft">0.0.0.0</span> to make the app publicly accessible through Hugging Face's
+											interface.
+										</li>
+									</ul>
 
-						<p>By customizing the Docker configuration in this way, you ensure your app runs reliably in a secure, containerized environment — with all dependencies in place and system-level quirks accounted for.</p>
-						<hr class="blg-hr">
-					</div>
-					<!-- End of Modifying Docker Configuration -->
-					
-					<!-- Start of 6. Build and Run App -->
-					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+									<div class="blg-code-block" data-lang="docker">ENTRYPOINT [&quot;streamlit&quot;, &quot;run&quot;, &quot;src/web_app.py&quot;, &quot;--server.port=8501&quot;, &quot;--server.address=0.0.0.0&quot;]</div>
 
-						<a id="build-run" style="position: relative; top: -110px; visibility: hidden;"></a>
-						<div id = "build-run" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">6. Build and Run App</h1>
-						</div>
+									<p>
+										By customizing the Docker configuration in this way, you ensure your app runs reliably in a secure, containerized environment — with all dependencies in place and system-level
+										quirks accounted for.
+									</p>
+									<hr class="blg-hr" />
+								</div>
+								<!-- End of Modifying Docker Configuration -->
 
-						<p>Unlike traditional platforms, Hugging Face Spaces does not offer a manual <b>Build</b> or <b>Run</b> button. Instead, it uses a commit-based workflow similar to GitHub. Whenever you upload new files or modify existing ones in the Space repository, Hugging Face automatically triggers a build followed by execution.</p>
+								<!-- Start of 6. Build and Run App -->
+								<div class="blg-section">
+									<a id="build-run" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>6. Build and Run App</h2>
+									</div>
 
-						<p>To update your app and trigger a new build, follow these steps:</p>
+									<p>
+										Unlike traditional platforms, Hugging Face Spaces does not offer a manual <strong>Build</strong> or <strong>Run</strong> button. Instead, it uses a commit-based workflow similar to
+										GitHub. Whenever you upload new files or modify existing ones in the Space repository, Hugging Face automatically triggers a build followed by execution.
+									</p>
 
-						<ol style="padding-left: 40px;">
-							<li>Navigate to the <b>Files</b> tab in your Hugging Face Space.</li>
-							<li>Select the file you want to edit.</li>
-							<li>Click the <b>Edit</b> button at the top of the file view.</li>
-							<div class="blg-img-container">
-								<img src="../img/blog_4/edit.png" alt="Edit File in Hugging Face Space" style="width: 70%; margin-bottom: 20px;"/>
-								<p><b>Figure 13 : Edit File in Hugging Face Space</b></p>
-							</div>
-							<li>Apply the necessary changes. Scroll to the bottom, write a commit message, and click <b>Commit changes to main</b>.</li>
-							<div class="blg-img-container">
-								<img src="../img/blog_4/commit.png" alt="Commit Changes in Hugging Face Space" style="width: 70%; margin-bottom: 20px;"/>
-								<p><b>Figure 14 : Commit Changes in Hugging Face Space</b></p>
-							</div>
-							<li>This action will automatically trigger a new build. Once completed, your updated app will be live and running. You can view your deployed app by visiting its URL. For example: <a href="https://huggingface.co/spaces/shafiqul1357/rag-fashion-recommendation" target="_blank" style="text-decoration: underline;">Fashion Recommendation System</a></li>
-							<div class="blg-img-container">
-								<img src="../img/blog_4/app.png" alt="Fasion Recommendation App" style="width: 70%; margin-bottom: 20px;"/>
-								<p><b>Figure 15 : Fasion Recommendation App</b></p>
-							</div>
-						</ol>
-						<hr class="blg-hr">
-					</div>
-					<!-- End of Build and Run App -->
+									<p>To update your app and trigger a new build, follow these steps:</p>
 
-					<!-- Start of 7. Writing an Effective README file -->
-					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+									<ol class="blg-toc-ol">
+										<li class="blg-li">Navigate to the <strong>Files</strong> tab in your Hugging Face Space.</li>
+										<li class="blg-li">Select the file you want to edit.</li>
+										<li class="blg-li">Click the <strong>Edit</strong> button at the top of the file view.</li>
+										<div class="blg-img-container">
+											<img src="../img/blog_4/edit.png" alt="Edit File in Hugging Face Space" class="blg-img" />
+											<p class="blg-img-caption">Figure 13: Edit File in Hugging Face Space</p>
+										</div>
+										<li class="blg-li">Apply the necessary changes. Scroll to the bottom, write a commit message, and click <strong>Commit changes to main</strong>.</li>
+										<div class="blg-img-container">
+											<img src="../img/blog_4/commit.png" alt="Commit Changes in Hugging Face Space" class="blg-img" />
+											<p class="blg-img-caption">Figure 14: Commit Changes in Hugging Face Space</p>
+										</div>
+										<li class="blg-li">
+											This action will automatically trigger a new build. Once completed, your updated app will be live and running. You can view your deployed app by visiting its URL. For example:
+											<a href="https://huggingface.co/spaces/shafiqul1357/rag-fashion-recommendation" target="_blank" class="blg-link" rel="noopener noreferrer">Fashion Recommendation System</a>
+										</li>
+										<div class="blg-img-container">
+											<img src="../img/blog_4/app.png" alt="Fasion Recommendation App" class="blg-img" />
+											<p class="blg-img-caption">Figure 15: Fasion Recommendation App</p>
+										</div>
+									</ol>
+									<hr class="blg-hr" />
+								</div>
+								<!-- End of Build and Run App -->
 
-						<a id="readme" style="position: relative; top: -110px; visibility: hidden;"></a>
-						<div id = "readme" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">7. Writing an Effective README File</h1>
-						</div>
+								<!-- Start of 7. Writing an Effective README file -->
+								<div class="blg-section">
+									<a id="readme" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>7. Writing an Effective README File</h2>
+									</div>
 
-						<p>A well-crafted <span class="code-soft">README.md</span> is more than just a formality — it's your app's first impression. Whether users land on your Hugging Face Space or GitHub repository, the README provides the initial context they need to understand your project.</p>
+									<p>
+										A well-crafted <span class="code-soft">README.md</span> is more than just a formality — it's your app's first impression. Whether users land on your Hugging Face Space or GitHub
+										repository, the README provides the initial context they need to understand your project.
+									</p>
 
-						<p>It should clearly communicate the app's purpose, how to use it, and any setup instructions. An effective README not only improves the user experience but also boosts visibility by including proper tags, descriptions, and metadata for discoverability.</p>
-						<div class="blg-img-container">
-								<img src="../img/blog_4/readme.png" alt="README file of fashion recommendation system" style="width: 70%; margin-bottom: 20px;"/>
-								<p><b>Figure 16 : README file of fashion recommendation system</b></p>
-						</div>
-						<p>Let's break down what to include and how to structure it, using our current README file.</p>
+									<p>
+										It should clearly communicate the app's purpose, how to use it, and any setup instructions. An effective README not only improves the user experience but also boosts visibility by
+										including proper tags, descriptions, and metadata for discoverability.
+									</p>
+									<div class="blg-img-container">
+										<img src="../img/blog_4/readme.png" alt="README file of fashion recommendation system" class="blg-img" />
+										<p class="blg-img-caption">Figure 16: README file of fashion recommendation system</p>
+									</div>
+									<p>Let's break down what to include and how to structure it, using our current README file.</p>
 
-						<br>
-						<b>📄 Top-Level Metadata (YAML Block)</b>
-						<p>At the very top of your <span class="code-soft">README.md</span> file, Hugging Face supports a special metadata block written in YAML format. This block defines how your Space is presented on the platform — including its title, description, tags, license, and visibility settings. It's a useful way to enhance both the appearance and discoverability of your app. Below is a sample used in this project.</p>
+									<div class="blg-sub-header">
+										<h3>📄 Top-Level Metadata (YAML Block)</h3>
+									</div>
+									<p>
+										At the very top of your <span class="code-soft">README.md</span> file, Hugging Face supports a special metadata block written in YAML format. This block defines how your Space is
+										presented on the platform — including its title, description, tags, license, and visibility settings. It's a useful way to enhance both the appearance and discoverability of your
+										app. Below is a sample used in this project.
+									</p>
 
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
----
+									<div class="blg-code-block" data-lang="yaml">---
 title: RAG Fashion Recommendation
 emoji: 👗
 colorFrom: green
@@ -895,358 +895,264 @@ tags:
 license: mit
 pinned: false
 short_description: A fashion recommendation system powered by RAG and ChromaDB.
----
-</code>
-							</pre>
-						</div>
+---</div>
 
-						<p><b>✅ Why it's important:</b></p>
-						<ul style="padding-left: 40px; margin-top: 5px;">
-							<li><b>title</b>, <b>emoji</b>, and <b>colorFrom/colorTo</b> define the visual branding of your Space.</li>
-							<li><b>sdk</b> and <b>app_port</b> tell Hugging Face how to run your app — especially important for Docker-based deployments.</li>
-							<li><b>tags</b> improve the discoverability of your app through search and filtering on the platform.</li>
-							<li><b>short_description</b> appears in preview cards and Space listings to give users a quick summary.</li>
-						</ul>
+									<p><strong>✅ Why it's important:</strong></p>
+									<ul class="blg-ul">
+										<li><strong>title</strong>, <strong>emoji</strong>, and <strong>colorFrom/colorTo</strong> define the visual branding of your Space.</li>
+										<li><strong>sdk</strong> and <strong>app_port</strong> tell Hugging Face how to run your app — especially important for Docker-based deployments.</li>
+										<li><strong>tags</strong> improve the discoverability of your app through search and filtering on the platform.</li>
+										<li><strong>short_description</strong> appears in preview cards and Space listings to give users a quick summary.</li>
+									</ul>
 
-						<br>
-						<p><b>🖼️ Visual Preview</b><br></p>
-						<p>Including a UI screenshot or thumbnail image in your README helps users quickly understand what your app does. A well-chosen preview can improve engagement and make your Space look more professional at first glance.</p>
+									<p><strong>🖼️ Visual Preview</strong></p>
+									<p>
+										Including a UI screenshot or thumbnail image in your README helps users quickly understand what your app does. A well-chosen preview can improve engagement and make your Space look
+										more professional at first glance.
+									</p>
 
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-![App Preview](figure/thumbnail.png)
-</code>
-							</pre>
-						</div>
+									<div class="blg-code-block" data-lang="bash">![App Preview](figure/thumbnail.png)</div>
 
-						<p>Make sure the path is correct and relative to the README file.</p>
+									<p>Make sure the path is correct and relative to the README file.</p>
 
-						<br>
-						<p><b>📌 Recommended README Sections</b><br></p>
-						<p>Below is a detailed breakdown of the key sections you should include in your <span class="code-soft">README.md</span> to make it informative, useful, and professional.</p>
+									<p><strong>📌 Recommended README Sections</strong></p>
+									<p>Below is a detailed breakdown of the key sections you should include in your <span class="code-soft">README.md</span> to make it informative, useful, and professional.</p>
 
-						<br>
-						<p><b>1. Project Introduction</b><br></p>
-						<p>Start with a concise overview of what your application does. Mention its primary use case and the core technologies or frameworks involved. This section sets the context for first-time visitors and helps them understand the value of your app right away.</p>
-						
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-# 👗 RAG Fashion Recommendation
-A smart fashion product recommendation system built using Retrieval-Augmented Generation (RAG).
-</code>
-							</pre>
-						</div>
+									<p><strong>1. Project Introduction</strong></p>
+									<p>
+										Start with a concise overview of what your application does. Mention its primary use case and the core technologies or frameworks involved. This section sets the context for
+										first-time visitors and helps them understand the value of your app right away.
+									</p>
 
-						<br>
-						<p><b>2. Features</b><br></p>
-						<p>List the main features of your application to showcase its capabilities. Use bullet points or emojis to make this section easy to scan. Focus on user-facing functionality that sets your app apart.</p>
+									<div class="blg-code-block" data-lang="markdown"># 👗 RAG Fashion Recommendation
+A smart fashion product recommendation system built using Retrieval-Augmented Generation (RAG).</div>
 
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-- Search products using natural language
+									<p><strong>2. Features</strong></p>
+									<p>
+										List the main features of your application to showcase its capabilities. Use bullet points or emojis to make this section easy to scan. Focus on user-facing functionality that sets
+										your app apart.
+									</p>
+
+									<div class="blg-code-block" data-lang="markdown">- Search products using natural language
 - View rich product metadata
-- Get personalized, context-aware suggestions
-</code>
-							</pre>
-						</div>
+- Get personalized, context-aware suggestions</div>
 
-						<br>
-						<p><b>3. Technology Stack</b><br></p>
-						<p>List the technologies used in your app — such as the frontend framework, backend runtime, vector database, LLM provider, and embedding model. This gives technical users quick insight into how the system is built and what powers its functionality.</p>
+									<p><strong>3. Technology Stack</strong></p>
+									<p>
+										List the technologies used in your app — such as the frontend framework, backend runtime, vector database, LLM provider, and embedding model. This gives technical users quick
+										insight into how the system is built and what powers its functionality.
+									</p>
 
-						<br>
-						<p><b>4. How to Search Products</b><br></p>
-						<p>This section is especially helpful for users. Show examples of actual queries they can try, and explain the kinds of input your app understands.<br></p>
-						
-						<br>
-						<p>✅ <b>Tip:</b> Encourage users to use natural language. Highlight that they can filter by attributes like <b>gender</b>, <b>season</b>, <b>price</b>, <b>brand</b>, <b>style</b>, and more. Sample queries make the app feel more approachable and intuitive.</p>
+									<p><strong>4. How to Search Products</strong></p>
+									<p>This section is especially helpful for users. Show examples of actual queries they can try, and explain the kinds of input your app understands.</p>
 
-						<br>
-						<p><b>5. GitHub Repository</b><br></p>
-						<p>Include a direct link to your app's source code so users and developers can explore, clone, or contribute to the project.</p>
+									<p>
+										✅ <strong>Tip:</strong> Encourage users to use natural language. Highlight that they can filter by attributes like <strong>gender</strong>, <strong>season</strong>,
+										<strong>price</strong>, <strong>brand</strong>, <strong>style</strong>, and more. Sample queries make the app feel more approachable and intuitive.
+									</p>
 
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-[👉 RAG Fashion Recommendation System](https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation)
-</code>
-							</pre>
-						</div>
+									<p><strong>5. GitHub Repository</strong></p>
+									<p>Include a direct link to your app's source code so users and developers can explore, clone, or contribute to the project.</p>
 
-						<br>
-						<p><b>6. Live Demo Link</b><br></p>
-						<p>Provide a direct link to the live version of your app so users can try it out instantly. This makes your project more engaging and accessible without requiring any setup.</p>
-						
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-[🚀 Try it live on Hugging Face Spaces](https://huggingface.co/spaces/shafiqul1357/rag-fashion-recommendation)
-</code>
-							</pre>
-						</div>
+									<div class="blg-code-block" data-lang="markdown">[👉 RAG Fashion Recommendation System](https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation)</div>
 
-						<br>
-						<p><b>✅ Best Practices</b></p>
-						<ul style="padding-left: 40px; margin-top: 5px;">
-							<li>Use headings (<span class="code-soft">##</span>, <span class="code-soft">###</span>) to organize content and create a clear visual hierarchy.</li>
-							<li>Use bullet points, emojis, and code blocks to improve readability and visual engagement.</li>
-							<li>Keep content concise but meaningful — readers should understand what your app does within 30 seconds of scanning the README.</li>
-						</ul>
-						<hr style="border: 1px solid #ccc;">
-					</div>
-					<!-- End of Writing an Effective README file -->
-					
-					<!-- Start of 8. Searching Your App -->
-					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+									<p><strong>6. Live Demo Link</strong></p>
+									<p>Provide a direct link to the live version of your app so users can try it out instantly. This makes your project more engaging and accessible without requiring any setup.</p>
 
-						<a id="search-app" style="position: relative; top: -110px; visibility: hidden;"></a>
-						<div id = "search-app" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">8. Searching Your App</h1>
-						</div>
+									<div class="blg-code-block" data-lang="markdown">[🚀 Try it live on Hugging Face Spaces](https://huggingface.co/spaces/shafiqul1357/rag-fashion-recommendation)</div>
 
-						<p>Once your app is deployed on Hugging Face Spaces, it becomes searchable within the broader Hugging Face ecosystem. This makes it easy for users — including yourself — to find and access it using the platform's built-in search functionality.</p>
+									<p><strong>✅ Best Practices</strong></p>
+									<ul class="blg-ul">
+										<li class="blg-li">Use headings (<span class="code-soft">##</span>, <span class="code-soft">###</span>) to organize content and create a clear visual hierarchy.</li>
+										<li class="blg-li">Use bullet points, emojis, and code blocks to improve readability and visual engagement.</li>
+										<li class="blg-li">Keep content concise but meaningful — readers should understand what your app does within 30 seconds of scanning the README.</li>
+									</ul>
+									<hr style="border: 1px solid #ccc" />
+								</div>
+								<!-- End of Writing an Effective README file -->
 
-						<br>
-						<p><b>🔍 Using the Hugging Face Search Bar</b></p>
+								<!-- Start of 8. Searching Your App -->
+								<div class="blg-section">
+									<a id="search-app" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>8. Searching Your App</h2>
+									</div>
 
-						<ol style="padding-left: 40px;">
-							<li>Go to the Hugging Face Spaces dashboard: 
-								<a href="https://huggingface.co/spaces" target="_blank" style="text-decoration: underline;">https://huggingface.co/spaces</a></li>
-							<li>Type the name of your app into the search bar — for example: <b>fashion recommendation</b>.</li>
-							<li>The search results will display all relevant Spaces. You can locate your app in the list based on its name, description, or tags.</li>
-						</ol>
+									<p>
+										Once your app is deployed on Hugging Face Spaces, it becomes searchable within the broader Hugging Face ecosystem. This makes it easy for users — including yourself — to find and
+										access it using the platform's built-in search functionality.
+									</p>
 
-						<p>Here's an example search result for this app.</p>
-						<div class="blg-img-container">
-								<img src="../img/blog_4/search_app.png" alt="Search app by key word" style="width: 70%; margin-bottom: 20px;"/>
-								<p><b>Figure 17 : Search app by key word</b></p>
-						</div>
+									<p><strong>🔍 Using the Hugging Face Search Bar</strong></p>
 
-						<br>
-						<p><b>📁 Direct Navigation</b><br></p>
-						<p>If you already know the direct URL of your deployed app, you can access it anytime by navigating straight to the link — no search required. This is the fastest way to open your app for testing, sharing, or demonstration purposes.</p>
-						
-						<!-- Code -->
-						<div class="blg-code-container">
-							<pre class="line-numbers">
-								<code class="language-bash">
-https://huggingface.co/spaces/<your-username>/<your-space-name>
-</code>
-							</pre>
-						</div>
-						<p>In this case: 👉 <a href="https://huggingface.co/spaces/shafiqul1357/rag-fashion-recommendation" target="_blank" style="text-decoration: underline;">https://huggingface.co/spaces/shafiqul1357/rag-fashion-recommendation</a></p>
+									<ol class="blg-toc-ol">
+										<li class="blg-li">
+											Go to the Hugging Face Spaces dashboard: <a href="https://huggingface.co/spaces" target="_blank" class="blg-link" rel="noopener noreferrer">https://huggingface.co/spaces</a>
+										</li>
+										<li class="blg-li">Type the name of your app into the search bar — for example: <strong>fashion recommendation</strong>.</li>
+										<li class="blg-li">The search results will display all relevant Spaces. You can locate your app in the list based on its name, description, or tags.</li>
+									</ol>
 
-						<hr class="blg-hr">
-					</div>
-					<!-- End of Searching Your App -->
+									<p>Here's an example search result for this app.</p>
+									<div class="blg-img-container">
+										<img src="../img/blog_4/search_app.png" alt="Search app by key word" class="blg-img" />
+										<p class="blg-img-caption">Figure 17: Search app by key word</p>
+									</div>
 
-					<!-- Start of 9. Conclusion -->
-					<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; font-size: 16px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+									<p><strong>📁 Direct Navigation</strong></p>
+									<p>
+										If you already know the direct URL of your deployed app, you can access it anytime by navigating straight to the link — no search required. This is the fastest way to open your app
+										for testing, sharing, or demonstration purposes.
+									</p>
 
-						<a id="conclusion" style="position: relative; top: -110px; visibility: hidden;"></a>
-						<div id = "conclusion" class="blg-main-header">
-							<h1 style="color: #2c3e50; font-size: 28px;">9. Conclusion</h1>
-						</div>
+									<div class="blg-code-block" data-lang="bash">https://huggingface.co/spaces/&lt;your-username&gt;/&lt;your-space-name&gt;</div>
+									<p>
+										In this case: 👉
+										<a href="https://huggingface.co/spaces/shafiqul1357/rag-fashion-recommendation" target="_blank" class="blg-link" rel="noopener noreferrer"
+											>https://huggingface.co/spaces/shafiqul1357/rag-fashion-recommendation</a
+										>
+									</p>
 
-						<p>Deploying your Streamlit app to Hugging Face Spaces doesn't have to be complicated. With a well-organized project structure, a few essential configuration adjustments, and a clear <span class="code-soft">README.md</span>, you can transform a local prototype into a fully functional, cloud-hosted application — all without dealing with servers or infrastructure management.</p>
+									<hr class="blg-hr" />
+								</div>
+								<!-- End of Searching Your App -->
 
-						<p>In this guide, we covered the full deployment lifecycle using a practical example — a <b>RAG-based fashion recommendation system</b>. From creating your Space and preparing the project files to securing credentials, customizing the Dockerfile, and writing an effective README, each step contributes to a reliable and professional deployment experience.</p>
+								<!-- Start of 9. Conclusion -->
+								<div class="blg-section">
+									<a id="conclusion" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>9. Conclusion</h2>
+									</div>
 
-						<p>Whether you're launching a personal portfolio project, showcasing a client demo, or deploying an internal tool, <b>Hugging Face Spaces</b> provides a developer-friendly platform to bring your ideas online and share them with the world.</p>
+									<p>
+										Deploying your Streamlit app to Hugging Face Spaces doesn't have to be complicated. With a well-organized project structure, a few essential configuration adjustments, and a clear
+										<span class="code-soft">README.md</span>, you can transform a local prototype into a fully functional, cloud-hosted application — all without dealing with servers or infrastructure
+										management.
+									</p>
 
-					</div>
-					<!-- End of Conclusion -->
+									<p>
+										In this guide, we covered the full deployment lifecycle using a practical example — a <strong>RAG-based fashion recommendation system</strong>. From creating your Space and
+										preparing the project files to securing credentials, customizing the Dockerfile, and writing an effective README, each step contributes to a reliable and professional deployment
+										experience.
+									</p>
 
-					<!-- Start of Technical stacks -->
-					<div class="reference-container">
-						<hr class="blg-hr">
-						<h2><img src="../img/technical_stack/stack.png" alt="Technical Stack Icon" style="width: 48px; vertical-align: middle; margin-right: 6px;"> <b>Technical Stacks</b></h2>
-						<ul class="blg-ul">
-							<li class="blg-li">
-								<img src="../img/technical_stack/python.svg" alt="Python" width="32" style="vertical-align: middle; margin-right: 6px;">
-								<b>Python</b> 
-							</li>
-							<li class="blg-li">
-								<img src="../img/technical_stack/docker.svg" alt="Docker" width="32" style="vertical-align: middle; margin-right: 6px;">
-								<b>Docker</b> 
-							</li>
-							<li class="blg-li">
-								<img src="../img/technical_stack/streamlit.svg" alt="Streamlit" width="32" style="vertical-align: middle; margin-right: 6px;">
-								<b>Streamlit</b> 
-							</li>
-							<li class="blg-li">
-								<img src="../img/technical_stack/huggingface.svg" alt="Hugging Face" width="32" style="vertical-align: middle; margin-right: 6px;">
-								<b>Hugging Face</b> 
-							</li>
-							<li class="blg-li">
-								<img src="../img/technical_stack/rag.png" alt="RAG" width="32" style="vertical-align: middle; margin-right: 6px;">
-								<b>RAG</b> 
-							</li>
-							<li class="blg-li">
-								<img src="../img/technical_stack/groq.svg" alt="Groq" width="32" style="vertical-align: middle; margin-right: 6px;">
-								<b>Groq</b> 
-							</li>
-							<li class="blg-li">
-								<img src="../img/technical_stack/llama.png" alt="Llama 3" width="32" style="vertical-align: middle; margin-right: 6px;">
-								<b>Llama 3</b> 
-							</li>
-							<li class="blg-li">
-								<img src="../img/technical_stack/chroma.svg" alt="Chroma DB" width="32" style="vertical-align: middle; margin-right: 6px;">
-								<b>Chroma DB</b> 
-							</li>
-							<li class="blg-li">
-								<img src="../img/technical_stack/prompt.png" alt="Prompt Engineering" width="32" style="vertical-align: middle; margin-right: 6px;">
-								<b>Prompt Engineering</b> 
-							</li>
-						</ul>
-						<br>
-					</div>
-					<!-- End of Technical stacks -->
+									<p>
+										Whether you're launching a personal portfolio project, showcasing a client demo, or deploying an internal tool, <strong>Hugging Face Spaces</strong> provides a developer-friendly
+										platform to bring your ideas online and share them with the world.
+									</p>
+								</div>
+								<!-- End of Conclusion -->
 
-					<!-- Download Source Code -->
+								<!-- 10. Technical Stacks -->
+								<div class="blg-trailing-section">
+									<div class="blg-trailing-header">
+										<img src="../img/technical_stack/stack.png" alt="Technical Stacks" />
+										<h2>Technical Stacks</h2>
+									</div>
+									<div class="blg-tech-grid">
+										<div class="blg-tech-card"><img src="../img/technical_stack/python.svg" alt="Python" /> Python</div>
+										<div class="blg-tech-card"><img src="../img/technical_stack/docker.svg" alt="Docker" /> Docker</div>
+										<div class="blg-tech-card"><img src="../img/technical_stack/streamlit.svg" alt="Streamlit" /> Streamlit</div>
+										<div class="blg-tech-card"><img src="../img/technical_stack/huggingface.svg" alt="Hugging Face" /> Hugging Face</div>
+										<div class="blg-tech-card"><img src="../img/technical_stack/rag.png" alt="RAG" /> RAG</div>
+										<div class="blg-tech-card"><img src="../img/technical_stack/groq.svg" alt="Groq" /> Groq</div>
+										<div class="blg-tech-card"><img src="../img/technical_stack/llama.png" alt="Llama 3" /> Llama 3</div>
+										<div class="blg-tech-card"><img src="../img/technical_stack/chroma.svg" alt="Chroma DB" /> Chroma DB</div>
+										<div class="blg-tech-card"><img src="../img/technical_stack/prompt.png" alt="Prompt Engineering" /> Prompt Engineering</div>
+									</div>
+								</div>
+								<!-- End: Technical Stacks -->
 
-					<h2>
-						<a href="https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation/tree/huggingface" target="_blank" style="text-decoration: none;">
-							<img src="../img/others/download.svg" alt="Download" style="width: 48px; height: 48px; vertical-align: middle; margin-right: 5px;"/>
-						</a>
-						Download Source Code : 
-						<a href="https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation/tree/huggingface" target="_blank" style="text-decoration: underline;">RAG Fashion Recommendation System</a>
-					</h2>
-					<br>
+								<!-- 11. Download Source Code -->
+								<div class="blg-download-card">
+									<img src="../img/others/download.svg" alt="Download" />
+									<div class="blg-download-info">
+										<h3>Download Source Code</h3>
+										<p>RAG Fashion Recommendation System</p>
+									</div>
+									<a href="https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation/tree/huggingface" class="blg-download-btn" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+								</div>
+								<!-- End: Download Source Code -->
 
-					<div class="reference-container">
-						<hr class="blg-hr">
-						<h2>📚 <b>References</b></h2>
-						<ul class="blg-ul">
-							<li class="blg-li">🔗 <b>GitHub Repository:</b> 
-								<a target="_blank" style="text-decoration: underline;" href="https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation/tree/huggingface">
-									RAG Fashion Recommendation System
-								</a>
-							</li>
-							<li class="blg-li">🤗 <b>Live App in Hugging Face Space:</b> 
-								<a target="_blank" style="text-decoration: underline;" href="https://huggingface.co/spaces/shafiqul1357/rag-fashion-recommendation">
-									Fashion Recommendation App
-								</a>
-							</li>
-							<li class="blg-li">
-								<img src="../img/technical_stack/streamlit.svg" alt="Streamlit Icon" width="24" style="vertical-align: middle; margin-right: 6px;">
-								<b>Streamlit Website:</b> 
-								<a target="_blank" style="text-decoration: underline;" href="https://streamlit.io/">Streamlit</a>
-							</li>
-							<li class="blg-li">
-								<img src="../img/technical_stack/medium.svg" alt="Medium Icon" width="24" style="vertical-align: middle; margin-right: 6px;">
-								<b>Medium Article:</b> 
-								<a target="_blank" style="text-decoration: underline;" href="https://medium.com/@shafiqul-islam/deploy-streamlit-app-to-hugging-face-spaces-a-complete-guide-9c1ec83d24ed">
-									Read the Blog on Medium
-								</a>
-							</li>
-						</ul>
-					</div>
-
-					<br><br>
-
-					<div class="blg-center-txt">
-						<h1>Related Blog Posts</h1>
-					</div>
-
-				<!-- End of blog posts container -->
-				
-				<!-- blog posts in slick slider -->
-				<div id="postContainer" class="row">
-					<!-- Blog posts will be dynamically generated here -->
-				</div>
-
-				<!-- Slide Counter -->
-				<div class="blg-slide-counter">
-					<span id="currentSlide">1</span> / <span id="totalSlides">1</span>
-				</div>
-				<br>
-
-			</div>
-		</section>
-		
-		<section class="footer-section">
-			<div class="container footer">
-				<div class="row footer">
-					<div class="col-md-8">
-						<div class="copyright">
-							<div class="logo-circle">
-								<img src="../img/others/blog_logo.svg" alt="Shafiqul AI" style="height:24px; vertical-align:middle;">
+								<!-- 12. References -->
+								<div class="blg-trailing-section">
+									<div class="blg-trailing-header">
+										<span style="font-size: 22px; line-height: 1">📚</span>
+										<h2>References</h2>
+									</div>
+									<ul class="blg-ul">
+										<li class="blg-li">
+											<img src="../img/technical_stack/github.svg" alt="GitHub" width="18" style="vertical-align: middle; margin-right: 6px" />
+											<strong>GitHub Repository:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://github.com/shafiqul-islam-sumon/rag-fashion-recommendation/tree/huggingface"
+												>RAG Fashion Recommendation System</a
+											>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/huggingface.svg" alt="Hugging Face" width="18" style="vertical-align: middle; margin-right: 6px" />
+											<strong>Live App in Hugging Face Space:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://huggingface.co/spaces/shafiqul1357/rag-fashion-recommendation">Fashion Recommendation App</a>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/streamlit.svg" alt="Streamlit" width="18" style="vertical-align: middle; margin-right: 6px" />
+											<strong>Streamlit Website:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://streamlit.io/">Streamlit</a>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/medium.svg" alt="Medium" width="18" style="vertical-align: middle; margin-right: 6px" />
+											<strong>Medium Article:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://medium.com/@shafiqul-islam/deploy-streamlit-app-to-hugging-face-spaces-a-complete-guide-9c1ec83d24ed"
+												>Read the Blog on Medium</a
+											>
+										</li>
+									</ul>
+								</div>
+								<!-- End: References -->
 							</div>
-							<span> &copy; <span id="currentYear"></span> Shafiqul AI | All rights reserved. Developed by Md Shafiqul Islam</span>
+							<!-- end blogContainer -->
+						</div>
+						<!-- end .blog-detail-main -->
+					</div>
+					<!-- end .blog-detail-layout -->
+
+					<!-- Related Blog Posts -->
+					<div class="related-posts-section">
+						<div class="blog-title-bar">
+							<img src="../img/others/blog.png" alt="blog post" style="width: 24px; height: auto" />
+							<h2>Related Blog Posts</h2>
+						</div>
+						<div class="related-posts-wrapper">
+							<div class="related-posts-swiper-area">
+								<div class="swiper" id="postContainer">
+									<div class="swiper-wrapper">
+										<!-- Blog posts will be dynamically generated here -->
+									</div>
+								</div>
+								<div class="swiper-button-prev"></div>
+								<div class="swiper-button-next"></div>
+							</div>
+							<div class="blg-slide-counter">
+								<div class="slide-progress-bar">
+									<div class="slide-progress-fill" id="slideProgressFill"></div>
+								</div>
+								<div class="slide-counter-label"><span id="currentSlide">1</span> / <span id="totalSlides">1</span></div>
+							</div>
 						</div>
 					</div>
-					<div class="col-md-4">
-						<ul class="social-network">
-							<li>
-								<a target="_blank" href="mailto:mdshafiqul.islam603@gmail.com" data-placement="top" title="Gmail">
-									<img src="../img/contact/gmail.svg" alt="Gmail">
-									<span class="icon-label">Gmail</span>
-								</a>
-							</li>
-							<li>
-								<a target="_blank" href="https://www.linkedin.com/in/shafiqul-islam-sumon/" data-placement="top" title="LinkedIn">
-									<img src="../img/contact/linkedin.svg" alt="LinkedIn">
-									<span class="icon-label">LinkedIn</span>
-								</a>
-							</li>
-							<li>
-								<a target="_blank" href="https://github.com/shafiqulislamsumon" data-placement="top" title="GitHub">
-									<img src="../img/contact/github.svg" alt="GitHub">
-									<span class="icon-label">GitHub</span>
-								</a>
-							</li>
-							<li>
-								<a target="_blank" href="https://leetcode.com/u/shafiqul/" data-placement="top" title="LeetCode">
-									<img src="../img/contact/leetcode.svg" alt="LeetCode">
-									<span class="icon-label">LeetCode</span>
-								</a>
-							</li>
-							<li>
-								<a target="_blank" href="https://huggingface.co/shafiqul1357" data-placement="top" title="Hugging Face">
-									<img src="../img/contact/huggingface.svg" alt="Hugging Face">
-									<span class="icon-label">Hugging Face</span>
-								</a>
-							</li>
-							<li>
-								<a target="_blank" href="https://medium.com/@shafiqul-islam" data-placement="top" title="Medium">
-									<img src="../img/contact/medium.svg" alt="Medium">
-									<span class="icon-label">Medium</span>
-								</a>
-							</li>
-						</ul>
-					</div>
 				</div>
-			</div>
-		</section>
+			</section>
+			<div id="site-footer"></div>
+		</div>
+		<!-- end wrapper -->
 
-
-	</div> <!-- end wrapper -->
-
-	<a href="#" class="scrollup"><i class="fa fa-angle-up active"></i></a>
-
-	<!-- javascript -->
-	<!-- Placed at the end of the document so the pages load faster -->
-	<script type="text/javascript" src="../js/jquery-3.7.1.min.js"></script>
-	<script type="text/javascript" src="../js/bootstrap.min.js"></script>
-	<script type="text/javascript" src="../js/slick.min.js"></script>
-	<script type="text/javascript" src="../js/tabulator.min.js"></script>
-	<script type="text/javascript" src="../js/prism.js"></script>
-	<script type="text/javascript" src="../js/smooth-scroll.polyfills.min.js"></script>
-	<script type="text/javascript" src="../js/detail.js"></script>
-
-	<script>
-		document.getElementById("currentYear").textContent = new Date().getFullYear();
-	</script>	
-
-</body>
-
+		<!-- javascript -->
+		<!-- Placed at the end of the document so the pages load faster -->
+		<script type="text/javascript" src="../js/bootstrap.bundle.min.js"></script>
+		<script type="text/javascript" src="../js/components.js"></script>
+		<script type="text/javascript" src="../js/site.js"></script>
+		<script src="../js/swiper-bundle.min.js"></script>
+		<script type="text/javascript" src="../js/prism.js" data-manual></script>
+		<script type="text/javascript" src="../js/code-highlight.js"></script>
+		<script type="text/javascript" src="../js/detail.js"></script>
+	</body>
 </html>

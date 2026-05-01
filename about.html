@@ -1,192 +1,121 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
+	<head>
+		<!-- Google tag (gtag.js) -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-6SEFZQJHM1"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
 
-	<!-- Google tag (gtag.js) -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-6SEFZQJHM1"></script>
-	<script>
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag('js', new Date());
+			gtag("config", "G-6SEFZQJHM1", {
+				cookie_domain: "shafiqulai.github.io",
+			});
+		</script>
 
-	gtag('config', 'G-6SEFZQJHM1', {
-    	cookie_domain: 'shafiqulai.github.io'
-  	});
-	</script>
+		<meta charset="utf-8" />
+		<title>About - Shafiqul AI</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="description" content="About - Shafiqul AI" />
+		<meta name="author" content="MD SHAFIQUL ISLAM" />
+		<link rel="icon" href="./img/others/favicon.ico" type="image/x-icon" />
 
-	<meta charset="utf-8">
-	<title>About - Shafiqul AI</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<meta name="description" content="About - Shafiqul AI" />
-	<meta name="author" content="MD SHAFIQUL ISLAM" />
-	<link rel="icon" href="./img/others/favicon.ico" type="image/x-icon">
+		<!-- css -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/style.css" />
+	</head>
+	<body>
+		<div id="wrapper">
+			<div id="site-header"></div>
 
-	<!-- css -->
-	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />    
-	<link rel="stylesheet" type="text/css" href="css/font-awesome.css" />
-	<link rel="stylesheet" type="text/css" href="css/style.css" />
-
-</head>
-<body>
-<div id="wrapper">
-	<!-- start header -->
-	<header>
-        <div class="navbar navbar-default custom-sticky-navbar">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="index.html"><img src="img/others/logo.png" alt="logo" class="navbar-logo" /></a>
-                </div>
-                <div class="navbar-collapse collapse ">
-					<ul class="nav navbar-nav">
-						<li><a href="index.html"><img src="./img/others/home.svg" alt="Home" style="width:24px; height:auto; vertical-align:middle; margin-right:10px;">Home</a></li>
-						<li class="active"><a href="about.html"><img src="./img/others/about.svg" alt="About" style="width:24px; height:auto; vertical-align:middle; margin-right:10px;">About</a></li>
-					</ul>
-                </div>
-            </div>
-        </div>
-	</header>
-	<!-- end header -->
-
-	<section id="about-featured">
-		<div class="container">
-			<div id="intr-container" class="row">
-				<!-- image -->
-				<div class="col-md-6 intr-img-container">
-					<img src="./img/others/profile_pic.JPG" alt="" />
-				</div>
-
-				<!-- Description -->
-				<div class="col-md-6 intr-desc-container">
-					<h1>MD SHAFIQUL ISLAM</h1>
-					<h2>AI Engineer</h2>
-					<p> I am an AI Engineer. I work with Computer Vision, NLP, LLM, RAG, Chatbot etc.
-					</p>
-					
-				</div>
-			</div>
-		</div>
-	</section>
-
-	<section id="contact-section">
-		<div class="container">
-			<div class="container contact-main-header">
-				<img src="./img/others/profile.svg" alt="profile" style="width: 24px; height: auto;">
-				<h2> Contact & Profiles</h2>
-			</div>
-
-			<ul class="contact-list">
-				<li class="contact-item">
-					<img class="contact-icon" src="img/contact/gmail.svg" alt="Email" >
-					<span class="contact-title">Email : </span>
-					<a class="contact-link" target="_blank" href="mailto:mdshafiqul.islam603@gmail.com" >mdshafiqul.islam603@gmail.com</a>
-				</li>
-				<li class="contact-item">
-					<img class="contact-icon" src="img/contact/linkedin.svg" alt="LinkedIn" >
-					<span class="contact-title">LinkedIn : </span>
-					<a class="contact-link" target="_blank" href="https://www.linkedin.com/in/shafiqul-islam-sumon/" >https://www.linkedin.com/in/shafiqul-islam-sumon/</a>
-				</li>
-				<li class="contact-item">
-					<img class="contact-icon" src="img/contact/github.svg" alt="GitHub" >
-					<span class="contact-title">GitHub : </span>
-					<a class="contact-link" target="_blank" href="https://github.com/shafiqul-islam-sumon" >https://github.com/shafiqul-islam-sumon</a>
-				</li>
-				<li class="contact-item">
-					<img class="contact-icon" src="img/contact/leetcode.svg" alt="LeetCode" >
-					<span class="contact-title">LeetCode : </span>
-					<a class="contact-link" target="_blank" href="https://leetcode.com/shafiqul/" >https://leetcode.com/shafiqul/ </a>
-				</li>
-				<li class="contact-item">
-					<img class="contact-icon" src="img/contact/huggingface.svg" alt="Hugging Face" >
-					<span class="contact-title">Hugging Face : </span>
-					<a class="contact-link" target="_blank" href="https://huggingface.co/shafiqul1357" >https://huggingface.co/shafiqul1357 </a>
-				</li>
-				<li class="contact-item">
-					<img class="contact-icon" src="img/contact/medium.svg" alt="Medium" >
-					<span class="contact-title">Medium : </span>
-					<a class="contact-link" target="_blank" href="https://medium.com/@shafiqul-islam" >https://medium.com/@shafiqul-islam </a>
-				</li>
-			</ul>
-		</div>
-
-	</section>
-
-	
-	<section class="footer-section">
-		<div class="container footer">
-			<div class="row footer">
-				<div class="col-md-8">
-					<div class="copyright">
-						<div class="logo-circle">
-							<img src="./img/others/blog_logo.svg" alt="Shafiqul AI" style="height:24px; vertical-align:middle;">
+			<!-- About Section -->
+			<section id="about-featured">
+				<div class="container">
+					<div class="about-card">
+						<div class="about-img-col">
+							<img src="./img/others/profile_pic.JPG" alt="MD Shafiqul Islam" />
 						</div>
-						<span> &copy; <span id="currentYear"></span> Shafiqul AI | All rights reserved. Developed by Md Shafiqul Islam</span>
+						<div class="about-desc-col">
+							<h1 class="about-name">MD SHAFIQUL ISLAM</h1>
+							<p class="about-role">AI Engineer</p>
+							<div class="about-divider"></div>
+							<div class="about-bio">
+								<p>
+									I am an AI Engineer specializing in building production-ready intelligent systems using Large Language Models (LLMs), Retrieval-Augmented Generation (RAG), AI Agents, and Computer
+									Vision. I focus on designing scalable solutions that solve real-world problems by combining data, models, and practical system design.
+								</p>
+								<p>
+									I develop end-to-end AI systems — from data processing and model development to deployment — across diverse domains. My work includes agent-based analytics platforms, domain-specific
+									RAG systems, anomaly detection using vision models, and structured data extraction pipelines from images and documents.
+								</p>
+								<p>
+									My technical expertise includes Python, PyTorch, modern LLM frameworks, and cloud platforms such as AWS and GCP. I work extensively with tools and techniques for building scalable AI
+									systems.
+								</p>
+								<p>
+									I am particularly interested in building intelligent systems that bridge the gap between advanced AI models and real-world applications, delivering solutions that are not only
+									innovative but also practical and impactful.
+								</p>
+							</div>
+						</div>
 					</div>
 				</div>
-				<div class="col-md-4">
-					<ul class="social-network">
-						<li>
-							<a target="_blank" href="mailto:mdshafiqul.islam603@gmail.com" data-placement="top" title="Gmail">
-								<img src="img/contact/gmail.svg" alt="Gmail">
-								<span class="icon-label">Gmail</span>
-							</a>
-						</li>
-						<li>
-							<a target="_blank" href="https://www.linkedin.com/in/shafiqul-islam-sumon/" data-placement="top" title="LinkedIn">
-								<img src="img/contact/linkedin.svg" alt="LinkedIn">
-								<span class="icon-label">LinkedIn</span>
-							</a>
-						</li>
-						<li>
-							<a target="_blank" href="https://github.com/shafiqulislamsumon" data-placement="top" title="GitHub">
-								<img src="img/contact/github.svg" alt="GitHub">
-								<span class="icon-label">GitHub</span>
-							</a>
-						</li>
-						<li>
-							<a target="_blank" href="https://leetcode.com/u/shafiqul/" data-placement="top" title="LeetCode">
-								<img src="img/contact/leetcode.svg" alt="LeetCode">
-								<span class="icon-label">LeetCode</span>
-							</a>
-						</li>
-						<li>
-							<a target="_blank" href="https://huggingface.co/shafiqul1357" data-placement="top" title="Hugging Face">
-								<img src="img/contact/huggingface.svg" alt="Hugging Face">
-								<span class="icon-label">Hugging Face</span>
-							</a>
-						</li>
-						<li>
-							<a target="_blank" href="https://medium.com/@shafiqul-islam" data-placement="top" title="Medium">
-								<img src="img/contact/medium.svg" alt="Medium">
-								<span class="icon-label">Medium</span>
-							</a>
-						</li>
-					</ul>
+			</section>
+
+			<!-- Contact Section -->
+			<section id="contact-section">
+				<div class="container">
+					<div class="container contact-main-header">
+						<img src="./img/others/profile.svg" alt="profile" style="width: 24px; height: auto" />
+						<h2>Contact &amp; Profiles</h2>
+					</div>
+
+					<div class="contact-grid">
+						<a class="contact-card contact-card--email" href="mailto:mdshafiqul.islam603@gmail.com" target="_blank" rel="noopener noreferrer">
+							<img src="img/contact/gmail.svg" alt="Email" />
+							<span class="contact-card-name">Email</span>
+							<span class="contact-card-handle">mdshafiqul.islam603@gmail.com</span>
+						</a>
+						<a class="contact-card contact-card--linkedin" href="https://www.linkedin.com/in/shafiqul-islam-sumon/" target="_blank" rel="noopener noreferrer">
+							<img src="img/contact/linkedin.svg" alt="LinkedIn" />
+							<span class="contact-card-name">LinkedIn</span>
+							<span class="contact-card-handle">shafiqul-islam-sumon</span>
+						</a>
+						<a class="contact-card contact-card--github" href="https://github.com/shafiqul-islam-sumon" target="_blank" rel="noopener noreferrer">
+							<img src="img/contact/github.svg" alt="GitHub" />
+							<span class="contact-card-name">GitHub</span>
+							<span class="contact-card-handle">shafiqul-islam-sumon</span>
+						</a>
+						<a class="contact-card contact-card--leetcode" href="https://leetcode.com/shafiqul/" target="_blank" rel="noopener noreferrer">
+							<img src="img/contact/leetcode.svg" alt="LeetCode" />
+							<span class="contact-card-name">LeetCode</span>
+							<span class="contact-card-handle">shafiqul</span>
+						</a>
+						<a class="contact-card contact-card--huggingface" href="https://huggingface.co/shafiqul1357" target="_blank" rel="noopener noreferrer">
+							<img src="img/contact/huggingface.svg" alt="Hugging Face" />
+							<span class="contact-card-name">Hugging Face</span>
+							<span class="contact-card-handle">shafiqul1357</span>
+						</a>
+						<a class="contact-card contact-card--medium" href="https://medium.com/@shafiqul-islam" target="_blank" rel="noopener noreferrer">
+							<img src="img/contact/medium.svg" alt="Medium" />
+							<span class="contact-card-name">Medium</span>
+							<span class="contact-card-handle">@shafiqul-islam</span>
+						</a>
+					</div>
 				</div>
-			</div>
+			</section>
+			<div id="site-footer"></div>
 		</div>
-	</section>
-
-
-
-</div> <!-- end wrapper -->
-
-<a href="#" class="scrollup"><i class="fa fa-angle-up active"></i></a>
-<!-- javascript
-    ================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
-<script type="text/javascript" src="js/jquery-3.7.1.min.js"></script>
-<script type="text/javascript" src="js/bootstrap.min.js"></script>
-<script type="text/javascript" src="js/smooth-scroll.polyfills.min.js"></script>
-
-<script>
-    document.getElementById("currentYear").textContent = new Date().getFullYear();
-</script>
-
-
-</body>
+		<!-- end wrapper -->
+		<!-- javascript -->
+		<!-- Placed at the end of the document so the pages load faster -->
+		<script type="text/javascript" src="js/bootstrap.bundle.min.js"></script>
+		<script type="text/javascript" src="js/components.js"></script>
+		<script type="text/javascript" src="js/site.js"></script>
+	</body>
 </html>
