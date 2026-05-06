@@ -75,5 +75,16 @@
         "date": "28 Jul 2025",
         "description": "An AI-powered fashion recommendation system helps users find the right products using natural language queries. It leverages Retrieval-Augmented Generation (RAG) to connect user intent with relevant product metadata. Product information is embedded and stored in a vector database for efficient retrieval. A re-ranking model improves the relevance of results based on user preferences. The system is wrapped in a clean, user-friendly web interface for easy exploration.",
         "readMoreUrl": "./blogs/blog_7.html"
+    },
+    {
+        "id": 8,
+        "author": "MD SHAFIQUL ISLAM",
+        "author_img": "../img/author/shafiqul.png",
+        "category": ["LangGraph"],
+        "image": "./img/blog_8/thumbnail.webp",
+        "title": "LangGraph Basics: Part 1 — StateGraph, Nodes & Edges",
+        "date": "04 May 2026",
+        "description": "LangGraph is a Python framework built on top of LangChain for creating stateful, graph-based AI workflows. Unlike linear chains, it models an application as a graph where processing steps are Nodes, connections between them are Edges, and all shared data flows through a central State. These three components — StateGraph, Nodes, and Edges — are the foundation of every LangGraph application, from simple pipelines to complex multi-agent systems. This post covers each concept with clear analogies, focused code examples, and a complete Q&A bot built with Google Gemini.",
+        "readMoreUrl": "./blogs/blog_8.html"
     }
 ]

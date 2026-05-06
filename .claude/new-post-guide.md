@@ -112,6 +112,9 @@ Copy `blogs/blog_7.html` as a starting point. Structure below is verified from a
   <script src="../js/prism.js" data-manual></script>
   <script src="../js/code-highlight.js"></script>
   <script src="../js/detail.js"></script>
+  <!-- Add below only if the post contains Mermaid diagrams -->
+  <script src="../js/mermaid.min.js"></script>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
 </body>
 ```
 
@@ -248,6 +251,24 @@ Sidebar hidden on mobile; inline `.blg-toc-container` shown instead. Scroll-spy 
 
 Full HTML patterns for every element: `.claude/instructions.md`
 
+## Step 5b — Installation & Setup section (LangGraph series only)
+
+For any post in the LangGraph series, Section 2 (Installation & Setup) must follow this structure:
+
+```
+1. Python version   → state 3.12, show: python --version
+2. Virtual env      → python -m venv langgraph
+                      source langgraph/bin/activate      (macOS/Linux)
+                      langgraph\Scripts\activate         (Windows)
+3. requirements.txt → show full file as properties block, then pip install -r requirements.txt
+4. Gemini API key   → Google AI Studio link, .env contents, .gitignore warning
+5. Project tree     → blg-tree with all files for that post
+6. File-to-section  → sentence mapping each file to its section number
+7. Subsection 2.1   → Configuring the LLM (config.py + llm.py code + explanation)
+```
+
+Never show a bare `pip install pkg1 pkg2` one-liner — always use `requirements.txt`.
+
 ## Step 6 — Code blocks and trees
 
 **Code blocks** — always set `data-lang`:
@@ -294,6 +315,7 @@ Alignment rule: all comments start at column = `max(pipe_len + name_len) + 6`.
 - [ ] All `.blg-tree` comments column-aligned with spaces
 - [ ] All TOC `href="#id"` match corresponding `.blg-anchor` `id=` values
 - [ ] No `style=""` attributes anywhere in blog content
+- [ ] If post uses Mermaid: `mermaid.min.js` script added at bottom (local, not CDN)
 
 ### After publishing
 - [ ] Add new URL to `sitemap.xml`:

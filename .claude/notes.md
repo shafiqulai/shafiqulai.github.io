@@ -1,5 +1,9 @@
 # Project Notes
 
+## LangGraph Series
+- GitHub repo: [github.com/shafiqul-islam-sumon/langgraph](https://github.com/shafiqul-islam-sumon/langgraph/tree/main)
+- Gemini model in use: `gemini-3-flash-preview`
+
 ## Website
 - Production: [shafiqulai.github.io](https://shafiqulai.github.io)
 - Local (desktop): [localhost:5500/index.html](http://localhost:5500/index.html)

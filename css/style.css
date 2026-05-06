@@ -943,6 +943,18 @@ div.code-toolbar > .toolbar { display: none; }
 	margin-top: 6px;
 }
 
+.blg-mermaid-container {
+	width: 100%;
+	max-width: 420px;
+	margin: 20px auto;
+	text-align: center;
+}
+
+.blg-mermaid-container svg {
+	max-width: 100%;
+	height: auto;
+}
+
 /* ====================================== End Blog Details ==================================== */
 
 /* ====================================== Start of Contacts ==================================== */
@@ -2171,7 +2183,9 @@ ul.social-network {
 	}
 
 	.top-blg-img-container > a {
-		height: auto;
+		display: block;
+		width: 100%;
+		height: 100%;
 	}
 
 	.featured-badge {
@@ -2180,9 +2194,10 @@ ul.social-network {
 	}
 
 	.top-blg-img-container img {
-		height: auto;
-		min-height: 180px;
+		width: 100%;
+		height: 100%;
 		object-fit: cover;
+		object-position: center center;
 	}
 
 	.top-blg-desc-container {
@@ -2214,8 +2229,8 @@ ul.social-network {
 
 	#left-main,
 	#featured-section {
-		padding-left: 12px !important;
-		padding-right: 12px !important;
+		padding-left: 0 !important;
+		padding-right: 0 !important;
 	}
 
 	#postContainer {
@@ -2224,10 +2239,10 @@ ul.social-network {
 	}
 
 	#postContainer .read-more-button {
-		width: calc(100% - 30px);
+		width: 100%;
 		justify-content: center;
-		margin-left: 15px;
-		margin-right: 15px;
+		margin-left: 0;
+		margin-right: 0;
 	}
 
 	.card-inner > .date {
@@ -2241,8 +2256,8 @@ ul.social-network {
 	/* Categories: sits between featured post and blog grid on mobile */
 	.col-lg-3.categories {
 		width: 100%;
-		padding-left: 12px !important;
-		padding-right: 12px !important;
+		padding-left: 0 !important;
+		padding-right: 0 !important;
 		margin-top: 8px;
 		margin-bottom: 28px;
 	}

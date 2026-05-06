@@ -1,0 +1,1413 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<!-- Google tag (gtag.js) -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-6SEFZQJHM1"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
+
+			gtag("config", "G-6SEFZQJHM1", {
+				cookie_domain: "shafiqulai.github.io",
+			});
+		</script>
+
+		<meta charset="utf-8" />
+		<title>LangGraph Basics: Part 1 — StateGraph, Nodes &amp; Edges</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="Learn the core building blocks of LangGraph — StateGraph, Nodes, and Edges. This beginner-friendly guide walks you through each concept step by step, with clear examples and a complete working Q&A bot built with Gemini."
+		/>
+		<meta name="author" content="MD SHAFIQUL ISLAM" />
+		<link rel="icon" href="../img/others/favicon.ico" type="image/x-icon" />
+
+		<!-- Fonts -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+
+		<!-- CSS (order matters) -->
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+		<link rel="stylesheet" href="../css/swiper-bundle.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/style.css" />
+		<link rel="stylesheet" type="text/css" href="../css/prism.css" />
+	</head>
+
+	<body>
+		<!-- Reading Progress Bar -->
+		<div id="reading-progress"></div>
+		<div id="wrapper">
+			<div id="site-header"></div>
+
+			<section id="content">
+				<div class="container">
+					<div class="blog-detail-layout">
+
+						<!-- Left: Sticky TOC Sidebar -->
+						<aside class="toc-sidebar" id="tocSidebar">
+							<div class="toc-sidebar-header">
+								<p class="toc-sidebar-title">Contents</p>
+							</div>
+							<ul class="toc-sidebar-list">
+								<li><a href="#what-is-langgraph">1. What is LangGraph?</a></li>
+								<li class="toc-sidebar-sub"><a href="#why-langgraph">Why LangGraph Exists</a></li>
+								<li class="toc-sidebar-sub"><a href="#langgraph-vs-langchain">LangGraph vs LangChain</a></li>
+								<li><a href="#installation-setup">2. Installation &amp; Setup</a></li>
+								<li class="toc-sidebar-sub"><a href="#configuring-llm">Configuring the LLM</a></li>
+								<li><a href="#mental-model">3. The Mental Model: Think in Graphs</a></li>
+								<li><a href="#state-memory">4. State — The Shared Memory</a></li>
+								<li class="toc-sidebar-sub"><a href="#what-is-state">What is State?</a></li>
+								<li class="toc-sidebar-sub"><a href="#defining-state">Defining State with TypedDict</a></li>
+								<li><a href="#nodes">5. Nodes — The Workers</a></li>
+								<li class="toc-sidebar-sub"><a href="#what-is-node">What is a Node?</a></li>
+								<li class="toc-sidebar-sub"><a href="#writing-node">Writing a Node Function</a></li>
+								<li><a href="#edges">6. Edges — The Connections</a></li>
+								<li class="toc-sidebar-sub"><a href="#normal-edges">Normal Edges</a></li>
+								<li class="toc-sidebar-sub"><a href="#start-and-end">START and END</a></li>
+								<li><a href="#building-graph">7. StateGraph — Building the Graph</a></li>
+								<li class="toc-sidebar-sub"><a href="#creating-wiring">Creating &amp; Wiring the Graph</a></li>
+								<li class="toc-sidebar-sub"><a href="#compiling">Compiling the Graph</a></li>
+								<li><a href="#complete-example">8. Complete Example: Simple Q&amp;A Bot</a></li>
+								<li class="toc-sidebar-sub"><a href="#code-walkthrough">Full Code Walkthrough</a></li>
+								<li class="toc-sidebar-sub"><a href="#running-output">Running &amp; Output</a></li>
+								<li><a href="#web-ui">9. Web UI with Gradio</a></li>
+								<li><a href="#conclusion">10. Conclusion</a></li>
+							</ul>
+						</aside>
+
+						<!-- Right: Blog Content -->
+						<div class="blog-detail-main">
+							<div id="blogContainer">
+
+								<!-- Blog Title -->
+								<div class="container blg-title-container">
+									<h2 class="blg-title">LangGraph Basics: Part 1 — StateGraph, Nodes &amp; Edges</h2>
+								</div>
+
+								<!-- Author Info -->
+								<div class="author_section">
+									<img id="author_img" src="" alt="Author Photo" class="author_img" />
+									<div class="author_details">
+										<span id="author_name" class="author_name"></span>
+										<span id="published_date" class="published_date"></span>
+									</div>
+								</div>
+
+								<!-- Intro: thumbnail left, preface right -->
+								<div class="blg-intro">
+									<div class="blg-intro-img">
+										<img
+											src="../img/blog_8/thumbnail.webp"
+											alt="LangGraph Basics — StateGraph, Nodes and Edges"
+											class="blg-thumbnail"
+										/>
+									</div>
+									<div class="blg-intro-text">
+										<p>
+											🧩 Building AI applications that just run a single prompt and return a result is straightforward. But real-world agents are different — they need to
+											<strong>remember context</strong>, <strong>make decisions</strong>, loop back, call tools, and hand off work to other agents. That's exactly the kind of
+											complexity <span class="highlight-purple">LangGraph</span> is designed to handle.
+										</p>
+
+										<p>
+											🗺️ LangGraph lets you model your AI application as a <strong>graph</strong> — a structure where each processing step is a
+											<span class="highlight-blue">node</span>, the connections between steps are <span class="highlight-green">edges</span>, and all data flows through a
+											shared <span class="highlight-teal">state</span>. This simple idea unlocks surprisingly powerful patterns — from multi-step pipelines to autonomous agents.
+										</p>
+
+										<p>
+											🎯 This is <strong>Part 1 of the LangGraph Basics series</strong>. Before writing any complex agent, you need a firm grip on these three fundamentals:
+											<span class="code-soft">StateGraph</span>, <span class="code-soft">Nodes</span>, and <span class="code-soft">Edges</span>. We'll cover every concept
+											step by step — with clear analogies, isolated code examples, and a complete working Q&amp;A bot powered by <strong>Google Gemini</strong> at the end.
+										</p>
+
+										<blockquote class="blg-callout-tip">
+											✅ <strong>Who this is for:</strong> You're comfortable with Python and have some LangChain experience. No prior LangGraph knowledge needed.
+										</blockquote>
+									</div>
+								</div>
+
+								<!-- Inline Table of Contents (visible on mobile) -->
+								<div class="blg-toc-container">
+									<h2>📚 Table of Contents</h2>
+									<ol class="blg-toc-ol">
+										<li class="blg-toc-li"><a href="#what-is-langgraph">🤔 1. What is LangGraph?</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#why-langgraph">Why LangGraph Exists</a></li>
+											<li class="blg-toc-li"><a href="#langgraph-vs-langchain">LangGraph vs LangChain</a></li>
+										</ul>
+
+										<li class="blg-toc-li"><a href="#installation-setup">⚙️ 2. Installation &amp; Setup</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#configuring-llm">Configuring the LLM</a></li>
+										</ul>
+
+										<li class="blg-toc-li"><a href="#mental-model">🗺️ 3. The Mental Model: Think in Graphs</a></li>
+
+										<li class="blg-toc-li"><a href="#state-memory">💾 4. State — The Shared Memory</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#what-is-state">What is State?</a></li>
+											<li class="blg-toc-li"><a href="#defining-state">Defining State with TypedDict</a></li>
+										</ul>
+
+										<li class="blg-toc-li"><a href="#nodes">🔧 5. Nodes — The Workers</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#what-is-node">What is a Node?</a></li>
+											<li class="blg-toc-li"><a href="#writing-node">Writing a Node Function</a></li>
+										</ul>
+
+										<li class="blg-toc-li"><a href="#edges">🔗 6. Edges — The Connections</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#normal-edges">Normal Edges</a></li>
+											<li class="blg-toc-li"><a href="#start-and-end">START and END</a></li>
+										</ul>
+
+										<li class="blg-toc-li"><a href="#building-graph">🏗️ 7. StateGraph — Building the Graph</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#creating-wiring">Creating &amp; Wiring the Graph</a></li>
+											<li class="blg-toc-li"><a href="#compiling">Compiling the Graph</a></li>
+										</ul>
+
+										<li class="blg-toc-li"><a href="#complete-example">🤖 8. Complete Example: Simple Q&amp;A Bot</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#code-walkthrough">Full Code Walkthrough</a></li>
+											<li class="blg-toc-li"><a href="#running-output">Running &amp; Output</a></li>
+										</ul>
+
+										<li class="blg-toc-li"><a href="#web-ui">🖥️ 9. Web UI with Gradio</a></li>
+
+										<li class="blg-toc-li"><a href="#conclusion">🎯 10. Conclusion</a></li>
+									</ol>
+								</div>
+								<!-- End: Table of Contents -->
+
+								<!-- 1. What is LangGraph? -->
+								<div class="blg-section">
+									<a id="what-is-langgraph" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>🤔 1. What is LangGraph?</h2>
+									</div>
+
+									<!-- 1.1 Why LangGraph Exists -->
+									<a id="why-langgraph" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">1.1</span>
+										<h3>💡 Why LangGraph Exists</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>
+											LangChain made it easy to chain prompts, models, and tools into a pipeline. A typical chain looks like
+											<span class="code-soft">prompt | llm | parser</span> — one input flows through each step and produces one output. For simple, linear use cases, this works perfectly.
+										</p>
+										<p>
+											But real-world AI applications rarely follow a straight line. Consider a <strong>customer support agent</strong> — it reads a message, decides whether to search a knowledge base or call a tool, retries if something fails, and remembers the full conversation history. A linear pipeline has no way to model that.
+										</p>
+									</div>
+
+									<blockquote class="blg-callout-info">
+										💡 <strong>The core problem:</strong> linear chains move in one direction — A → B → C → done. They can't loop, branch based on conditions, or carry memory across steps.
+									</blockquote>
+
+									<div class="blg-paragraph">
+										<p>
+											<span class="highlight-purple">LangGraph</span> was built to solve this. Instead of a pipeline, it models an application as a <strong>directed graph</strong> — where each processing step is a node, the connections between steps are edges, and all shared data flows through a central state object. This makes loops, conditional branching, retries, and multi-step memory all natural to express.
+										</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><strong>🧪 Example — a research agent:</strong></p>
+									</div>
+
+									<ul class="blg-ul">
+										<li class="blg-li">It receives a question from the user</li>
+										<li class="blg-li">It searches the web for relevant information</li>
+										<li class="blg-li">If the result is not sufficient, it searches again — <strong>a loop</strong></li>
+										<li class="blg-li">Once the result is good enough, it generates a final answer</li>
+									</ul>
+
+									<div class="blg-paragraph">
+										<p>
+											Step 3 — looping back to search — is impossible in a linear chain. In LangGraph, it's just an edge that points back to the search node. That's the fundamental shift LangGraph introduces.
+										</p>
+									</div>
+
+									<!-- 1.2 LangGraph vs LangChain -->
+									<a id="langgraph-vs-langchain" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">1.2</span>
+										<h3>⚖️ LangGraph vs LangChain</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>
+											LangChain and LangGraph are often mentioned together, but they serve different roles. <span class="highlight-blue">LangChain</span> provides the building blocks — LLMs, prompt templates, tools, output parsers, and retrievers. <span class="highlight-purple">LangGraph</span> uses those building blocks to define <em>how</em> they connect, flow, and interact over multiple steps.
+										</p>
+										<p>
+											They're not competing frameworks — LangGraph is built <strong>on top of</strong> LangChain. The models and tools are still LangChain objects; LangGraph controls how they're orchestrated.
+										</p>
+									</div>
+
+									<div class="blg-table">
+										<table>
+											<thead>
+												<tr>
+													<th>Feature</th>
+													<th>LangChain</th>
+													<th>LangGraph</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td>Best for</td>
+													<td>Simple linear pipelines</td>
+													<td>Complex stateful workflows</td>
+												</tr>
+												<tr>
+													<td>Flow</td>
+													<td>Linear — A → B → C</td>
+													<td>Graph — any direction</td>
+												</tr>
+												<tr>
+													<td>Loops</td>
+													<td>Not supported</td>
+													<td>Native support</td>
+												</tr>
+												<tr>
+													<td>State</td>
+													<td>No built-in shared state</td>
+													<td>Central shared state object</td>
+												</tr>
+												<tr>
+													<td>Branching</td>
+													<td>Limited</td>
+													<td>Conditional edges</td>
+												</tr>
+												<tr>
+													<td>Multi-agent</td>
+													<td>Not designed for it</td>
+													<td>First-class support</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+
+									<blockquote class="blg-callout-tip">
+										✅ A good rule of thumb: if the workflow always follows the same fixed steps, LangChain is enough. If any step needs to <strong>decide what happens next</strong>, loop, or share memory — that's LangGraph territory.
+									</blockquote>
+
+									<hr class="blg-hr" />
+								</div>
+								<!-- End: What is LangGraph? -->
+
+								<!-- 2. Installation & Setup -->
+								<div class="blg-section">
+									<a id="installation-setup" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>⚙️ 2. Installation &amp; Setup</h2>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>
+											Before writing any code, four things need to be in place: the right Python version, a virtual environment, the required packages, and a Gemini API key.
+										</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><strong>🐍 Python version:</strong></p>
+										<p>This series uses <strong>Python 3.12</strong>. Check your version before starting:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="bash">python --version</div>
+
+									<div class="blg-paragraph">
+										<p><strong>🔒 Create a virtual environment:</strong></p>
+										<p>A virtual environment keeps the project's dependencies isolated from other Python projects on the machine:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="bash"># Create the environment
+python -m venv langgraph
+
+# Activate — macOS / Linux
+source langgraph/bin/activate
+
+# Activate — Windows
+langgraph\Scripts\activate</div>
+
+									<div class="blg-paragraph">
+										<p><strong>📦 Install the dependencies:</strong></p>
+										<p>All packages for this series are listed in <span class="code-soft">requirements.txt</span>:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="properties">langchain==1.2.17
+langgraph==1.1.10
+langchain-google-genai==4.2.2
+python-dotenv==1.2.2
+gradio==6.14.0</div>
+
+									<div class="blg-code-block" data-lang="bash">pip install -r requirements.txt</div>
+
+									<div class="blg-paragraph">
+										<p><strong>🔑 Gemini API key:</strong></p>
+										<p>
+											Get a free API key from <a href="https://aistudio.google.com/app/apikey" class="blg-link" target="_blank" rel="noopener noreferrer">Google AI Studio</a>. Create a <span class="code-soft">.env</span> file and add the following:
+										</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="properties">GOOGLE_API_KEY=your_google_api_key_here
+GEMINI_MODEL_NAME=gemini-3-flash-preview
+GEMINI_TEMPERATURE=0.7
+GEMINI_MAX_RETRIES=2</div>
+
+									<blockquote class="blg-callout-warning">
+										⚠️ Never commit the <span class="code-soft">.env</span> file to Git. Add it to <span class="code-soft">.gitignore</span> to keep your API key safe.
+									</blockquote>
+
+									<div class="blg-paragraph">
+										<p><strong>🗂️ Project structure for this post:</strong></p>
+									</div>
+
+									<div class="blg-tree"><span class="tree-root">basics-1-stategraph-nodes-edges/</span>
+<span class="tree-pipe">├── </span><span class="tree-file">config.py</span>     <span class="tree-comment"># loads .env, Gemini config</span>
+<span class="tree-pipe">├── </span><span class="tree-file">llm.py</span>        <span class="tree-comment"># initialises GeminiLLM</span>
+<span class="tree-pipe">├── </span><span class="tree-file">state.py</span>      <span class="tree-comment"># defines QAState (TypedDict)</span>
+<span class="tree-pipe">├── </span><span class="tree-file">nodes.py</span>      <span class="tree-comment"># defines the answer node</span>
+<span class="tree-pipe">├── </span><span class="tree-file">graph.py</span>      <span class="tree-comment"># builds and compiles the StateGraph</span>
+<span class="tree-pipe">├── </span><span class="tree-file">qa_runner.py</span>  <span class="tree-comment"># QARunner — console entry point</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">figure/</span>       <span class="tree-comment"># auto-generated graph diagrams</span>
+<span class="tree-pipe">└── </span><span class="tree-spec">.env</span>          <span class="tree-comment"># API keys (never commit this)</span></div>
+
+									<div class="blg-paragraph">
+										<p>
+											Each file maps to a specific concept covered in this post — <span class="code-soft">state.py</span> to Section 4, <span class="code-soft">nodes.py</span> to Section 5, <span class="code-soft">graph.py</span> to Sections 6 and 7, and <span class="code-soft">qa_runner.py</span> to Section 8. The code is built up incrementally, so each file makes sense on its own before they're wired together.
+										</p>
+									</div>
+
+									<!-- 2.1 Configuring the LLM -->
+									<a id="configuring-llm" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">2.1</span>
+										<h3>🔧 Configuring the LLM</h3>
+									</div>
+
+									<p class="blg-paragraph">
+										The LLM setup is split across two files. <span class="code-soft">config.py</span> loads the <span class="code-soft">.env</span> file and reads the model settings into a <span class="code-soft">Config</span> class. <span class="code-soft">llm.py</span> imports <span class="code-soft">Config</span> and uses it to build the <span class="code-soft">GeminiLLM</span> wrapper around <span class="code-soft">ChatGoogleGenerativeAI</span>.
+									</p>
+
+									<div class="blg-code-block" data-lang="python">import os
+
+from dotenv import load_dotenv
+
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
+
+
+class Config:
+    MODEL_NAME = os.getenv("GEMINI_MODEL_NAME", "gemini-3-flash-preview")
+    TEMPERATURE = float(os.getenv("GEMINI_TEMPERATURE", 0.7))
+    MAX_RETRIES = int(os.getenv("GEMINI_MAX_RETRIES", 2))</div>
+
+									<div class="blg-code-block" data-lang="python">from langchain_google_genai import ChatGoogleGenerativeAI
+
+from config import Config
+
+
+class GeminiLLM:
+
+    def __init__(self):
+        self.llm = ChatGoogleGenerativeAI(
+            model=Config.MODEL_NAME,
+            temperature=Config.TEMPERATURE,
+            max_retries=Config.MAX_RETRIES,
+        )
+
+    def get_llm(self):
+        return self.llm</div>
+
+									<p class="blg-paragraph">
+										<span class="code-soft">Config</span> reads three values from the environment: the model name, temperature, and retry limit — with sensible defaults if any are missing.
+										<span class="code-soft">GeminiLLM</span> instantiates <span class="code-soft">ChatGoogleGenerativeAI</span> using those values and exposes it via <span class="code-soft">get_llm()</span>.
+										Nodes that need the LLM import only <span class="code-soft">GeminiLLM</span> from <span class="code-soft">llm.py</span> — they don't need to know anything about how it's configured.
+									</p>
+
+									<hr class="blg-hr" />
+								</div>
+								<!-- End: Installation & Setup -->
+
+								<!-- 3. The Mental Model -->
+								<div class="blg-section">
+									<a id="mental-model" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>🗺️ 3. The Mental Model: Think in Graphs</h2>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>
+											Before writing any code, it helps to have a clear mental picture of how LangGraph works. The best way to think about it is an <strong>assembly line</strong>.
+										</p>
+										<p>
+											Imagine a car factory. A car body enters the line as a bare frame. At each station, workers perform a specific task — one station fits the engine, the next installs the dashboard, another adds the doors. The car moves from station to station in a defined order, getting more complete at each step, until it rolls off the line fully built.
+										</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>A LangGraph application works the same way:</p>
+									</div>
+
+									<ul class="blg-ul">
+										<li class="blg-li">🏭 The <strong>stations</strong> are <span class="highlight-blue">Nodes</span> — each one performs a specific piece of work</li>
+										<li class="blg-li">🔗 The <strong>conveyor belt connections</strong> are <span class="highlight-green">Edges</span> — they define which station comes next</li>
+										<li class="blg-li">🚗 The <strong>car being built</strong> is the <span class="highlight-teal">State</span> — the shared data that every station reads from and writes to</li>
+									</ul>
+
+									<div class="blg-paragraph">
+										<p>
+											Every LangGraph application is built from exactly these three things. Nothing more.
+										</p>
+									</div>
+
+									<div class="blg-feature-grid">
+										<div class="blg-feature-card card-teal">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">💾</span>
+												<h4>State</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>A shared Python dictionary that travels through the entire graph. Every node reads from it and writes updates back to it.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-blue">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">🔧</span>
+												<h4>Nodes</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Python functions that do the actual work. Each node receives the current state, performs its task, and returns an updated state.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-green">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">🔗</span>
+												<h4>Edges</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Connections between nodes that define the execution order. They tell the graph which node to visit after the current one finishes.</p>
+											</div>
+										</div>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>
+											Here is what the simplest possible LangGraph application looks like — the one built in this post:
+										</p>
+									</div>
+
+									<div class="blg-arch-stack">
+										<div class="blg-arch-layer al-blue">
+											<div class="blg-arch-icon">🚦</div>
+											<div class="blg-arch-name">START</div>
+											<div class="blg-arch-desc">The entry point. Every graph begins here. The initial state is passed in at this point.</div>
+										</div>
+										<div class="blg-arch-layer al-teal">
+											<div class="blg-arch-icon">🔧</div>
+											<div class="blg-arch-name">answer node</div>
+											<div class="blg-arch-desc">Reads the question from state, calls the Gemini LLM, and writes the answer back to state.</div>
+										</div>
+										<div class="blg-arch-layer al-green">
+											<div class="blg-arch-icon">🏁</div>
+											<div class="blg-arch-name">END</div>
+											<div class="blg-arch-desc">The exit point. Execution stops here and the final state is returned to the caller.</div>
+										</div>
+									</div>
+
+									<blockquote class="blg-callout-note">
+										📌 <strong>Key insight:</strong> the graph doesn't call nodes directly — it invokes the compiled app with an initial state, and the graph engine handles the rest, moving state from node to node along the defined edges.
+									</blockquote>
+
+									<div class="blg-paragraph">
+										<p>
+											The next three sections break down each building block — State, Nodes, and Edges — one at a time, with code examples. By Section 7 they'll be wired together into a working graph.
+										</p>
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+								<!-- End: The Mental Model -->
+
+								<!-- 4. State — The Shared Memory -->
+								<div class="blg-section">
+									<a id="state-memory" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>💾 4. State — The Shared Memory</h2>
+									</div>
+
+									<!-- 4.1 What is State? -->
+									<a id="what-is-state" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">4.1</span>
+										<h3>🧠 What is State?</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>
+											<span class="highlight-teal">State</span> is a Python dictionary that is created once at the start and passed through every node in the graph. Each node can read any value from it and write updates back to it. By the time execution reaches <span class="code-soft">END</span>, the state holds the final result.
+										</p>
+										<p>
+											Think of it as a <strong>shared notepad</strong> in a relay race. The first runner writes the question on it, hands it to the next runner, who reads the question, writes the answer, and passes it forward. Every participant in the race works from the same notepad — nobody holds private information.
+										</p>
+									</div>
+
+									<blockquote class="blg-callout-purple">
+										🔗 <strong>Key rule:</strong> a node never receives separate arguments — it always receives the entire state and returns only the fields it wants to update. Fields it doesn't touch remain unchanged.
+									</blockquote>
+
+									<div class="blg-paragraph">
+										<p>For the Q&A bot in this post, the state carries two things:</p>
+									</div>
+
+									<ul class="blg-ul">
+										<li class="blg-li">📥 <span class="code-soft">question</span> — the user's input, set at the start</li>
+										<li class="blg-li">📤 <span class="code-soft">answer</span> — filled in by the answer node after calling the LLM</li>
+									</ul>
+
+									<!-- 4.2 Defining State with TypedDict -->
+									<a id="defining-state" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">4.2</span>
+										<h3>📝 Defining State with TypedDict</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>
+											State is defined using Python's <span class="highlight-blue">TypedDict</span> — a special class that describes the shape of a dictionary with type hints. It gives structure, IDE autocompletion, and makes the code self-documenting without adding any runtime overhead.
+										</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Here is the complete <span class="code-soft">state.py</span> file:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">from typing import TypedDict
+
+
+class QAState(TypedDict):
+    question: str
+    answer: str</div>
+
+									<div class="blg-paragraph">
+										<p>That's all it takes. <span class="code-soft">QAState</span> is a dictionary with exactly two string fields. LangGraph uses this class to validate that every node returns data that matches the state's structure.</p>
+										<p>When the graph is invoked, the initial state is passed in as a plain dictionary matching this shape:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">result = app.invoke({"question": "What is LangGraph?"})</div>
+
+									<div class="blg-paragraph">
+										<p>
+											The <span class="code-soft">answer</span> field starts empty — it doesn't need to be passed in. The answer node will populate it. After the graph finishes, <span class="code-soft">result</span> is the final state dictionary with both fields filled:
+										</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">{
+    "question": "What is LangGraph?",
+    "answer": "LangGraph is a library for building stateful, multi-actor applications..."
+}</div>
+
+									<blockquote class="blg-callout-info">
+										💡 A node returns only the fields it updated — not the entire state. LangGraph merges the returned dictionary back into the existing state automatically. So if a node returns <span class="code-soft">{"answer": "..."}</span>, the <span class="code-soft">question</span> field is preserved untouched.
+									</blockquote>
+
+									<hr class="blg-hr" />
+								</div>
+								<!-- End: State -->
+
+								<!-- 5. Nodes — The Workers -->
+								<div class="blg-section">
+									<a id="nodes" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>🔧 5. Nodes — The Workers</h2>
+									</div>
+
+									<!-- 5.1 What is a Node? -->
+									<a id="what-is-node" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">5.1</span>
+										<h3>🤖 What is a Node?</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>
+											A <span class="highlight-blue">node</span> is a Python function that performs one specific task inside the graph. It has a strict contract with LangGraph:
+										</p>
+									</div>
+
+									<ul class="blg-ul">
+										<li class="blg-li">📥 <strong>Input</strong> — receives the current state dictionary</li>
+										<li class="blg-li">⚙️ <strong>Work</strong> — does something useful (calls an LLM, searches a database, formats text, etc.)</li>
+										<li class="blg-li">📤 <strong>Output</strong> — returns a dictionary containing only the fields it wants to update</li>
+									</ul>
+
+									<div class="blg-paragraph">
+										<p>
+											Think of a node as a <strong>specialist in a hospital</strong>. A radiologist receives a patient (state), reads their scan (reads from state), writes a report (updates state), and sends the patient to the next specialist (next node via edge). The radiologist doesn't care about the patient's billing details — they only work on what's relevant to them and update only their part.
+										</p>
+										<p>
+											A graph can have one node or a hundred. Each one is independent and focused on a single responsibility. This makes it easy to test, replace, or extend individual nodes without touching the rest of the graph.
+										</p>
+									</div>
+
+									<!-- 5.2 Writing a Node Function -->
+									<a id="writing-node" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">5.2</span>
+										<h3>✍️ Writing a Node Function</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>
+											Nodes are defined as methods inside a class. The class holds the LLM (or any other dependency) in its constructor, and each method is a node. Here is the complete <span class="code-soft">nodes.py</span>:
+										</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">from llm import GeminiLLM
+from state import QAState
+
+
+class QANodes:
+
+    def __init__(self):
+        self.llm = GeminiLLM().get_llm()
+
+    def answer_node(self, state: QAState) -> dict:
+        response = self.llm.invoke(state["question"])
+        content = response.content
+        if isinstance(content, list):
+            content = " ".join(
+                block.get("text", "")
+                for block in content
+                if isinstance(block, dict) and block.get("type") == "text"
+            )
+        return {"answer": content}</div>
+
+									<div class="blg-paragraph">
+										<p>Breaking it down step by step:</p>
+									</div>
+
+									<ul class="blg-ul">
+										<li class="blg-li">
+											<strong><span class="code-soft">__init__</span></strong> — creates the Gemini LLM once when the class is instantiated. Keeping it here means the LLM is only initialised once, not on every node call.
+										</li>
+										<li class="blg-li">
+											<strong><span class="code-soft">answer_node(self, state)</span></strong> — this is the node LangGraph will call. It takes the full state and reads <span class="code-soft">state["question"]</span>.
+										</li>
+										<li class="blg-li">
+											<strong><span class="code-soft">self.llm.invoke(...)</span></strong> — sends the question to Gemini and gets a response back.
+										</li>
+										<li class="blg-li">
+											<strong>Content extraction</strong> — newer versions of <span class="code-soft">langchain-google-genai</span> return <span class="code-soft">response.content</span> as a list of content blocks rather than a plain string. The check handles both formats cleanly.
+										</li>
+										<li class="blg-li">
+											<strong><span class="code-soft">return {"answer": content}</span></strong> — returns only the updated field. LangGraph merges this back into the full state automatically.
+										</li>
+									</ul>
+
+									<div class="blg-callout-note">
+										📌 <strong>Why <code>-> dict</code> and not <code>-> QAState</code>?</strong><br />
+										<span class="code-soft">QAState</span> has two fields: <span class="code-soft">question</span> and <span class="code-soft">answer</span>.
+										But <span class="code-soft">answer_node</span> only returns <span class="code-soft">{"answer": content}</span> — one field, not both.
+										Annotating the return as <span class="code-soft">-> QAState</span> would imply the full state is being returned, which is misleading.
+										LangGraph node functions return a <strong>partial state update</strong> — only the keys that changed.
+										LangGraph merges that partial dict back into the full state internally.
+										<span class="code-soft">-> dict</span> is the accurate annotation here.
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+								<!-- End: Nodes -->
+
+								<!-- 6. Edges — The Connections -->
+								<div class="blg-section">
+									<a id="edges" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>🔗 6. Edges — The Connections</h2>
+									</div>
+
+									<!-- 6.1 Normal Edges -->
+									<a id="normal-edges" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">6.1</span>
+										<h3>➡️ Normal Edges</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>
+											An <span class="highlight-green">edge</span> is a connection between two nodes that defines which node runs next. A <strong>normal edge</strong> is unconditional — when node A finishes, node B always runs next, no questions asked.
+										</p>
+										<p>
+											Think of edges as <strong>one-way roads on a map</strong>. A road from City A to City B means every traveller who leaves City A will arrive at City B — there's no choice, no condition, no detour. Normal edges work exactly the same way.
+										</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Adding a normal edge in code is a single line:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">graph.add_edge("node_a", "node_b")</div>
+
+									<div class="blg-paragraph">
+										<p>
+											Once <span class="code-soft">node_a</span> finishes and returns its state update, LangGraph immediately hands control to <span class="code-soft">node_b</span>. The updated state travels along the edge automatically — there's nothing extra to pass or return.
+										</p>
+									</div>
+
+									<blockquote class="blg-callout-info">
+										💡 Later in the series, you'll see <strong>conditional edges</strong> — edges that decide which node to visit next based on the current state. They're built on the same idea, just with a routing function in between. For now, normal edges are all we need.
+									</blockquote>
+
+									<!-- 6.2 START and END -->
+									<a id="start-and-end" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">6.2</span>
+										<h3>🚦 START and END</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>
+											Every graph needs a defined entry point and a defined exit point. LangGraph provides two special constants for this — <span class="code-soft">START</span> and <span class="code-soft">END</span> — imported directly from <span class="code-soft">langgraph.graph</span>.
+										</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">from langgraph.graph import START, END</div>
+
+									<div class="blg-paragraph">
+										<p>
+											<span class="highlight-blue">START</span> is not a real node — it's a marker that tells the graph where execution begins. An edge from <span class="code-soft">START</span> to a node means that node runs first when the graph is invoked.
+										</p>
+										<p>
+											<span class="highlight-orange">END</span> is also not a real node — it's a marker that tells the graph where to stop. When a node connects to <span class="code-soft">END</span>, it means that node is the last step. After it finishes, LangGraph returns the final state to the caller.
+										</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>For the Q&A bot, the edge setup looks like this:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">graph.add_edge(START, "answer")   # graph starts at the answer node
+graph.add_edge("answer", END)     # after answer node, graph stops</div>
+
+									<div class="blg-paragraph">
+										<p>
+											This creates a straight path: <strong>START → answer → END</strong>. The initial state enters at <span class="code-soft">START</span>, the answer node processes it, and the final state is returned at <span class="code-soft">END</span>.
+										</p>
+									</div>
+
+									<blockquote class="blg-callout-note">
+										📌 <strong>Every graph must have:</strong> at least one edge from <span class="code-soft">START</span> to a node, and at least one edge from a node to <span class="code-soft">END</span>. Without either, the graph will raise an error when compiled.
+									</blockquote>
+
+									<hr class="blg-hr" />
+								</div>
+								<!-- End: Edges -->
+
+								<!-- 7. StateGraph — Building the Graph -->
+								<div class="blg-section">
+									<a id="building-graph" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>🏗️ 7. StateGraph — Building the Graph</h2>
+									</div>
+
+									<!-- 7.1 Creating & Wiring the Graph -->
+									<a id="creating-wiring" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">7.1</span>
+										<h3>🔩 Creating &amp; Wiring the Graph</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>
+											<span class="highlight-purple">StateGraph</span> is the central class in LangGraph. It acts as a blueprint — you tell it what the state looks like, register your nodes, connect them with edges, and then compile it into a runnable application.
+										</p>
+										<p>
+											Creating a graph starts with passing the state class as an argument. This tells LangGraph what structure to expect from every node's input and output:
+										</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">from langgraph.graph import StateGraph
+from state import QAState
+
+graph = StateGraph(QAState)</div>
+
+									<div class="blg-paragraph">
+										<p>
+											With the graph created, nodes are registered using <span class="code-soft">add_node()</span>. The first argument is a <strong>string name</strong> — this is the identifier used when adding edges. The second argument is the actual function or method to call:
+										</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">graph.add_node("answer", self.nodes.answer_node)</div>
+
+									<div class="blg-paragraph">
+										<p>
+											The name <span class="code-soft">"answer"</span> is what the edges refer to. The method <span class="code-soft">self.nodes.answer_node</span> is what actually runs when that node is reached. Now the edges are added to connect everything:
+										</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">graph.add_edge(START, "answer")
+graph.add_edge("answer", END)</div>
+
+									<div class="blg-paragraph">
+										<p>
+											At this point the graph is fully wired. Here is the complete <span class="code-soft">graph.py</span> with all of this put together inside a class:
+										</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">import os
+
+from langgraph.graph import END, START, StateGraph
+
+from nodes import QANodes
+from state import QAState
+
+FIGURE_DIR = os.path.join(os.path.dirname(__file__), "figure")
+
+
+class QAGraph:
+
+    def __init__(self):
+        self.nodes = QANodes()
+        self.compiled_graph = self._build()
+
+    def _build(self):
+        graph = StateGraph(QAState)
+
+        graph.add_node("answer", self.nodes.answer_node)
+
+        graph.add_edge(START, "answer")
+        graph.add_edge("answer", END)
+
+        return graph.compile()
+
+    def save_figure(self):
+        os.makedirs(FIGURE_DIR, exist_ok=True)
+
+        mermaid_str = self.compiled_graph.get_graph().draw_mermaid()
+        with open(os.path.join(FIGURE_DIR, "graph.mmd"), "w") as f:
+            f.write(mermaid_str)
+
+        png_bytes = self.compiled_graph.get_graph().draw_mermaid_png()
+        with open(os.path.join(FIGURE_DIR, "graph.png"), "wb") as f:
+            f.write(png_bytes)
+
+    def get_compiled_graph(self):
+        return self.compiled_graph</div>
+
+									<div class="blg-paragraph">
+										<p>
+											<span class="code-soft">_build()</span> is a private method called once in <span class="code-soft">__init__</span>. It creates the graph, registers the node, adds the edges, compiles it, and returns the compiled app. <span class="code-soft">save_figure()</span> uses LangGraph's built-in Mermaid export to generate a visual diagram of the graph structure.
+										</p>
+									</div>
+
+									<!-- 7.2 Compiling the Graph -->
+									<a id="compiling" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">7.2</span>
+										<h3>✅ Compiling the Graph</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>
+											<span class="code-soft">graph.compile()</span> is the final step before a graph can run. It validates the entire structure — checking that every node is reachable, that there is a path from <span class="code-soft">START</span> to <span class="code-soft">END</span>, and that all edge references point to registered nodes. If anything is wrong, it raises an error here rather than at runtime.
+										</p>
+										<p>
+											The result of <span class="code-soft">compile()</span> is a <strong>compiled app</strong> — a fully validated, executable version of the graph. This is what gets invoked with data:
+										</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">app = graph.compile()
+
+result = app.invoke({"question": "What is LangGraph?"})</div>
+
+									<p class="blg-paragraph">
+										<span class="code-soft">QAGraph</span> has no <span class="code-soft">invoke()</span> method — and neither does <span class="code-soft">StateGraph</span>.
+										The method comes from a completely different object: the <span class="code-soft">CompiledStateGraph</span> that <span class="code-soft">graph.compile()</span> returns.
+										<span class="code-soft">CompiledStateGraph</span> inherits from LangChain's <span class="code-soft">Runnable</span> base class, which is what provides <span class="code-soft">.invoke()</span>, <span class="code-soft">.stream()</span>, and <span class="code-soft">.ainvoke()</span>.
+									</p>
+
+									<p class="blg-paragraph">
+										The object chain makes this concrete:
+									</p>
+
+									<div class="blg-code-block" data-lang="python"># Inside QAGraph._build():
+graph = StateGraph(QAState)       # a StateGraph — no invoke()
+# ... add nodes and edges ...
+return graph.compile()            # returns a CompiledStateGraph ← invoke() lives here
+
+# Inside QAGraph.__init__():
+self.compiled_graph = self._build()   # self.compiled_graph IS the CompiledStateGraph
+
+# Inside QARunner.__init__():
+self.app = self.qa_graph.get_compiled_graph()  # self.app IS the CompiledStateGraph
+
+# Inside QARunner.run():
+result = self.app.invoke({"question": question})  # calls CompiledStateGraph.invoke()</div>
+
+									<p class="blg-paragraph">
+										So when <span class="code-soft">self.app.invoke()</span> is called in <span class="code-soft">QARunner</span>, it is calling <span class="code-soft">invoke()</span> on the <span class="code-soft">CompiledStateGraph</span> — never on <span class="code-soft">QAGraph</span>.
+									</p>
+
+									<p class="blg-paragraph">
+										Here is what the <span class="code-soft">CompiledStateGraph</span> engine does internally when <span class="code-soft">invoke()</span> is called with <span class="code-soft">{"question": "What is LangGraph?"}</span>:
+									</p>
+
+									<ul class="blg-ul">
+										<li class="blg-li">
+											<strong>Step 1 — Initialise state.</strong>
+											The input dict is merged with the state schema (<span class="code-soft">QAState</span>). Missing fields get empty defaults:
+											<span class="code-soft">{"question": "What is LangGraph?", "answer": ""}</span>
+										</li>
+										<li class="blg-li">
+											<strong>Step 2 — Read the edge from START.</strong>
+											The engine looks at the edge registry: <span class="code-soft">START → "answer"</span>.
+											It looks up which callable was registered under the name <span class="code-soft">"answer"</span>.
+											That was set by <span class="code-soft">graph.add_node("answer", self.nodes.answer_node)</span> — so the engine resolves <span class="code-soft">"answer"</span> to <span class="code-soft">QANodes.answer_node</span>.
+										</li>
+										<li class="blg-li">
+											<strong>Step 3 — Call the node.</strong>
+											The engine calls <span class="code-soft">answer_node({"question": "What is LangGraph?", "answer": ""})</span>.
+											The node sends the question to Gemini and returns the partial update:
+											<span class="code-soft">{"answer": "LangGraph is a library for building stateful..."}</span>
+										</li>
+										<li class="blg-li">
+											<strong>Step 4 — Merge state.</strong>
+											The engine merges the partial update into the full state:
+											<span class="code-soft">{"question": "What is LangGraph?", "answer": "LangGraph is a library..."}</span>
+										</li>
+										<li class="blg-li">
+											<strong>Step 5 — Read the next edge.</strong>
+											The engine looks at the edge registry again: <span class="code-soft">"answer" → END</span>.
+											<span class="code-soft">END</span> is a sentinel — the engine stops execution and returns the final state to the caller.
+										</li>
+									</ul>
+
+									<div class="blg-callout-purple">
+										💡 <strong>Key insight:</strong> <span class="code-soft">graph.add_node("answer", self.nodes.answer_node)</span> is what connects the string name <span class="code-soft">"answer"</span> to the actual Python function.
+										When the engine follows the edge <span class="code-soft">START → "answer"</span>, it resolves the string <span class="code-soft">"answer"</span> to <span class="code-soft">answer_node</span> through this registry and calls it.
+										The edges work with names, not function references — so the same string must be used consistently in <span class="code-soft">add_node()</span> and <span class="code-soft">add_edge()</span>.
+									</div>
+
+									<div class="blg-table">
+										<table>
+											<thead>
+												<tr>
+													<th>Method</th>
+													<th>Description</th>
+													<th>Use when</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td><span class="code-soft">.invoke()</span></td>
+													<td>Runs the graph and returns the final state</td>
+													<td>Scripts, batch processing</td>
+												</tr>
+												<tr>
+													<td><span class="code-soft">.stream()</span></td>
+													<td>Yields state updates as each node finishes</td>
+													<td>Real-time output, debugging</td>
+												</tr>
+												<tr>
+													<td><span class="code-soft">.ainvoke()</span></td>
+													<td>Async version of invoke</td>
+													<td>FastAPI, async applications</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+
+									<blockquote class="blg-callout-tip">
+										✅ Always call <span class="code-soft">compile()</span> before invoking. Calling a raw <span class="code-soft">StateGraph</span> directly will raise an error — it must be compiled first.
+									</blockquote>
+
+									<hr class="blg-hr" />
+								</div>
+								<!-- End: StateGraph -->
+
+								<!-- 8. Complete Example -->
+								<div class="blg-section">
+									<a id="complete-example" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>🤖 8. Complete Example: Simple Q&amp;A Bot</h2>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>
+											Everything covered so far — state, nodes, edges, and the graph — comes together in this example. The project is split across five files, each responsible for one concept. Here is a recap of the full structure before walking through the entry point:
+										</p>
+									</div>
+
+									<div class="blg-tree"><span class="tree-root">basics-1-stategraph-nodes-edges/</span>
+<span class="tree-pipe">├── </span><span class="tree-file">config.py</span>     <span class="tree-comment"># loads .env, Gemini config</span>
+<span class="tree-pipe">├── </span><span class="tree-file">llm.py</span>        <span class="tree-comment"># initialises GeminiLLM</span>
+<span class="tree-pipe">├── </span><span class="tree-file">state.py</span>      <span class="tree-comment"># defines QAState (TypedDict)</span>
+<span class="tree-pipe">├── </span><span class="tree-file">nodes.py</span>      <span class="tree-comment"># defines the answer node</span>
+<span class="tree-pipe">├── </span><span class="tree-file">graph.py</span>      <span class="tree-comment"># builds and compiles the StateGraph</span>
+<span class="tree-pipe">├── </span><span class="tree-file">qa_runner.py</span>  <span class="tree-comment"># QARunner — console entry point</span>
+<span class="tree-pipe">├── </span><span class="tree-file">app.py</span>        <span class="tree-comment"># Gradio web UI</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">figure/</span>       <span class="tree-comment"># auto-generated graph diagrams (.mmd + .png)</span>
+<span class="tree-pipe">└── </span><span class="tree-spec">.env</span>          <span class="tree-comment"># API keys (never commit this)</span></div>
+
+									<!-- 8.1 Full Code Walkthrough -->
+									<a id="code-walkthrough" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">8.1</span>
+										<h3>📖 Full Code Walkthrough</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>
+											The entry point is <span class="code-soft">qa_runner.py</span>. It contains a <span class="code-soft">QARunner</span> class that wires the compiled graph to a clean interface, and a <span class="code-soft">__main__</span> block that runs the demo:
+										</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">from graph import QAGraph
+
+
+class QARunner:
+
+    def __init__(self):
+        self.qa_graph = QAGraph()
+        self.app = self.qa_graph.get_compiled_graph()
+
+    def save_figure(self):
+        self.qa_graph.save_figure()
+
+    def run(self, question: str) -> str:
+        result = self.app.invoke({"question": question})
+        return result["answer"]
+
+
+if __name__ == "__main__":
+    runner = QARunner()
+
+    print("\n" + "=" * 60)
+    print("         LangGraph Basics — Q&A Bot Demo")
+    print("=" * 60)
+
+    print("\n Saving graph architecture...")
+    runner.save_figure()
+
+    questions = [
+        "What is LangGraph in one sentence?",
+        "What is the difference between a node and an edge in LangGraph?",
+        "Why do we need state in LangGraph?",
+    ]
+
+    for i, question in enumerate(questions, 1):
+        print(f"\n[{i}] {question}")
+        print("-" * 60)
+        print(runner.run(question))
+        print("=" * 60)</div>
+
+									<div class="blg-paragraph">
+										<p>Breaking it down step by step:</p>
+									</div>
+
+									<ul class="blg-ul">
+										<li class="blg-li">
+											<strong><span class="code-soft">QARunner.__init__</span></strong> — instantiates <span class="code-soft">QAGraph</span>, which internally builds the graph, registers the node, adds the edges, and compiles everything. By the time <span class="code-soft">__init__</span> finishes, the app is ready to run.
+										</li>
+										<li class="blg-li">
+											<strong><span class="code-soft">save_figure()</span></strong> — delegates to <span class="code-soft">QAGraph.save_figure()</span>, which exports the graph as both <span class="code-soft">graph.mmd</span> (Mermaid syntax) and <span class="code-soft">graph.png</span> into the <span class="code-soft">figure/</span> folder. The folder is created automatically if it doesn't exist.
+										</li>
+										<li class="blg-li">
+											<strong><span class="code-soft">run(question)</span></strong> — invokes the compiled graph with an initial state of <span class="code-soft">{"question": question}</span>. The graph runs through START → answer → END, and the final state is returned. The method extracts and returns just the <span class="code-soft">answer</span> field.
+										</li>
+										<li class="blg-li">
+											<strong><span class="code-soft">__main__</span> block</strong> — creates a runner, saves the graph diagram, then loops through three questions and prints each answer with clear formatting.
+										</li>
+									</ul>
+
+									<blockquote class="blg-callout-purple">
+										🔗 <strong>How the files connect:</strong> <span class="code-soft">qa_runner.py</span> imports <span class="code-soft">QAGraph</span> → which imports <span class="code-soft">QANodes</span> and <span class="code-soft">QAState</span> → <span class="code-soft">QANodes</span> imports <span class="code-soft">GeminiLLM</span> from <span class="code-soft">llm.py</span> → which reads config from <span class="code-soft">config.py</span>. Each file has exactly one responsibility and depends only on what it needs.
+									</blockquote>
+
+									<!-- 8.2 Running & Output -->
+									<a id="running-output" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">8.2</span>
+										<h3>▶️ Running &amp; Output</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Run the bot from inside the project folder:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="bash">cd basics-1-stategraph-nodes-edges
+python qa_runner.py</div>
+
+									<div class="blg-paragraph">
+										<p>The output looks like this:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="bash">============================================================
+         LangGraph Basics — Q&A Bot Demo
+============================================================
+
+ Saving graph architecture...
+  Graph saved → figure/graph.mmd
+  Graph saved → figure/graph.png
+
+[1] What is LangGraph in one sentence?
+------------------------------------------------------------
+LangGraph is a library for building stateful, multi-actor
+applications with LLMs by representing workflows as graphs
+that support cycles, loops, and complex logic.
+============================================================
+
+[2] What is the difference between a node and an edge in LangGraph?
+------------------------------------------------------------
+A node is a processing step that reads from and writes to
+the shared state. An edge is a connection between two nodes
+that defines which one runs next.
+============================================================
+
+[3] Why do we need state in LangGraph?
+------------------------------------------------------------
+State is the shared memory that flows through the entire
+graph. Without it, nodes would have no way to read input
+from previous steps or pass results to the next step.
+============================================================</div>
+
+									<div class="blg-paragraph">
+										<p>Below is the LangGraph diagram generated by the bot — a simple three-step flow.</p>
+									</div>
+
+									<div class="blg-img-container">
+										<div class="blg-mermaid-container">
+											<pre class="mermaid">
+%%{init: {"flowchart": {"curve": "linear"}}}%%
+graph TD
+    S([__start__]):::first
+    A(answer)
+    E([__end__]):::last
+    S --> A
+    A --> E
+    classDef default fill:#f2f0ff,line-height:1.2
+    classDef first fill-opacity:0
+    classDef last fill:#bfb6fc
+											</pre>
+										</div>
+										<p class="blg-img-caption">Graph architecture of the Q&amp;A bot — <code>__start__</code> feeds into the <code>answer</code> node, which connects to <code>__end__</code>.</p>
+									</div>
+
+									<blockquote class="blg-callout-tip">
+										✅ The graph diagram is a useful debugging and documentation tool. As the graph grows more complex in later parts of this series, the diagram will immediately show which nodes are connected and how the flow branches.
+									</blockquote>
+
+									<hr class="blg-hr" />
+								</div>
+								<!-- End: Complete Example -->
+
+								<!-- 9. Web UI with Gradio -->
+								<div class="blg-section">
+									<a id="web-ui" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>🖥️ 9. Web UI with Gradio</h2>
+									</div>
+
+									<p class="blg-paragraph">
+										The console runner in <span class="code-soft">qa_runner.py</span> works fine for testing, but a chat interface is a more natural way to interact with a Q&amp;A bot.
+										<span class="code-soft">app.py</span> wraps the same <span class="code-soft">QARunner</span> in a <strong>Gradio</strong> <span class="code-soft">ChatInterface</span> — no changes to the graph, state, or nodes needed.
+									</p>
+
+									<div class="blg-code-block" data-lang="python">import gradio as gr
+
+from qa_runner import QARunner
+
+
+class QAApp:
+
+    def __init__(self):
+        self.runner = QARunner()
+
+    def respond(self, message: str, _history: list) -> str:
+        if not message.strip():
+            return ""
+        return self.runner.run(message)
+
+    def launch(self):
+        gr.ChatInterface(
+            fn=self.respond,
+            title="🤖 LangGraph Chatbot",
+        ).launch()
+
+
+if __name__ == "__main__":
+    QAApp().launch()</div>
+
+									<p class="blg-paragraph">
+										<span class="code-soft">QAApp.respond</span> matches the signature Gradio's <span class="code-soft">ChatInterface</span> expects — <span class="code-soft">message</span> (the current input) and <span class="code-soft">_history</span> (the conversation so far).
+										The history is not passed into the graph here because each question is stateless — the LangGraph state resets on every <span class="code-soft">.invoke()</span> call.
+									</p>
+
+									<p class="blg-paragraph">
+										Run the web UI with:
+									</p>
+
+									<div class="blg-code-block" data-lang="bash">cd basics-1-stategraph-nodes-edges
+python app.py</div>
+
+									<p class="blg-paragraph">
+										Gradio starts a local server at <span class="code-soft">http://127.0.0.1:7860</span> and opens a chat interface in the browser with a message history panel and a text input.
+									</p>
+
+									<div class="blg-img-container">
+										<img src="../img/blog_8/web_ui.png" alt="LangGraph Chatbot — Gradio Web UI" class="blg-img" />
+										<p class="blg-img-caption">LangGraph Chatbot running in the browser via Gradio.</p>
+									</div>
+
+									<div class="blg-callout-tip">
+										✅ <strong>app.py vs qa_runner.py:</strong> Both run the same LangGraph graph. <span class="code-soft">qa_runner.py</span> is a quick console runner for testing. <span class="code-soft">app.py</span> is the web interface for interactive use. The graph, state, and nodes are shared — only the entry point differs.
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+								<!-- End: Web UI with Gradio -->
+
+								<!-- 10. Conclusion -->
+								<div class="blg-section">
+									<a id="conclusion" class="blg-anchor"></a>
+									<div class="blg-main-header">
+										<h2>🎯 10. Conclusion</h2>
+									</div>
+
+									<p class="blg-paragraph">
+										Three components sit at the center of every LangGraph application.
+										<span class="highlight-blue">State</span> holds all the data that flows through a graph — a plain
+										<span class="code-soft">TypedDict</span> that each node can read from and write back to.
+										<span class="highlight-blue">Nodes</span> are the processing units — Python functions or class methods that receive the current state, do something with it, and return an updated slice.
+										<span class="highlight-blue">Edges</span> define the wiring — which node runs after which, starting from
+										<span class="code-soft">START</span> and finishing at <span class="code-soft">END</span>.
+									</p>
+
+									<p class="blg-paragraph">
+										The Q&amp;A bot in this post was intentionally minimal: one state, one node, two edges.
+										That minimal structure is not a simplification — it is exactly how every larger LangGraph graph is assembled.
+										Multi-step pipelines, branching workflows, and multi-agent systems all reduce to the same three concepts wired together differently.
+									</p>
+
+									<div class="blg-callout-tip">
+										<strong>Up next — Basics Part 2:</strong> The next post goes deeper into
+										<strong>State</strong> — specifically <code>Annotated</code> fields and custom reducers.
+										Reducers control what happens when two nodes both write to the same state key:
+										whether the new value replaces the old one, gets appended to a list, or gets merged through any custom logic you define.
+										That mechanism becomes essential the moment a graph has more than one node touching the same field.
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+								<!-- End: Conclusion -->
+
+								<!-- 10. Technical Stacks -->
+								<div class="blg-trailing-section">
+									<div class="blg-trailing-header">
+										<img src="../img/technical_stack/stack.png" alt="Technical Stacks" />
+										<h2>Technical Stacks</h2>
+									</div>
+									<div class="blg-tech-grid">
+										<div class="blg-tech-card"><img src="../img/technical_stack/python.svg" alt="Python" /> Python</div>
+										<div class="blg-tech-card"><img src="../img/technical_stack/langgraph.svg" alt="LangGraph" /> LangGraph</div>
+										<div class="blg-tech-card"><img src="../img/technical_stack/gemini.svg" alt="Gemini" /> Gemini</div>
+									</div>
+								</div>
+								<!-- End: Technical Stacks -->
+
+								<!-- 11. Download Source Code -->
+								<div class="blg-download-card">
+									<img src="../img/others/download.svg" alt="Download" />
+									<div class="blg-download-info">
+										<h3>Download Source Code</h3>
+										<p>LangGraph Basics — StateGraph, Nodes &amp; Edges</p>
+									</div>
+									<a href="https://github.com/shafiqul-islam-sumon/langgraph/tree/main" class="blg-download-btn" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+								</div>
+								<!-- End: Download Source Code -->
+
+								<!-- 12. References -->
+								<div class="blg-trailing-section">
+									<div class="blg-trailing-header">
+										<span style="font-size: 22px; line-height: 1;">📚</span>
+										<h2>References</h2>
+									</div>
+									<ul class="blg-ul">
+										<li class="blg-li">
+											<img src="../img/technical_stack/github.svg" alt="GitHub" width="18" style="vertical-align: middle; margin-right: 6px;" />
+											<strong>GitHub Repository:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://github.com/shafiqul-islam-sumon/langgraph/tree/main">LangGraph Basics — Source Code</a>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/langchain.svg" alt="LangGraph" width="18" style="vertical-align: middle; margin-right: 6px;" />
+											<strong>LangGraph Docs:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://langchain-ai.github.io/langgraph/">langchain-ai.github.io/langgraph</a>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/gemini.svg" alt="Gemini" width="18" style="vertical-align: middle; margin-right: 6px;" />
+											<strong>Google Gemini API:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://ai.google.dev/">ai.google.dev</a>
+										</li>
+									</ul>
+								</div>
+								<!-- End: References -->
+
+							</div>
+							<!-- End: blogContainer -->
+						</div>
+						<!-- End: blog-detail-main -->
+					</div>
+					<!-- End: blog-detail-layout -->
+
+					<!-- Related Blog Posts — outside .blog-detail-layout, inside .container -->
+					<div class="related-posts-section">
+						<div class="blog-title-bar">
+							<img src="../img/others/blog.png" alt="blog post" style="width: 24px; height: auto;" />
+							<h2>Related Blog Posts</h2>
+						</div>
+						<div class="related-posts-wrapper">
+							<div class="related-posts-swiper-area">
+								<div class="swiper" id="postContainer">
+									<div class="swiper-wrapper">
+										<!-- populated by detail.js -->
+									</div>
+								</div>
+								<div class="swiper-button-prev"></div>
+								<div class="swiper-button-next"></div>
+							</div>
+							<div class="blg-slide-counter">
+								<div class="slide-progress-bar">
+									<div class="slide-progress-fill" id="slideProgressFill"></div>
+								</div>
+								<div class="slide-counter-label">
+									<span id="currentSlide">1</span> / <span id="totalSlides">1</span>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</section>
+			<div id="site-footer"></div>
+		</div>
+
+		<!-- JavaScript (order matters) -->
+		<script type="text/javascript" src="../js/bootstrap.bundle.min.js"></script>
+		<script type="text/javascript" src="../js/components.js"></script>
+		<script type="text/javascript" src="../js/site.js"></script>
+		<script src="../js/swiper-bundle.min.js"></script>
+		<script src="../js/prism.js" data-manual></script>
+		<script type="text/javascript" src="../js/code-highlight.js"></script>
+		<script type="text/javascript" src="../js/detail.js"></script>
+		<script src="../js/mermaid.min.js"></script>
+		<script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+	</body>
+</html>

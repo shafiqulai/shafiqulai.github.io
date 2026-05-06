@@ -307,6 +307,7 @@ function getCategoryIcons() {
         "Gradio": "./img/technical_stack/gradio.svg",
         "RAG": "./img/technical_stack/rag.png",
         "LangChain": "./img/technical_stack/langchain.svg",
+        "LangGraph": "./img/technical_stack/langgraph.svg",
         "Qdrant": "./img/technical_stack/qdrant.svg",
         "ChromaDB": "./img/technical_stack/chroma.svg",
         "OpenAI": "./img/technical_stack/openai.svg",
