@@ -262,12 +262,20 @@ For any post in the LangGraph series, Section 2 (Installation & Setup) must foll
                       langgraph\Scripts\activate         (Windows)
 3. requirements.txt → show full file as properties block, then pip install -r requirements.txt
 4. Gemini API key   → Google AI Studio link, .env contents, .gitignore warning
-5. Project tree     → blg-tree with all files for that post
+5. Project tree     → blg-tree with all files for that post (include prompts/ subfolder if used)
 6. File-to-section  → sentence mapping each file to its section number
 7. Subsection 2.1   → Configuring the LLM (config.py + llm.py code + explanation)
 ```
 
 Never show a bare `pip install pkg1 pkg2` one-liner — always use `requirements.txt`.
+
+**Prompts folder** — when the post uses the `prompts/` convention, show it in the tree:
+```html
+<span class="tree-pipe">    ├── </span><span class="tree-file">nodes.py</span>                <span class="tree-comment"># node functions</span>
+<span class="tree-pipe">    ├── </span><span class="tree-dir">prompts/</span>                <span class="tree-comment"># LLM prompt templates, one file per node</span>
+<span class="tree-pipe">    │   ├── </span><span class="tree-file">node_a.txt</span>       <span class="tree-comment"># prompt for node_a</span>
+<span class="tree-pipe">    │   └── </span><span class="tree-file">node_b.txt</span>       <span class="tree-comment"># prompt for node_b</span>
+```
 
 ## Step 6 — Code blocks and trees
 

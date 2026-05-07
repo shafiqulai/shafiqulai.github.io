@@ -1,0 +1,966 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<!-- Google tag (gtag.js) -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-6SEFZQJHM1"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
+
+			gtag("config", "G-6SEFZQJHM1", {
+				cookie_domain: "shafiqulai.github.io",
+			});
+		</script>
+
+		<meta charset="utf-8" />
+		<title>LangGraph Basics: Part 2 — State, Annotated Fields &amp; Custom Reducers</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="LangGraph routes data between nodes through a shared TypedDict called State. By default, when a node returns a value for an existing key, it replaces whatever was already there — a behaviour called last-write-wins. For fields that should accumulate rather than overwrite, LangGraph supports Annotated type hints paired with reducer functions, including the built-in operator.add and add_messages."
+		/>
+		<meta name="author" content="MD SHAFIQUL ISLAM" />
+		<link rel="icon" href="../img/others/favicon.ico" type="image/x-icon" />
+
+		<!-- Fonts -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+
+		<!-- CSS (order matters) -->
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+		<link rel="stylesheet" href="../css/swiper-bundle.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/style.css" />
+		<link rel="stylesheet" type="text/css" href="../css/prism.css" />
+	</head>
+
+	<body>
+		<!-- Reading Progress Bar -->
+		<div id="reading-progress"></div>
+		<div id="wrapper">
+			<div id="site-header"></div>
+
+			<section id="content">
+				<div class="container">
+					<div class="blog-detail-layout">
+
+						<!-- Left: Sticky TOC Sidebar -->
+						<aside class="toc-sidebar" id="tocSidebar">
+							<div class="toc-sidebar-header">
+								<p class="toc-sidebar-title">Contents</p>
+							</div>
+							<ul class="toc-sidebar-list">
+								<li><a href="#state-really">1. What is State — Really?</a></li>
+								<li class="toc-sidebar-sub"><a href="#merge-problem">The Merge Problem</a></li>
+								<li><a href="#annotated-fields">2. Annotated Fields</a></li>
+								<li class="toc-sidebar-sub"><a href="#what-is-annotated">What is Annotated?</a></li>
+								<li class="toc-sidebar-sub"><a href="#annotated-in-state">Annotated in State</a></li>
+								<li><a href="#builtin-reducers">3. Built-in Reducers</a></li>
+								<li class="toc-sidebar-sub"><a href="#operator-add">operator.add</a></li>
+								<li class="toc-sidebar-sub"><a href="#add-messages">add_messages</a></li>
+								<li><a href="#custom-reducers">4. Custom Reducers</a></li>
+								<li class="toc-sidebar-sub"><a href="#reducer-signature">Reducer Signature</a></li>
+								<li class="toc-sidebar-sub"><a href="#concrete-reducer">A Concrete Custom Reducer</a></li>
+								<li><a href="#messages-state">5. MessagesState — The Shortcut</a></li>
+								<li><a href="#complete-example">6. Complete Example: Topic Expander</a></li>
+								<li class="toc-sidebar-sub"><a href="#code-walkthrough">Full Code Walkthrough</a></li>
+								<li class="toc-sidebar-sub"><a href="#running-output">Running &amp; Output</a></li>
+								<li><a href="#web-ui">7. Web UI with Gradio</a></li>
+								<li><a href="#conclusion">8. Conclusion</a></li>
+							</ul>
+						</aside>
+
+						<!-- Right: Blog Content -->
+						<div class="blog-detail-main">
+							<div id="blogContainer">
+
+								<!-- Blog Title -->
+								<div class="container blg-title-container">
+									<h2 class="blg-title">LangGraph Basics: Part 2 — State, Annotated Fields &amp; Custom Reducers</h2>
+								</div>
+
+								<!-- Author Info -->
+								<div class="author_section">
+									<img id="author_img" src="" alt="Author Photo" class="author_img" />
+									<div class="author_details">
+										<span id="author_name" class="author_name"></span>
+										<span id="published_date" class="published_date"></span>
+									</div>
+								</div>
+
+								<!-- Intro -->
+								<div class="blg-intro">
+									<div class="blg-intro-img">
+										<img
+											src="../img/blog_9/thumbnail.webp"
+											alt="LangGraph Basics — State, Annotated Fields and Custom Reducers"
+											class="blg-thumbnail"
+										/>
+									</div>
+									<div class="blg-intro-text">
+										<p>
+											🔄 In <a class="blg-link" href="./blog_8.html">Part 1</a> we introduced LangGraph's three core primitives — State, Nodes, and Edges — and built a simple Q&amp;A bot with a single node. The state was a plain <span class="code-soft">TypedDict</span> with two fields: <span class="code-soft">question</span> and <span class="code-soft">answer</span>. Simple, clean, and exactly right for a single-node graph.
+										</p>
+
+										<p>
+											🧩 But as graphs grow — more nodes, more processing steps — a new challenge appears. By default, LangGraph uses a <strong>last-write-wins</strong> rule: if two nodes both return a value for the same field, the second one overwrites the first. For most fields that's fine. But for fields that should <em>accumulate</em> data across nodes — a running list of results, a growing message history — overwriting is a bug waiting to happen.
+										</p>
+
+										<p>
+											🛠️ The fix is <strong>Annotated fields</strong> with <strong>reducer functions</strong>. A reducer tells LangGraph how to <em>merge</em> a node's returned value with whatever the field already holds, instead of replacing it. In this part we'll cover how reducers work, the built-in options, how to write your own, and the ready-made <span class="code-soft">MessagesState</span> shortcut. A complete Topic Expander application ties it all together.
+										</p>
+
+										<blockquote class="blg-callout-tip">
+											✅ <strong>Who this is for:</strong> You've read Part 1 (or understand StateGraph, nodes, and edges). No extra prerequisites needed.
+										</blockquote>
+									</div>
+								</div>
+
+								<!-- Inline Table of Contents (visible on mobile) -->
+								<div class="blg-toc-container">
+									<h2>📚 Table of Contents</h2>
+									<ol class="blg-toc-ol">
+										<li class="blg-toc-li"><a href="#state-really">💾 1. What is State — Really?</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#merge-problem">The Merge Problem</a></li>
+										</ul>
+
+										<li class="blg-toc-li"><a href="#annotated-fields">🏷️ 2. Annotated Fields</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#what-is-annotated">What is Annotated?</a></li>
+											<li class="blg-toc-li"><a href="#annotated-in-state">Annotated in State</a></li>
+										</ul>
+
+										<li class="blg-toc-li"><a href="#builtin-reducers">🔧 3. Built-in Reducers</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#operator-add">operator.add</a></li>
+											<li class="blg-toc-li"><a href="#add-messages">add_messages</a></li>
+										</ul>
+
+										<li class="blg-toc-li"><a href="#custom-reducers">✍️ 4. Custom Reducers</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#reducer-signature">Reducer Signature</a></li>
+											<li class="blg-toc-li"><a href="#concrete-reducer">A Concrete Custom Reducer</a></li>
+										</ul>
+
+										<li class="blg-toc-li"><a href="#messages-state">💬 5. MessagesState — The Shortcut</a></li>
+
+										<li class="blg-toc-li"><a href="#complete-example">🤖 6. Complete Example: Topic Expander</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#code-walkthrough">Full Code Walkthrough</a></li>
+											<li class="blg-toc-li"><a href="#running-output">Running &amp; Output</a></li>
+										</ul>
+
+										<li class="blg-toc-li"><a href="#web-ui">🖥️ 7. Web UI with Gradio</a></li>
+										<li class="blg-toc-li"><a href="#conclusion">🏁 8. Conclusion</a></li>
+									</ol>
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- Section 1: What is State — Really?                    -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="state-really" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>💾 1. What is State — Really?</h2></div>
+
+									<p class="blg-paragraph">
+										In Part 1 we said that state is a shared dictionary that flows through your graph. That's accurate, but it glosses over something important: what exactly happens when a node returns a value?
+									</p>
+
+									<p class="blg-paragraph">
+										Every node in LangGraph is expected to return a <em>partial</em> dictionary — only the keys it changed. After the node finishes, LangGraph takes that partial dict and <strong>merges</strong> it back into the full state. The key question is: <em>how</em> does it merge?
+									</p>
+
+									<p class="blg-paragraph">
+										For plain <span class="code-soft">TypedDict</span> fields, the answer is simple: <strong>last write wins</strong>. Whatever the node returns replaces whatever was already in that field. The previous value is gone.
+									</p>
+
+									<blockquote class="blg-callout-info">
+										📌 <strong>Default merge rule:</strong> For any field declared without a reducer, LangGraph replaces the old value with the new one. This is exactly what you want for fields like <span class="code-soft">answer</span> or <span class="code-soft">summary</span> — you only care about the latest value.
+									</blockquote>
+
+									<!-- 1.1 -->
+									<a id="merge-problem" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">1.1</span>
+										<h3>The Merge Problem</h3>
+									</div>
+
+									<p class="blg-paragraph">
+										Last-write-wins works perfectly when only one node writes to a field, or when you genuinely want to overwrite. But imagine a graph where two nodes both contribute results to a shared list — say, a list of <span class="code-soft">points</span> about a topic. Node 1 generates key facts. Node 2 generates deeper insights. Both return values for <span class="code-soft">points</span>.
+									</p>
+
+									<p class="blg-paragraph">
+										With a plain TypedDict field, this is what happens:
+									</p>
+
+									<div class="blg-code-block" data-lang="python">from typing import TypedDict
+
+class BrokenState(TypedDict):
+    topic: str
+    points: list[str]   # plain field — no reducer, last write wins
+
+# After expand_node runs and returns {"points": ["Fact A", "Fact B", "Fact C"]}:
+# state["points"] = ["Fact A", "Fact B", "Fact C"]  ✅
+
+# After refine_node runs and returns {"points": ["Insight A", "Insight B", "Insight C"]}:
+# state["points"] = ["Insight A", "Insight B", "Insight C"]  ❌ Facts are gone!</div>
+
+									<p class="blg-paragraph">
+										Node 2 wipes out everything Node 1 produced. If you weren't careful, you'd never notice — the graph would still run without errors, but you'd lose half your data silently. This is the merge problem.
+									</p>
+
+									<p class="blg-paragraph">
+										The fix is to tell LangGraph <em>how</em> to merge values for this specific field — and that's exactly what Annotated fields and reducers do.
+									</p>
+
+									<hr class="blg-hr">
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- Section 2: Annotated Fields                           -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="annotated-fields" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🏷️ 2. Annotated Fields</h2></div>
+
+									<p class="blg-paragraph">
+										Before we look at <span class="highlight-purple">Annotated</span>, let's get clear on what a <strong>reducer</strong> actually is — because Annotated is just the mechanism for attaching a reducer to a field.
+									</p>
+
+									<blockquote class="blg-callout-info">
+										🔁 <strong>What is a reducer?</strong><br><br>
+										A reducer is a function that answers one question: <em>"when this field already has a value and a node returns a new value for the same field, how should the old and new values be combined?"</em>
+										<br><br>
+										Think of a shared shopping list at home. You write three items in the morning. Your partner adds two more in the afternoon. The rule for combining those two lists is the reducer — it could be "merge everything together", "keep only unique items", or "take the latest version". LangGraph calls that rule function automatically whenever a node writes to a field that has a reducer attached.
+										<br><br>
+										Without a reducer → LangGraph replaces the old value with the new one (last-write-wins).<br>
+										With a reducer → LangGraph calls <span class="code-soft">reducer(old_value, new_value)</span> and uses the result.
+									</blockquote>
+
+									<p class="blg-paragraph">
+										<span class="highlight-purple">Annotated</span> is a standard Python typing tool — not something LangGraph invented. It lets you attach extra metadata to a type hint. LangGraph reads that metadata to find the reducer for each field.
+									</p>
+
+									<!-- 2.1 -->
+									<a id="what-is-annotated" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">2.1</span>
+										<h3>What is Annotated?</h3>
+									</div>
+
+									<p class="blg-paragraph">
+										<span class="code-soft">Annotated</span> comes from Python's <span class="code-soft">typing</span> module (Python 3.9+). The syntax is:
+									</p>
+
+									<div class="blg-code-block" data-lang="python">from typing import Annotated
+
+# Annotated[actual_type, metadata]
+x: Annotated[int, "this is just metadata"] = 42</div>
+
+									<p class="blg-paragraph">
+										Python itself ignores the metadata at runtime — it has no effect on how the variable behaves. But libraries and frameworks can read it using <span class="code-soft">typing.get_type_hints()</span> with <span class="code-soft">include_extras=True</span>. LangGraph does exactly this: when it sees <span class="code-soft">Annotated[list[str], some_function]</span>, it treats <span class="code-soft">some_function</span> as the reducer for that field.
+									</p>
+
+									<blockquote class="blg-callout-note">
+										📝 <strong>Note:</strong> <span class="code-soft">Annotated</span> is a general Python feature used by many libraries — Pydantic uses it for field validators, FastAPI uses it for dependency injection, and LangGraph uses it for reducers. The concept is the same: attach structured metadata to a type and let the framework read it.
+									</blockquote>
+
+									<!-- 2.2 -->
+									<a id="annotated-in-state" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">2.2</span>
+										<h3>Annotated in State</h3>
+									</div>
+
+									<p class="blg-paragraph">
+										To fix the merge problem, declare the field with <span class="code-soft">Annotated</span> and pass a reducer function as the second argument:
+									</p>
+
+									<div class="blg-code-block" data-lang="python">import operator
+from typing import Annotated, TypedDict
+
+class FixedState(TypedDict):
+    topic: str
+    points: Annotated[list[str], operator.add]  # reducer: concatenates lists</div>
+
+									<p class="blg-paragraph">
+										Now when a node returns <span class="code-soft">{"points": ["Insight A", "Insight B"]}</span>, LangGraph doesn't replace the list. Instead it calls:
+									</p>
+
+									<div class="blg-code-block" data-lang="python">new_points = operator.add(current_points, ["Insight A", "Insight B"])
+# equivalent to: current_points + ["Insight A", "Insight B"]</div>
+
+									<p class="blg-paragraph">
+										The result is the two lists joined together. Whatever was in <span class="code-soft">points</span> before is preserved, and the new items are added at the end. Here's the same two-node scenario, now working correctly:
+									</p>
+
+									<div class="blg-code-block" data-lang="python"># After expand_node returns {"points": ["Fact A", "Fact B", "Fact C"]}:
+# LangGraph calls: operator.add([], ["Fact A", "Fact B", "Fact C"])
+# state["points"] = ["Fact A", "Fact B", "Fact C"]  ✅
+
+# After refine_node returns {"points": ["Insight A", "Insight B", "Insight C"]}:
+# LangGraph calls: operator.add(["Fact A", "Fact B", "Fact C"], ["Insight A", "Insight B", "Insight C"])
+# state["points"] = ["Fact A", "Fact B", "Fact C", "Insight A", "Insight B", "Insight C"]  ✅</div>
+
+									<p class="blg-paragraph">
+										Both nodes' contributions survive. The field accumulates instead of overwriting. Fields <em>without</em> <span class="code-soft">Annotated</span> — like <span class="code-soft">topic</span> and <span class="code-soft">summary</span> above — still use last-write-wins, which is exactly what you want for those.
+									</p>
+
+									<blockquote class="blg-callout-tip">
+										🔗 <strong>How does Annotated actually solve the merge problem?</strong><br><br>
+										When your graph starts, LangGraph inspects all the type hints in your state class. For a plain field like <span class="code-soft">answer: str</span>, it notes "use the default replace rule". For an Annotated field like <span class="code-soft">points: Annotated[list[str], operator.add]</span>, it extracts the second argument — <span class="code-soft">operator.add</span> — and stores it as the reducer for that field.
+										<br><br>
+										From then on, whenever a node returns a value for <span class="code-soft">points</span>, LangGraph calls <span class="code-soft">operator.add(current_value, new_value)</span> instead of doing a replacement. <span class="code-soft">Annotated</span> is the attachment point — the only way to tell LangGraph "use this specific function to merge this field". Without it, there's no hook to plug a reducer in.
+									</blockquote>
+
+									<hr class="blg-hr">
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- Section 3: Built-in Reducers                          -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="builtin-reducers" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🔧 3. Built-in Reducers</h2></div>
+
+									<p class="blg-paragraph">
+										Any Python function that fits the reducer contract works — you're not limited to any specific library or built-in. That said, two ready-made options cover the vast majority of cases: <span class="code-soft">operator.add</span> from Python's standard library, and <span class="code-soft">add_messages</span> from LangGraph itself. Section 4 covers writing your own when you need different logic.
+									</p>
+
+									<!-- 3.1 -->
+									<a id="operator-add" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">3.1</span>
+										<h3>operator.add</h3>
+									</div>
+
+									<p class="blg-paragraph">
+										Python ships with a built-in standard library module called <span class="code-soft">operator</span>. It provides function-form equivalents of Python's built-in operators — things like <span class="code-soft">+</span>, <span class="code-soft">-</span>, <span class="code-soft">*</span>, and more. These are useful when you need to pass an operator as a callable (something you can hand to another function), rather than use it as inline syntax.
+									</p>
+
+									<p class="blg-paragraph">
+										<span class="code-soft">operator.add(a, b)</span> does exactly the same thing as <span class="code-soft">a + b</span>. For lists that means concatenation, for strings it joins them, and for numbers it adds them:
+									</p>
+
+									<div class="blg-code-block" data-lang="python">import operator
+
+operator.add([1, 2, 3], [4, 5])    # → [1, 2, 3, 4, 5]
+operator.add("hello ", "world")    # → "hello world"
+operator.add(10, 5)                # → 15</div>
+
+									<p class="blg-paragraph">
+										When used as a reducer for a <span class="code-soft">list[str]</span> field, each node simply returns a list of new items. LangGraph concatenates that list onto whatever is already in the field. The items accumulate in the order the nodes run — exactly like appending to a list, except the append logic lives in the state definition rather than in the nodes themselves.
+									</p>
+
+									<blockquote class="blg-callout-tip">
+										💡 <strong>Tip:</strong> Because the accumulation is handled by the reducer, your node functions stay simple — they just return a list of new items, with no need to read the current state value before appending.
+									</blockquote>
+
+									<!-- 3.2 -->
+									<a id="add-messages" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">3.2</span>
+										<h3>add_messages</h3>
+									</div>
+
+									<p class="blg-paragraph">
+										<span class="code-soft">add_messages</span> comes from LangGraph and is specifically designed for chat message history. It does something smarter than plain concatenation: it <strong>deduplicates by message ID</strong>. If a message with the same ID already exists in the list, the newer version replaces the older one. New messages (no matching ID) are appended.
+									</p>
+
+									<div class="blg-code-block" data-lang="python">from langgraph.graph.message import add_messages
+from langchain_core.messages import HumanMessage, AIMessage
+from typing import Annotated, TypedDict
+
+class ChatState(TypedDict):
+    messages: Annotated[list, add_messages]</div>
+
+									<p class="blg-paragraph">
+										This is important for conversational agents where messages can be updated or corrected — you don't want duplicates cluttering the history. <span class="code-soft">add_messages</span> is the right choice whenever your field holds LangChain message objects (<span class="code-soft">HumanMessage</span>, <span class="code-soft">AIMessage</span>, etc.).
+									</p>
+
+									<hr class="blg-hr">
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- Section 4: Custom Reducers                            -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="custom-reducers" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>✍️ 4. Custom Reducers</h2></div>
+
+									<p class="blg-paragraph">
+										<span class="code-soft">operator.add</span> and <span class="code-soft">add_messages</span> cover the most common cases. But sometimes you need different merge logic — for example, keeping only unique items, capping a list at a maximum length, or merging dictionaries in a specific way. Any Python function can serve as a reducer, as long as it fits the right contract.
+									</p>
+
+									<!-- 4.1 -->
+									<a id="reducer-signature" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">4.1</span>
+										<h3>Reducer Signature</h3>
+									</div>
+
+									<p class="blg-paragraph">
+										A reducer is a plain function that takes two arguments and returns a merged value:
+									</p>
+
+									<div class="blg-code-block" data-lang="python">def my_reducer(current_value, new_value):
+    # current_value: what is already in state for this field
+    # new_value:     what the node just returned for this field
+    # return:        the merged result that replaces the field in state
+    return merged_result</div>
+
+									<p class="blg-paragraph">
+										A few rules to keep in mind:
+									</p>
+
+									<ul class="blg-ul">
+										<li class="blg-li">The function should be <strong>pure</strong> — no side effects, no modifying inputs in place.</li>
+										<li class="blg-li">It must handle the <strong>initial case</strong> where <span class="code-soft">current_value</span> is empty (an empty list <span class="code-soft">[]</span>, an empty string <span class="code-soft">""</span>, etc.).</li>
+										<li class="blg-li">The return type should match the field's declared type — if the field is <span class="code-soft">list[str]</span>, return a <span class="code-soft">list[str]</span>.</li>
+									</ul>
+
+									<!-- 4.2 -->
+									<a id="concrete-reducer" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">4.2</span>
+										<h3>A Concrete Custom Reducer</h3>
+									</div>
+
+									<p class="blg-paragraph">
+										Say you want to collect tags across multiple nodes, but you never want duplicates in the list. <span class="code-soft">operator.add</span> would blindly concatenate and allow repeats. A custom reducer solves this:
+									</p>
+
+									<div class="blg-code-block" data-lang="python">from typing import Annotated, TypedDict
+
+def keep_unique(current: list[str], new: list[str]) -> list[str]:
+    """Appends only items from 'new' that are not already in 'current'."""
+    seen = set(current)
+    return current + [item for item in new if item not in seen]
+
+class TagState(TypedDict):
+    topic: str
+    tags: Annotated[list[str], keep_unique]  # custom reducer
+
+# If current tags are ["AI", "Python"] and a node returns {"tags": ["Python", "LangGraph"]}:
+# keep_unique(["AI", "Python"], ["Python", "LangGraph"])
+# → ["AI", "Python", "LangGraph"]   ← "Python" not duplicated ✅</div>
+
+									<p class="blg-paragraph">
+										The function is just ordinary Python — no LangGraph-specific imports needed. Pass it as the second argument to <span class="code-soft">Annotated</span> and it becomes the merge strategy for that field.
+									</p>
+
+									<hr class="blg-hr">
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- Section 5: MessagesState                              -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="messages-state" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>💬 5. MessagesState — The Shortcut</h2></div>
+
+									<p class="blg-paragraph">
+										Chat-based graphs need a <span class="code-soft">messages</span> field with <span class="code-soft">add_messages</span> as the reducer so often that LangGraph ships with a pre-built state class to save you the boilerplate:
+									</p>
+
+									<div class="blg-code-block" data-lang="python">from langgraph.graph import MessagesState
+
+# MessagesState is essentially equivalent to:
+#
+# from langgraph.graph.message import add_messages
+# from langchain_core.messages import BaseMessage
+#
+# class MessagesState(TypedDict):
+#     messages: Annotated[list[BaseMessage], add_messages]</div>
+
+									<p class="blg-paragraph">
+										You can use it directly as your state class, or inherit from it and add your own fields:
+									</p>
+
+									<div class="blg-code-block" data-lang="python">from langgraph.graph import MessagesState
+
+# Use as-is for a pure chat graph
+graph = StateGraph(MessagesState)
+
+# Or extend it with extra fields
+class MyState(MessagesState):
+    summary: str      # plain field — last write wins
+    session_id: str   # another plain field</div>
+
+									<p class="blg-paragraph">
+										<span class="code-soft">MessagesState</span> is the right choice whenever your graph is primarily message-based — chatbots, conversational agents, anything where the core data structure is a growing list of <span class="code-soft">HumanMessage</span> / <span class="code-soft">AIMessage</span> objects. For other types of accumulation (strings, custom objects, numbers), define your own <span class="code-soft">Annotated</span> field with the appropriate reducer.
+									</p>
+
+									<hr class="blg-hr">
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- Section 6: Complete Example                           -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="complete-example" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🤖 6. Complete Example: Topic Expander</h2></div>
+
+									<p class="blg-paragraph">
+										Theory is clearest when it's grounded in working code. The Topic Expander is a two-node linear graph — the same structural skeleton as Part 1 — but the state now uses an <span class="code-soft">Annotated</span> field with <span class="code-soft">operator.add</span>. Both nodes write to the same <span class="code-soft">points</span> field, and because of the reducer, both contributions survive in the final state.
+									</p>
+
+									<p class="blg-paragraph">
+										Graph flow:
+									</p>
+
+									<ul class="blg-ul">
+										<li class="blg-li"><strong>expand_node</strong> — given a topic, asks Gemini to generate 3 key points. Returns <span class="code-soft">{"points": [...]}</span>.</li>
+										<li class="blg-li"><strong>refine_node</strong> — reads those points from state, generates a deeper insight for each one. Returns <span class="code-soft">{"points": [...], "summary": "..."}</span>.</li>
+									</ul>
+
+									<p class="blg-paragraph">
+										After both nodes run, <span class="code-soft">state["points"]</span> holds 6 items — 3 from <span class="code-soft">expand_node</span> and 3 from <span class="code-soft">refine_node</span>, merged by the reducer. The project structure:
+									</p>
+
+									<div class="blg-tree"><span class="tree-root">langgraph/</span>
+<span class="tree-pipe">├── </span><span class="tree-spec">.env</span>                    <span class="tree-comment"># shared API keys for all series</span>
+<span class="tree-pipe">├── </span><span class="tree-file">requirements.txt</span>        <span class="tree-comment"># shared dependencies</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">basics-1-stategraph-nodes-edges/</span>
+<span class="tree-pipe">│   └── </span><span class="tree-comment">...</span>
+<span class="tree-pipe">└── </span><span class="tree-dir">basics-2-state-annotated-reducers/</span>
+<span class="tree-pipe">    ├── </span><span class="tree-file">config.py</span>               <span class="tree-comment"># loads .env, defines Config</span>
+<span class="tree-pipe">    ├── </span><span class="tree-file">llm.py</span>                  <span class="tree-comment"># wraps ChatGoogleGenerativeAI</span>
+<span class="tree-pipe">    ├── </span><span class="tree-file">state.py</span>                <span class="tree-comment"># TopicState with Annotated points field</span>
+<span class="tree-pipe">    ├── </span><span class="tree-file">nodes.py</span>                <span class="tree-comment"># expand_node and refine_node</span>
+<span class="tree-pipe">    ├── </span><span class="tree-dir">prompts/</span>                <span class="tree-comment"># LLM prompt templates, one file per node</span>
+<span class="tree-pipe">    │   ├── </span><span class="tree-file">expand_node.txt</span>  <span class="tree-comment"># prompt for expand_node</span>
+<span class="tree-pipe">    │   └── </span><span class="tree-file">refine_node.txt</span>  <span class="tree-comment"># prompt for refine_node</span>
+<span class="tree-pipe">    ├── </span><span class="tree-file">graph.py</span>                <span class="tree-comment"># builds and compiles the StateGraph</span>
+<span class="tree-pipe">    ├── </span><span class="tree-file">topic_runner.py</span>         <span class="tree-comment"># runs the graph, formats output</span>
+<span class="tree-pipe">    └── </span><span class="tree-file">app.py</span>                  <span class="tree-comment"># Gradio ChatInterface</span></div>
+
+									<p class="blg-paragraph">
+										<span class="code-soft">config.py</span> and <span class="code-soft">llm.py</span> are identical to Part 1 — they load settings from the shared <span class="code-soft">.env</span> file and wrap <span class="code-soft">ChatGoogleGenerativeAI</span>. See <a class="blg-link" href="./blog_8.html#configuring-llm">Part 1, Section 2.1</a> for a detailed walkthrough of those files. The interesting changes are in <span class="code-soft">state.py</span>, <span class="code-soft">nodes.py</span>, and <span class="code-soft">graph.py</span>.
+									</p>
+
+									<!-- 6.1 -->
+									<a id="code-walkthrough" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">6.1</span>
+										<h3>Full Code Walkthrough</h3>
+									</div>
+
+									<p class="blg-paragraph">
+										<strong>state.py</strong> — the state definition is where the Part 2 changes begin:
+									</p>
+
+									<div class="blg-code-block" data-lang="python">import operator
+from typing import Annotated, TypedDict
+
+
+class TopicState(TypedDict):
+    topic: str
+    points: Annotated[list[str], operator.add]  # reducer: concatenates lists
+    summary: str</div>
+
+									<p class="blg-paragraph">
+										Three fields:
+									</p>
+
+									<ul class="blg-ul">
+										<li class="blg-li"><span class="code-soft">topic</span> — the user's input. Plain field; only set once at the start, never overwritten.</li>
+										<li class="blg-li"><span class="code-soft">points</span> — accumulates across nodes. <span class="code-soft">Annotated[list[str], operator.add]</span> means each node's returned list is <em>concatenated</em> onto this field rather than replacing it.</li>
+										<li class="blg-li"><span class="code-soft">summary</span> — a plain string written once by the final node. Last-write-wins is fine here.</li>
+									</ul>
+
+									<p class="blg-paragraph">
+										<strong>nodes.py</strong> — two node functions, both returning partial state updates:
+									</p>
+
+									<div class="blg-code-block" data-lang="python">import os
+
+from llm import GeminiLLM
+from state import TopicState
+
+_PROMPTS_DIR = os.path.join(os.path.dirname(__file__), "prompts")
+
+def _load_prompt(filename: str) -> str:
+    with open(os.path.join(_PROMPTS_DIR, filename), "r") as f:
+        return f.read()
+
+
+class TopicNodes:
+    def __init__(self):
+        self.llm = GeminiLLM().get_llm()
+        # Load prompt templates once at startup — not on every node call
+        self.expand_prompt = _load_prompt("expand_node.txt")
+        self.refine_prompt = _load_prompt("refine_node.txt")
+
+    def expand_node(self, state: TopicState) -> dict:
+        prompt = self.expand_prompt.format(topic=state["topic"])
+        response = self.llm.invoke(prompt)
+        content = self._extract_text(response)
+        lines = [
+            f"[Expand] {ln.strip()}"
+            for ln in content.strip().splitlines() if ln.strip()
+        ]
+        return {"points": lines[:3]}
+
+    def refine_node(self, state: TopicState) -> dict:
+        existing = "\n".join(f"- {p}" for p in state["points"])
+        prompt = self.refine_prompt.format(topic=state["topic"], existing=existing)
+        response = self.llm.invoke(prompt)
+        content = self._extract_text(response)
+        insights = [
+            f"[Refine] {ln.strip()}"
+            for ln in content.strip().splitlines() if ln.strip()
+        ]
+        return {
+            "points": insights[: len(state["points"])],
+            "summary": (
+                f"Explored '{state['topic']}' across {len(state['points'])} "
+                "key aspects with deeper insights."
+            ),
+        }
+
+    def _extract_text(self, response) -> str:
+        content = response.content
+        if isinstance(content, list):
+            return " ".join(
+                block.get("text", "")
+                for block in content
+                if isinstance(block, dict) and block.get("type") == "text"
+            )
+        return content</div>
+
+									<p class="blg-paragraph">
+										A few things to notice:
+									</p>
+
+									<ul class="blg-ul">
+										<li class="blg-li"><strong>Prompts from files:</strong> Prompt text lives in <span class="code-soft">prompts/expand_node.txt</span> and <span class="code-soft">prompts/refine_node.txt</span>, loaded once in <span class="code-soft">__init__</span>. The <span class="code-soft">.format()</span> call fills in the <span class="code-soft">{topic}</span> and <span class="code-soft">{existing}</span> placeholders at runtime. Keeping prompts in separate files makes them easy to edit without touching code.</li>
+										<li class="blg-li"><strong>Node tagging:</strong> Each item is prefixed with <span class="code-soft">[Expand]</span> or <span class="code-soft">[Refine]</span>. In the output you can immediately see which node produced which item — helpful for understanding how the reducer merged the two lists.</li>
+										<li class="blg-li"><span class="code-soft">expand_node</span> returns <span class="code-soft">{"points": lines[:3]}</span> — just a list of 3 strings. It doesn't touch <span class="code-soft">topic</span> or <span class="code-soft">summary</span>.</li>
+										<li class="blg-li"><span class="code-soft">refine_node</span> reads <span class="code-soft">state["points"]</span> — which at this point already holds the 3 items from <span class="code-soft">expand_node</span>. It generates one insight per item, then returns that list under the same <span class="code-soft">"points"</span> key. Thanks to the reducer, these insights are <em>appended</em>, not written over.</li>
+										<li class="blg-li"><span class="code-soft">refine_node</span> also sets <span class="code-soft">"summary"</span>, a plain field — so that's a regular replacement, not accumulation.</li>
+										<li class="blg-li"><span class="code-soft">_extract_text</span> handles both the plain string format (older langchain-google-genai) and the list-of-dicts format (4.x API).</li>
+									</ul>
+
+									<p class="blg-paragraph">
+										<strong>graph.py</strong> — two nodes wired in a linear sequence:
+									</p>
+
+									<div class="blg-code-block" data-lang="python">from langgraph.graph import END, START, StateGraph
+
+from nodes import TopicNodes
+from state import TopicState
+
+
+class TopicGraph:
+    """
+    Graph structure (linear — two nodes):
+        START → expand → refine → END
+    """
+
+    def __init__(self):
+        self.nodes = TopicNodes()
+        self.compiled_graph = self._build()
+
+    def _build(self):
+        graph = StateGraph(TopicState)
+
+        graph.add_node("expand", self.nodes.expand_node)
+        graph.add_node("refine", self.nodes.refine_node)
+
+        graph.add_edge(START, "expand")
+        graph.add_edge("expand", "refine")
+        graph.add_edge("refine", END)
+
+        return graph.compile()
+
+    def get_compiled_graph(self):
+        return self.compiled_graph</div>
+
+									<p class="blg-paragraph">
+										The graph structure is identical to Part 1 — linear, no branching. The only structural difference is a second node added to the chain. The interesting new behaviour lives entirely in the state definition, not in the graph topology.
+									</p>
+
+									<p class="blg-paragraph">
+										<strong>topic_runner.py</strong> — runs the graph and formats the output:
+									</p>
+
+									<div class="blg-code-block" data-lang="python">from graph import TopicGraph
+
+
+class TopicRunner:
+    def __init__(self):
+        self.topic_graph = TopicGraph()
+        self.app = self.topic_graph.get_compiled_graph()
+
+    def save_figure(self):
+        # Delegates to TopicGraph — saves graph.mmd and graph.png to figure/
+        self.topic_graph.save_figure()
+
+    def run(self, topic: str) -> dict:
+        # points must start as an empty list so operator.add can append to it
+        return self.app.invoke({"topic": topic, "points": [], "summary": ""})
+
+    def format_output(self, result: dict) -> str:
+        lines = [f"📌 Topic: {result['topic']}", "─" * 60, ""]
+        lines.append("Points collected:")
+        for i, point in enumerate(result["points"], 1):
+            lines.append(f"  {i}. {point}")
+        lines.append("")
+        lines.append(f"📝 Summary: {result['summary']}")
+        return "\n".join(lines)
+
+
+if __name__ == "__main__":
+    runner = TopicRunner()
+
+    print("\n Saving graph architecture...")
+    runner.save_figure()   # called once — graph structure doesn't change at runtime
+
+    topics = ["Machine Learning", "Climate Change"]
+    for topic in topics:
+        result = runner.run(topic)
+        print(runner.format_output(result))
+        print("=" * 60)</div>
+
+									<p class="blg-paragraph">
+										One detail: when calling <span class="code-soft">invoke()</span>, we initialise <span class="code-soft">points</span> as an empty list <span class="code-soft">[]</span>. This is important — <span class="code-soft">operator.add(current, new)</span> requires <span class="code-soft">current</span> to be a list. Passing <span class="code-soft">None</span> or omitting the key would cause a <span class="code-soft">TypeError</span>.
+									</p>
+
+									<!-- 6.2 -->
+									<a id="running-output" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">6.2</span>
+										<h3>Running &amp; Output</h3>
+									</div>
+
+									<p class="blg-paragraph">
+										Activate your virtual environment, navigate to the <span class="code-soft">basics-2-state-annotated-reducers/</span> folder, and run:
+									</p>
+
+									<div class="blg-code-block" data-lang="bash">python topic_runner.py</div>
+
+									<p class="blg-paragraph">
+										You should see output similar to this (exact wording varies — it's a live LLM call):
+									</p>
+
+									<div class="blg-code-block" data-lang="bash">📌 Topic: Machine Learning
+────────────────────────────────────────────────────────────
+
+Points collected:
+  1. [Expand] Machine learning enables computers to learn patterns from data without being explicitly programmed.
+  2. [Expand] The three main paradigms — supervised, unsupervised, and reinforcement learning — each address different types of problems.
+  3. [Expand] Deep learning, a subset of machine learning, uses layered neural networks to process complex data like images and text.
+  4. [Refine] Rather than relying on handcrafted rules, ML systems generalise from examples — making them adaptable to a wide variety of tasks.
+  5. [Refine] Evaluating a model on unseen data is essential; training accuracy alone is a poor indicator of real-world performance.
+  6. [Refine] Pre-trained models and transfer learning allow practitioners to build powerful systems even with limited labelled data.
+
+📝 Summary: Explored 'Machine Learning' across 3 key aspects with deeper insights.</div>
+
+									<p class="blg-paragraph">
+										The <span class="code-soft">[Expand]</span> and <span class="code-soft">[Refine]</span> labels make it clear which node produced each item. Items 1–3 came from <span class="code-soft">expand_node</span>; items 4–6 came from <span class="code-soft">refine_node</span>. They're all in the same list because <span class="code-soft">operator.add</span> concatenated them — exactly the behaviour the reducer was designed to produce. Without the <span class="code-soft">Annotated</span> declaration, only items 4–6 would survive.
+									</p>
+
+									<p class="blg-paragraph">
+										You can visualise the graph structure at any time by calling <span class="code-soft">get_graph().draw_mermaid()</span> on the compiled graph. Here's what the Topic Expander graph looks like:
+									</p>
+
+									<div class="blg-img-container">
+										<div class="blg-mermaid-container">
+											<pre class="mermaid">%%{init: {'flowchart': {'curve': 'linear'}}}%%
+graph TD
+    __start__([__start__]) --> expand
+    expand([expand]) --> refine
+    refine([refine]) --> __end__([__end__])</pre>
+										</div>
+										<p class="blg-img-caption">Topic Expander graph — two nodes in a linear sequence, both writing to the same <code>points</code> field</p>
+									</div>
+
+									<hr class="blg-hr">
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- Section 7: Web UI with Gradio                         -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="web-ui" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🖥️ 7. Web UI with Gradio</h2></div>
+
+									<p class="blg-paragraph">
+										The Gradio app wraps <span class="code-soft">TopicRunner</span> in a chat interface so you can explore any topic interactively. The structure mirrors Part 1's app.py — type a topic, get the expanded points and summary back in the chat window.
+									</p>
+
+									<div class="blg-code-block" data-lang="python">import gradio as gr
+
+from topic_runner import TopicRunner
+
+
+class TopicApp:
+    def __init__(self):
+        self.runner = TopicRunner()
+
+    def respond(self, message: str, _history: list) -> str:
+        if not message.strip():
+            return ""
+        result = self.runner.run(message)
+        return self.runner.format_output(result)
+
+    def launch(self):
+        gr.ChatInterface(fn=self.respond, title="🌐 Topic Expander").launch()
+
+
+if __name__ == "__main__":
+    TopicApp().launch()</div>
+
+									<p class="blg-paragraph">
+										Run it with:
+									</p>
+
+									<div class="blg-code-block" data-lang="bash">python app.py</div>
+
+									<p class="blg-paragraph">
+										Gradio will start a local server and open the chat interface in your browser. Type any topic — "Quantum Computing", "Solar Energy", "Large Language Models" — and the graph will expand and refine it, showing all accumulated points.
+									</p>
+
+									<div class="blg-img-container">
+										<img src="../img/blog_9/web_ui.png" alt="Topic Expander Gradio Web UI" class="blg-img" />
+										<p class="blg-img-caption">Topic Expander running in the Gradio ChatInterface</p>
+									</div>
+
+									<hr class="blg-hr">
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- Section 8: Conclusion                                 -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="conclusion" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🏁 8. Conclusion</h2></div>
+
+									<p class="blg-paragraph">
+										The graph structure in this post is identical to Part 1 — two nodes, one path, no branching. What changed is the state. By adding <span class="code-soft">Annotated[list[str], operator.add]</span> to the <span class="code-soft">points</span> field, we turned a dumb overwrite into a smart accumulation. Both nodes contribute to the same field and both contributions survive to the end.
+									</p>
+
+									<p class="blg-paragraph">
+										Here's a quick summary of what we covered:
+									</p>
+
+									<ul class="blg-ul">
+										<li class="blg-li">LangGraph's default merge rule is <strong>last-write-wins</strong> — the node's returned value replaces the field's current value.</li>
+										<li class="blg-li"><strong>Annotated fields</strong> attach a reducer function to a type hint, telling LangGraph to merge rather than replace.</li>
+										<li class="blg-li"><strong>operator.add</strong> concatenates lists (or strings, or numbers). Most commonly used for accumulating items across nodes.</li>
+										<li class="blg-li"><strong>add_messages</strong> merges LangChain message objects with deduplication by ID — the right choice for chat history.</li>
+										<li class="blg-li"><strong>Custom reducers</strong> are plain Python functions: <span class="code-soft">(current, new) → merged</span>. Any logic you need.</li>
+										<li class="blg-li"><strong>MessagesState</strong> is a pre-built state class that ships with LangGraph — use it (or extend it) for message-based graphs.</li>
+									</ul>
+
+									<blockquote class="blg-callout-purple">
+										🔜 <strong>Up next — Part 3:</strong> We'll introduce <strong>conditional edges</strong> and routing logic. Instead of every node connecting to the next in a fixed sequence, you'll write functions that decide at runtime which path the graph should take. This is where graphs start behaving like real decision-making systems.
+									</blockquote>
+
+									<hr class="blg-hr">
+								</div>
+
+								<!-- Technical Stacks -->
+								<div class="blg-trailing-section">
+									<div class="blg-trailing-header">
+										<img src="../img/technical_stack/stack.png" alt="Technical Stacks" />
+										<h2>Technical Stacks</h2>
+									</div>
+									<div class="blg-tech-grid">
+										<div class="blg-tech-card"><img src="../img/technical_stack/python.svg" alt="Python" /> Python</div>
+										<div class="blg-tech-card"><img src="../img/technical_stack/langgraph.svg" alt="LangGraph" /> LangGraph</div>
+										<div class="blg-tech-card"><img src="../img/technical_stack/gemini.svg" alt="Gemini" /> Gemini</div>
+									</div>
+								</div>
+
+								<!-- Download Source Code -->
+								<div class="blg-download-card">
+									<img src="../img/others/download.svg" alt="Download" />
+									<div class="blg-download-info">
+										<h3>Download Source Code</h3>
+										<p>LangGraph Basics — State, Annotated Fields &amp; Custom Reducers</p>
+									</div>
+									<a href="https://github.com/shafiqul-islam-sumon/langgraph/tree/main" class="blg-download-btn" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+								</div>
+
+								<!-- References -->
+								<div class="blg-trailing-section">
+									<div class="blg-trailing-header">
+										<span style="font-size: 22px; line-height: 1;">📚</span>
+										<h2>References</h2>
+									</div>
+									<ul class="blg-ul">
+										<li class="blg-li">
+											<img src="../img/technical_stack/github.svg" alt="GitHub" width="18" style="vertical-align: middle; margin-right: 6px;" />
+											<strong>GitHub Repository:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://github.com/shafiqul-islam-sumon/langgraph/tree/main">LangGraph Basics — Source Code</a>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/langgraph.svg" alt="LangGraph" width="18" style="vertical-align: middle; margin-right: 6px;" />
+											<strong>LangGraph Docs — State &amp; Reducers:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://langchain-ai.github.io/langgraph/concepts/low_level/#reducers">langchain-ai.github.io/langgraph — Reducers</a>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/gemini.svg" alt="Gemini" width="18" style="vertical-align: middle; margin-right: 6px;" />
+											<strong>Google Gemini API:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://ai.google.dev/">ai.google.dev</a>
+										</li>
+									</ul>
+								</div>
+
+							</div>
+							<!-- End: blogContainer -->
+						</div>
+						<!-- End: blog-detail-main -->
+					</div>
+					<!-- End: blog-detail-layout -->
+
+					<!-- Related Blog Posts — outside .blog-detail-layout, inside .container -->
+					<div class="related-posts-section">
+						<div class="blog-title-bar">
+							<img src="../img/others/blog.png" alt="blog post" style="width: 24px; height: auto;" />
+							<h2>Related Blog Posts</h2>
+						</div>
+						<div class="related-posts-wrapper">
+							<div class="related-posts-swiper-area">
+								<div class="swiper" id="postContainer">
+									<div class="swiper-wrapper">
+										<!-- populated by detail.js -->
+									</div>
+								</div>
+								<div class="swiper-button-prev"></div>
+								<div class="swiper-button-next"></div>
+							</div>
+							<div class="blg-slide-counter">
+								<div class="slide-progress-bar">
+									<div class="slide-progress-fill" id="slideProgressFill"></div>
+								</div>
+								<div class="slide-counter-label">
+									<span id="currentSlide">1</span> / <span id="totalSlides">1</span>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</section>
+			<div id="site-footer"></div>
+		</div>
+
+		<!-- JavaScript (order matters) -->
+		<script type="text/javascript" src="../js/bootstrap.bundle.min.js"></script>
+		<script type="text/javascript" src="../js/components.js"></script>
+		<script type="text/javascript" src="../js/site.js"></script>
+		<script src="../js/swiper-bundle.min.js"></script>
+		<script src="../js/prism.js" data-manual></script>
+		<script type="text/javascript" src="../js/code-highlight.js"></script>
+		<script type="text/javascript" src="../js/detail.js"></script>
+		<script src="../js/mermaid.min.js"></script>
+		<script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+	</body>
+</html>

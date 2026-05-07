@@ -11,11 +11,12 @@ Always use OOP (Object-Oriented Programming) when writing Python code. Every imp
 **File structure for each series entry:**
 - `config.py` — loads `.env` with `python-dotenv`, defines `Config` class with model settings
 - `llm.py` — imports `Config`, defines `GeminiLLM` wrapping `ChatGoogleGenerativeAI`
-- `state.py` — defines state as `TypedDict`
-- `nodes.py` — imports `GeminiLLM` from `llm.py`, defines node class with node methods
+- `state.py` — defines state as `TypedDict` (with `Annotated` fields where accumulation is needed)
+- `nodes.py` — imports `GeminiLLM` from `llm.py`, defines node class with node methods; loads prompt templates from `prompts/` in `__init__`
+- `prompts/` — subfolder with one `.txt` file per node; templates use `{placeholder}` syntax, filled with `.format()` at runtime
 - `graph.py` — builds and compiles the `StateGraph`, exposes compiled graph
-- `qa_runner.py` — entry point, contains `QARunner`, imports graph and runs demo
-- `app.py` — Gradio `ChatInterface` wrapping `QARunner` from `qa_runner.py`
+- `<app_name>_runner.py` — entry point named after the app (e.g. `qa_runner.py`, `topic_runner.py`), contains runner class, imports graph and runs demo
+- `app.py` — Gradio `ChatInterface` wrapping the runner
 - `.env` and `requirements.txt` live in the parent `langgraph/` folder, not per-series
 
 **Node return type:**
@@ -43,7 +44,24 @@ The string in `add_node()` and `add_edge()` must match exactly — that is what 
 Returns a list of dicts `[{"type": "text", "text": "...", ...}]` instead of a plain string.
 Always handle both formats in node functions with an `isinstance(content, list)` check.
 
+## Prompts Folder Convention (LangGraph series)
+Prompt text lives in `prompts/` subfolder — one `.txt` file per node function.
+
+- Load all prompts once in `__init__` (not on every node call): `self.expand_prompt = _load_prompt("expand_node.txt")`
+- Use `str.format()` to fill placeholders at runtime: `self.expand_prompt.format(topic=state["topic"])`
+- Prompt files use `{placeholder}` syntax (same as Python's `str.format`)
+- Module-level helper: `_load_prompt(filename)` reads from `os.path.join(os.path.dirname(__file__), "prompts", filename)`
+- Benefit: prompts are editable without touching code; cleaner node methods
+
+## Node Output Tagging Convention
+When a graph has multiple nodes writing to the same Annotated field, prefix each item with `[NodeName]` so the output clearly shows which node produced which item.
+
+Example: `expand_node` returns `[f"[Expand] {line}" for line in lines]` and `refine_node` returns `[f"[Refine] {line}" for line in lines]`.
+
+This makes the reducer's accumulation effect visually obvious in console output and blog examples.
+
 ## Mermaid Diagrams in Blog
+- **Every LangGraph series post must include a Mermaid graph diagram** showing the graph structure (nodes and edges). Place it in the Running & Output section (or equivalent), after the console output.
 - Use local `js/mermaid.min.js` — do not use CDN
 - Add two script tags at the bottom with the other JS libs (after `detail.js`):
   ```html

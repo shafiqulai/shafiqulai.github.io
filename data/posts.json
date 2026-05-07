@@ -86,5 +86,16 @@
         "date": "04 May 2026",
         "description": "LangGraph is a Python framework built on top of LangChain for creating stateful, graph-based AI workflows. Unlike linear chains, it models an application as a graph where processing steps are Nodes, connections between them are Edges, and all shared data flows through a central State. These three components — StateGraph, Nodes, and Edges — are the foundation of every LangGraph application, from simple pipelines to complex multi-agent systems. This post covers each concept with clear analogies, focused code examples, and a complete Q&A bot built with Google Gemini.",
         "readMoreUrl": "./blogs/blog_8.html"
+    },
+    {
+        "id": 9,
+        "author": "MD SHAFIQUL ISLAM",
+        "author_img": "../img/author/shafiqul.png",
+        "category": ["LangGraph"],
+        "image": "./img/blog_9/thumbnail.webp",
+        "title": "LangGraph Basics: Part 2 — State, Annotated Fields & Custom Reducers",
+        "date": "07 May 2026",
+        "description": "LangGraph routes data between nodes through a shared TypedDict called State. By default, when a node returns a value for an existing key, it replaces whatever was already there — a behaviour called last-write-wins. For fields that should accumulate rather than overwrite, LangGraph supports Annotated type hints paired with reducer functions, including the built-in operator.add and add_messages. This post covers how reducers work, how to write a custom one, and the ready-made MessagesState shortcut, illustrated with a two-node Topic Expander graph built with Google Gemini.",
+        "readMoreUrl": "./blogs/blog_9.html"
     }
 ]
