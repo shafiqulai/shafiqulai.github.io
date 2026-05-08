@@ -1232,6 +1232,11 @@ a:hover img {
 .card-inner > p { padding-bottom: 4px; }
 .card-inner > .read-more-button { margin: auto 15px 15px; }
 
+.blog-post .image-container a {
+	display: block;
+	width: 100%;
+}
+
 .blog-post .image-container img {
 	width: 100%;
 	aspect-ratio: 16 / 9;
@@ -1893,9 +1898,8 @@ ul li, ol li {
 	.related-posts-swiper-area .swiper-button-prev { left: -44px; }
 	.related-posts-swiper-area .swiper-button-next { right: -44px; }
 
-	/* Compact image height */
 	.related-posts-wrapper .blog-post .image-container img {
-		aspect-ratio: 16 / 7;
+		aspect-ratio: 16 / 9;
 	}
 
 	/* Tighter text clamps */
@@ -2239,10 +2243,8 @@ ul.social-network {
 	}
 
 	#postContainer .read-more-button {
-		width: 100%;
+		width: calc(100% - 30px);
 		justify-content: center;
-		margin-left: 0;
-		margin-right: 0;
 	}
 
 	.card-inner > .date {
