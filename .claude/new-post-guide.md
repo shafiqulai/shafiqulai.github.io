@@ -64,7 +64,7 @@ img/blog_8/thumbnail.webp     ← required
 img/blog_8/any_other.webp     ← content images
 ```
 
-Formats: `.webp` for thumbnails, `.webp`/`.png` for diagrams, `.jpg` for photos.
+Format: always `.webp` — thumbnails, content images, UI screenshots, and diagrams. See Image Format Rule in CLAUDE.md.
 
 ## Step 4 — Create `blogs/blog_N.html`
 
@@ -301,6 +301,8 @@ Alignment rule: all comments start at column = `max(pipe_len + name_len) + 6`.
 - [ ] Entry appended to `data/posts.json` — homepage card auto-generated from this
 - [ ] `thumbnail.webp` placed in `img/blog_N/`
 - [ ] New tech stack icons added to `img/technical_stack/` (if needed)
+- [ ] URL appended to `sitemap.xml` (do this now — see Sitemap Rule in CLAUDE.md)
+- [ ] If this is a new series part (e.g. LangGraph Basics N): `README.md` created in the series folder and `langgraph/README.md` updated (see README Rule in CLAUDE.md)
 
 ### Content — in page order
 - [ ] Blog title (`.blg-title`)
@@ -326,10 +328,4 @@ Alignment rule: all comments start at column = `max(pipe_len + name_len) + 6`.
 - [ ] If post uses Mermaid: `mermaid.min.js` script added at bottom (local, not CDN)
 
 ### After publishing
-- [ ] Add new URL to `sitemap.xml`:
-  ```xml
-  <url>
-      <loc>https://shafiqulai.github.io/blogs/blog_N.html</loc>
-  </url>
-  ```
 - [ ] Submit URL in Google Search Console → URL Inspection → Request Indexing

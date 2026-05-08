@@ -97,5 +97,16 @@
         "date": "07 May 2026",
         "description": "LangGraph routes data between nodes through a shared TypedDict called State. By default, when a node returns a value for an existing key, it replaces whatever was already there — a behaviour called last-write-wins. For fields that should accumulate rather than overwrite, LangGraph supports Annotated type hints paired with reducer functions, including the built-in operator.add and add_messages. This post covers how reducers work, how to write a custom one, and the ready-made MessagesState shortcut, illustrated with a two-node Topic Expander graph built with Google Gemini.",
         "readMoreUrl": "./blogs/blog_9.html"
+    },
+    {
+        "id": 10,
+        "author": "MD SHAFIQUL ISLAM",
+        "author_img": "../img/author/shafiqul.png",
+        "category": ["LangGraph"],
+        "image": "./img/blog_10/thumbnail.webp",
+        "title": "LangGraph Basics: Part 3 — Conditional Edges & Routing Logic",
+        "date": "08 May 2026",
+        "description": "LangGraph graphs can branch at runtime — that's what conditional edges are for. Instead of always following the same path, a node can hand control to different successors depending on the current state. A router function reads the state and returns a string naming the next node; add_conditional_edges() wires this routing logic into the graph. This post builds a Customer Support Router that classifies incoming messages and routes them to dedicated billing, technical, or general support nodes — each powered by a specialised LLM prompt.",
+        "readMoreUrl": "./blogs/blog_10.html"
     }
 ]

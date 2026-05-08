@@ -2,7 +2,7 @@
 
 Personal engineering blog by **Md Shafiqul Islam** (AI Engineer / LLM Specialist / Python Developer).
 Topics: LLMs, RAG, AI Agents, LangChain, Docker, Hugging Face, OpenAI, Streamlit, Gradio.
-7 blog posts published (`blog_1.html` through `blog_7.html`), hosted on GitHub Pages.
+10 blog posts published (`blog_1.html` through `blog_10.html`), hosted on GitHub Pages.
 
 **Before writing any blog HTML → read `.claude/instructions.md`.**
 **To create a new blog post → read `.claude/new-post-guide.md`.**
@@ -27,7 +27,7 @@ Topics: LLMs, RAG, AI Agents, LangChain, Docker, Hugging Face, OpenAI, Streamlit
 shafiqulai.github.io/
 ├── index.html                    # Homepage (blog card grid)
 ├── blogs/
-│   └── blog_1.html … blog_7.html # Blog detail pages (no template file)
+│   └── blog_1.html … blog_10.html # Blog detail pages (no template file)
 ├── data/
 │   └── posts.json                # All blog metadata — source of truth for cards + slider
 ├── img/
@@ -69,6 +69,45 @@ shafiqulai.github.io/
 - Valid values: `python` `bash` `docker` `yaml` `json` `properties` `markdown`
 - Blocks with `<span>` tags are skipped (manual highlighting preserved)
 - `self`/`cls` registered as Python keywords via `Prism.languages.insertBefore`
+
+## Image Format Rule
+
+**Always use `.webp` format for all images in new blog posts** — thumbnails, content images, and web UI screenshots.
+- Never reference `.png` or `.jpg` in new blog HTML unless no `.webp` version exists.
+- When adding images to `img/blog_N/`, convert to `.webp` before referencing in HTML.
+
+## Sitemap Rule
+
+**Every time a new blog HTML file is created, append its URL to `sitemap.xml` immediately — do not wait until after publishing.**
+
+```xml
+<url>
+    <loc>https://shafiqulai.github.io/blogs/blog_N.html</loc>
+</url>
+```
+
+Replace `blog_N` with the actual blog number. Add the entry before the closing `</urlset>` tag.
+
+## README Rule
+
+**Every time a new series folder is created (e.g. `langgraph/basics-N-*/`), create a `README.md` inside that folder immediately.**
+
+The folder README must cover:
+- Brief description of what the part teaches
+- Key concepts table
+- Graph architecture — ASCII diagram + Mermaid code block
+- Annotated project structure tree (one-line description per file)
+- Key code snippets with explanations
+- How to run (console runner + Gradio web UI)
+- Series navigation (← prev | **you are here** | next →)
+- Link to the blog post at the very top
+
+**Also update `langgraph/README.md`** whenever a new folder README is added:
+- Add the new part to the series table with a `README →` link column entry
+- Add a short summary paragraph for the new part with a `→ Full details` link
+- Update the project structure tree and "Running a Project" section
+
+Use `langgraph/basics-1-stategraph-nodes-edges/README.md` as the style template.
 
 ## CSS Conventions
 

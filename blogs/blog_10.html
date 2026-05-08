@@ -1,0 +1,1152 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<!-- Google tag (gtag.js) -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-6SEFZQJHM1"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
+			gtag("config", "G-6SEFZQJHM1", {
+				cookie_domain: "shafiqulai.github.io",
+			});
+		</script>
+
+		<meta charset="utf-8" />
+		<title>LangGraph Basics: Part 3 — Conditional Edges &amp; Routing Logic</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="LangGraph graphs can branch at runtime — that's what conditional edges are for. Instead of always following the same path, a node can hand control to different successors depending on the current state. A router function reads the state and returns a string naming the next node; add_conditional_edges() wires this routing logic into the graph. This post builds a Customer Support Router that classifies incoming messages and routes them to dedicated billing, technical, or general support nodes."
+		/>
+		<meta name="author" content="MD SHAFIQUL ISLAM" />
+		<link rel="icon" href="../img/others/favicon.ico" type="image/x-icon" />
+
+		<!-- Fonts -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+
+		<!-- CSS (order matters) -->
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+		<link rel="stylesheet" href="../css/swiper-bundle.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/style.css" />
+		<link rel="stylesheet" type="text/css" href="../css/prism.css" />
+	</head>
+
+	<body>
+		<!-- Reading Progress Bar -->
+		<div id="reading-progress"></div>
+		<div id="wrapper">
+			<div id="site-header"></div>
+
+			<section id="content">
+				<div class="container">
+					<div class="blog-detail-layout">
+
+						<!-- Left: Sticky TOC Sidebar -->
+						<aside class="toc-sidebar" id="tocSidebar">
+							<div class="toc-sidebar-header">
+								<p class="toc-sidebar-title">Contents</p>
+							</div>
+							<ul class="toc-sidebar-list">
+								<li><a href="#conditional-edges">1. What are Conditional Edges?</a></li>
+								<li class="toc-sidebar-sub"><a href="#fixed-paths">1.1 The Problem with Fixed Paths</a></li>
+								<li class="toc-sidebar-sub"><a href="#analogy">1.2 A Real-World Analogy</a></li>
+								<li><a href="#installation-setup">2. Installation &amp; Setup</a></li>
+								<li class="toc-sidebar-sub"><a href="#configuring-llm">2.1 Configuring the LLM</a></li>
+								<li><a href="#normal-vs-conditional">3. Normal vs Conditional Edges</a></li>
+								<li><a href="#router-function">4. The Router Function</a></li>
+								<li class="toc-sidebar-sub"><a href="#what-router-does">4.1 What a Router Function Does</a></li>
+								<li class="toc-sidebar-sub"><a href="#reading-state">4.2 Reading State Inside the Router</a></li>
+								<li class="toc-sidebar-sub"><a href="#literal-type">4.3 Type-Safe Routing with Literal</a></li>
+								<li><a href="#add-conditional-edges">5. add_conditional_edges()</a></li>
+								<li class="toc-sidebar-sub"><a href="#syntax-params">5.1 Syntax and Parameters</a></li>
+								<li class="toc-sidebar-sub"><a href="#path-map">5.2 The Path Map</a></li>
+								<li class="toc-sidebar-sub"><a href="#skip-path-map">5.3 Skipping the Path Map</a></li>
+								<li><a href="#complete-example">6. Complete Example</a></li>
+								<li class="toc-sidebar-sub"><a href="#project-structure">6.1 Project Structure</a></li>
+								<li class="toc-sidebar-sub"><a href="#code-walkthrough">6.2 Full Code Walkthrough</a></li>
+								<li class="toc-sidebar-sub"><a href="#running-output">6.3 Running &amp; Output</a></li>
+								<li><a href="#graph-diagram">7. Graph Diagram</a></li>
+								<li><a href="#web-ui-gradio">8. Web UI with Gradio</a></li>
+								<li><a href="#conclusion">9. Conclusion</a></li>
+							</ul>
+						</aside>
+
+						<!-- Right: Main Content -->
+						<div class="blog-detail-main">
+							<div id="blogContainer">
+
+								<!-- Title -->
+								<div class="container blg-title-container">
+									<h2 class="blg-title">LangGraph Basics: Part 3 — Conditional Edges &amp; Routing Logic</h2>
+								</div>
+
+								<!-- Author -->
+								<div class="author_section">
+									<img id="author_img" src="" alt="Author Photo" class="author_img">
+									<div class="author_details">
+										<span id="author_name" class="author_name"></span>
+										<span id="published_date" class="published_date"></span>
+									</div>
+								</div>
+
+								<!-- Thumbnail -->
+								<div class="blg-img-container">
+									<img src="../img/blog_10/thumbnail.webp" alt="LangGraph Basics: Part 3 — Conditional Edges &amp; Routing Logic" class="blg-thumbnail" />
+								</div>
+
+								<!-- Inline TOC (mobile) -->
+								<div class="blg-toc-container">
+									<h2>📚 Table of Contents</h2>
+									<ol class="blg-toc-ol">
+										<li class="blg-toc-li"><a href="#conditional-edges">1. What are Conditional Edges?</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#fixed-paths">1.1 The Problem with Fixed Paths</a></li>
+											<li class="blg-toc-li"><a href="#analogy">1.2 A Real-World Analogy</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#installation-setup">2. Installation &amp; Setup</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#configuring-llm">2.1 Configuring the LLM</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#normal-vs-conditional">3. Normal vs Conditional Edges</a></li>
+										<li class="blg-toc-li"><a href="#router-function">4. The Router Function</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#what-router-does">4.1 What a Router Function Does</a></li>
+											<li class="blg-toc-li"><a href="#reading-state">4.2 Reading State Inside the Router</a></li>
+											<li class="blg-toc-li"><a href="#literal-type">4.3 Type-Safe Routing with Literal</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#add-conditional-edges">5. add_conditional_edges()</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#syntax-params">5.1 Syntax and Parameters</a></li>
+											<li class="blg-toc-li"><a href="#path-map">5.2 The Path Map</a></li>
+											<li class="blg-toc-li"><a href="#skip-path-map">5.3 Skipping the Path Map</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#complete-example">6. Complete Example: Customer Support Router</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#project-structure">6.1 Project Structure</a></li>
+											<li class="blg-toc-li"><a href="#code-walkthrough">6.2 Full Code Walkthrough</a></li>
+											<li class="blg-toc-li"><a href="#running-output">6.3 Running &amp; Output</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#graph-diagram">7. Graph Diagram</a></li>
+										<li class="blg-toc-li"><a href="#web-ui-gradio">8. Web UI with Gradio</a></li>
+										<li class="blg-toc-li"><a href="#conclusion">9. Conclusion</a></li>
+									</ol>
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════ -->
+								<!-- 1. What are Conditional Edges?                     -->
+								<!-- ═══════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="conditional-edges" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🔀 1. What are Conditional Edges?</h2></div>
+
+									<div class="blg-paragraph">
+										<p>In <a href="./blog_8.html" class="blg-link">Part 1</a> you learned that LangGraph graphs are made of nodes connected by edges. A normal edge — <span class="code-soft">add_edge("A", "B")</span> — always sends execution from node A to node B, no matter what. That works perfectly for a straight pipeline where every input follows the same steps in the same order.</p>
+									</div>
+									<div class="blg-paragraph">
+										<p>But real-world AI applications rarely work in straight lines. Sometimes you need to check a condition and go one way if it's true and another way if it's false. Sometimes you want different processing paths depending on what the user sent. This is where <span class="highlight-blue">conditional edges</span> come in.</p>
+									</div>
+									<div class="blg-paragraph">
+										<p>A conditional edge doesn't connect two nodes directly. Instead, it says: <em>"after this node runs, call a function to decide where to go next."</em> That function — called the <span class="highlight-purple">router function</span> — reads the current state and returns a string naming the next node. LangGraph then routes execution to that node.</p>
+									</div>
+
+									<!-- 1.1 -->
+									<a id="fixed-paths" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">1.1</span>
+										<h3>🚧 The Problem with Fixed Paths</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Imagine you're building an AI customer support system. A customer might write about a billing problem, a technical issue, or a general question. With normal edges, you can only wire one path:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">graph.add_node("support", support_node)
+graph.add_edge(START, "support")   # always goes to the same node
+graph.add_edge("support", END)</div>
+
+									<div class="blg-paragraph">
+										<p>Every message — billing complaint, app crash report, or opening-hours question — hits the same <span class="code-soft">support_node</span>. That one node now has to detect the message type internally, switch its behaviour, and handle all three cases. It becomes a tangled function trying to do everything at once. The graph carries no routing intelligence; it's all buried inside a single node.</p>
+									</div>
+
+									<blockquote class="blg-callout-warning">
+										⚠️ <strong>The cost of a fixed path:</strong> when one node handles all cases, it becomes harder to read, test, and improve. A bug in the billing response path can silently break the technical one. Conditional edges let you separate concerns cleanly — one specialist node per responsibility.
+									</blockquote>
+
+									<div class="blg-paragraph">
+										<p>With conditional edges, you split this into three dedicated nodes — <span class="code-soft">billing_support</span>, <span class="code-soft">technical_support</span>, and <span class="code-soft">general_support</span> — and let the graph decide which one to call based on the message type. The routing logic moves out of the node and into the graph structure, where it belongs.</p>
+									</div>
+
+									<!-- 1.2 -->
+									<a id="analogy" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">1.2</span>
+										<h3>☎️ A Real-World Analogy</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Think about calling a customer support hotline. You don't immediately speak to a billing specialist. First, a recorded menu — or a live operator — asks what your issue is about. Based on your answer, it routes your call: <em>"Press 1 for billing, press 2 for technical support, press 3 for all other inquiries."</em></p>
+									</div>
+									<div class="blg-paragraph">
+										<p>Without that routing step, every call would land on the same desk. One agent would have to handle billing disputes, troubleshoot app crashes, and answer FAQ questions simultaneously — doing all of it less effectively than a specialist would. The routing operator exists precisely to direct each caller to the agent best equipped to help them.</p>
+									</div>
+
+									<blockquote class="blg-callout-purple">
+										🔗 <strong>In LangGraph terms:</strong> the routing operator is the <strong>router function</strong>, the customer's issue category is stored in <strong>state</strong>, and the specialist agents are the <strong>downstream nodes</strong>. <span class="code-soft">add_conditional_edges()</span> is the mechanism that wires this routing logic into the graph.
+									</blockquote>
+
+									<div class="blg-paragraph">
+										<p>With that mental model in place, let's get the environment set up and then build each piece of the routing system from scratch.</p>
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════ -->
+								<!-- 2. Installation & Setup                            -->
+								<!-- ═══════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="installation-setup" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>⚙️ 2. Installation &amp; Setup</h2></div>
+
+									<div class="blg-paragraph">
+										<p>If you've followed Parts 1 and 2, your environment is already set up — you can skip straight to Section 3. If this is your first post in the series, follow the steps below to get everything ready.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><strong>Python version.</strong> This project requires Python 3.12.</p>
+									</div>
+									<div class="blg-code-block" data-lang="bash">python --version
+# Python 3.12.x</div>
+
+									<div class="blg-paragraph">
+										<p><strong>Create and activate a virtual environment.</strong></p>
+									</div>
+									<div class="blg-code-block" data-lang="bash">python -m venv langgraph
+source langgraph/bin/activate        # macOS / Linux
+langgraph\Scripts\activate           # Windows</div>
+
+									<div class="blg-paragraph">
+										<p><strong>Install dependencies.</strong> All packages for the entire series are in one shared <span class="code-soft">requirements.txt</span> at the root of the <span class="code-soft">langgraph/</span> folder.</p>
+									</div>
+									<div class="blg-code-block" data-lang="properties">langchain==1.2.17
+langgraph==1.1.10
+langchain-google-genai==4.2.2
+python-dotenv==1.2.2
+gradio==6.14.0</div>
+
+									<div class="blg-code-block" data-lang="bash">pip install -r requirements.txt</div>
+
+									<div class="blg-paragraph">
+										<p><strong>Gemini API key.</strong> This project uses Google Gemini as the LLM. Get your free API key from <a href="https://aistudio.google.com/apikey" class="blg-link" target="_blank" rel="noopener noreferrer">Google AI Studio</a>, then create a <span class="code-soft">.env</span> file inside the <span class="code-soft">langgraph/</span> folder:</p>
+									</div>
+									<div class="blg-code-block" data-lang="properties">GEMINI_API_KEY=your_api_key_here
+GEMINI_MODEL_NAME=gemini-2.0-flash
+GEMINI_TEMPERATURE=0.7
+GEMINI_MAX_RETRIES=2</div>
+
+									<blockquote class="blg-callout-warning">
+										⚠️ Never commit your <span class="code-soft">.env</span> file to version control. Add it to <span class="code-soft">.gitignore</span> to keep your API key safe.
+									</blockquote>
+
+									<!-- 2.1 -->
+									<a id="configuring-llm" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">2.1</span>
+										<h3>🔧 Configuring the LLM</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">config.py</span> reads the <span class="code-soft">.env</span> file and exposes the settings as class attributes. All other modules import from <span class="code-soft">Config</span> directly — no instantiation needed.</p>
+									</div>
+									<div class="blg-code-block" data-lang="python">import os
+from dotenv import load_dotenv
+
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
+
+class Config:
+    MODEL_NAME  = os.getenv("GEMINI_MODEL_NAME", "gemini-2.0-flash")
+    TEMPERATURE = float(os.getenv("GEMINI_TEMPERATURE", 0.7))
+    MAX_RETRIES = int(os.getenv("GEMINI_MAX_RETRIES", 2))</div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">llm.py</span> wraps <span class="code-soft">ChatGoogleGenerativeAI</span> with those settings. Every node that needs an LLM instantiates <span class="code-soft">GeminiLLM()</span> once and calls <span class="code-soft">get_llm()</span>.</p>
+									</div>
+									<div class="blg-code-block" data-lang="python">from langchain_google_genai import ChatGoogleGenerativeAI
+from config import Config
+
+class GeminiLLM:
+    def __init__(self):
+        self.llm = ChatGoogleGenerativeAI(
+            model=Config.MODEL_NAME,
+            temperature=Config.TEMPERATURE,
+            max_retries=Config.MAX_RETRIES,
+        )
+
+    def get_llm(self):
+        return self.llm</div>
+
+									<div class="blg-paragraph">
+										<p>With the environment ready, let's look at how conditional edges differ from the normal edges you've already used.</p>
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════ -->
+								<!-- 3. Normal vs Conditional Edges                     -->
+								<!-- ═══════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="normal-vs-conditional" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>⚖️ 3. Normal Edges vs Conditional Edges</h2></div>
+
+									<div class="blg-paragraph">
+										<p>You've used <span class="code-soft">add_edge()</span> in every previous post. Here's a side-by-side look at what changes when you switch to <span class="code-soft">add_conditional_edges()</span>.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><strong>Normal edge</strong> — hardwired, always the same destination:</p>
+									</div>
+									<div class="blg-code-block" data-lang="python"># Normal edge: node_a always goes to node_b, every single time
+graph.add_edge("node_a", "node_b")</div>
+
+									<div class="blg-paragraph">
+										<p><strong>Conditional edge</strong> — the destination is chosen at runtime by a router function:</p>
+									</div>
+									<div class="blg-code-block" data-lang="python"># Conditional edge: after node_a runs, call my_router(state)
+# and go to whichever node it returns
+graph.add_conditional_edges(
+    "node_a",      # source node
+    my_router,     # router function — decides where to go
+    {              # path map — translates return values to node names
+        "path_x": "node_b",
+        "path_y": "node_c",
+        "path_z": "node_d",
+    }
+)</div>
+
+									<div class="blg-paragraph">
+										<p>The behaviour difference is significant: a normal edge always produces one solid arrow in the graph diagram; a conditional edge produces <em>multiple dashed arrows</em> — one per possible destination — but only one of them is actually followed during each run.</p>
+									</div>
+
+									<div class="blg-table">
+										<table>
+											<thead>
+												<tr>
+													<th>Feature</th>
+													<th>Normal Edge</th>
+													<th>Conditional Edge</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td>API call</td>
+													<td><span class="code-soft">add_edge(src, dst)</span></td>
+													<td><span class="code-soft">add_conditional_edges(src, fn, map)</span></td>
+												</tr>
+												<tr>
+													<td>Path at runtime</td>
+													<td>Fixed — always the same</td>
+													<td>Dynamic — chosen by router function</td>
+												</tr>
+												<tr>
+													<td>Possible destinations</td>
+													<td>One</td>
+													<td>One or more</td>
+												</tr>
+												<tr>
+													<td>Decision logic</td>
+													<td>None needed</td>
+													<td>Router reads state and returns next node</td>
+												</tr>
+												<tr>
+													<td>Diagram arrow</td>
+													<td>Solid arrow (→)</td>
+													<td>Dashed arrows (- - →) for each branch</td>
+												</tr>
+												<tr>
+													<td>Best for</td>
+													<td>Linear pipelines</td>
+													<td>Classification, branching, routing</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+
+									<blockquote class="blg-callout-tip">
+										✅ <strong>When to choose which:</strong> if the next node is always the same regardless of input or state, use <span class="code-soft">add_edge()</span>. If the graph needs to make a decision — "which specialist should handle this?" — use <span class="code-soft">add_conditional_edges()</span>.
+									</blockquote>
+
+									<div class="blg-paragraph">
+										<p>The key ingredient that makes conditional edges work is the router function. Let's build a complete understanding of how to write one.</p>
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════ -->
+								<!-- 4. The Router Function                             -->
+								<!-- ═══════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="router-function" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🧭 4. The Router Function</h2></div>
+
+									<div class="blg-paragraph">
+										<p>A router function is the brain behind a conditional edge. It looks at the current state and decides which node should run next. LangGraph calls it automatically — you just write the logic, and the framework handles the rest.</p>
+									</div>
+
+									<!-- 4.1 -->
+									<a id="what-router-does" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">4.1</span>
+										<h3>📋 What a Router Function Does</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>A router function has a simple contract — it takes the current state as its only argument and returns a string. That string is the name of the next node to run.</p>
+									</div>
+									<div class="blg-code-block" data-lang="python">def my_router(state: MyState) -> str:
+    if state["priority"] == "urgent":
+        return "urgent_handler"
+    return "standard_handler"</div>
+
+									<div class="blg-paragraph">
+										<p>That's the entire contract. There is no special class to inherit from, no decorator to apply, no LangGraph-specific import needed. Any plain Python function that accepts one argument (state) and returns a string qualifies as a router function.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Here's the three-branch pattern from our customer support project:</p>
+									</div>
+									<div class="blg-code-block" data-lang="python">def route_by_category(state: SupportState) -> str:
+    category = state["category"]   # read the classification from state
+
+    if category == "billing":
+        return "billing_support"   # name of the node to run next
+    elif category == "technical":
+        return "technical_support"
+    else:
+        return "general_support"</div>
+
+									<div class="blg-paragraph">
+										<p>Each branch simply returns a string. LangGraph looks up that string in the path map (covered in Section 5.2) and sends execution to the matching node.</p>
+									</div>
+
+									<blockquote class="blg-callout-info">
+										💡 <strong>Keep router functions focused.</strong> A router function should only read state and return a string — it should not call an LLM, write to state, or produce side effects. All computation belongs in nodes.
+									</blockquote>
+
+									<!-- 4.2 -->
+									<a id="reading-state" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">4.2</span>
+										<h3>🔍 Reading State Inside the Router</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Here is something important to understand about timing: LangGraph calls the router function <em>after</em> the source node has already finished running and its state updates have been merged. By the time your router is invoked, the state already contains everything the previous node wrote.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>This is why the pattern works so naturally. The source node does the computation — classifying the customer's message — and stores the result in state. The router then simply <em>reads</em> that result and returns the right node name. No computation in the router, just a lookup.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Here's the step-by-step sequence for our project:</p>
+									</div>
+
+									<ul class="blg-ul">
+										<li class="blg-li"><strong>Step 1:</strong> <span class="code-soft">classify_node</span> runs → asks the LLM to categorise the message → returns <span class="code-soft">{"category": "billing"}</span></li>
+										<li class="blg-li"><strong>Step 2:</strong> LangGraph merges <span class="code-soft">{"category": "billing"}</span> into the full state</li>
+										<li class="blg-li"><strong>Step 3:</strong> LangGraph calls <span class="code-soft">route_by_category(state)</span> — <span class="code-soft">state["category"]</span> is now <span class="code-soft">"billing"</span></li>
+										<li class="blg-li"><strong>Step 4:</strong> The router returns <span class="code-soft">"billing_support"</span></li>
+										<li class="blg-li"><strong>Step 5:</strong> LangGraph runs the <span class="code-soft">billing_support</span> node</li>
+									</ul>
+
+									<blockquote class="blg-callout-note">
+										📌 <strong>Key point:</strong> the router runs between nodes, not inside them. It is not a node itself — it's a gate that LangGraph calls to decide which node comes next. It does not appear in the node registry (<span class="code-soft">add_node()</span>) and it does not modify state.
+									</blockquote>
+
+									<!-- 4.3 -->
+									<a id="literal-type" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">4.3</span>
+										<h3>🏷️ Type-Safe Routing with <code>Literal</code></h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>A router that returns plain <span class="code-soft">str</span> works fine, but annotating the return type with <span class="code-soft">Literal</span> from Python's <span class="code-soft">typing</span> module makes the code much clearer and safer.</p>
+									</div>
+									<div class="blg-code-block" data-lang="python">from typing import Literal
+
+def route_by_category(
+    state: SupportState,
+) -> Literal["billing_support", "technical_support", "general_support"]:
+    mapping = {
+        "billing":   "billing_support",
+        "technical": "technical_support",
+        "general":   "general_support",
+    }
+    return mapping.get(state["category"], "general_support")</div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">Literal["a", "b", "c"]</span> tells Python — and anyone reading the code — that this function will only ever return one of those three exact strings. Here's why this matters in practice:</p>
+									</div>
+
+									<ul class="blg-ul">
+										<li class="blg-li"><strong>Self-documenting:</strong> a reader can see all possible routing targets just from the function signature — no need to read the function body.</li>
+										<li class="blg-li"><strong>Typo protection:</strong> if you mistype a return value (e.g. <span class="code-soft">"billng_support"</span>), your IDE's type checker will flag it immediately instead of silently producing a routing error at runtime.</li>
+										<li class="blg-li"><strong>Graph diagram accuracy:</strong> LangGraph can use the <span class="code-soft">Literal</span> annotation to draw all possible branches in the diagram automatically.</li>
+									</ul>
+
+									<div class="blg-paragraph">
+										<p>Making it a habit to annotate router functions with <span class="code-soft">Literal</span> costs nothing and pays back every time someone (including future you) reads the code. Now let's look at how to connect this router into the graph.</p>
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════ -->
+								<!-- 5. add_conditional_edges()                         -->
+								<!-- ═══════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="add-conditional-edges" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🔌 5. Wiring it Together: <code>add_conditional_edges()</code></h2></div>
+
+									<div class="blg-paragraph">
+										<p>Writing the router function is only half the job. You also need to tell LangGraph which node triggers the router and what to do with the string it returns. That's exactly what <span class="code-soft">add_conditional_edges()</span> does.</p>
+									</div>
+
+									<!-- 5.1 -->
+									<a id="syntax-params" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">5.1</span>
+										<h3>🧩 Syntax and Parameters</h3>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">graph.add_conditional_edges(source, path, path_map=None)</div>
+
+									<div class="blg-paragraph">
+										<p>The method takes three arguments:</p>
+									</div>
+
+									<ul class="blg-ul">
+										<li class="blg-li"><strong><span class="code-soft">source</span></strong> (string) — the name of the node whose completion triggers the routing decision. After this node runs and its state updates are merged, LangGraph calls the router. In our project this is <span class="code-soft">"classify"</span>.</li>
+										<li class="blg-li"><strong><span class="code-soft">path</span></strong> (callable) — the router function. LangGraph calls <span class="code-soft">path(state)</span> and expects a string back. In our project this is <span class="code-soft">route_by_category</span>.</li>
+										<li class="blg-li"><strong><span class="code-soft">path_map</span></strong> (dict, optional) — maps the router's return values to registered node names. It can be omitted when the router returns node names directly (see Section 5.3).</li>
+									</ul>
+
+									<div class="blg-paragraph">
+										<p>A complete call for our customer support router:</p>
+									</div>
+									<div class="blg-code-block" data-lang="python">graph.add_conditional_edges(
+    "classify",          # ← source: the node that runs first
+    route_by_category,   # ← path: called with state after "classify" finishes
+    {                    # ← path_map: maps return values to node names
+        "billing_support":   "billing_support",
+        "technical_support": "technical_support",
+        "general_support":   "general_support",
+    }
+)</div>
+
+									<!-- 5.2 -->
+									<a id="path-map" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">5.2</span>
+										<h3>🗺️ The Path Map</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The path map is a Python dictionary where:</p>
+									</div>
+
+									<ul class="blg-ul">
+										<li class="blg-li"><strong>Keys</strong> are the strings your router function can return</li>
+										<li class="blg-li"><strong>Values</strong> are the names of nodes registered in the graph via <span class="code-soft">add_node()</span></li>
+									</ul>
+
+									<div class="blg-paragraph">
+										<p>Think of the path map as a lookup table. When the router returns <span class="code-soft">"billing_support"</span>, LangGraph checks the path map, finds the matching entry, and sends execution to the registered node named <span class="code-soft">"billing_support"</span>.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python"># router returns "billing_support"
+#     ↓
+# path_map["billing_support"] → "billing_support"  (registered node name)
+#     ↓
+# LangGraph runs the "billing_support" node</div>
+
+									<div class="blg-paragraph">
+										<p>The path map decouples the router from the graph's internal node names. If you ever rename the node from <span class="code-soft">"billing_support"</span> to <span class="code-soft">"handle_billing"</span>, you only update the path map value — the router code stays untouched:</p>
+									</div>
+									<div class="blg-code-block" data-lang="python">graph.add_conditional_edges(
+    "classify",
+    route_by_category,
+    {
+        "billing_support": "handle_billing",  # ← only this value changes
+        "technical_support": "technical_support",
+        "general_support":   "general_support",
+    }
+)</div>
+
+									<!-- 5.3 -->
+									<a id="skip-path-map" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">5.3</span>
+										<h3>✂️ Skipping the Path Map</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>When your router returns node names directly — the return values exactly match registered node names — the path map can be omitted entirely:</p>
+									</div>
+									<div class="blg-code-block" data-lang="python"># These two calls are equivalent when router returns node names directly:
+
+# With path map (explicit — recommended):
+graph.add_conditional_edges("classify", route_by_category, {
+    "billing_support":   "billing_support",
+    "technical_support": "technical_support",
+    "general_support":   "general_support",
+})
+
+# Without path map (implicit):
+graph.add_conditional_edges("classify", route_by_category)</div>
+
+									<blockquote class="blg-callout-tip">
+										✅ <strong>Recommendation:</strong> include the path map even when it seems redundant. It makes the valid routing targets visible at a glance without having to read the router function, and it protects against silent bugs when node names change later.
+									</blockquote>
+
+									<div class="blg-paragraph">
+										<p>Now that you understand every moving part — the router function, the <span class="code-soft">Literal</span> annotation, and <span class="code-soft">add_conditional_edges()</span> — let's put them all together in a real working project.</p>
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════ -->
+								<!-- 6. Complete Example: Customer Support Router       -->
+								<!-- ═══════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="complete-example" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🎧 6. Complete Example: Customer Support Router</h2></div>
+
+									<div class="blg-paragraph">
+										<p>The project we're building is a <span class="highlight-purple">Customer Support Router</span> — a four-node LangGraph application that classifies an incoming customer message and routes it to a dedicated support node. The classify node runs first and writes <span class="code-soft">category</span> to state; the router reads that category and sends the message to exactly one of three specialist nodes, each powered by a different LLM prompt.</p>
+									</div>
+
+									<!-- 6.1 -->
+									<a id="project-structure" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">6.1</span>
+										<h3>📁 Project Structure</h3>
+									</div>
+
+									<div class="blg-tree"><span class="tree-root">basics-3-conditional-edges/</span>
+<span class="tree-pipe">├── </span><span class="tree-file">config.py</span>              <span class="tree-comment"># env variables and model settings</span>
+<span class="tree-pipe">├── </span><span class="tree-file">llm.py</span>                 <span class="tree-comment"># Gemini LLM wrapper</span>
+<span class="tree-pipe">├── </span><span class="tree-file">state.py</span>               <span class="tree-comment"># SupportState TypedDict</span>
+<span class="tree-pipe">├── </span><span class="tree-file">router.py</span>              <span class="tree-comment"># route_by_category function</span>
+<span class="tree-pipe">├── </span><span class="tree-file">nodes.py</span>               <span class="tree-comment"># classify + three support node functions</span>
+<span class="tree-pipe">├── </span><span class="tree-file">graph.py</span>               <span class="tree-comment"># graph construction and compilation</span>
+<span class="tree-pipe">├── </span><span class="tree-file">support_runner.py</span>      <span class="tree-comment"># entry point: runs the graph</span>
+<span class="tree-pipe">├── </span><span class="tree-file">app.py</span>                 <span class="tree-comment"># Gradio web UI</span>
+<span class="tree-pipe">└── </span><span class="tree-dir">prompts/</span>               <span class="tree-comment"># LLM prompt templates, one file per node</span>
+<span class="tree-pipe">    ├── </span><span class="tree-file">classify.txt</span>       <span class="tree-comment"># classify the support category</span>
+<span class="tree-pipe">    ├── </span><span class="tree-file">billing.txt</span>        <span class="tree-comment"># prompt for billing queries</span>
+<span class="tree-pipe">    ├── </span><span class="tree-file">technical.txt</span>      <span class="tree-comment"># prompt for technical issues</span>
+<span class="tree-pipe">    └── </span><span class="tree-file">general.txt</span>        <span class="tree-comment"># prompt for general inquiries</span></div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">config.py</span> and <span class="code-soft">llm.py</span> handle environment setup (Section 2.1). <span class="code-soft">state.py</span> defines the shared data structure. <span class="code-soft">router.py</span> holds the routing function (Section 4). <span class="code-soft">nodes.py</span> contains all four node functions. <span class="code-soft">graph.py</span> wires everything together using <span class="code-soft">add_conditional_edges()</span> (Section 5). <span class="code-soft">support_runner.py</span> is the entry point (Section 6.3), and <span class="code-soft">app.py</span> provides the Gradio web interface (Section 8).</p>
+									</div>
+
+									<!-- 6.2 -->
+									<a id="code-walkthrough" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">6.2</span>
+										<h3>📝 Full Code Walkthrough</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><strong>state.py — shared data structure.</strong></p>
+									</div>
+									<div class="blg-paragraph">
+										<p>The state has three fields. <span class="code-soft">message</span> holds the customer's original text, <span class="code-soft">category</span> is written by <span class="code-soft">classify_node</span> and read by the router, and <span class="code-soft">response</span> is the final reply from whichever support node runs.</p>
+									</div>
+									<div class="blg-code-block" data-lang="python">from typing import TypedDict
+
+class SupportState(TypedDict):
+    message:  str
+    category: str  # set by classify_node; drives the conditional edge
+    response: str</div>
+
+									<div class="blg-paragraph">
+										<p>All three fields use the default last-write-wins behaviour — no <span class="code-soft">Annotated</span> reducers needed here. Each field is written by exactly one node and never needs to accumulate across multiple writes.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><strong>router.py — the routing function.</strong></p>
+									</div>
+									<div class="blg-paragraph">
+										<p>The router lives in its own file, separate from the nodes. This separation keeps the routing logic easy to find, read, and test on its own. The function maps each category string to the corresponding node name, with a safe fallback in case the LLM returns something unexpected.</p>
+									</div>
+									<div class="blg-code-block" data-lang="python">from typing import Literal
+from state import SupportState
+
+def route_by_category(
+    state: SupportState,
+) -> Literal["billing_support", "technical_support", "general_support"]:
+    mapping = {
+        "billing":   "billing_support",
+        "technical": "technical_support",
+        "general":   "general_support",
+    }
+    # Falls back to general_support if the LLM returns an unexpected value
+    return mapping.get(state["category"], "general_support")</div>
+
+									<div class="blg-paragraph">
+										<p>The <span class="code-soft">mapping.get(key, default)</span> pattern is a defensive measure. If the LLM ever returns something other than the three expected strings, the graph gracefully routes to <span class="code-soft">general_support</span> instead of crashing with a <span class="code-soft">KeyError</span>.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><strong>nodes.py — all four node functions.</strong></p>
+									</div>
+									<div class="blg-paragraph">
+										<p><span class="code-soft">SupportNodes</span> initialises the LLM and loads all four prompt templates once in <span class="code-soft">__init__</span>. The classify node determines the category; the three support nodes each respond to one type of customer message using a specialised prompt.</p>
+									</div>
+									<div class="blg-code-block" data-lang="python">import os
+from llm import GeminiLLM
+from state import SupportState
+
+_PROMPTS_DIR = os.path.join(os.path.dirname(__file__), "prompts")
+
+def _load_prompt(filename: str) -> str:
+    with open(os.path.join(_PROMPTS_DIR, filename), "r") as f:
+        return f.read()
+
+class SupportNodes:
+    def __init__(self):
+        self.llm              = GeminiLLM().get_llm()
+        self.classify_prompt  = _load_prompt("classify.txt")
+        self.billing_prompt   = _load_prompt("billing.txt")
+        self.technical_prompt = _load_prompt("technical.txt")
+        self.general_prompt   = _load_prompt("general.txt")
+
+    def classify_node(self, state: SupportState) -> dict:
+        prompt   = self.classify_prompt.format(message=state["message"])
+        response = self.llm.invoke(prompt)
+        raw      = self._extract_text(response).strip().lower()
+        category = raw if raw in ("billing", "technical", "general") else "general"
+        return {"category": category}   # ← only writes category; router reads it next
+
+    def billing_node(self, state: SupportState) -> dict:
+        prompt = self.billing_prompt.format(message=state["message"])
+        return {"response": self._extract_text(self.llm.invoke(prompt)).strip()}
+
+    def technical_node(self, state: SupportState) -> dict:
+        prompt = self.technical_prompt.format(message=state["message"])
+        return {"response": self._extract_text(self.llm.invoke(prompt)).strip()}
+
+    def general_node(self, state: SupportState) -> dict:
+        prompt = self.general_prompt.format(message=state["message"])
+        return {"response": self._extract_text(self.llm.invoke(prompt)).strip()}
+
+    def _extract_text(self, response) -> str:
+        content = response.content
+        if isinstance(content, list):
+            return " ".join(
+                block.get("text", "")
+                for block in content
+                if isinstance(block, dict) and block.get("type") == "text"
+            )
+        return content</div>
+
+									<div class="blg-paragraph">
+										<p>Each of the three support nodes receives the full state but only uses <span class="code-soft">message</span>. Because each has its own prompt file, you can tune them independently — for example, making the billing node more empathetic or the technical node more step-by-step — without touching any other node.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><strong>graph.py — wiring everything together.</strong></p>
+									</div>
+									<div class="blg-paragraph">
+										<p>This is where <span class="code-soft">add_conditional_edges()</span> appears. The graph registers all four nodes, then wires them: <span class="code-soft">START → classify</span> with a fixed edge, <span class="code-soft">classify → ?</span> with a conditional edge, and all three support nodes to <span class="code-soft">END</span> with fixed edges.</p>
+									</div>
+									<div class="blg-code-block" data-lang="python">import os
+from langgraph.graph import END, START, StateGraph
+from nodes import SupportNodes
+from router import route_by_category
+from state import SupportState
+
+class SupportGraph:
+    def __init__(self):
+        self.nodes          = SupportNodes()
+        self.compiled_graph = self._build()
+
+    def _build(self):
+        graph = StateGraph(SupportState)
+
+        # Register all four nodes
+        graph.add_node("classify",          self.nodes.classify_node)
+        graph.add_node("billing_support",   self.nodes.billing_node)
+        graph.add_node("technical_support", self.nodes.technical_node)
+        graph.add_node("general_support",   self.nodes.general_node)
+
+        # Fixed edge: every run starts with classify
+        graph.add_edge(START, "classify")
+
+        # Conditional edge: route_by_category picks which support node runs
+        graph.add_conditional_edges(
+            "classify",
+            route_by_category,
+            {
+                "billing_support":   "billing_support",
+                "technical_support": "technical_support",
+                "general_support":   "general_support",
+            },
+        )
+
+        # All three support nodes converge at END
+        graph.add_edge("billing_support",   END)
+        graph.add_edge("technical_support", END)
+        graph.add_edge("general_support",   END)
+
+        return graph.compile()
+
+    def get_compiled_graph(self):
+        return self.compiled_graph</div>
+
+									<div class="blg-paragraph">
+										<p>The graph has one fixed entry (<span class="code-soft">START → classify</span>), one conditional fork (<span class="code-soft">classify → ?</span>), and three fixed exits (<span class="code-soft">? → END</span>). The <span class="code-soft">?</span> is resolved at runtime by the router — only one branch runs per invoke.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><strong>support_runner.py — entry point.</strong></p>
+									</div>
+									<div class="blg-paragraph">
+										<p><span class="code-soft">SupportRunner</span> wraps the graph and exposes a simple <span class="code-soft">run(message)</span> method. The initial state passes empty strings for <span class="code-soft">category</span> and <span class="code-soft">response</span> — both are filled in by the graph before it ends.</p>
+									</div>
+									<div class="blg-code-block" data-lang="python">from graph import SupportGraph
+
+class SupportRunner:
+    def __init__(self):
+        self.support_graph = SupportGraph()
+        self.app           = self.support_graph.get_compiled_graph()
+
+    def run(self, message: str) -> dict:
+        return self.app.invoke({
+            "message":  message,
+            "category": "",     # filled by classify_node
+            "response": "",     # filled by whichever support node runs
+        })
+
+    def format_output(self, result: dict) -> str:
+        return "\n".join([
+            f"📩 Message  : {result['message']}",
+            f"🏷️  Category : {result['category'].upper()}",
+            "─" * 60,
+            f"💬 Response :\n{result['response']}",
+        ])</div>
+
+									<!-- 6.3 -->
+									<a id="running-output" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">6.3</span>
+										<h3>▶️ Running &amp; Output</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Run the entry point from inside the <span class="code-soft">basics-3-conditional-edges/</span> directory:</p>
+									</div>
+									<div class="blg-code-block" data-lang="bash">python support_runner.py</div>
+
+									<div class="blg-paragraph">
+										<p>The runner tests three messages — one billing issue, one technical problem, and one general inquiry — and prints the category and response for each:</p>
+									</div>
+									<div class="blg-code-block" data-lang="bash">============================================================
+    LangGraph Basics — Customer Support Router Demo
+============================================================
+
+  Saving graph architecture...
+  Graph saved → figure/graph.mmd
+  Graph saved → figure/graph.png
+
+📩 Message  : I was charged twice for my subscription this month.
+🏷️  Category : BILLING
+────────────────────────────────────────────────────────────
+💬 Response :
+We're sorry about the duplicate charge. Please log in to
+your account and go to Billing History to confirm the
+transactions. If two charges appear, submit a refund request
+through the portal and our team will process it within
+3–5 business days.
+============================================================
+
+📩 Message  : My app keeps crashing whenever I try to upload a file.
+🏷️  Category : TECHNICAL
+────────────────────────────────────────────────────────────
+💬 Response :
+Let's get that fixed. First, make sure you're on the latest
+app version. Then try clearing the app cache in
+Settings → Storage. If the crash persists, please send us
+your device model and OS version so our team can investigate
+further.
+============================================================
+
+📩 Message  : What are your customer support hours?
+🏷️  Category : GENERAL
+────────────────────────────────────────────────────────────
+💬 Response :
+Our support team is available Monday to Friday, 9 AM – 6 PM
+(EST). For urgent issues outside these hours, submit a
+ticket through the Help Center and we'll respond within
+24 hours.
+============================================================</div>
+
+									<div class="blg-paragraph">
+										<p>Each message lands in exactly the right specialist node. The billing complaint gets an empathetic, resolution-focused reply. The app crash gets clear troubleshooting steps. The hours question gets a direct, informative answer. The graph handled all the routing automatically — the individual support nodes never had to check the message type themselves.</p>
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════ -->
+								<!-- 7. Graph Diagram                                   -->
+								<!-- ═══════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="graph-diagram" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>📊 7. Graph Diagram</h2></div>
+
+									<div class="blg-paragraph">
+										<p>LangGraph can export the compiled graph as a Mermaid diagram. Call <span class="code-soft">runner.save_figure()</span> (already wired into <span class="code-soft">support_runner.py</span>) to generate <span class="code-soft">figure/graph.mmd</span> and <span class="code-soft">figure/graph.png</span>. Here's what the branching structure looks like:</p>
+									</div>
+
+									<div class="blg-img-container">
+										<div class="blg-mermaid-container">
+											<pre class="mermaid">
+%%{init: {"flowchart": {"curve": "linear"}}}%%
+graph TD
+    S([__start__]):::first
+    CL(classify)
+    BS(billing_support)
+    TS(technical_support)
+    GS(general_support)
+    E([__end__]):::last
+    S  --> CL
+    CL -.-> BS
+    CL -.-> TS
+    CL -.-> GS
+    BS --> E
+    TS --> E
+    GS --> E
+    classDef default fill:#f2f0ff,line-height:1.2
+    classDef first fill-opacity:0
+    classDef last fill:#bfb6fc
+											</pre>
+										</div>
+										<p class="blg-img-caption">Graph architecture of the Customer Support Router. Solid arrows (→) are normal edges; dashed arrows (- -→) are conditional edges. Only one dashed branch is followed per run.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Two things stand out in this diagram. First, the three dashed arrows leaving <span class="code-soft">classify</span> represent the conditional branches — all three are shown in the graph structure, but only one runs per invocation. Second, all three support nodes reconnect to <span class="code-soft">__end__</span> with solid arrows — regardless of which branch ran, execution always ends in the same place.</p>
+									</div>
+
+									<blockquote class="blg-callout-info">
+										💡 <strong>Solid vs dashed arrows:</strong> solid arrows (<span class="code-soft">add_edge</span>) mean "always go here". Dashed arrows (<span class="code-soft">add_conditional_edges</span>) mean "go here if the router says so". A glance at the diagram tells you exactly where decisions happen and how many branches are possible.
+									</blockquote>
+
+									<div class="blg-paragraph">
+										<p>As graphs grow more complex in later posts — with loops, multiple conditional forks, and checkpoints — this diagram becomes an essential tool for understanding and debugging the flow.</p>
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════ -->
+								<!-- 8. Web UI with Gradio                              -->
+								<!-- ═══════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="web-ui-gradio" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🌐 8. Web UI with Gradio</h2></div>
+
+									<div class="blg-paragraph">
+										<p>The project includes a Gradio chat interface so you can test the router interactively. <span class="code-soft">app.py</span> wraps <span class="code-soft">SupportRunner</span> in a <span class="code-soft">ChatInterface</span> and launches a local web server. Type any customer message into the chat box and the graph will classify it and return the appropriate specialist response.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">import gradio as gr
+from support_runner import SupportRunner
+
+class SupportApp:
+    def __init__(self):
+        self.runner = SupportRunner()
+
+    def respond(self, message: str, _history: list) -> str:
+        # _history is required by Gradio's ChatInterface but not used here
+        if not message.strip():
+            return ""
+        result = self.runner.run(message)
+        return self.runner.format_output(result)
+
+    def launch(self):
+        gr.ChatInterface(fn=self.respond, title="🎧 Customer Support Router").launch()
+
+if __name__ == "__main__":
+    SupportApp().launch()</div>
+
+									<div class="blg-paragraph">
+										<p>Run it with:</p>
+									</div>
+									<div class="blg-code-block" data-lang="bash">python app.py</div>
+
+									<div class="blg-paragraph">
+										<p>Gradio will print a local URL (usually <span class="code-soft">http://127.0.0.1:7860</span>). Open it in your browser and try sending a billing question, a technical complaint, and a general inquiry to watch each one route to the right specialist node.</p>
+									</div>
+
+									<div class="blg-img-container">
+										<img src="../img/blog_10/web_ui.webp" alt="Customer Support Router Gradio web interface" class="blg-img" />
+										<p class="blg-img-caption">The Customer Support Router running in a Gradio chat interface. The category and routed specialist response are shown for each message.</p>
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════ -->
+								<!-- 9. Conclusion                                      -->
+								<!-- ═══════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="conclusion" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🏁 9. Conclusion</h2></div>
+
+									<div class="blg-paragraph">
+										<p>Conditional edges are one of the most powerful ideas in LangGraph. They move routing decisions out of individual nodes and into the graph structure itself, keeping each node focused and the overall flow easy to understand and maintain.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Here's what you learned in this post:</p>
+									</div>
+
+									<ul class="blg-ul">
+										<li class="blg-li">Normal edges (<span class="code-soft">add_edge</span>) are fixed; conditional edges (<span class="code-soft">add_conditional_edges</span>) choose the next node at runtime based on state.</li>
+										<li class="blg-li">A <strong>router function</strong> is a plain Python function that takes the current state and returns a string naming the next node to run.</li>
+										<li class="blg-li">It runs <em>after</em> the source node has already updated state — so it can safely read values written by that node.</li>
+										<li class="blg-li">Annotating the return type with <span class="code-soft">Literal</span> documents valid destinations, catches typos early, and helps LangGraph render accurate graph diagrams.</li>
+										<li class="blg-li"><span class="code-soft">add_conditional_edges(source, path, path_map)</span> wires the router into the graph. The path map translates router return values to registered node names.</li>
+										<li class="blg-li">In the Customer Support Router, <span class="code-soft">classify_node</span> labels each message; the router reads the label and sends execution to the matching specialist node.</li>
+									</ul>
+
+									<blockquote class="blg-callout-tip">
+										✅ <strong>Up next — Part 4: Checkpointers, Memory &amp; Streaming.</strong> So far, every graph run has been stateless — the state lives only for the duration of one <span class="code-soft">invoke()</span> call. In Part 4 you'll learn how to persist state across calls using <strong>checkpointers</strong>, giving your graph true multi-turn memory, and how to stream LLM output token by token as it's generated.
+									</blockquote>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- Technical Stacks -->
+								<div class="blg-trailing-section">
+									<div class="blg-trailing-header">
+										<img src="../img/technical_stack/stack.png" alt="Technical Stacks">
+										<h2>Technical Stacks</h2>
+									</div>
+									<div class="blg-tech-grid">
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/python.svg" alt="Python"> Python
+										</div>
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/langgraph.svg" alt="LangGraph"> LangGraph
+										</div>
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/langchain.svg" alt="LangChain"> LangChain
+										</div>
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/gemini.svg" alt="Gemini"> Gemini
+										</div>
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/gradio.svg" alt="Gradio"> Gradio
+										</div>
+									</div>
+								</div>
+								<!-- End: Technical Stacks -->
+
+								<!-- Download Source Code -->
+								<div class="blg-download-card">
+									<img src="../img/others/download.svg" alt="Download">
+									<div class="blg-download-info">
+										<h3>Download Source Code</h3>
+										<p>LangGraph Basics — Customer Support Router</p>
+									</div>
+									<a href="https://github.com/shafiqul-islam-sumon/langgraph/tree/main/basics-3-conditional-edges" class="blg-download-btn" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+								</div>
+								<!-- End: Download Source Code -->
+
+								<!-- References -->
+								<div class="blg-trailing-section">
+									<div class="blg-trailing-header">
+										<span style="font-size: 22px; line-height: 1;">📚</span>
+										<h2>References</h2>
+									</div>
+									<ul class="blg-ul">
+										<li class="blg-li">
+											<img src="../img/technical_stack/github.svg" alt="GitHub" width="18" style="vertical-align: middle; margin-right: 6px;">
+											<strong>GitHub Repository:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://github.com/shafiqul-islam-sumon/langgraph/tree/main/basics-3-conditional-edges">shafiqul-islam-sumon/langgraph — basics-3-conditional-edges</a>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/langgraph.svg" alt="LangGraph" width="18" style="vertical-align: middle; margin-right: 6px;">
+											<strong>LangGraph Documentation:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://langchain-ai.github.io/langgraph/">langchain-ai.github.io/langgraph</a>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/gemini.svg" alt="Gemini" width="18" style="vertical-align: middle; margin-right: 6px;">
+											<strong>Google AI Studio (API key):</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://aistudio.google.com/apikey">aistudio.google.com/apikey</a>
+										</li>
+									</ul>
+								</div>
+								<!-- End: References -->
+
+							</div><!-- end #blogContainer -->
+						</div><!-- end .blog-detail-main -->
+					</div><!-- end .blog-detail-layout -->
+
+					<!-- Related posts — OUTSIDE .blog-detail-layout, INSIDE .container -->
+					<div class="related-posts-section">
+						<div class="blog-title-bar">
+							<img src="../img/others/blog.png" alt="blog post" style="width: 24px; height: auto;">
+							<h2>Related Blog Posts</h2>
+						</div>
+						<div class="related-posts-wrapper">
+							<div class="related-posts-swiper-area">
+								<div class="swiper" id="postContainer">
+									<div class="swiper-wrapper"><!-- populated by detail.js --></div>
+								</div>
+								<div class="swiper-button-prev"></div>
+								<div class="swiper-button-next"></div>
+							</div>
+							<div class="blg-slide-counter">
+								<div class="slide-progress-bar">
+									<div class="slide-progress-fill" id="slideProgressFill"></div>
+								</div>
+								<div class="slide-counter-label">
+									<span id="currentSlide">1</span> / <span id="totalSlides">1</span>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div><!-- end .container -->
+			</section>
+
+			<div id="site-footer"></div>
+		</div><!-- end #wrapper -->
+
+		<script src="../js/bootstrap.bundle.min.js"></script>
+		<script src="../js/components.js"></script>
+		<script src="../js/site.js"></script>
+		<script src="../js/swiper-bundle.min.js"></script>
+		<script src="../js/prism.js" data-manual></script>
+		<script src="../js/code-highlight.js"></script>
+		<script src="../js/detail.js"></script>
+		<script src="../js/mermaid.min.js"></script>
+		<script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+	</body>
+</html>
