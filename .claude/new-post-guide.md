@@ -8,8 +8,8 @@ Professional public website — every sentence must be publication-ready: correc
 **2. Write simply and user-friendly.**
 Assume the reader is intelligent but new to the topic. Avoid unexplained jargon; define technical terms on first use.
 
-**3. Use examples.**
-Show a concrete real-world scenario or code snippet alongside every abstract concept.
+**3. Use a real-world scenario — one per post, carried throughout.**
+Open with a concrete scenario a non-technical reader can picture (e.g. "a student asking an AI tutor follow-up questions"). Introduce it in the intro paragraph. Use it as the running analogy when explaining every abstract concept. The complete example section must implement that exact scenario — not a generic placeholder. Variable names, class names, file names, and the Gradio UI must all reflect the scenario. See the Real-World Scenario Rule in CLAUDE.md.
 
 **4. No plagiarism.**
 All content must be original. Rewrite ideas in your own words; cite sources in the References section.
@@ -269,13 +269,14 @@ For any post in the LangGraph series, Section 2 (Installation & Setup) must foll
 
 Never show a bare `pip install pkg1 pkg2` one-liner — always use `requirements.txt`.
 
-**Prompts folder** — when the post uses the `prompts/` convention, show it in the tree:
+**Prompts folder** — every LLM prompt must live in `prompts/` as a `.txt` file. This is mandatory for every post that uses LLM prompts. See Prompts Folder Rule in CLAUDE.md. Show it in the tree:
 ```html
-<span class="tree-pipe">    ├── </span><span class="tree-file">nodes.py</span>                <span class="tree-comment"># node functions</span>
+<span class="tree-pipe">    ├── </span><span class="tree-file">nodes.py</span>                <span class="tree-comment"># node functions — loads prompts from prompts/</span>
 <span class="tree-pipe">    ├── </span><span class="tree-dir">prompts/</span>                <span class="tree-comment"># LLM prompt templates, one file per node</span>
 <span class="tree-pipe">    │   ├── </span><span class="tree-file">node_a.txt</span>       <span class="tree-comment"># prompt for node_a</span>
 <span class="tree-pipe">    │   └── </span><span class="tree-file">node_b.txt</span>       <span class="tree-comment"># prompt for node_b</span>
 ```
+The `nodes.py` code block must show the `_load_prompt()` file-loading pattern — never an inline string literal.
 
 ## Step 6 — Code blocks and trees
 

@@ -2,7 +2,7 @@
 
 Personal engineering blog by **Md Shafiqul Islam** (AI Engineer / LLM Specialist / Python Developer).
 Topics: LLMs, RAG, AI Agents, LangChain, Docker, Hugging Face, OpenAI, Streamlit, Gradio.
-10 blog posts published (`blog_1.html` through `blog_10.html`), hosted on GitHub Pages.
+11 blog posts published (`blog_1.html` through `blog_11.html`), hosted on GitHub Pages.
 
 **Before writing any blog HTML → read `.claude/instructions.md`.**
 **To create a new blog post → read `.claude/new-post-guide.md`.**
@@ -27,7 +27,7 @@ Topics: LLMs, RAG, AI Agents, LangChain, Docker, Hugging Face, OpenAI, Streamlit
 shafiqulai.github.io/
 ├── index.html                    # Homepage (blog card grid)
 ├── blogs/
-│   └── blog_1.html … blog_10.html # Blog detail pages (no template file)
+│   └── blog_1.html … blog_11.html # Blog detail pages (no template file)
 ├── data/
 │   └── posts.json                # All blog metadata — source of truth for cards + slider
 ├── img/
@@ -108,6 +108,49 @@ The folder README must cover:
 - Update the project structure tree and "Running a Project" section
 
 Use `langgraph/basics-1-stategraph-nodes-edges/README.md` as the style template.
+
+## Graph Figure Rule
+
+**Every LangGraph post must save the compiled graph as a Mermaid diagram and PNG into a `figure/` folder.**
+
+- Add `FIGURE_DIR = os.path.join(os.path.dirname(__file__), "figure")` to `graph.py`.
+- Add a `save_figure()` method to the graph class that calls `get_graph().draw_mermaid()` (saves `.mmd`) and `get_graph().draw_mermaid_png()` (saves `.png`).
+- Delegate `save_figure()` from the runner class: `def save_figure(self): self.graph.save_figure()`.
+- Call `runner.save_figure()` at the very start of the `if __name__ == "__main__"` block, before any demo runs.
+- The console output shown in the blog must include the two `Graph saved →` lines.
+- The project tree in the blog HTML must show the `figure/` folder with `graph.mmd` and `graph.png` entries.
+- `figure/` is auto-created by `os.makedirs(FIGURE_DIR, exist_ok=True)` — never create it manually or commit it empty.
+
+Use `basics-3-conditional-edges/graph.py` and `support_runner.py` as the canonical pattern.
+
+## Prompts Folder Rule
+
+**Every LLM prompt must live in a `prompts/` subfolder as a plain `.txt` file — never hardcoded as a Python string inside a node function.**
+
+- Create one `.txt` file per node (e.g. `prompts/study_buddy.txt`, `prompts/classify.txt`).
+- Load it in `__init__` with a `_load_prompt(filename)` helper function (see `basics-3-conditional-edges/nodes.py` as the canonical pattern).
+- Prompt files may use `{variable}` placeholders filled with `.format()` at call time.
+- The project tree in the blog HTML must always show the `prompts/` folder and each `.txt` file with a comment.
+- The nodes.py code walkthrough in the blog must show the file-loading pattern, not an inline string.
+
+This rule applies to every LangGraph post and any other post that uses LLM prompts. Separation keeps prompt tuning independent of code changes.
+
+## Real-World Scenario Rule
+
+**Every blog post must be anchored to one concrete real-world scenario introduced in Section 1 and carried through to the complete example and web UI.**
+
+- Pick a scenario a non-technical reader can picture immediately (e.g. "a student asking follow-up questions to an AI tutor", "a customer support bot that routes complaints").
+- Introduce the scenario by name in the intro paragraph and explain *why* the concept being taught is necessary for that scenario.
+- All abstract concepts (nodes, reducers, checkpointers, etc.) must be explained using that scenario as the running analogy before any code is shown.
+- The complete example section must implement that exact scenario — not a generic placeholder.
+- Source code file names, variable names, function names, and class names must reflect the scenario (e.g. `study_runner.py`, `StudyState`, not `runner.py`, `MyState`).
+- The Gradio web UI must also wrap the same scenario — same runner class, same thread behaviour.
+- The download card and GitHub repo name must reference the scenario.
+
+**How to choose a scenario:**
+- It must require the concept being taught (e.g. a multi-turn chatbot *needs* checkpointers; a content pipeline *needs* reducers).
+- Prefer domains that are universally relatable: education, customer support, travel, personal productivity, content creation.
+- Avoid toy examples ("foo/bar", "node_a/node_b") — every identifier should mean something.
 
 ## CSS Conventions
 

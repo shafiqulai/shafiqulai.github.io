@@ -1,0 +1,1706 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<!-- Google tag (gtag.js) -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-6SEFZQJHM1"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
+			gtag("config", "G-6SEFZQJHM1", {
+				cookie_domain: "shafiqulai.github.io",
+			});
+		</script>
+
+		<meta charset="utf-8" />
+		<title>LangGraph Basics: Part 4 — Checkpointers, Memory &amp; Streaming</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="LangGraph graphs forget everything when invoke() returns — checkpointers fix this by persisting state across calls. MemorySaver stores state in memory; SqliteSaver persists it to disk. Thread IDs keep conversations separate. This post builds a Personal Study Buddy chatbot that remembers every question a student has asked, demonstrates full multi-turn memory with two isolated student sessions, and shows how to stream LLM responses token by token using stream_mode."
+		/>
+		<meta name="author" content="MD SHAFIQUL ISLAM" />
+		<link rel="canonical" href="https://shafiqulai.github.io/blogs/blog_11.html" />
+		<link rel="icon" href="../img/others/favicon.ico" type="image/x-icon" />
+
+		<!-- Fonts -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+
+		<!-- CSS (order matters) -->
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+		<link rel="stylesheet" href="../css/swiper-bundle.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/style.css" />
+		<link rel="stylesheet" type="text/css" href="../css/prism.css" />
+	</head>
+
+	<body>
+		<!-- Reading Progress Bar -->
+		<div id="reading-progress"></div>
+		<div id="wrapper">
+			<div id="site-header"></div>
+
+			<section id="content">
+				<div class="container">
+					<div class="blog-detail-layout">
+
+						<!-- Left: Sticky TOC Sidebar -->
+						<aside class="toc-sidebar" id="tocSidebar">
+							<div class="toc-sidebar-header">
+								<p class="toc-sidebar-title">Contents</p>
+							</div>
+							<ul class="toc-sidebar-list">
+								<li><a href="#persistence">1. What is Persistence?</a></li>
+								<li class="toc-sidebar-sub"><a href="#stateless-problem">1.1 The Stateless Graph Problem</a></li>
+								<li class="toc-sidebar-sub"><a href="#real-world-need">1.2 Scenarios That Need Memory</a></li>
+								<li><a href="#installation-setup">2. Installation &amp; Setup</a></li>
+								<li class="toc-sidebar-sub"><a href="#configuring-llm">2.1 Configuring the LLM</a></li>
+								<li><a href="#checkpointers">3. Checkpointers — The Memory Engine</a></li>
+								<li class="toc-sidebar-sub"><a href="#what-is-checkpointer">3.1 What is a Checkpointer?</a></li>
+								<li class="toc-sidebar-sub"><a href="#how-checkpointing-works">3.2 How Checkpointing Works</a></li>
+								<li class="toc-sidebar-sub"><a href="#memorysaver">3.3 MemorySaver</a></li>
+								<li class="toc-sidebar-sub"><a href="#sqlitesaver">3.4 SqliteSaver</a></li>
+								<li class="toc-sidebar-sub"><a href="#checkpointer-comparison">3.5 Comparison Table</a></li>
+								<li><a href="#thread-ids">4. Thread IDs — Separate Conversations</a></li>
+								<li class="toc-sidebar-sub"><a href="#what-is-thread">4.1 What is a Thread?</a></li>
+								<li class="toc-sidebar-sub"><a href="#config-dict">4.2 The config Dictionary</a></li>
+								<li class="toc-sidebar-sub"><a href="#two-threads">4.3 Two Threads in Action</a></li>
+								<li class="toc-sidebar-sub"><a href="#inspect-state">4.4 Inspecting Saved State</a></li>
+								<li><a href="#invoke-vs-stream">5. invoke() vs stream()</a></li>
+								<li class="toc-sidebar-sub"><a href="#invoke-method">5.1 invoke() — Wait for the Result</a></li>
+								<li class="toc-sidebar-sub"><a href="#stream-method">5.2 stream() — Watch the Graph Think</a></li>
+								<li class="toc-sidebar-sub"><a href="#mode-values">5.3 stream_mode="values"</a></li>
+								<li class="toc-sidebar-sub"><a href="#mode-updates">5.4 stream_mode="updates"</a></li>
+								<li class="toc-sidebar-sub"><a href="#mode-messages">5.5 stream_mode="messages"</a></li>
+								<li class="toc-sidebar-sub"><a href="#stream-comparison">5.6 Comparison Table</a></li>
+								<li><a href="#complete-example">6. Complete Example: Study Buddy</a></li>
+								<li class="toc-sidebar-sub"><a href="#scenario-arch">6.1 Scenario &amp; Architecture</a></li>
+								<li class="toc-sidebar-sub"><a href="#state-design">6.2 State Design</a></li>
+								<li class="toc-sidebar-sub"><a href="#chat-node">6.3 The Chat Node</a></li>
+								<li class="toc-sidebar-sub"><a href="#build-graph">6.4 Building the Graph</a></li>
+								<li class="toc-sidebar-sub"><a href="#runner">6.5 The Runner</a></li>
+								<li class="toc-sidebar-sub"><a href="#output-walkthrough">6.6 Console Output</a></li>
+								<li class="toc-sidebar-sub"><a href="#sqlite-upgrade">6.7 Upgrading to SqliteSaver</a></li>
+								<li><a href="#web-ui-gradio">7. Web UI with Gradio</a></li>
+								<li class="toc-sidebar-sub"><a href="#how-to-use">7.1 How to Use the App</a></li>
+								<li><a href="#conclusion">8. Conclusion</a></li>
+							</ul>
+						</aside>
+
+						<!-- Right: Main Content -->
+						<div class="blog-detail-main">
+							<div id="blogContainer">
+
+								<!-- Title -->
+								<div class="container blg-title-container">
+									<h2 class="blg-title">LangGraph Basics: Part 4 — Checkpointers, Memory &amp; Streaming</h2>
+								</div>
+
+								<!-- Author -->
+								<div class="author_section">
+									<img id="author_img" src="" alt="Author Photo" class="author_img">
+									<div class="author_details">
+										<span id="author_name" class="author_name"></span>
+										<span id="published_date" class="published_date"></span>
+									</div>
+								</div>
+
+								<!-- Thumbnail -->
+								<div class="blg-img-container">
+									<img src="../img/blog_11/thumbnail.webp" alt="LangGraph Basics: Part 4 — Checkpointers, Memory &amp; Streaming" class="blg-thumbnail" />
+								</div>
+
+								<!-- Inline TOC (mobile) -->
+								<div class="blg-toc-container">
+									<h2>📚 Table of Contents</h2>
+									<ol class="blg-toc-ol">
+										<li class="blg-toc-li"><a href="#persistence">1. What is Persistence — and Why Do We Need It?</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#stateless-problem">1.1 The Stateless Graph Problem</a></li>
+											<li class="blg-toc-li"><a href="#real-world-need">1.2 Scenarios That Need Memory</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#installation-setup">2. Installation &amp; Setup</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#configuring-llm">2.1 Configuring the LLM</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#checkpointers">3. Checkpointers — The Memory Engine</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#what-is-checkpointer">3.1 What is a Checkpointer?</a></li>
+											<li class="blg-toc-li"><a href="#how-checkpointing-works">3.2 How Checkpointing Works Internally</a></li>
+											<li class="blg-toc-li"><a href="#memorysaver">3.3 MemorySaver — In-Process Storage</a></li>
+											<li class="blg-toc-li"><a href="#sqlitesaver">3.4 SqliteSaver — File-Based Persistence</a></li>
+											<li class="blg-toc-li"><a href="#checkpointer-comparison">3.5 MemorySaver vs SqliteSaver</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#thread-ids">4. Thread IDs — Keeping Conversations Separate</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#what-is-thread">4.1 What is a Thread?</a></li>
+											<li class="blg-toc-li"><a href="#config-dict">4.2 The config Dictionary</a></li>
+											<li class="blg-toc-li"><a href="#two-threads">4.3 Two Threads in Action</a></li>
+											<li class="blg-toc-li"><a href="#inspect-state">4.4 Inspecting Saved State</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#invoke-vs-stream">5. invoke() vs stream() — Two Ways to Run a Graph</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#invoke-method">5.1 invoke() — Wait for the Final Result</a></li>
+											<li class="blg-toc-li"><a href="#stream-method">5.2 stream() — Watch the Graph Think</a></li>
+											<li class="blg-toc-li"><a href="#mode-values">5.3 stream_mode="values"</a></li>
+											<li class="blg-toc-li"><a href="#mode-updates">5.4 stream_mode="updates"</a></li>
+											<li class="blg-toc-li"><a href="#mode-messages">5.5 stream_mode="messages"</a></li>
+											<li class="blg-toc-li"><a href="#stream-comparison">5.6 Choosing the Right Mode</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#complete-example">6. Complete Example: Personal Study Buddy</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#scenario-arch">6.1 Scenario &amp; Architecture</a></li>
+											<li class="blg-toc-li"><a href="#state-design">6.2 State Design (state.py)</a></li>
+											<li class="blg-toc-li"><a href="#chat-node">6.3 The Chat Node (nodes.py)</a></li>
+											<li class="blg-toc-li"><a href="#build-graph">6.4 Building the Graph (graph.py)</a></li>
+											<li class="blg-toc-li"><a href="#runner">6.5 The Runner (study_runner.py)</a></li>
+											<li class="blg-toc-li"><a href="#output-walkthrough">6.6 Console Output Walkthrough</a></li>
+											<li class="blg-toc-li"><a href="#sqlite-upgrade">6.7 Upgrading to SqliteSaver</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#web-ui-gradio">7. Web UI with Gradio</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#how-to-use">7.1 How to Use the App</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#conclusion">8. Conclusion</a></li>
+									</ol>
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- 1. What is Persistence?                                -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="persistence" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🧠 1. What is Persistence — and Why Do We Need It?</h2></div>
+
+									<div class="blg-paragraph">
+										<p>Imagine a student named Alice who is learning programming. She asks her AI tutor: <em>"Can you explain recursion?"</em> The tutor gives a brilliant answer with a great analogy. Alice follows up: <em>"Can you give me a Python example?"</em> And the tutor — having zero memory of the first question — responds with something completely disconnected. Alice has to re-explain her context every single turn. That's not a tutor. That's a goldfish.</p>
+									</div>
+									<div class="blg-paragraph">
+										<p>This is the exact problem we solve in Part 4. Every LangGraph graph built so far in this series was <span class="highlight-orange">stateless</span> — the entire state lived only for the duration of one <span class="code-soft">invoke()</span> call. The moment the call returned, all that data was thrown away. The next call started completely from scratch, with no knowledge of anything that came before.</p>
+									</div>
+									<div class="blg-paragraph">
+										<p>LangGraph solves this with three interlocking features. First, <span class="highlight-blue">checkpointers</span> — a built-in persistence layer that automatically saves the graph's state after every node runs. Second, <span class="highlight-purple">thread IDs</span> — identifiers that keep different users' histories completely separate. Third, <span class="highlight-teal">streaming</span> — a way to surface LLM responses token by token as they are generated, instead of waiting for the full reply. Together, these three turn a stateless graph into a true conversational agent.</p>
+									</div>
+
+									<!-- 1.1 -->
+									<a id="stateless-problem" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">1.1</span>
+										<h3>🐟 The Stateless Graph Problem</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Let's prove the problem is real. Take a minimal graph and invoke it twice with related questions. The state carries no knowledge across calls:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python"># Without a checkpointer — each invoke() starts completely fresh
+result1 = app.invoke({"messages": [HumanMessage("Explain recursion.")]})
+print(result1["messages"][-1].content)
+# ✅ Great explanation with the factorial analogy...
+
+result2 = app.invoke({"messages": [HumanMessage("Give me a Python example.")]})
+print(result2["messages"][-1].content)
+# ❌ A Python example... of what exactly?
+#    The graph has no idea "recursion" was even mentioned in result1.</div>
+
+									<div class="blg-paragraph">
+										<p>The second call has no access to the first result. From the graph's perspective, "Give me a Python example" is the very first message ever sent. The context Alice carefully built up vanishes between calls.</p>
+									</div>
+
+									<blockquote class="blg-callout-warning">
+										⚠️ <strong>Why this matters beyond chatbots:</strong> state loss between calls breaks multi-step workflows too. An agent that approves expenses in step one will have no record of that approval in step two. A document processing pipeline that tags a file in step one can't use that tag in step three. Persistence is not just a chatbot feature — it's required for any graph that spans more than a single request.
+									</blockquote>
+
+									<div class="blg-paragraph">
+										<p>Now compare the same two calls on a graph compiled with a checkpointer and a thread ID:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python"># With a checkpointer — history is saved and restored automatically
+config = {"configurable": {"thread_id": "alice-session"}}
+
+result1 = app.invoke({"messages": [HumanMessage("Explain recursion.")]}, config)
+# ✅ Great explanation with the factorial analogy...
+
+result2 = app.invoke({"messages": [HumanMessage("Give me a Python example.")]}, config)
+# ✅ Sure! Here is recursion in Python using the factorial example we discussed:
+#    def factorial(n):
+#        if n == 0:
+#            return 1
+#        return n * factorial(n - 1)</div>
+
+									<div class="blg-paragraph">
+										<p>Same graph. Same node. Same LLM. The only difference is three things: a checkpointer attached at compile time, and a <span class="code-soft">thread_id</span> passed in the config. That's the magic — and the rest of this post explains exactly how it works.</p>
+									</div>
+
+									<!-- 1.2 -->
+									<a id="real-world-need" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">1.2</span>
+										<h3>🌍 Real-World Scenarios That Need Memory</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Stateless graphs work fine for one-shot tasks — "summarise this paragraph", "translate this sentence". But most real products need something more:</p>
+									</div>
+
+									<div class="blg-feature-grid">
+										<div class="blg-feature-card card-blue">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">📚</span>
+												<h4>AI Tutors &amp; Study Assistants</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Students ask follow-up questions that only make sense in context of what was explained earlier. The tutor must remember every question and answer to build on them.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-purple">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">🎧</span>
+												<h4>Customer Support Threads</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>A customer files a ticket and adds follow-up details across multiple messages. The agent needs to track the full complaint history, not just the latest message.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-green">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">💻</span>
+												<h4>Coding Assistants</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>"Fix the bug in the function I wrote earlier" — the assistant must remember what code was written, what language, and what error was reported in previous turns.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-teal">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">⚙️</span>
+												<h4>Resumable Workflows</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>A multi-step approval process that spans hours or days. If the server restarts, the workflow must resume exactly where it left off — not from the beginning.</p>
+											</div>
+										</div>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Our example for this post is the AI study buddy. Alice can ask questions across multiple turns — and the tutor remembers every single one. Meanwhile, another student Bob runs a completely independent session: his questions and the tutor's answers are stored under a different thread and never mix with Alice's.</p>
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- 2. Installation & Setup                                -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="installation-setup" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>⚙️ 2. Installation &amp; Setup</h2></div>
+
+									<div class="blg-paragraph">
+										<p>If you followed Parts 1–3, your environment is already set up — Part 4 adds no new packages. If this is your first post in the series, follow all steps below.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><strong>Python version.</strong> This project requires Python 3.12.</p>
+									</div>
+									<div class="blg-code-block" data-lang="bash">python --version
+# Python 3.12.x</div>
+
+									<div class="blg-paragraph">
+										<p><strong>Create and activate a virtual environment.</strong></p>
+									</div>
+									<div class="blg-code-block" data-lang="bash">python -m venv langgraph
+source langgraph/bin/activate        # macOS / Linux
+langgraph\Scripts\activate           # Windows</div>
+
+									<div class="blg-paragraph">
+										<p><strong>Install dependencies.</strong> All packages for the series live in one shared <span class="code-soft">requirements.txt</span> at the root of the <span class="code-soft">langgraph/</span> folder:</p>
+									</div>
+									<div class="blg-code-block" data-lang="properties">langchain==1.2.17
+langgraph==1.1.10
+langchain-google-genai==4.2.2
+python-dotenv==1.2.2
+gradio==6.14.0</div>
+
+									<div class="blg-code-block" data-lang="bash">pip install -r requirements.txt</div>
+
+									<div class="blg-paragraph">
+										<p><strong>Gemini API key.</strong> Get your free API key from <a href="https://aistudio.google.com/apikey" class="blg-link" target="_blank" rel="noopener noreferrer">Google AI Studio</a>, then create a <span class="code-soft">.env</span> file at the root of the <span class="code-soft">langgraph/</span> folder:</p>
+									</div>
+									<div class="blg-code-block" data-lang="properties">GEMINI_API_KEY=your_api_key_here
+GEMINI_MODEL_NAME=gemini-3-flash-preview
+GEMINI_TEMPERATURE=0.7
+GEMINI_MAX_RETRIES=2</div>
+
+									<blockquote class="blg-callout-warning">
+										⚠️ Never commit your <span class="code-soft">.env</span> file to version control. Add <span class="code-soft">.env</span> to <span class="code-soft">.gitignore</span> before your first commit.
+									</blockquote>
+
+									<div class="blg-paragraph">
+										<p><strong>Project structure.</strong> Part 4 lives in its own folder inside <span class="code-soft">langgraph/</span>:</p>
+									</div>
+
+									<div class="blg-tree"><span class="tree-root">basics-4-checkpointers-memory-streaming/</span>
+<span class="tree-pipe">├── </span><span class="tree-file">config.py</span>              <span class="tree-comment"># reads .env settings</span>
+<span class="tree-pipe">├── </span><span class="tree-file">llm.py</span>                 <span class="tree-comment"># Gemini LLM wrapper</span>
+<span class="tree-pipe">├── </span><span class="tree-file">state.py</span>               <span class="tree-comment"># StudyState with add_messages reducer</span>
+<span class="tree-pipe">├── </span><span class="tree-file">nodes.py</span>               <span class="tree-comment"># study_buddy_node — loads prompt from prompts/</span>
+<span class="tree-pipe">├── </span><span class="tree-file">graph.py</span>               <span class="tree-comment"># graph wired with MemorySaver checkpointer</span>
+<span class="tree-pipe">├── </span><span class="tree-file">study_runner.py</span>        <span class="tree-comment"># console demo: multi-turn, two threads, state inspection</span>
+<span class="tree-pipe">├── </span><span class="tree-file">app.py</span>                 <span class="tree-comment"># Gradio web UI with per-session thread_id &amp; streaming</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">prompts/</span>               <span class="tree-comment"># LLM prompt templates, one file per node</span>
+<span class="tree-pipe">│   └── </span><span class="tree-file">study_buddy.txt</span>    <span class="tree-comment"># system prompt for the study_buddy_node</span>
+<span class="tree-pipe">└── </span><span class="tree-dir">figure/</span>                <span class="tree-comment"># auto-generated graph diagrams</span>
+<span class="tree-pipe">    ├── </span><span class="tree-file">graph.mmd</span>          <span class="tree-comment"># Mermaid source exported by save_figure()</span>
+<span class="tree-pipe">    └── </span><span class="tree-file">graph.png</span>          <span class="tree-comment"># PNG rendered from the Mermaid source</span></div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">config.py</span> and <span class="code-soft">llm.py</span> are identical to previous parts (Section 2.1). <span class="code-soft">state.py</span> introduces the <span class="code-soft">add_messages</span> reducer (Section 6.2). <span class="code-soft">nodes.py</span> holds the single chat node and loads its system prompt from <span class="code-soft">prompts/study_buddy.txt</span> at init (Section 6.3). <span class="code-soft">graph.py</span> wires the checkpointer and exposes <span class="code-soft">save_figure()</span> to export the graph diagram (Section 6.4). <span class="code-soft">study_runner.py</span> calls <span class="code-soft">save_figure()</span> on startup and runs the multi-turn demo (Section 6.5). <span class="code-soft">app.py</span> is the Gradio web UI (Section 7). <span class="code-soft">figure/</span> is auto-created by <span class="code-soft">save_figure()</span> — you don't create it manually.</p>
+									</div>
+
+									<!-- 2.1 -->
+									<a id="configuring-llm" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">2.1</span>
+										<h3>🔧 Configuring the LLM</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">config.py</span> reads the <span class="code-soft">.env</span> file and exposes settings as class attributes. <span class="code-soft">llm.py</span> wraps <span class="code-soft">ChatGoogleGenerativeAI</span> with those settings. These are unchanged from Parts 1–3.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">import os
+from dotenv import load_dotenv
+
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
+
+class Config:
+    MODEL_NAME  = os.getenv("GEMINI_MODEL_NAME", "gemini-3-flash-preview")
+    TEMPERATURE = float(os.getenv("GEMINI_TEMPERATURE", 0.7))
+    MAX_RETRIES = int(os.getenv("GEMINI_MAX_RETRIES", 2))</div>
+
+									<div class="blg-code-block" data-lang="python">from langchain_google_genai import ChatGoogleGenerativeAI
+from config import Config
+
+class GeminiLLM:
+    def __init__(self):
+        self.llm = ChatGoogleGenerativeAI(
+            model=Config.MODEL_NAME,
+            temperature=Config.TEMPERATURE,
+            max_retries=Config.MAX_RETRIES,
+        )
+
+    def get_llm(self):
+        return self.llm</div>
+
+									<div class="blg-paragraph">
+										<p>With the environment ready, let's dig into how checkpointers actually work.</p>
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- 3. Checkpointers — The Memory Engine                   -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="checkpointers" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>💾 3. Checkpointers — The Memory Engine</h2></div>
+
+									<div class="blg-paragraph">
+										<p>A checkpointer is the piece of infrastructure that makes memory possible in LangGraph. Without one, every <span class="code-soft">invoke()</span> is isolated. With one, LangGraph automatically saves the full state after every node runs, and restores it before the next run on the same thread. You don't call save or load manually — the framework handles it entirely.</p>
+									</div>
+
+									<!-- 3.1 -->
+									<a id="what-is-checkpointer" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">3.1</span>
+										<h3>💡 What is a Checkpointer?</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Think of a checkpointer as the <strong>save-game system</strong> in a video game. Every time you reach a checkpoint in the game, progress is automatically written to disk. If you lose a life or close the game, you restart from the last checkpoint — not from the very beginning. You don't press "save" manually; the system does it for you at fixed points.</p>
+									</div>
+									<div class="blg-paragraph">
+										<p>In LangGraph, the "checkpoints" are node boundaries. After each node finishes running and its state updates are merged, LangGraph calls the checkpointer to save a snapshot of the full current state. On the next <span class="code-soft">invoke()</span> with the same thread ID, LangGraph calls the checkpointer to load the last snapshot and restores the graph exactly where it left off before running the next node.</p>
+									</div>
+
+									<blockquote class="blg-callout-purple">
+										🔗 <strong>Key distinction:</strong> a checkpointer is not a node, not part of the graph logic, and not something you write yourself. It's an <em>infrastructure component</em> attached to the compiled graph. You pass it in once at compile time and LangGraph manages all save/load operations automatically.
+									</blockquote>
+
+									<!-- 3.2 -->
+									<a id="how-checkpointing-works" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">3.2</span>
+										<h3>🔄 How Checkpointing Works Internally</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Here is the exact sequence that happens when you call <span class="code-soft">app.invoke()</span> on a graph compiled with a checkpointer:</p>
+									</div>
+
+									<div class="blg-arch-stack">
+										<div class="blg-arch-layer al-blue">
+											<div class="blg-arch-icon">📥</div>
+											<div class="blg-arch-name">Load checkpoint</div>
+											<div class="blg-arch-desc">LangGraph asks the checkpointer: "Do you have a saved state for thread_id X?" If yes, it loads and merges it with the new input. If no, this is the first turn — start fresh.</div>
+										</div>
+										<div class="blg-arch-layer al-purple">
+											<div class="blg-arch-icon">⚙️</div>
+											<div class="blg-arch-name">Run the first node</div>
+											<div class="blg-arch-desc">The first node receives the restored state (full history) plus the new input. It runs its logic and returns a partial state update.</div>
+										</div>
+										<div class="blg-arch-layer al-teal">
+											<div class="blg-arch-icon">🔀</div>
+											<div class="blg-arch-name">Merge state updates</div>
+											<div class="blg-arch-desc">LangGraph merges the node's partial return dict into the full state using the reducers defined in the TypedDict (e.g. add_messages appends, plain keys overwrite).</div>
+										</div>
+										<div class="blg-arch-layer al-amber">
+											<div class="blg-arch-icon">💾</div>
+											<div class="blg-arch-name">Save checkpoint</div>
+											<div class="blg-arch-desc">LangGraph calls the checkpointer to save the updated state snapshot. This happens after every node, not just at the end — so even long multi-node graphs are safe against mid-run failures.</div>
+										</div>
+										<div class="blg-arch-layer al-green">
+											<div class="blg-arch-icon">➡️</div>
+											<div class="blg-arch-name">Move to next node (or end)</div>
+											<div class="blg-arch-desc">If the graph has more nodes, repeat from step 2 for each one. When END is reached, return the final state to the caller.</div>
+										</div>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The critical insight is step 4: <strong>the state is saved after every node, including intermediate ones.</strong> This means if a graph crashes halfway through a five-node pipeline, the next call can pick up from the last saved checkpoint rather than replaying all earlier nodes from scratch.</p>
+									</div>
+
+									<!-- 3.3 -->
+									<a id="memorysaver" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">3.3</span>
+										<h3>🗂️ MemorySaver — In-Process Storage</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">MemorySaver</span> is the simplest checkpointer. It stores all checkpoint data in a Python dictionary inside the same process. Zero setup required — just import it and pass it to <span class="code-soft">compile()</span>.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">from langgraph.checkpoint.memory import MemorySaver
+
+checkpointer = MemorySaver()
+app = graph.compile(checkpointer=checkpointer)</div>
+
+									<div class="blg-paragraph">
+										<p>That single change is all it takes to give the graph memory. All saved states live in RAM for as long as the Python process is running.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><strong>When to use MemorySaver:</strong></p>
+									</div>
+									<ul class="blg-ul">
+										<li class="blg-li">Local development and experimentation — fast, no dependencies</li>
+										<li class="blg-li">Unit tests — each test gets a fresh <span class="code-soft">MemorySaver()</span> instance with no shared state</li>
+										<li class="blg-li">Short-lived sessions in a single-process server (e.g. a Gradio app running on your laptop)</li>
+									</ul>
+
+									<blockquote class="blg-callout-warning">
+										⚠️ <strong>MemorySaver's limitation:</strong> everything is lost when the process exits. Restart your Python script and all conversation history is gone. If you need history to survive server restarts, use SqliteSaver instead.
+									</blockquote>
+
+									<!-- 3.4 -->
+									<a id="sqlitesaver" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">3.4</span>
+										<h3>🗄️ SqliteSaver — File-Based Persistence</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">SqliteSaver</span> stores checkpoints in a local SQLite database file. SQLite is lightweight, file-based, and needs no server — just a <span class="code-soft">.db</span> file on disk. When the process restarts, LangGraph reads from that file and restores all previous conversation threads exactly as they were. <span class="code-soft">SqliteSaver</span> requires one extra package not included in the shared <span class="code-soft">requirements.txt</span> (it isn't used in the project source code — only <span class="code-soft">MemorySaver</span> is). Install it separately if you want to try this upgrade:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="bash">pip install langgraph-checkpoint-sqlite==3.0.3</div>
+
+									<div class="blg-code-block" data-lang="python">from langgraph.checkpoint.sqlite import SqliteSaver
+
+checkpointer = SqliteSaver.from_conn_string("study_buddy.db")
+app = graph.compile(checkpointer=checkpointer)</div>
+
+									<div class="blg-paragraph">
+										<p>The swap from MemorySaver to SqliteSaver is exactly those two lines. The rest of your code — nodes, state, runner, Gradio app — is completely unchanged. This is the power of the checkpointer abstraction: the storage backend is swappable without touching any business logic.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><strong>When to use SqliteSaver:</strong></p>
+									</div>
+									<ul class="blg-ul">
+										<li class="blg-li">Any application where users expect their history to survive a server restart</li>
+										<li class="blg-li">Single-machine deployments (one server, one SQLite file) — personal tools, demos, internal apps</li>
+										<li class="blg-li">When you want to inspect saved checkpoints manually (you can open the <span class="code-soft">.db</span> file with any SQLite browser)</li>
+									</ul>
+
+									<blockquote class="blg-callout-info">
+										💡 <strong>For production at scale</strong> (multiple servers, high concurrency), LangGraph also supports PostgresSaver and RedisSaver. Those are beyond the scope of this post, but the swap-in pattern is exactly the same — just change the checkpointer import and connection string.
+									</blockquote>
+
+									<!-- 3.5 -->
+									<a id="checkpointer-comparison" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">3.5</span>
+										<h3>⚖️ MemorySaver vs SqliteSaver — Comparison</h3>
+									</div>
+
+									<div class="blg-table">
+										<table>
+											<thead>
+												<tr>
+													<th>Feature</th>
+													<th>MemorySaver</th>
+													<th>SqliteSaver</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td>Storage location</td>
+													<td>RAM (Python dict)</td>
+													<td>SQLite file on disk (.db)</td>
+												</tr>
+												<tr>
+													<td>Setup required</td>
+													<td>None — zero config</td>
+													<td>One package + connection string</td>
+												</tr>
+												<tr>
+													<td>Survives process restart</td>
+													<td>❌ No — wiped on exit</td>
+													<td>✅ Yes — reads .db file on startup</td>
+												</tr>
+												<tr>
+													<td>Survives server restart</td>
+													<td>❌ No</td>
+													<td>✅ Yes (same machine)</td>
+												</tr>
+												<tr>
+													<td>Code changes to swap</td>
+													<td colspan="2">2 lines — import + constructor</td>
+												</tr>
+												<tr>
+													<td>Best for</td>
+													<td>Dev, testing, prototypes</td>
+													<td>Single-server apps, demos, tools</td>
+												</tr>
+												<tr>
+													<td>Inspect saved data</td>
+													<td>Python debugger only</td>
+													<td>Any SQLite browser (DB Browser, etc.)</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Both checkpointers are used in this post: <span class="code-soft">MemorySaver</span> for the main demo and <span class="code-soft">SqliteSaver</span> as a drop-in upgrade in Section 6.7. Now let's look at how thread IDs work alongside checkpointers.</p>
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- 4. Thread IDs                                          -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="thread-ids" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🧵 4. Thread IDs — Keeping Conversations Separate</h2></div>
+
+									<div class="blg-paragraph">
+										<p>A checkpointer saves state. But whose state? If two students are both chatting with the Study Buddy at the same time, you don't want their conversation histories to mix. Thread IDs solve this by giving each conversation its own isolated storage slot within the checkpointer.</p>
+									</div>
+
+									<!-- 4.1 -->
+									<a id="what-is-thread" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">4.1</span>
+										<h3>💬 What is a Thread?</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Think about WhatsApp. You have one app, one contact list — but you have <em>separate chat windows</em> for each person. You can message Alice and Bob independently, and the messages never mix. Each chat window is a thread.</p>
+									</div>
+									<div class="blg-paragraph">
+										<p>A LangGraph thread works the same way. You have one compiled graph — but many threads, each identified by a <span class="code-soft">thread_id</span> string. Every <span class="code-soft">invoke()</span> or <span class="code-soft">stream()</span> call that carries the same <span class="code-soft">thread_id</span> shares state with every previous call on that thread. A call with a different <span class="code-soft">thread_id</span> gets a completely fresh, isolated state.</p>
+									</div>
+
+									<blockquote class="blg-callout-purple">
+										🔗 <strong>Thread ID = conversation namespace.</strong> The checkpointer stores states keyed by <span class="code-soft">thread_id</span>. LangGraph uses the thread ID you pass to decide which saved state to load before running, and which slot to write after running. Same graph, completely separate histories per thread.
+									</blockquote>
+
+									<!-- 4.2 -->
+									<a id="config-dict" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">4.2</span>
+										<h3>📋 The config Dictionary</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>You pass the thread ID to every <span class="code-soft">invoke()</span> or <span class="code-soft">stream()</span> call using the <span class="code-soft">config</span> argument — a plain Python dict with a specific structure:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">config = {"configurable": {"thread_id": "alice-session-001"}}
+
+# Pass it as the second argument to invoke()
+result = app.invoke({"messages": [HumanMessage("Explain recursion.")]}, config)
+
+# Or to stream()
+for event in app.stream({"messages": [HumanMessage("Explain recursion.")]}, config):
+    ...</div>
+
+									<div class="blg-paragraph">
+										<p>The structure is always <span class="code-soft">{"configurable": {"thread_id": "..."}}</span>. The <span class="code-soft">configurable</span> key is a LangGraph convention — it's how runtime configuration is passed without modifying the graph or the input state. The <span class="code-soft">thread_id</span> value can be any string you choose: a username, a UUID, a session token, a database record ID.</p>
+									</div>
+
+									<blockquote class="blg-callout-warning">
+										⚠️ <strong>What happens if you omit the config?</strong> If you call <span class="code-soft">app.invoke(input)</span> on a graph compiled with a checkpointer but provide no <span class="code-soft">config</span>, LangGraph will raise a <span class="code-soft">ValueError</span> asking for a thread ID. The checkpointer needs to know <em>which</em> thread to save to. Always pass <span class="code-soft">config</span> when a checkpointer is attached.
+									</blockquote>
+
+									<!-- 4.3 -->
+									<a id="two-threads" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">4.3</span>
+										<h3>👩‍🎓 Two Threads in Action</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Let's see thread isolation in code. Alice and Bob both use the same <span class="code-soft">app</span> object, but each passes a different <span class="code-soft">thread_id</span>. Their messages never interfere:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">alice_config = {"configurable": {"thread_id": "alice-session-001"}}
+bob_config   = {"configurable": {"thread_id": "bob-session-001"}}
+
+# Turn 1 — Alice asks about recursion
+app.invoke({"messages": [HumanMessage("Explain recursion.")]}, alice_config)
+
+# Turn 1 — Bob asks a completely different question (separate thread)
+app.invoke({"messages": [HumanMessage("What is a list comprehension?")]}, bob_config)
+
+# Turn 2 — Alice follows up. The graph restores HER history, not Bob's.
+result = app.invoke({"messages": [HumanMessage("Give me a Python example.")]}, alice_config)
+print(result["messages"][-1].content)
+# ✅ "Here is a Python example of recursion using the factorial function
+#     we discussed in our last message..."
+#
+# The AI remembered Alice asked about RECURSION — not list comprehensions.
+# Bob's thread is completely separate and was never mixed in.</div>
+
+									<div class="blg-paragraph">
+										<p>Alice's second message ("Give me a Python example") is answered in the context of recursion — what Alice asked about in turn 1. Bob's list comprehension question has no influence on Alice's thread whatsoever. This is thread isolation working correctly.</p>
+									</div>
+
+									<blockquote class="blg-callout-tip">
+										✅ <strong>Choosing thread IDs in practice:</strong> for a web app, use a session token or UUID generated when the user opens the browser tab. For a CLI tool, use the username. For unit tests, use a fixed string like <span class="code-soft">"test-thread"</span>. The ID just needs to be unique per conversation — its format doesn't matter to LangGraph.
+									</blockquote>
+
+									<!-- 4.4 -->
+									<a id="inspect-state" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">4.4</span>
+										<h3>🔍 Inspecting Saved State</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>LangGraph gives you two methods to read what's stored for a thread. Most tutorials skip these, but they're extremely useful for debugging and building admin features.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><strong><span class="code-soft">get_state(config)</span> — read the latest snapshot.</strong></p>
+									</div>
+									<div class="blg-paragraph">
+										<p>Returns a <span class="code-soft">StateSnapshot</span> object containing the most recent state for the given thread. You access the actual state values through <span class="code-soft">.values</span>:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">config   = {"configurable": {"thread_id": "alice-session-001"}}
+snapshot = app.get_state(config)
+
+# The current messages list for Alice's thread
+messages = snapshot.values.get("messages", [])
+print(f"Messages stored for Alice: {len(messages)}")
+
+for msg in messages:
+    role    = type(msg).__name__   # HumanMessage or AIMessage
+    preview = msg.content[:60]
+    print(f"  [{role}]: {preview}...")</div>
+
+									<div class="blg-paragraph">
+										<p><strong><span class="code-soft">get_state_history(config)</span> — read every checkpoint ever saved.</strong></p>
+									</div>
+									<div class="blg-paragraph">
+										<p>Returns an iterator of <span class="code-soft">StateSnapshot</span> objects, one per checkpoint, newest first. Each snapshot has a <span class="code-soft">.config</span> with the checkpoint ID, allowing you to restore any past state. This is the foundation for time-travel debugging and undo functionality:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">config   = {"configurable": {"thread_id": "alice-session-001"}}
+snapshots = list(app.get_state_history(config))
+
+print(f"Total checkpoints saved for Alice: {len(snapshots)}")
+# One checkpoint per node execution — a 3-turn conversation has 3 checkpoints
+
+# Each snapshot is a point in time you can restore to
+for i, snap in enumerate(snapshots):
+    msg_count = len(snap.values.get("messages", []))
+    print(f"  Checkpoint {i+1}: {msg_count} messages in history")</div>
+
+									<blockquote class="blg-callout-note">
+										📌 <strong>Key insight:</strong> <span class="code-soft">get_state()</span> is for reading current state (the most common need). <span class="code-soft">get_state_history()</span> is for time-travel debugging — replaying history, building "undo last message" features, or auditing exactly what the graph stored at each step. Both are read-only — they don't modify anything.
+									</blockquote>
+
+									<div class="blg-paragraph">
+										<p>With checkpointers and thread IDs covered, let's look at the other major feature in this post: two ways to actually <em>run</em> the graph.</p>
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- 5. invoke() vs stream()                                -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="invoke-vs-stream" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>⚡ 5. invoke() vs stream() — Two Ways to Run a Graph</h2></div>
+
+									<div class="blg-paragraph">
+										<p>Both <span class="code-soft">invoke()</span> and <span class="code-soft">stream()</span> accept exactly the same arguments — input, config, and optional parameters. The difference is purely in <em>when</em> and <em>what</em> they return. Choosing between them depends on whether you need the final result immediately or want to observe the graph's progress as it runs.</p>
+									</div>
+
+									<!-- 5.1 -->
+									<a id="invoke-method" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">5.1</span>
+										<h3>⏳ invoke() — Wait for the Final Result</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">invoke()</span> is the blocking call. It runs the entire graph — every node, in sequence — and returns only when execution has reached <span class="code-soft">END</span>. The return value is the complete, final state dict.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">config = {"configurable": {"thread_id": "alice-session-001"}}
+
+# invoke() blocks until the ENTIRE graph finishes, then returns the full state
+result = app.invoke(
+    {"messages": [HumanMessage("Explain recursion.")]},
+    config=config,
+)
+
+# result is the final state after all nodes have run
+print(result["messages"][-1].content)   # The AI's complete reply</div>
+
+									<div class="blg-paragraph">
+										<p>Think of <span class="code-soft">invoke()</span> like a restaurant that hands you the finished meal. You wait at the table until the kitchen is completely done, then everything arrives at once. You don't see any intermediate steps. This works perfectly for backend scripts and batch processing where latency isn't visible to a user.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><strong>When to use invoke():</strong></p>
+									</div>
+									<ul class="blg-ul">
+										<li class="blg-li">Batch processing scripts where all results are consumed after the fact</li>
+										<li class="blg-li">Unit tests that need the final state to assert against</li>
+										<li class="blg-li">Short pipelines where the LLM response is very fast (under a second)</li>
+										<li class="blg-li">Any context where the caller doesn't need to see intermediate node results</li>
+									</ul>
+
+									<!-- 5.2 -->
+									<a id="stream-method" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">5.2</span>
+										<h3>🌊 stream() — Watch the Graph Think</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">stream()</span> is the non-blocking call. Instead of waiting until the end, it returns a Python <em>generator</em> — an object you iterate over with a <span class="code-soft">for</span> loop. Each iteration yields one event as soon as it's available. The graph continues running in the background between yields.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">config = {"configurable": {"thread_id": "alice-session-001"}}
+
+# stream() returns a generator — nothing runs until you iterate
+for event in app.stream(
+    {"messages": [HumanMessage("Explain recursion.")]},
+    config=config,
+    stream_mode="updates",   # what each event contains — explained below
+):
+    print(event)   # printed as each node finishes, not all at once</div>
+
+									<div class="blg-paragraph">
+										<p>Think of <span class="code-soft">stream()</span> like watching a chef cook through a glass window. You see each step happening in real time — chopping, frying, plating — instead of only seeing the finished dish. For AI applications with slow LLMs, this real-time visibility dramatically improves the user experience.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The <span class="code-soft">stream_mode</span> parameter controls what each event contains. LangGraph offers three modes — let's look at each one.</p>
+									</div>
+
+									<!-- 5.3 -->
+									<a id="mode-values" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">5.3</span>
+										<h3>📊 stream_mode="values" — Full State After Each Node</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>With <span class="code-soft">stream_mode="values"</span>, each event is the <strong>complete state snapshot</strong> after the most recent node finished. The event is a dict with all state keys — not just the ones that changed.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">for event in app.stream(input, config, stream_mode="values"):
+    # event is the FULL state after the latest node ran
+    messages = event.get("messages", [])
+    print(f"Messages in state so far: {len(messages)}")
+    if messages:
+        print(f"Latest: {messages[-1].content[:80]}")</div>
+
+									<div class="blg-paragraph">
+										<p><strong>When to use "values":</strong> debugging multi-node graphs where you want to see the entire state at each step. Not ideal for production use because you're receiving potentially large state objects repeatedly.</p>
+									</div>
+
+									<!-- 5.4 -->
+									<a id="mode-updates" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">5.4</span>
+										<h3>📝 stream_mode="updates" — Only What Changed</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>With <span class="code-soft">stream_mode="updates"</span>, each event contains only the <strong>partial state update</strong> returned by the node that just ran, wrapped in a dict keyed by node name. This is leaner than "values" — you only receive what actually changed.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">for event in app.stream(input, config, stream_mode="updates"):
+    # event is {node_name: partial_state_update}
+    for node_name, update in event.items():
+        print(f"Node '{node_name}' updated:")
+        for key, value in update.items():
+            print(f"  {key}: {str(value)[:60]}")</div>
+
+									<div class="blg-paragraph">
+										<p>For the Study Buddy — which has a single node called <span class="code-soft">study_buddy</span> — each event looks like:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">{"study_buddy": {"messages": [AIMessage(content="Recursion is when...")]}}
+# Only the messages key — only the new message — nothing more.</div>
+
+									<div class="blg-paragraph">
+										<p><strong>When to use "updates":</strong> server-side logging, monitoring node execution in multi-node graphs, or any case where you want to observe which node ran what without processing the full state each time.</p>
+									</div>
+
+									<!-- 5.5 -->
+									<a id="mode-messages" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">5.5</span>
+										<h3>✍️ stream_mode="messages" — Token-by-Token LLM Output</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>This is the mode that powers real-time chat UIs. With <span class="code-soft">stream_mode="messages"</span>, LangGraph yields each <strong>individual token</strong> from the LLM as it is generated, instead of waiting for the full response. Events come as <span class="code-soft">(chunk, metadata)</span> tuples where <span class="code-soft">chunk</span> is an <span class="code-soft">AIMessageChunk</span> holding a fragment of the response.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">print("🤖 Study Buddy: ", end="", flush=True)
+
+for chunk, metadata in app.stream(input, config, stream_mode="messages"):
+    # chunk is an AIMessageChunk with a tiny piece of the response
+    if hasattr(chunk, "content"):
+        content = chunk.content
+        if isinstance(content, str) and content:
+            print(content, end="", flush=True)   # prints each token immediately
+
+print()   # newline after the full response</div>
+
+									<div class="blg-paragraph">
+										<p>Run this and you'll see the Study Buddy's reply appearing word by word in real time — just like ChatGPT's streaming output. The user sees something immediately instead of staring at a blank screen for three seconds while the LLM generates a long explanation.</p>
+									</div>
+
+									<blockquote class="blg-callout-tip">
+										✅ <strong>Why "messages" mode matters:</strong> for an AI tutor explaining a complex topic, the LLM might take 3–8 seconds to generate a complete answer. With "messages" streaming, the student sees the first words after ~0.3 seconds and the response builds naturally in front of them. This isn't just cosmetic — it makes the experience feel alive and responsive.
+									</blockquote>
+
+									<!-- 5.6 -->
+									<a id="stream-comparison" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">5.6</span>
+										<h3>📊 Choosing the Right Mode — Comparison Table</h3>
+									</div>
+
+									<div class="blg-table">
+										<table>
+											<thead>
+												<tr>
+													<th>Mode</th>
+													<th>What Each Event Contains</th>
+													<th>Granularity</th>
+													<th>Best For</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td><span class="code-soft">invoke()</span></td>
+													<td>Final complete state (one return value)</td>
+													<td>One result total</td>
+													<td>Batch scripts, unit tests, fast pipelines</td>
+												</tr>
+												<tr>
+													<td><span class="code-soft">"values"</span></td>
+													<td>Full state after each node</td>
+													<td>One event per node</td>
+													<td>Debugging — see entire state at each step</td>
+												</tr>
+												<tr>
+													<td><span class="code-soft">"updates"</span></td>
+													<td><span class="code-soft">{node_name: partial_update}</span></td>
+													<td>One event per node (leaner)</td>
+													<td>Monitoring, logging, multi-node pipelines</td>
+												</tr>
+												<tr>
+													<td><span class="code-soft">"messages"</span></td>
+													<td>One token at a time from the LLM</td>
+													<td>Token-level</td>
+													<td>Real-time chat UIs, typing-effect displays</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The Study Buddy uses both <span class="code-soft">invoke()</span> (for the console demo in Section 6) and <span class="code-soft">stream_mode="messages"</span> (for the Gradio web UI in Section 7). Let's now put everything together in the complete implementation.</p>
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- 6. Complete Example                                    -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="complete-example" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🎓 6. Complete Example: Personal Study Buddy</h2></div>
+
+									<div class="blg-paragraph">
+										<p>The project is a <span class="highlight-purple">Personal Study Buddy</span> — an AI tutor that remembers everything a student has asked across an entire study session. Students can ask follow-up questions ("what analogy did you use?", "can you elaborate on the second point?") and the tutor answers them with full context. Two students — Alice and Bob — each get their own isolated thread so their sessions never interfere.</p>
+									</div>
+
+									<!-- 6.1 -->
+									<a id="scenario-arch" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">6.1</span>
+										<h3>🏗️ Scenario &amp; Architecture</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Alice is studying algorithms. She asks three questions in one session:</p>
+									</div>
+
+									<ol class="blg-toc-ol">
+										<li class="blg-toc-li">Turn 1: <em>"Can you explain recursion? I'm a complete beginner."</em></li>
+										<li class="blg-toc-li">Turn 2: <em>"That makes sense! Can you show me a Python code example?"</em></li>
+										<li class="blg-toc-li">Turn 3: <em>"How is recursion different from a regular for loop?"</em></li>
+										<li class="blg-toc-li">Turn 4 (later): <em>"What analogy did you use earlier when explaining recursion?"</em></li>
+									</ol>
+
+									<div class="blg-paragraph">
+										<p>Without a checkpointer, each turn would be answered in isolation — "That makes sense" and "Can you show me a Python example" would be meaningless to the AI since it has no idea what "that" refers to. With a checkpointer, the tutor reads the full conversation history before answering each turn and gives connected, contextual replies.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The graph architecture is intentionally simple — one node, one straight edge. The complexity is all in the persistence layer:</p>
+									</div>
+
+									<div class="blg-img-container">
+										<div class="blg-mermaid-container">
+											<pre class="mermaid">
+%%{init: {"flowchart": {"curve": "linear"}}}%%
+graph TD
+    S([__start__]):::first
+    SB(study_buddy)
+    E([__end__]):::last
+    S  --> SB
+    SB --> E
+    classDef default fill:#f2f0ff,line-height:1.2
+    classDef first fill-opacity:0
+    classDef last fill:#bfb6fc
+											</pre>
+										</div>
+										<p class="blg-img-caption">Graph architecture of the Study Buddy. One node — but the checkpointer (not shown) persists the full message history between every call.</p>
+									</div>
+
+									<!-- 6.2 -->
+									<a id="state-design" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">6.2</span>
+										<h3>📄 State Design (state.py)</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The state holds exactly one field: <span class="code-soft">messages</span> — the full conversation history as a list of LangChain message objects. We use the <span class="code-soft">add_messages</span> reducer (covered in <a href="./blog_9.html" class="blg-link">Part 2</a>) so that each new message is <em>appended</em> to the list rather than <em>replacing</em> it. This is what builds up the conversation history across turns.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">from typing import Annotated
+
+from langchain_core.messages import BaseMessage
+from langgraph.graph.message import add_messages
+from typing_extensions import TypedDict
+
+
+class StudyState(TypedDict):
+    # add_messages appends each new message — never overwrites the history.
+    # Without this reducer, every invoke() would replace the list with just the latest message.
+    messages: Annotated[list[BaseMessage], add_messages]</div>
+
+									<div class="blg-paragraph">
+										<p>Why does <span class="code-soft">add_messages</span> matter here? Without it, the default last-write-wins behaviour would mean each node call replaces the entire <span class="code-soft">messages</span> list with just the latest reply. The checkpointer would save this one-message list. Turn 2 would start with a one-message state — no history. The reducer and the checkpointer work <em>together</em>: the reducer accumulates the list within a session, and the checkpointer persists that accumulated list between sessions.</p>
+									</div>
+
+									<!-- 6.3 -->
+									<a id="chat-node" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">6.3</span>
+										<h3>⚙️ The Chat Node (nodes.py)</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The <span class="code-soft">study_buddy_node</span> receives the current state — which, thanks to the checkpointer, contains the <em>full conversation history</em> — and sends it to Gemini with a system prompt that defines the tutor's personality and approach. The LLM sees every previous question and answer before generating its response.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The system prompt lives in <span class="code-soft">prompts/study_buddy.txt</span> — a plain text file loaded once at init time. Keeping prompts in separate files (the convention from Parts 2 and 3) means you can tune the tutor's personality without touching any Python code.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">import os
+
+from langchain_core.messages import SystemMessage
+
+from llm import GeminiLLM
+from state import StudyState
+
+_PROMPTS_DIR = os.path.join(os.path.dirname(__file__), "prompts")
+
+
+def _load_prompt(filename: str) -> str:
+    with open(os.path.join(_PROMPTS_DIR, filename), "r") as f:
+        return f.read()
+
+
+class StudyBuddyNodes:
+    def __init__(self):
+        self.llm           = GeminiLLM().get_llm()
+        self.system_prompt = _load_prompt("study_buddy.txt")
+
+    def study_buddy_node(self, state: StudyState) -> dict:
+        # Prepend the system prompt so Gemini always has the persona context.
+        # state["messages"] contains the full history from all prior turns —
+        # the checkpointer loaded it before this node ran.
+        system   = SystemMessage(content=self.system_prompt)
+        messages = [system] + state["messages"]
+        response = self.llm.invoke(messages)
+        return {"messages": [response]}</div>
+
+									<div class="blg-paragraph">
+										<p>The prompt file itself (<span class="code-soft">prompts/study_buddy.txt</span>) contains the tutor persona instructions — beginner-friendly tone, analogy-first approach, encouragement to refer back to earlier turns. Separating it from the code also makes A/B testing easy: swap the file, restart, compare results. Notice what <span class="code-soft">state["messages"]</span> contains on turn 3: not just the current question, but every prior question and answer. The LLM sees the full picture before generating a response — that history is what makes the Study Buddy genuinely useful for multi-turn learning.</p>
+									</div>
+
+									<!-- 6.4 -->
+									<a id="build-graph" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">6.4</span>
+										<h3>🔗 Building the Graph (graph.py)</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The graph construction is identical to Parts 1–3, with two additions: <span class="code-soft">checkpointer=self.checkpointer</span> passed to <span class="code-soft">compile()</span>, and a <span class="code-soft">save_figure()</span> method that exports the graph structure as a Mermaid diagram and PNG into the <span class="code-soft">figure/</span> folder. This follows the same convention used in Parts 2 and 3.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">import os
+
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.graph import END, START, StateGraph
+
+from nodes import StudyBuddyNodes
+from state import StudyState
+
+FIGURE_DIR = os.path.join(os.path.dirname(__file__), "figure")
+
+
+class StudyBuddyGraph:
+    def __init__(self, checkpointer=None):
+        self.nodes = StudyBuddyNodes()
+        # MemorySaver by default. Pass SqliteSaver to persist across restarts.
+        self.checkpointer = checkpointer or MemorySaver()
+        self.compiled_graph = self._build()
+
+    def _build(self):
+        graph = StateGraph(StudyState)
+
+        graph.add_node("study_buddy", self.nodes.study_buddy_node)
+
+        graph.add_edge(START, "study_buddy")
+        graph.add_edge("study_buddy", END)
+
+        # The ONLY change from a stateless graph — one argument at compile time.
+        return graph.compile(checkpointer=self.checkpointer)
+
+    def save_figure(self):
+        """Exports the graph structure as a Mermaid diagram (.mmd) and PNG."""
+        os.makedirs(FIGURE_DIR, exist_ok=True)
+
+        mermaid_str = self.compiled_graph.get_graph().draw_mermaid()
+        mmd_path    = os.path.join(FIGURE_DIR, "graph.mmd")
+        with open(mmd_path, "w") as f:
+            f.write(mermaid_str)
+
+        png_bytes = self.compiled_graph.get_graph().draw_mermaid_png()
+        png_path  = os.path.join(FIGURE_DIR, "graph.png")
+        with open(png_path, "wb") as f:
+            f.write(png_bytes)
+
+        print(f"  Graph saved → {mmd_path}")
+        print(f"  Graph saved → {png_path}")
+
+    def get_compiled_graph(self):
+        return self.compiled_graph</div>
+
+									<div class="blg-paragraph">
+										<p>The <span class="code-soft">checkpointer</span> parameter in <span class="code-soft">__init__</span> makes it easy to swap storage backends without changing any other code. The <span class="code-soft">save_figure()</span> method calls <span class="code-soft">get_graph().draw_mermaid()</span> and <span class="code-soft">draw_mermaid_png()</span> on the compiled graph — these are built into LangGraph and need no extra dependencies. The <span class="code-soft">figure/</span> folder is created automatically if it doesn't exist.</p>
+									</div>
+
+									<!-- 6.5 -->
+									<a id="runner" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">6.5</span>
+										<h3>▶️ The Runner (study_runner.py)</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">StudyRunner</span> wraps the compiled graph and exposes four methods. <span class="code-soft">save_figure()</span> delegates to the graph's export method and is called once at startup. <span class="code-soft">chat()</span> uses <span class="code-soft">invoke()</span> for a complete reply. <span class="code-soft">stream_chat()</span> uses <span class="code-soft">stream_mode="messages"</span> for token-by-token output. <span class="code-soft">get_history()</span> uses <span class="code-soft">get_state()</span> to read what's stored for a thread.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">from langchain_core.messages import HumanMessage
+
+from graph import StudyBuddyGraph
+
+
+class StudyRunner:
+    def __init__(self, checkpointer=None):
+        self.study_graph = StudyBuddyGraph(checkpointer=checkpointer)
+        self.app = self.study_graph.get_compiled_graph()
+
+    def save_figure(self):
+        self.study_graph.save_figure()
+
+    def chat(self, message: str, thread_id: str) -> str:
+        """Send one message and return the study buddy's complete reply."""
+        config = {"configurable": {"thread_id": thread_id}}
+        result = self.app.invoke(
+            {"messages": [HumanMessage(content=message)]},
+            config=config,
+        )
+        content = result["messages"][-1].content
+        # langchain-google-genai 4.x returns content as a list of typed blocks
+        if isinstance(content, list):
+            return "".join(
+                block.get("text", "")
+                for block in content
+                if isinstance(block, dict) and block.get("type") == "text"
+            )
+        return content
+
+    def stream_chat(self, message: str, thread_id: str):
+        """Yield the study buddy's reply one token at a time."""
+        config = {"configurable": {"thread_id": thread_id}}
+        for chunk, _ in self.app.stream(
+            {"messages": [HumanMessage(content=message)]},
+            config=config,
+            stream_mode="messages",
+        ):
+            if not hasattr(chunk, "content"):
+                continue
+            content = chunk.content
+            # langchain-google-genai 4.x returns content as a list of typed blocks
+            if isinstance(content, str) and content:
+                yield content
+            elif isinstance(content, list):
+                for block in content:
+                    if isinstance(block, dict) and block.get("type") == "text":
+                        text = block.get("text", "")
+                        if text:
+                            yield text
+
+    def get_history(self, thread_id: str) -> list:
+        """Return all messages stored for a thread."""
+        config = {"configurable": {"thread_id": thread_id}}
+        state = self.app.get_state(config)
+        return state.values.get("messages", [])</div>
+
+									<div class="blg-paragraph">
+										<p>The <span class="code-soft">chat()</span> method builds the config dict internally — callers just pass a message and a thread ID. This keeps the checkpointer wiring hidden from the rest of the application. Alice's runner calls use <span class="code-soft">"alice-session-001"</span>; Bob's calls use <span class="code-soft">"bob-session-001"</span>. The runner doesn't know or care what the thread IDs mean — it just passes them to the graph.</p>
+									</div>
+
+									<!-- 6.6 -->
+									<a id="output-walkthrough" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">6.6</span>
+										<h3>📋 Console Output Walkthrough</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Run the demo from inside the <span class="code-soft">basics-4-checkpointers-memory-streaming/</span> directory:</p>
+									</div>
+									<div class="blg-code-block" data-lang="bash">python study_runner.py</div>
+
+									<div class="blg-paragraph">
+										<p>The demo runs three phases that each prove a different capability:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="bash">============================================================
+   LangGraph Basics — Personal Study Buddy Demo
+============================================================
+
+  Saving graph architecture...
+  Graph saved → figure/graph.mmd
+  Graph saved → figure/graph.png
+
+👩‍🎓  Alice's Study Session (thread: alice-session-001)
+------------------------------------------------------------
+
+🙋  Alice: Can you explain recursion to me? I'm a complete beginner.
+
+🤖  Study Buddy:
+Great question! Think of recursion like Russian nesting dolls (Matryoshka).
+Each doll contains a slightly smaller version of itself, until you reach
+the tiniest doll that can't be opened further — that's the base case.
+In programming, a recursive function calls itself with a smaller version
+of the problem until it hits a condition where it stops calling itself.
+------------------------------------------------------------
+
+🙋  Alice: That makes sense! Can you show me a Python code example?
+
+🤖  Study Buddy:
+Absolutely — let's use the classic example of calculating a factorial
+(5! = 5 × 4 × 3 × 2 × 1 = 120), which maps perfectly to our nesting
+doll analogy:
+
+    def factorial(n):
+        if n == 0:          # base case — the tiniest doll
+            return 1
+        return n * factorial(n - 1)   # open the next doll
+
+    print(factorial(5))    # 120
+
+Notice how factorial(5) calls factorial(4), which calls factorial(3),
+and so on — exactly like opening each nesting doll until the base case.
+------------------------------------------------------------
+
+🙋  Alice: How is recursion different from a regular for loop?
+
+🤖  Study Buddy:
+Both recursion and loops repeat operations, but they think differently.
+A for loop is explicit — you tell Python exactly how many times to repeat.
+Recursion is implicit — the function calls itself and Python manages
+the repetition through the call stack.
+
+Key differences:
+1. Loops are usually faster (no function call overhead)
+2. Recursion is more natural for tree structures, file systems, nested data
+3. Recursion can hit Python's stack limit (~1000 calls); loops cannot
+4. Loops are easier to debug for beginners; recursion reveals itself
+   naturally in problems that are "self-similar"
+
+As we discussed with the nesting dolls — recursion shines when the
+problem itself is recursive by nature.
+------------------------------------------------------------
+
+👨‍🎓  Bob's Study Session (thread: bob-session-001)
+------------------------------------------------------------
+
+🙋  Bob: What is a Python list comprehension?
+
+🤖  Study Buddy:
+A list comprehension is Python's shorthand for building a list in one line.
+Think of it like a factory conveyor belt: items go in one end, get processed,
+and come out the other as a new list.
+
+    squares = [x**2 for x in range(5)]
+    # [0, 1, 4, 9, 16]
+
+This does the same as a for loop but reads more naturally for simple transforms.
+------------------------------------------------------------
+
+🔍  Thread Isolation Proof
+------------------------------------------------------------
+
+🙋  Alice (follow-up): What analogy did you use earlier for recursion?
+
+🤖  Study Buddy:
+I used the Russian nesting dolls (Matryoshka) analogy! Each doll
+contains a slightly smaller version of itself, just like how a recursive
+function calls a slightly simpler version of itself. The innermost doll —
+the one that can't be opened — is the base case in the code.
+
+📋  Alice's saved message history:
+------------------------------------------------------------
+  [1] HumanMessage: Can you explain recursion to me? I'm a complete beginner...
+  [2] AIMessage: Great question! Think of recursion like Russian nesting dolls...
+  [3] HumanMessage: That makes sense! Can you show me a Python code example?...
+  [4] AIMessage: Absolutely — let's use the classic example of calculating a...
+  [5] HumanMessage: How is recursion different from a regular for loop?...
+  [6] AIMessage: Both recursion and loops repeat operations, but they think...
+  [7] HumanMessage: What analogy did you use earlier for recursion?...
+  [8] AIMessage: I used the Russian nesting dolls (Matryoshka) analogy!...
+
+  Total messages stored for Alice: 8
+============================================================</div>
+
+								<div class="blg-paragraph">
+									<p>Three things are proven by this output. First, Alice's turn 2 answer ("our nesting doll analogy") directly references turn 1 — the LLM had her prior question in context. Second, Bob's list comprehension session is completely isolated — his question doesn't appear anywhere in Alice's history. Third, Alice's turn 4 follow-up ("what analogy did you use?") is answered correctly with the <em>specific</em> analogy from turn 1, proving the checkpointer faithfully restored all prior messages. The history summary at the bottom confirms all 8 messages (4 user, 4 AI) are stored in order.</p>
+								</div>
+
+								<!-- 6.7 -->
+								<a id="sqlite-upgrade" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<span class="blg-sub-badge">6.7</span>
+									<h3>🗄️ Upgrading to SqliteSaver</h3>
+								</div>
+
+								<div class="blg-paragraph">
+									<p>The demo above uses <span class="code-soft">MemorySaver</span> — restart the script and all history is gone. To make Alice's study sessions survive a server restart, swap in <span class="code-soft">SqliteSaver</span> with exactly three line changes:</p>
+								</div>
+
+								<div class="blg-code-block" data-lang="python"># Before — MemorySaver (in-memory, lost on restart)
+from langgraph.checkpoint.memory import MemorySaver
+checkpointer = MemorySaver()
+app = graph.compile(checkpointer=checkpointer)
+
+# After — SqliteSaver (persisted to disk, survives restarts)
+from langgraph.checkpoint.sqlite import SqliteSaver
+checkpointer = SqliteSaver.from_conn_string("study_buddy.db")
+app = graph.compile(checkpointer=checkpointer)</div>
+
+								<div class="blg-paragraph">
+									<p>Everything else — <span class="code-soft">state.py</span>, <span class="code-soft">nodes.py</span>, <span class="code-soft">study_runner.py</span>, <span class="code-soft">app.py</span> — stays exactly the same. Run the demo once to build up Alice's history. Stop the script. Run it again. Alice's fourth question ("what analogy did you use?") will still be answered correctly, because the history was read from <span class="code-soft">study_buddy.db</span> on startup.</p>
+								</div>
+
+								<div class="blg-paragraph">
+									<p>In <span class="code-soft">graph.py</span>, the <span class="code-soft">checkpointer</span> parameter in <span class="code-soft">__init__</span> was designed exactly for this swap. You can pass either checkpointer when constructing the graph:</p>
+								</div>
+
+								<div class="blg-code-block" data-lang="python">from langgraph.checkpoint.sqlite import SqliteSaver
+from graph import StudyBuddyGraph
+
+sqlite_checkpointer = SqliteSaver.from_conn_string("study_buddy.db")
+runner = StudyRunner(checkpointer=sqlite_checkpointer)
+
+# All existing runner.chat() calls work identically — nothing else changes
+reply = runner.chat("Can you explain recursion?", "alice-session-001")</div>
+
+								<blockquote class="blg-callout-tip">
+									✅ <strong>SqliteSaver in practice:</strong> the <span class="code-soft">.db</span> file is created automatically if it doesn't exist. You can open it with <a href="https://sqlitebrowser.org/" class="blg-link" target="_blank" rel="noopener noreferrer">DB Browser for SQLite</a> to inspect all stored checkpoints, see exactly what messages are saved per thread, and manually delete a thread's history if needed.
+								</blockquote>
+
+								<hr class="blg-hr" />
+							</div>
+
+							<!-- ═══════════════════════════════════════════════════════ -->
+							<!-- 7. Web UI with Gradio                                  -->
+							<!-- ═══════════════════════════════════════════════════════ -->
+							<div class="blg-section">
+								<a id="web-ui-gradio" class="blg-anchor"></a>
+								<div class="blg-main-header"><h2>🌐 7. Web UI with Gradio</h2></div>
+
+								<div class="blg-paragraph">
+									<p>The Gradio web UI brings two features together: <strong>per-session thread IDs</strong> so each browser tab gets its own isolated conversation history, and <strong>token streaming</strong> so the Study Buddy's reply appears word by word in real time. The UI is built with <span class="code-soft">gr.ChatInterface</span> — Gradio's high-level chat component that handles the message input, history display, and submit button automatically — wrapped inside <span class="code-soft">gr.Blocks</span> so an extra <strong>🔄 New Session</strong> button can be added alongside it.</p>
+								</div>
+
+								<div class="blg-paragraph">
+									<p>The key concept for thread isolation is <span class="code-soft">gr.State</span>. Unlike a normal Python variable, <span class="code-soft">gr.State</span> persists its value across interactions within the same browser tab — but is completely separate between different tabs. It holds the <span class="code-soft">thread_id</span> for the current session, initialised to a fresh UUID the moment the page loads. Every message in that tab reuses the same UUID; a second tab starts with a different UUID entirely.</p>
+								</div>
+
+								<div class="blg-code-block" data-lang="python">import uuid
+
+import gradio as gr
+
+from study_runner import StudyRunner
+
+
+class StudyBuddyApp:
+    def __init__(self):
+        self.runner = StudyRunner()
+
+    def respond(self, message: str, _history: list, thread_id: str):
+        """Stream the study buddy reply into the chat UI."""
+        if not message.strip():
+            yield ""
+            return
+        # gr.ChatInterface expects each yield to be the full response so far
+        accumulated = ""
+        for token in self.runner.stream_chat(message, thread_id):
+            accumulated += token
+            yield accumulated
+
+    def launch(self):
+        with gr.Blocks(title="📚 Personal Study Buddy") as demo:
+            thread_state = gr.State(value=str(uuid.uuid4()))
+
+            chat = gr.ChatInterface(
+                fn=self.respond,
+                title="📚 Personal Study Buddy",
+                additional_inputs=[thread_state],
+            )
+
+            # gr.ClearButton resets ChatInterface's internal history and display.
+            # The chained .click() also assigns a fresh UUID so LangGraph starts
+            # a new thread — both visual history and memory reset together.
+            gr.ClearButton(
+                [chat.chatbot, chat.textbox],
+                value="🔄 New Session",
+                variant="primary",
+            ).click(
+                fn=lambda: str(uuid.uuid4()),
+                outputs=[thread_state],
+            )
+
+        demo.launch()
+
+
+if __name__ == "__main__":
+    StudyBuddyApp().launch()</div>
+
+								<div class="blg-paragraph">
+									<p><strong>How streaming works.</strong> <span class="code-soft">respond()</span> is a Python generator — it uses <span class="code-soft">yield</span> instead of <span class="code-soft">return</span>. On each iteration, it appends the latest token to an <span class="code-soft">accumulated</span> string and yields the <em>full response so far</em>. Gradio's <span class="code-soft">gr.ChatInterface</span> replaces the current bot message with each yield, producing the live word-by-word typing effect. Yielding the accumulated string (rather than individual tokens) is required by <span class="code-soft">gr.ChatInterface</span> — it displays the last yielded value, not a stream of appended fragments.</p>
+								</div>
+
+								<div class="blg-paragraph">
+									<p><strong>How thread isolation works.</strong> <span class="code-soft">thread_state</span> is initialised with <span class="code-soft">str(uuid.uuid4())</span> when the page loads, so every tab has a unique thread from the very first message. It is passed to <span class="code-soft">gr.ChatInterface</span> via <span class="code-soft">additional_inputs</span>, making it available to <span class="code-soft">respond()</span> as its third argument. Clicking <strong>🔄 New Session</strong> uses <span class="code-soft">gr.ClearButton</span> — which resets both the chatbot display and <span class="code-soft">gr.ChatInterface</span>'s internal history — while the chained <span class="code-soft">.click()</span> handler generates a new UUID for <span class="code-soft">thread_state</span>. Both the visual history and the LangGraph memory reset at the same moment.</p>
+								</div>
+
+								<div class="blg-paragraph">
+									<p>Run the app with:</p>
+								</div>
+								<div class="blg-code-block" data-lang="bash">python app.py</div>
+
+								<div class="blg-paragraph">
+									<p>Gradio will print a local URL (usually <span class="code-soft">http://127.0.0.1:7860</span>). Open it in your browser and try the sequences below — they are designed to make the checkpointer's memory visible in the most obvious way possible.</p>
+								</div>
+
+								<a id="how-to-use" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">7.1</span> How to Use the App</h3>
+								</div>
+
+								<div class="blg-paragraph">
+									<p><strong>Test multi-turn memory.</strong> Send these four messages one after another in the same tab. Turn 4 is the proof — the buddy should recall the analogy it used in turn 1 without you repeating anything.</p>
+								</div>
+
+								<table class="blg-table">
+									<thead>
+										<tr>
+											<th>Turn</th>
+											<th>Message to send</th>
+											<th>What it demonstrates</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>1</td>
+											<td>Can you explain recursion to me? I'm a beginner.</td>
+											<td>First turn — no history yet</td>
+										</tr>
+										<tr>
+											<td>2</td>
+											<td>Show me a Python code example.</td>
+											<td>Buddy remembers the topic without you repeating it</td>
+										</tr>
+										<tr>
+											<td>3</td>
+											<td>How is it different from a for loop?</td>
+											<td>Third turn with a growing conversation history</td>
+										</tr>
+										<tr>
+											<td>4</td>
+											<td>What analogy did you use earlier when explaining recursion?</td>
+											<td>Proof that memory spans all prior turns</td>
+										</tr>
+									</tbody>
+								</table>
+
+								<div class="blg-paragraph">
+									<p><strong>Test thread isolation.</strong> Open a <strong>second browser tab</strong> at <span class="code-soft">http://127.0.0.1:7860</span> and send a completely different question:</p>
+								</div>
+
+								<table class="blg-table">
+									<thead>
+										<tr>
+											<th>Turn</th>
+											<th>Message to send (Tab 2)</th>
+											<th>What it demonstrates</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>1</td>
+											<td>What is a Python list comprehension?</td>
+											<td>Starts a fresh thread — no knowledge of Tab 1</td>
+										</tr>
+										<tr>
+											<td>2</td>
+											<td>What topic did we start with?</td>
+											<td>Should say list comprehensions — not recursion</td>
+										</tr>
+									</tbody>
+								</table>
+
+								<div class="blg-paragraph">
+									<p><strong>Test New Session.</strong> Back in Tab 1, click <strong>🔄 New Session</strong> to clear the chat and generate a new thread ID. Then ask:</p>
+								</div>
+
+								<div class="blg-callout-tip">
+									<p>💡 <em>"What did we talk about just now?"</em> — the buddy should have no memory of the recursion conversation. A fresh thread means a clean slate.</p>
+								</div>
+
+								<div class="blg-img-container">
+									<img src="../img/blog_11/web_ui.webp" alt="Personal Study Buddy Gradio web interface" class="blg-img" />
+									<p class="blg-img-caption">The Personal Study Buddy running in a Gradio chat interface. Replies stream token by token, and the full conversation history is preserved across all turns in the session.</p>
+								</div>
+
+								<hr class="blg-hr" />
+							</div>
+
+							<!-- ═══════════════════════════════════════════════════════ -->
+							<!-- 8. Conclusion                                          -->
+							<!-- ═══════════════════════════════════════════════════════ -->
+							<div class="blg-section">
+								<a id="conclusion" class="blg-anchor"></a>
+								<div class="blg-main-header"><h2>🏁 8. Conclusion</h2></div>
+
+								<div class="blg-paragraph">
+									<p>In three previous posts, every graph we built was a goldfish — brilliant within a single call, but completely amnesiac between calls. This post fixed that. With a checkpointer, a thread ID, and the <span class="code-soft">add_messages</span> reducer, the Study Buddy now maintains a full conversation history across any number of turns. Alice can ask a follow-up question an hour later and the tutor will remember exactly what analogy it used in turn 1.</p>
+								</div>
+
+								<div class="blg-paragraph">
+									<p>Here's what you learned in this post:</p>
+								</div>
+
+								<ul class="blg-ul">
+									<li class="blg-li">LangGraph graphs are <strong>stateless by default</strong> — each <span class="code-soft">invoke()</span> starts fresh. A checkpointer is what gives them memory.</li>
+									<li class="blg-li"><span class="code-soft">MemorySaver</span> stores state in RAM — zero setup, lost on restart. <span class="code-soft">SqliteSaver</span> stores it in a <span class="code-soft">.db</span> file — survives restarts, production-ready for single-machine apps.</li>
+									<li class="blg-li">Swapping checkpointers is <strong>two lines</strong> — the import and the constructor. All other code stays the same.</li>
+									<li class="blg-li"><strong>Thread IDs</strong> are the namespace that keeps different users' histories separate. Always pass <span class="code-soft">{"configurable": {"thread_id": "..."}}</span> to every <span class="code-soft">invoke()</span> and <span class="code-soft">stream()</span> call on a checkpointed graph.</li>
+									<li class="blg-li"><span class="code-soft">get_state(config)</span> reads the latest checkpoint for a thread. <span class="code-soft">get_state_history(config)</span> reads the full checkpoint timeline — useful for time-travel debugging and audit trails.</li>
+									<li class="blg-li"><span class="code-soft">invoke()</span> blocks and returns the final state. <span class="code-soft">stream()</span> yields events as the graph runs. Three stream modes: <span class="code-soft">"values"</span> (full state per node), <span class="code-soft">"updates"</span> (partial state per node), <span class="code-soft">"messages"</span> (one token at a time from the LLM).</li>
+									<li class="blg-li">In Gradio, <span class="code-soft">gr.ChatInterface</span> with <span class="code-soft">additional_inputs=[gr.State(...)]</span> delivers per-tab thread isolation, and a generator <span class="code-soft">respond()</span> function powers token-level streaming without any extra configuration.</li>
+								</ul>
+
+								<blockquote class="blg-callout-tip">
+									✅ <strong>Up next — Part 5: Tools, ToolNode &amp; Prebuilt Components.</strong> The Study Buddy knows everything in its training data — but what about current events, real-time calculations, or web search? In Part 5 you'll learn how to give LangGraph nodes access to <strong>tools</strong>: Python functions the LLM can call at runtime to fetch live data, run code, or interact with external services.
+								</blockquote>
+
+								<hr class="blg-hr" />
+							</div>
+
+							<!-- Technical Stacks -->
+							<div class="blg-trailing-section">
+								<div class="blg-trailing-header">
+									<img src="../img/technical_stack/stack.png" alt="Technical Stacks">
+									<h2>Technical Stacks</h2>
+								</div>
+								<div class="blg-tech-grid">
+									<div class="blg-tech-card">
+										<img src="../img/technical_stack/python.svg" alt="Python"> Python
+									</div>
+									<div class="blg-tech-card">
+										<img src="../img/technical_stack/langgraph.svg" alt="LangGraph"> LangGraph
+									</div>
+									<div class="blg-tech-card">
+										<img src="../img/technical_stack/langchain.svg" alt="LangChain"> LangChain
+									</div>
+									<div class="blg-tech-card">
+										<img src="../img/technical_stack/gemini.svg" alt="Gemini"> Gemini
+									</div>
+									<div class="blg-tech-card">
+										<img src="../img/technical_stack/gradio.svg" alt="Gradio"> Gradio
+									</div>
+								</div>
+							</div>
+							<!-- End: Technical Stacks -->
+
+							<!-- Download Source Code -->
+							<div class="blg-download-card">
+								<img src="../img/others/download.svg" alt="Download">
+								<div class="blg-download-info">
+									<h3>Download Source Code</h3>
+									<p>LangGraph Basics — Personal Study Buddy</p>
+								</div>
+								<a href="https://github.com/shafiqul-islam-sumon/langgraph/tree/main/basics-4-checkpointers-memory-streaming" class="blg-download-btn" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+							</div>
+							<!-- End: Download Source Code -->
+
+							<!-- References -->
+							<div class="blg-trailing-section">
+								<div class="blg-trailing-header">
+									<span style="font-size: 22px; line-height: 1;">📚</span>
+									<h2>References</h2>
+								</div>
+								<ul class="blg-ul">
+									<li class="blg-li">
+										<img src="../img/technical_stack/github.svg" alt="GitHub" width="18" style="vertical-align: middle; margin-right: 6px;">
+										<strong>GitHub Repository:</strong>
+										<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://github.com/shafiqul-islam-sumon/langgraph/tree/main/basics-4-checkpointers-memory-streaming">shafiqul-islam-sumon/langgraph — basics-4-checkpointers-memory-streaming</a>
+									</li>
+									<li class="blg-li">
+										<img src="../img/technical_stack/langgraph.svg" alt="LangGraph" width="18" style="vertical-align: middle; margin-right: 6px;">
+										<strong>LangGraph Persistence Documentation:</strong>
+										<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://langchain-ai.github.io/langgraph/concepts/persistence/">langchain-ai.github.io/langgraph/concepts/persistence</a>
+									</li>
+									<li class="blg-li">
+										<img src="../img/technical_stack/gemini.svg" alt="Gemini" width="18" style="vertical-align: middle; margin-right: 6px;">
+										<strong>Google AI Studio (API key):</strong>
+										<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://aistudio.google.com/apikey">aistudio.google.com/apikey</a>
+									</li>
+								</ul>
+							</div>
+							<!-- End: References -->
+
+						</div><!-- end #blogContainer -->
+					</div><!-- end .blog-detail-main -->
+				</div><!-- end .blog-detail-layout -->
+
+				<!-- Related posts — OUTSIDE .blog-detail-layout, INSIDE .container -->
+				<div class="related-posts-section">
+					<div class="blog-title-bar">
+						<img src="../img/others/blog.png" alt="blog post" style="width: 24px; height: auto;">
+						<h2>Related Blog Posts</h2>
+					</div>
+					<div class="related-posts-wrapper">
+						<div class="related-posts-swiper-area">
+							<div class="swiper" id="postContainer">
+								<div class="swiper-wrapper"><!-- populated by detail.js --></div>
+							</div>
+							<div class="swiper-button-prev"></div>
+							<div class="swiper-button-next"></div>
+						</div>
+						<div class="blg-slide-counter">
+							<div class="slide-progress-bar">
+								<div class="slide-progress-fill" id="slideProgressFill"></div>
+							</div>
+							<div class="slide-counter-label">
+								<span id="currentSlide">1</span> / <span id="totalSlides">1</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div><!-- end .container -->
+		</section>
+
+		<div id="site-footer"></div>
+	</div><!-- end #wrapper -->
+
+	<script src="../js/bootstrap.bundle.min.js"></script>
+	<script src="../js/components.js"></script>
+	<script src="../js/site.js"></script>
+	<script src="../js/swiper-bundle.min.js"></script>
+	<script src="../js/prism.js" data-manual></script>
+	<script src="../js/code-highlight.js"></script>
+	<script src="../js/detail.js"></script>
+	<script src="../js/mermaid.min.js"></script>
+	<script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+</body>
+</html>

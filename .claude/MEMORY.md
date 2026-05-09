@@ -16,7 +16,7 @@ Always use OOP (Object-Oriented Programming) when writing Python code. Every imp
 - `prompts/` — subfolder with one `.txt` file per node; templates use `{placeholder}` syntax, filled with `.format()` at runtime
 - `graph.py` — builds and compiles the `StateGraph`, exposes compiled graph
 - `<app_name>_runner.py` — entry point named after the app (e.g. `qa_runner.py`, `topic_runner.py`), contains runner class, imports graph and runs demo
-- `app.py` — Gradio `ChatInterface` wrapping the runner
+- `app.py` — Gradio web UI wrapping the runner; use `gr.ChatInterface` inside `gr.Blocks` for posts that need a "New Session" button
 - `.env` and `requirements.txt` live in the parent `langgraph/` folder, not per-series
 
 **Node return type:**
@@ -41,8 +41,29 @@ When `invoke()` runs, the engine resolves the string `"answer"` to `answer_node`
 The string in `add_node()` and `add_edge()` must match exactly — that is what connects edges to functions.
 
 **langchain-google-genai 4.x response.content:**
-Returns a list of dicts `[{"type": "text", "text": "...", ...}]` instead of a plain string.
-Always handle both formats in node functions with an `isinstance(content, list)` check.
+Returns a list of dicts `[{"type": "text", "text": "...", "extras": {...}}]` instead of a plain string.
+Handle both formats everywhere content is read — node functions, runner `chat()`, runner `stream_chat()`, and any console preview:
+```python
+if isinstance(content, list):
+    return "".join(b.get("text","") for b in content if isinstance(b,dict) and b.get("type")=="text")
+```
+For `stream_chat()`, check each chunk with `if not hasattr(chunk, "content"): continue` before reading content.
+
+## Gradio ChatInterface Conventions (LangGraph series)
+
+**Streaming:** `gr.ChatInterface` generator functions must `yield` the **full accumulated response so far** on each iteration — not individual tokens. Gradio replaces the bot message with the last yielded value.
+```python
+accumulated = ""
+for token in self.runner.stream_chat(message, thread_id):
+    accumulated += token
+    yield accumulated
+```
+
+**New Session button:** Wrap `gr.ChatInterface` in `gr.Blocks`. Use `gr.ClearButton([chat.chatbot, chat.textbox], value="🔄 New Session", variant="primary")` to reset the visual history, then chain `.click(fn=lambda: str(uuid.uuid4()), outputs=[thread_state])` to also reset the LangGraph thread.
+
+**Thread isolation:** Pass `gr.State(value=str(uuid.uuid4()))` as `additional_inputs` to `gr.ChatInterface`. Initialise with a UUID (not `""`) so the first message already has a valid thread_id.
+
+**Empty message guard:** Use `yield ""; return` (not bare `return`) — a generator that returns before its first yield raises `RuntimeError` in Gradio's async wrapper.
 
 ## Prompts Folder Convention (LangGraph series)
 Prompt text lives in `prompts/` subfolder — one `.txt` file per node function.
