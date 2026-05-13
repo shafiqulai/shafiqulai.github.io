@@ -246,7 +246,7 @@ gradio==6.14.0</div>
 										<p><strong>Gemini API key.</strong> This project uses Google Gemini as the LLM. Get your free API key from <a href="https://aistudio.google.com/apikey" class="blg-link" target="_blank" rel="noopener noreferrer">Google AI Studio</a>, then create a <span class="code-soft">.env</span> file inside the <span class="code-soft">langgraph/</span> folder:</p>
 									</div>
 									<div class="blg-code-block" data-lang="properties">GEMINI_API_KEY=your_api_key_here
-GEMINI_MODEL_NAME=gemini-2.0-flash
+GEMINI_MODEL_NAME=gemini-3-flash-preview
 GEMINI_TEMPERATURE=0.7
 GEMINI_MAX_RETRIES=2</div>
 
@@ -270,7 +270,7 @@ from dotenv import load_dotenv
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 class Config:
-    MODEL_NAME  = os.getenv("GEMINI_MODEL_NAME", "gemini-2.0-flash")
+    MODEL_NAME  = os.getenv("GEMINI_MODEL_NAME", "gemini-3-flash-preview")
     TEMPERATURE = float(os.getenv("GEMINI_TEMPERATURE", 0.7))
     MAX_RETRIES = int(os.getenv("GEMINI_MAX_RETRIES", 2))</div>
 

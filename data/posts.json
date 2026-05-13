@@ -119,5 +119,16 @@
         "date": "10 May 2026",
         "description": "LangGraph graphs forget everything when invoke() returns — checkpointers fix this by persisting state across calls. MemorySaver stores state in memory; SqliteSaver persists it to disk. Thread IDs keep different users' conversations isolated. This post builds a Personal Study Buddy chatbot that remembers every question a student asks across a multi-turn session, demonstrates thread isolation between two students, and shows how to stream LLM responses token by token in a Gradio web UI.",
         "readMoreUrl": "./blogs/blog_11.html"
+    },
+    {
+        "id": 12,
+        "author": "MD SHAFIQUL ISLAM",
+        "author_img": "../img/author/shafiqul.png",
+        "category": ["LangGraph"],
+        "image": "./img/blog_12/thumbnail.webp",
+        "title": "LangGraph Basics: Part 5 — Tools, ToolNode & Prebuilt Components",
+        "date": "13 May 2026",
+        "description": "LangGraph agents can call custom Python functions — called tools — to perform tasks an LLM can't do reliably on its own. ToolNode executes those calls automatically, and tools_condition routes the graph based on whether the LLM wants a tool or a final answer. This post covers the @tool decorator, bind_tools(), ToolNode, tools_condition, and the create_react_agent shortcut. A Personal Finance Assistant is built that calculates loan EMIs, projects compound savings, converts currencies, and splits budgets — all powered by tool calling with Google Gemini.",
+        "readMoreUrl": "./blogs/blog_12.html"
     }
 ]

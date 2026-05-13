@@ -51,6 +51,8 @@ For `stream_chat()`, check each chunk with `if not hasattr(chunk, "content"): co
 
 ## Gradio ChatInterface Conventions (LangGraph series)
 
+**`theme` argument not supported:** Never pass `theme=gr.themes.Soft()` (or any theme) to `gr.ChatInterface` — it raises `TypeError: unexpected keyword argument 'theme'`. Remove it entirely; the default theme is fine.
+
 **Streaming:** `gr.ChatInterface` generator functions must `yield` the **full accumulated response so far** on each iteration — not individual tokens. Gradio replaces the bot message with the last yielded value.
 ```python
 accumulated = ""
@@ -92,6 +94,13 @@ This makes the reducer's accumulation effect visually obvious in console output 
 - Embed diagrams as `<pre class="mermaid">` inside `.blg-mermaid-container` inside `.blg-img-container`
 - Add a `.blg-img-caption` below the diagram
 - No separate Mermaid CSS needed — it renders to inline SVG
+
+## HTML Structure Rules
+
+**`.blg-table` must be a `<div>` wrapper, never a class on `<table>`.**
+- Correct: `<div class="blg-table"><table>…</table></div>`
+- Wrong: `<table class="blg-table">`
+- Reason: `overflow-x: auto` (mobile scroll) only works on a block container. Putting it on `<table>` has no effect, causing content to be clipped on mobile.
 
 ## Installation & Setup Section (LangGraph series posts)
 Every LangGraph blog post's Installation & Setup section must include in this order:

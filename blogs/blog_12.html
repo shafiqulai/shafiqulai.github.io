@@ -1,0 +1,1535 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<!-- Google tag (gtag.js) -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-6SEFZQJHM1"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
+			gtag("config", "G-6SEFZQJHM1", {
+				cookie_domain: "shafiqulai.github.io",
+			});
+		</script>
+
+		<meta charset="utf-8" />
+		<title>LangGraph Basics: Part 5 — Tools, ToolNode &amp; Prebuilt Components</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="LangGraph agents can call custom Python functions — called tools — to perform tasks an LLM can't do reliably on its own. ToolNode executes those calls automatically, and tools_condition routes the graph based on whether the LLM wants a tool or a final answer. This post builds a Personal Finance Assistant that calculates loan EMIs, projects savings, converts currencies, and splits budgets — all powered by tool calling with Google Gemini."
+		/>
+		<meta name="author" content="MD SHAFIQUL ISLAM" />
+		<link rel="canonical" href="https://shafiqulai.github.io/blogs/blog_12.html" />
+		<link rel="icon" href="../img/others/favicon.ico" type="image/x-icon" />
+
+		<!-- Fonts -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+
+		<!-- CSS (order matters) -->
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+		<link rel="stylesheet" href="../css/swiper-bundle.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/style.css" />
+		<link rel="stylesheet" type="text/css" href="../css/prism.css" />
+	</head>
+
+	<body>
+		<!-- Reading Progress Bar -->
+		<div id="reading-progress"></div>
+		<div id="wrapper">
+			<div id="site-header"></div>
+
+			<section id="content">
+				<div class="container">
+					<div class="blog-detail-layout">
+
+						<!-- Left: Sticky TOC Sidebar -->
+						<aside class="toc-sidebar" id="tocSidebar">
+							<div class="toc-sidebar-header">
+								<p class="toc-sidebar-title">Contents</p>
+							</div>
+							<ul class="toc-sidebar-list">
+								<li><a href="#intro">1. Why LLMs Need External Tools</a></li>
+								<li class="toc-sidebar-sub"><a href="#react-loop">1.1 The ReAct Loop</a></li>
+								<li class="toc-sidebar-sub"><a href="#scenario-intro">1.2 Our Scenario: Finance Assistant</a></li>
+								<li><a href="#installation-setup">2. Installation &amp; Setup</a></li>
+								<li class="toc-sidebar-sub"><a href="#configuring-llm">2.1 Configuring the LLM</a></li>
+								<li><a href="#defining-tools">3. Three Ways to Define Tools</a></li>
+								<li class="toc-sidebar-sub"><a href="#tool-decorator">3.1 Method 1: @tool Decorator</a></li>
+								<li class="toc-sidebar-sub"><a href="#structured-tool">3.2 Method 2: StructuredTool</a></li>
+								<li class="toc-sidebar-sub"><a href="#base-tool">3.3 Method 3: BaseTool Subclass</a></li>
+								<li class="toc-sidebar-sub"><a href="#four-finance-tools">3.4 The Finance Tools</a></li>
+								<li><a href="#toolnode">4. ToolNode — The Prebuilt Executor</a></li>
+								<li><a href="#bind-tools">5. Binding Tools to the LLM</a></li>
+								<li><a href="#tools-condition">6. Routing with tools_condition</a></li>
+								<li><a href="#complete-example">7. Complete Example: Finance Assistant</a></li>
+								<li class="toc-sidebar-sub"><a href="#scenario-arch">7.1 Scenario &amp; Architecture</a></li>
+								<li class="toc-sidebar-sub"><a href="#state-design">7.2 State Design</a></li>
+								<li class="toc-sidebar-sub"><a href="#tools-file">7.3 Tools (tools/ package)</a></li>
+								<li class="toc-sidebar-sub"><a href="#agent-node">7.4 Agent Node (nodes.py)</a></li>
+								<li class="toc-sidebar-sub"><a href="#graph-assembly">7.5 Graph Assembly (graph.py)</a></li>
+								<li class="toc-sidebar-sub"><a href="#runner-output">7.6 Runner &amp; Console Output</a></li>
+								<li class="toc-sidebar-sub"><a href="#mermaid-diagram">7.7 Graph Diagram</a></li>
+								<li><a href="#create-react-agent">8. Using create_react_agent</a></li>
+								<li><a href="#web-ui">9. Web Interface</a></li>
+								<li><a href="#conclusion">10. Conclusion</a></li>
+							</ul>
+						</aside>
+
+						<!-- Right: Blog Content -->
+						<div class="blog-detail-main">
+							<div id="blogContainer">
+
+								<!-- Title -->
+								<div class="container blg-title-container">
+									<h2 class="blg-title">LangGraph Basics: Part 5 — Tools, ToolNode &amp; Prebuilt Components</h2>
+								</div>
+
+								<!-- Author -->
+								<div class="author_section">
+									<img id="author_img" src="" alt="Author Photo" class="author_img">
+									<div class="author_details">
+										<span id="author_name" class="author_name"></span>
+										<span id="published_date" class="published_date"></span>
+									</div>
+								</div>
+
+								<!-- Thumbnail -->
+								<div class="blg-img-container">
+									<img src="../img/blog_12/thumbnail.webp" alt="LangGraph Basics Part 5 — Tools, ToolNode & Prebuilt Components" class="blg-thumbnail" />
+								</div>
+
+								<!-- Inline TOC (visible on mobile) -->
+								<div class="blg-toc-container">
+									<h2>📚 Table of Contents</h2>
+									<ol class="blg-toc-ol">
+										<li class="blg-toc-li"><a href="#intro">1. Why LLMs Need External Tools</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#react-loop">1.1 The ReAct Loop</a></li>
+											<li class="blg-toc-li"><a href="#scenario-intro">1.2 Our Scenario: Finance Assistant</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#installation-setup">2. Installation &amp; Setup</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#configuring-llm">2.1 Configuring the LLM</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#defining-tools">3. Three Ways to Define Tools</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#tool-decorator">3.1 Method 1: @tool Decorator</a></li>
+											<li class="blg-toc-li"><a href="#structured-tool">3.2 Method 2: StructuredTool</a></li>
+											<li class="blg-toc-li"><a href="#base-tool">3.3 Method 3: BaseTool Subclass</a></li>
+											<li class="blg-toc-li"><a href="#four-finance-tools">3.4 The Finance Tools</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#toolnode">4. ToolNode — The Prebuilt Executor</a></li>
+										<li class="blg-toc-li"><a href="#bind-tools">5. Binding Tools to the LLM</a></li>
+										<li class="blg-toc-li"><a href="#tools-condition">6. Routing with tools_condition</a></li>
+										<li class="blg-toc-li"><a href="#complete-example">7. Complete Example: Finance Assistant</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#scenario-arch">7.1 Scenario &amp; Architecture</a></li>
+											<li class="blg-toc-li"><a href="#state-design">7.2 State Design</a></li>
+											<li class="blg-toc-li"><a href="#tools-file">7.3 Tools (tools/ package)</a></li>
+											<li class="blg-toc-li"><a href="#agent-node">7.4 Agent Node (nodes.py)</a></li>
+											<li class="blg-toc-li"><a href="#graph-assembly">7.5 Graph Assembly (graph.py)</a></li>
+											<li class="blg-toc-li"><a href="#runner-output">7.6 Runner &amp; Console Output</a></li>
+											<li class="blg-toc-li"><a href="#mermaid-diagram">7.7 Graph Diagram</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#create-react-agent">8. Using create_react_agent</a></li>
+										<li class="blg-toc-li"><a href="#web-ui">9. Web Interface</a></li>
+										<li class="blg-toc-li"><a href="#conclusion">10. Conclusion</a></li>
+									</ol>
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- 1. Introduction                                        -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="intro" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🧠 1. Why LLMs Need External Tools</h2></div>
+
+									<div class="blg-paragraph">
+										<p>Language models are surprisingly good at many things — explaining concepts, summarising text, writing code, answering questions. But ask one to calculate the monthly payment on a $20,000 car loan and you might get an answer that <em>sounds</em> right but is quietly off by a few dollars. That might seem harmless, but small calculation errors in finance compound into real problems over a 4-year loan.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>This happens because LLMs don't actually compute — they predict text. When an LLM "does math", it's pattern-matching against millions of similar problems it saw during training. Most of the time it's close enough. But close enough isn't acceptable when your users are making financial decisions.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The solution is <span class="highlight-blue">tools</span>. A tool in LangGraph is simply a Python function that the LLM can call when it needs one. The LLM handles the part it's genuinely good at — understanding the question, reasoning about which function to use, and explaining the result in plain language. Python handles the part it's good at: exact arithmetic. Together, they're far more reliable than either alone.</p>
+									</div>
+
+									<blockquote class="blg-callout-purple">
+										🔗 <strong>What is a Tool?</strong> In LangGraph and LangChain, a <em>tool</em> is a Python callable wrapped as a structured object with a name, a description, and a parameter schema — everything the LLM needs to decide when to call it and what arguments to pass. There are three ways to create one: the <span class="code-soft">@tool</span> decorator, <span class="code-soft">StructuredTool.from_function()</span>, or subclassing <span class="code-soft">BaseTool</span>. Section 3 covers all three.
+									</blockquote>
+
+									<a id="react-loop" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">1.1</span>
+										<h3>🔄 The ReAct Loop</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The pattern that governs tool-calling agents is called <span class="highlight-purple">ReAct</span> — short for <strong>Re</strong>ason + <strong>Act</strong>. It describes a loop the agent runs until it has a final answer:</p>
+									</div>
+
+									<ul class="blg-ul">
+										<li class="blg-li"><strong>Reason</strong> — the LLM reads the conversation and decides what to do next. If it has enough information to answer, it does. If not, it picks a tool.</li>
+										<li class="blg-li"><strong>Act</strong> — the LLM calls the chosen tool with specific arguments (it doesn't execute the code itself — it just requests the call).</li>
+										<li class="blg-li"><strong>Observe</strong> — LangGraph's <span class="code-soft">ToolNode</span> runs the Python function and hands the result back to the LLM.</li>
+										<li class="blg-li"><strong>Repeat</strong> — the LLM reads the tool result and either calls another tool or gives a final answer.</li>
+									</ul>
+
+									<div class="blg-paragraph">
+										<p>Think of a good chef in a professional kitchen. They read the order (Reason), grab the right knife or pan (Act), taste the dish (Observe), then adjust the seasoning (Reason again). They don't do everything with their bare hands — they use the right tool at each step. A LangGraph tool-calling agent works exactly the same way.</p>
+									</div>
+
+									<div class="blg-table">
+										<table>
+											<thead>
+												<tr><th>Step</th><th>Who does it</th><th>What happens</th></tr>
+											</thead>
+											<tbody>
+												<tr><td>Reason</td><td>LLM (agent node)</td><td>Reads the conversation, decides to use <span class="code-soft">calculate_loan_payment</span></td></tr>
+												<tr><td>Act</td><td>LLM → AIMessage</td><td>Returns <span class="code-soft">tool_calls</span> with function name and arguments</td></tr>
+												<tr><td>Observe</td><td>ToolNode</td><td>Runs the Python function, wraps result in <span class="code-soft">ToolMessage</span></td></tr>
+												<tr><td>Reason again</td><td>LLM (agent node)</td><td>Reads tool result, writes final answer as plain text</td></tr>
+											</tbody>
+										</table>
+									</div>
+
+									<a id="scenario-intro" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">1.2</span>
+										<h3>💰 Our Scenario: Personal Finance Assistant</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Throughout this post, we'll build a <strong>Personal Finance Assistant</strong> for Priya — a 28-year-old software engineer who earns $4,500 per month. Priya wants to plan smarter: she's thinking about a car loan, she'd like to start investing, she's about to travel to Europe, and she wants to stop guessing where her salary goes every month.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>She asks the assistant questions like:</p>
+									</div>
+
+									<div class="blg-query-list">
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Q</span>
+												"What would my monthly payment be on a $20,000 car loan at 6% interest for 48 months?"
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">A</span>
+												Agent calls <span class="code-soft">calculate_loan_payment(20000, 6, 48)</span> → returns $469.70/month
+											</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Q</span>
+												"If I invest $5,000 at 7% annual interest, how much will I have after 10 years?"
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">A</span>
+												Agent calls <span class="code-soft">compound_interest(5000, 7, 10)</span> → returns $9,835.76
+											</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Q</span>
+												"How much is 1,000 USD in EUR?"
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">A</span>
+												Agent calls <span class="code-soft">convert_currency(1000, "USD", "EUR")</span> → returns 925.93 EUR
+											</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Q</span>
+												"I earn $4,500/month. Split my budget: 30% rent, 20% food, 20% savings."
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">A</span>
+												Agent calls <span class="code-soft">split_budget(4500, 30, 20, 20)</span> → returns full breakdown
+											</div>
+										</div>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Each of these requires a different tool. The LLM reads the question, picks the right tool, fills in the arguments, and presents the result clearly. By the end of this post, you'll have built exactly this — a four-tool finance agent powered by Google Gemini and LangGraph.</p>
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- 2. Installation & Setup                                -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="installation-setup" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>⚙️ 2. Installation &amp; Setup</h2></div>
+
+									<div class="blg-paragraph">
+										<p>This post is part of the LangGraph Basics series. The virtual environment and dependencies are shared across the series — if you've already set them up for a previous post, skip to the project tree.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><strong>Step 1 — Check your Python version.</strong> Python 3.12 is required.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="bash">python --version
+# Python 3.12.x</div>
+
+									<div class="blg-paragraph">
+										<p><strong>Step 2 — Create and activate a virtual environment.</strong></p>
+									</div>
+
+									<div class="blg-code-block" data-lang="bash">python -m venv langgraph
+
+# macOS / Linux
+source langgraph/bin/activate
+
+# Windows
+langgraph\Scripts\activate</div>
+
+									<div class="blg-paragraph">
+										<p><strong>Step 3 — Install dependencies.</strong> Create a <span class="code-soft">requirements.txt</span> in the <span class="code-soft">langgraph/</span> root folder with these exact versions:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="properties">langchain==1.2.17
+langgraph==1.1.10
+langchain-google-genai==4.2.2
+python-dotenv==1.2.2
+gradio==6.14.0</div>
+
+									<div class="blg-code-block" data-lang="bash">pip install -r requirements.txt</div>
+
+									<div class="blg-paragraph">
+										<p><strong>Step 4 — Get your Gemini API key.</strong> Visit <a href="https://aistudio.google.com/apikey" class="blg-link" target="_blank" rel="noopener noreferrer">Google AI Studio</a>, generate a key, and create a <span class="code-soft">.env</span> file in the <span class="code-soft">langgraph/</span> root folder:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="properties">GEMINI_API_KEY=your_api_key_here
+GEMINI_MODEL_NAME=gemini-3-flash-preview
+GEMINI_TEMPERATURE=0.7
+GEMINI_MAX_RETRIES=2</div>
+
+									<blockquote class="blg-callout-warning">
+										⚠️ <strong>Never commit your .env file.</strong> Add it to <span class="code-soft">.gitignore</span> right away: echo ".env" &gt;&gt; .gitignore
+									</blockquote>
+
+									<div class="blg-paragraph">
+										<p><strong>Step 5 — Project structure.</strong> All files for this post live inside <span class="code-soft">basics-5-tools-toolnode/</span>. The <span class="code-soft">.env</span> and <span class="code-soft">requirements.txt</span> are shared at the <span class="code-soft">langgraph/</span> root level.</p>
+									</div>
+
+									<div class="blg-tree"><span class="tree-root">langgraph/</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">basics-5-tools-toolnode/</span>      <span class="tree-comment"># this post's project folder</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">config.py</span>                 <span class="tree-comment"># Config class — loads .env</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">llm.py</span>                    <span class="tree-comment"># GeminiLLM — plain LLM wrapper</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">state.py</span>                  <span class="tree-comment"># FinanceState — messages-based state</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-dir">tools/</span>                    <span class="tree-comment"># one BaseTool class per file</span>
+<span class="tree-pipe">│   │   ├── </span><span class="tree-file">__init__.py</span>            <span class="tree-comment"># exports TOOLS list</span>
+<span class="tree-pipe">│   │   ├── </span><span class="tree-file">loan_payment.py</span>        <span class="tree-comment"># LoanPaymentTool</span>
+<span class="tree-pipe">│   │   ├── </span><span class="tree-file">compound_interest.py</span>  <span class="tree-comment"># CompoundInterestTool</span>
+<span class="tree-pipe">│   │   ├── </span><span class="tree-file">convert_currency.py</span>    <span class="tree-comment"># ConvertCurrencyTool</span>
+<span class="tree-pipe">│   │   └── </span><span class="tree-file">split_budget.py</span>        <span class="tree-comment"># SplitBudgetTool</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">nodes.py</span>                  <span class="tree-comment"># FinanceNodes — agent_node with tools</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">graph.py</span>                  <span class="tree-comment"># FinanceGraph — builds and compiles</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">finance_runner.py</span>         <span class="tree-comment"># FinanceRunner — entry point + demo</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">app.py</span>                    <span class="tree-comment"># Gradio web UI</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-dir">prompts/</span>                  <span class="tree-comment"># all LLM prompt templates</span>
+<span class="tree-pipe">│   │   ├── </span><span class="tree-file">system.txt</span>            <span class="tree-comment"># system prompt for the agent node</span>
+<span class="tree-pipe">│   │   ├── </span><span class="tree-file">loan_payment.txt</span>      <span class="tree-comment"># description for LoanPaymentTool</span>
+<span class="tree-pipe">│   │   ├── </span><span class="tree-file">compound_interest.txt</span> <span class="tree-comment"># description for CompoundInterestTool</span>
+<span class="tree-pipe">│   │   ├── </span><span class="tree-file">convert_currency.txt</span>  <span class="tree-comment"># description for ConvertCurrencyTool</span>
+<span class="tree-pipe">│   │   └── </span><span class="tree-file">split_budget.txt</span>      <span class="tree-comment"># description for SplitBudgetTool</span>
+<span class="tree-pipe">│   └── </span><span class="tree-dir">figure/</span>                   <span class="tree-comment"># auto-generated by graph.py</span>
+<span class="tree-pipe">│       ├── </span><span class="tree-file">graph.mmd</span>             <span class="tree-comment"># Mermaid source</span>
+<span class="tree-pipe">│       └── </span><span class="tree-file">graph.png</span>             <span class="tree-comment"># PNG diagram</span>
+<span class="tree-pipe">├── </span><span class="tree-spec">.env</span>                          <span class="tree-comment"># GEMINI_API_KEY (shared, never commit)</span>
+<span class="tree-pipe">└── </span><span class="tree-file">requirements.txt</span>              <span class="tree-comment"># shared dependencies</span></div>
+
+									<div class="blg-paragraph">
+										<p>Here's how each file maps to the sections in this post: the <span class="code-soft">tools/</span> package is covered in Section 3, <span class="code-soft">nodes.py</span> in Sections 4–5, <span class="code-soft">graph.py</span> in Section 6, and <span class="code-soft">finance_runner.py</span> + <span class="code-soft">app.py</span> in Section 7.</p>
+									</div>
+
+									<a id="configuring-llm" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">2.1</span>
+										<h3>🔧 Configuring the LLM</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">config.py</span> reads the environment variables and exposes them as typed class attributes. Every other file imports from here — nothing reads <span class="code-soft">os.getenv()</span> directly anywhere else.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">import os
+from dotenv import load_dotenv
+
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
+
+class Config:
+    MODEL_NAME  = os.getenv("GEMINI_MODEL_NAME", "gemini-3-flash-preview")
+    TEMPERATURE = float(os.getenv("GEMINI_TEMPERATURE", 0.7))
+    MAX_RETRIES = int(os.getenv("GEMINI_MAX_RETRIES", 2))</div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">llm.py</span> wraps <span class="code-soft">ChatGoogleGenerativeAI</span> in a class. Notice that this file does <em>not</em> call <span class="code-soft">bind_tools()</span> — the plain LLM is returned here, and tool binding happens later in <span class="code-soft">nodes.py</span>. This keeps the LLM class reusable across any graph.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">from langchain_google_genai import ChatGoogleGenerativeAI
+from config import Config
+
+class GeminiLLM:
+    def __init__(self):
+        self.llm = ChatGoogleGenerativeAI(
+            model=Config.MODEL_NAME,
+            temperature=Config.TEMPERATURE,
+            max_retries=Config.MAX_RETRIES,
+        )
+
+    def get_llm(self):
+        return self.llm</div>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- 3. Three Ways to Define Tools                          -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="defining-tools" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🔧 3. Three Ways to Define Tools</h2></div>
+
+									<div class="blg-paragraph">
+										<p>Before the LLM can call a Python function, that function must be wrapped as a LangChain Tool — an object with a name, a description, and a parameter schema. LangChain gives you three ways to do that wrapping. All three produce the same result: a tool the LLM can discover and call through <span class="code-soft">bind_tools()</span>.</p>
+									</div>
+
+									<ul class="blg-ul">
+										<li class="blg-li"><strong>Method 1 — <span class="code-soft">@tool</span> decorator:</strong> Minimal setup. Add one decorator; the docstring becomes the description and type annotations build the schema. Best for simple, stateless functions.</li>
+										<li class="blg-li"><strong>Method 2 — <span class="code-soft">StructuredTool.from_function():</span></strong> Explicit name, description, and Pydantic schema. Useful when you want to control each field without a docstring, or reuse an existing function.</li>
+										<li class="blg-li"><strong>Method 3 — <span class="code-soft">BaseTool</span> subclass:</strong> Full OOP approach. A class with <span class="code-soft">_run()</span> and <span class="code-soft">_arun()</span> methods. Best for complex tools that need internal state, dependency injection, or proper async support — and the most testable and maintainable of the three.</li>
+									</ul>
+
+									<blockquote class="blg-callout-info">
+										💡 <strong>All three work identically with ToolNode and bind_tools.</strong> Choose based on how much control you need. For production code, BaseTool subclassing is the most explicit and the easiest to test independently.
+									</blockquote>
+
+									<!-- 3.1 -->
+									<a id="tool-decorator" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">3.1</span>
+										<h3>🏷️ Method 1 — The @tool Decorator</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The <span class="code-soft">@tool</span> decorator converts a plain Python function into a LangChain tool with one line. Three things are inferred automatically: the <strong>name</strong> comes from the function name, the <strong>description</strong> comes from the first line of the docstring (this is what the LLM reads to decide when to call the tool), and the <strong>parameter schema</strong> is built from type annotations.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Here is the loan payment tool using <span class="code-soft">@tool</span>:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">from langchain_core.tools import tool
+
+@tool
+def calculate_loan_payment(principal: float, annual_rate_pct: float, months: int) -> str:
+    """Calculate the fixed monthly loan payment (EMI) for a given loan.
+
+    Args:
+        principal: Total loan amount in dollars.
+        annual_rate_pct: Annual interest rate as a percentage (e.g., 6 for 6%).
+        months: Loan term in months.
+    """
+    if annual_rate_pct == 0:
+        monthly_payment = principal / months
+    else:
+        r = annual_rate_pct / 100 / 12
+        monthly_payment = principal * (r * (1 + r) ** months) / ((1 + r) ** months - 1)
+    total_paid = monthly_payment * months
+    return (
+        f"Monthly payment: ${monthly_payment:.2f} for {months} months. "
+        f"Total paid: ${total_paid:.2f}."
+    )</div>
+
+									<div class="blg-paragraph">
+										<p>You can inspect what the decorator built:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">print(calculate_loan_payment.name)        # calculate_loan_payment
+print(calculate_loan_payment.description)  # Calculate the fixed monthly loan payment (EMI) for a given loan.
+print(calculate_loan_payment.args)         # {'principal': {'title': 'Principal', 'type': 'number'}, ...}</div>
+
+									<blockquote class="blg-callout-tip">
+										✅ <strong>Best for:</strong> Quick, stateless functions where the docstring is already clear. The decorator approach is the fastest way to get a working tool.
+									</blockquote>
+
+									<!-- 3.2 -->
+									<a id="structured-tool" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">3.2</span>
+										<h3>🧩 Method 2 — StructuredTool.from_function()</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">StructuredTool.from_function()</span> wraps an existing function but lets you set the name and description explicitly — without relying on the docstring format. You also pass a Pydantic <span class="code-soft">BaseModel</span> as the argument schema, which gives you fine-grained control over field validation and per-field descriptions.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Here is the compound interest calculator using <span class="code-soft">StructuredTool</span>:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">from langchain_core.tools import StructuredTool
+from pydantic import BaseModel
+
+
+class CompoundInterestInput(BaseModel):
+    principal: float
+    annual_rate_pct: float
+    years: int
+
+
+def _compound_interest(principal: float, annual_rate_pct: float, years: int) -> str:
+    rate = annual_rate_pct / 100
+    final_amount = principal * (1 + rate) ** years
+    interest_earned = final_amount - principal
+    return (
+        f"Final amount after {years} years: ${final_amount:.2f}. "
+        f"Interest earned: ${interest_earned:.2f}."
+    )
+
+
+compound_interest = StructuredTool.from_function(
+    func=_compound_interest,
+    name="compound_interest",
+    description=(
+        "Calculate the final amount after annual compound interest. "
+        "Use this for savings projections and investment growth questions."
+    ),
+    args_schema=CompoundInterestInput,
+)</div>
+
+									<div class="blg-paragraph">
+										<p>The function <span class="code-soft">_compound_interest</span> is a plain Python function — no decorator needed. The <span class="code-soft">StructuredTool.from_function()</span> call wraps it and attaches an explicit name, description, and schema. This is useful when you're adapting a function you didn't write, or when you want a richer Pydantic schema with field-level validators.</p>
+									</div>
+
+									<blockquote class="blg-callout-tip">
+										✅ <strong>Best for:</strong> Wrapping existing functions without modifying them, or when you need explicit Pydantic field descriptions and validators separate from the function docstring.
+									</blockquote>
+
+									<!-- 3.3 -->
+									<a id="base-tool" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">3.3</span>
+										<h3>🏗️ Method 3 — BaseTool Subclass</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Subclassing <span class="code-soft">BaseTool</span> is the most explicit and most powerful approach. Instead of a decorated function, you define a class with two methods: <span class="code-soft">_run()</span> for synchronous calls and <span class="code-soft">_arun()</span> for async. The tool's name, description, and argument schema are class attributes — nothing is inferred from docstrings or function signatures.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Here is the currency converter as a <span class="code-soft">BaseTool</span> subclass:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">import os
+from typing import Type
+
+from langchain_core.tools import BaseTool
+from pydantic import BaseModel
+
+_PROMPTS_DIR = os.path.join(os.path.dirname(__file__), "..", "prompts")
+
+# Module-level constant — outside the class to avoid Pydantic field validation
+_RATES_TO_USD: dict[str, float] = {
+    "USD": 1.0, "EUR": 1.08, "GBP": 1.27, "JPY": 0.0067,
+    "BDT": 0.0091, "CAD": 0.74, "AUD": 0.65, "INR": 0.012,
+}
+
+
+def _load_prompt(filename: str) -> str:
+    with open(os.path.join(_PROMPTS_DIR, filename), "r") as f:
+        return f.read().strip()
+
+
+class ConvertCurrencyInput(BaseModel):
+    amount: float
+    from_currency: str
+    to_currency: str
+
+
+class ConvertCurrencyTool(BaseTool):
+    name: str = "convert_currency"
+    description: str = _load_prompt("convert_currency.txt")
+    args_schema: Type[BaseModel] = ConvertCurrencyInput
+
+    def _run(self, amount: float, from_currency: str, to_currency: str) -> str:
+        src, dst = from_currency.upper(), to_currency.upper()
+        if src not in _RATES_TO_USD or dst not in _RATES_TO_USD:
+            return f"Unsupported currency. Supported: {', '.join(_RATES_TO_USD)}."
+        converted = (amount * _RATES_TO_USD[src]) / _RATES_TO_USD[dst]
+        return f"{amount:.2f} {src} = {converted:.2f} {dst}."
+
+    async def _arun(self, amount: float, from_currency: str, to_currency: str) -> str:
+        return self._run(amount, from_currency, to_currency)</div>
+
+									<div class="blg-paragraph">
+										<p>Four details are worth noting:</p>
+									</div>
+
+									<ul class="blg-ul">
+										<li class="blg-li"><strong><span class="code-soft">name</span>, <span class="code-soft">description</span>, <span class="code-soft">args_schema</span></strong> are typed class attributes. Nothing is inferred — you see exactly what the LLM receives when you read the class definition.</li>
+										<li class="blg-li"><strong>Description loaded from <span class="code-soft">prompts/convert_currency.txt</span></strong> — <span class="code-soft">_load_prompt()</span> reads the file at class definition time. Keeping descriptions in <span class="code-soft">.txt</span> files lets you tune the LLM's tool-selection behavior without changing Python code.</li>
+										<li class="blg-li"><strong>The exchange rate dict is module-level</strong> (<span class="code-soft">_RATES_TO_USD</span>). Pydantic would treat class-level dictionaries as model fields and raise a validation error, so constants that aren't tool arguments live outside the class.</li>
+										<li class="blg-li"><strong><span class="code-soft">_arun()</span> delegates to <span class="code-soft">_run()</span>.</strong> For I/O-bound tools (API calls, DB queries), you'd implement <span class="code-soft">_arun()</span> with real <span class="code-soft">async/await</span>. For pure-Python arithmetic, delegation is fine.</li>
+									</ul>
+
+									<blockquote class="blg-callout-tip">
+										✅ <strong>Best for:</strong> Production code. Classes are easy to test in isolation, easy to mock in unit tests, and straightforward to extend with logging, retries, or dependency injection. This is what the source code for this post uses.
+									</blockquote>
+
+									<!-- 3.4 -->
+									<a id="four-finance-tools" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">3.4</span>
+										<h3>💵 The 4 Finance Tools</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The source code uses Method 3 — <span class="code-soft">BaseTool</span> subclassing — for all four tools, organized into a <span class="code-soft">tools/</span> package with one file per tool. Each tool is its own class in its own file, which keeps it self-contained and independently testable. The package's <span class="code-soft">__init__.py</span> collects all four into a single <span class="code-soft">TOOLS</span> list:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python"># tools/__init__.py
+from .compound_interest import CompoundInterestTool
+from .convert_currency import ConvertCurrencyTool
+from .loan_payment import LoanPaymentTool
+from .split_budget import SplitBudgetTool
+
+TOOLS = [
+    LoanPaymentTool(),
+    CompoundInterestTool(),
+    ConvertCurrencyTool(),
+    SplitBudgetTool(),
+]</div>
+
+									<div class="blg-paragraph">
+										<p>With this in place, <span class="code-soft">from tools import TOOLS</span> works from anywhere in the project — whether <span class="code-soft">tools</span> is a single <span class="code-soft">.py</span> file or a package directory makes no difference to the importer. The four tools cover everything Priya needs:</p>
+									</div>
+
+									<div class="blg-table">
+										<table>
+											<thead>
+												<tr>
+													<th>File</th>
+													<th>Class</th>
+													<th>What It Computes</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td><span class="code-soft">loan_payment.py</span></td>
+													<td><span class="code-soft">LoanPaymentTool</span></td>
+													<td>Fixed monthly EMI using the compound interest formula</td>
+												</tr>
+												<tr>
+													<td><span class="code-soft">compound_interest.py</span></td>
+													<td><span class="code-soft">CompoundInterestTool</span></td>
+													<td>Final savings amount after annual compounding</td>
+												</tr>
+												<tr>
+													<td><span class="code-soft">convert_currency.py</span></td>
+													<td><span class="code-soft">ConvertCurrencyTool</span></td>
+													<td>Currency conversion via USD as intermediate</td>
+												</tr>
+												<tr>
+													<td><span class="code-soft">split_budget.py</span></td>
+													<td><span class="code-soft">SplitBudgetTool</span></td>
+													<td>Monthly income split into named budget categories</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- 4. ToolNode                                            -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="toolnode" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>⚡ 4. ToolNode — The Prebuilt Executor</h2></div>
+
+									<div class="blg-paragraph">
+										<p>When the LLM decides to call a tool, it doesn't actually run the Python function. Instead, it returns a special <span class="highlight-blue">AIMessage</span> that contains a <span class="code-soft">tool_calls</span> field — a list of tool names and arguments the LLM has chosen. The LLM's job is to decide what to call; actually running the function is a separate step.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>That's exactly what <span class="highlight-teal">ToolNode</span> does. It's a prebuilt LangGraph node that automatically:</p>
+									</div>
+
+									<ul class="blg-ul">
+										<li class="blg-li"><strong>Reads the last message in state</strong> — it looks for an <span class="code-soft">AIMessage</span> with a non-empty <span class="code-soft">tool_calls</span> field</li>
+										<li class="blg-li"><strong>Finds the matching function</strong> — it looks up the tool by name in the list you registered</li>
+										<li class="blg-li"><strong>Calls the function</strong> — it passes the arguments the LLM provided</li>
+										<li class="blg-li"><strong>Wraps the result</strong> — it wraps the return value in a <span class="code-soft">ToolMessage</span> object</li>
+										<li class="blg-li"><strong>Updates state</strong> — it returns <span class="code-soft">{"messages": [ToolMessage(...)]}</span>, which the <span class="code-soft">add_messages</span> reducer appends to the conversation</li>
+									</ul>
+
+									<div class="blg-paragraph">
+										<p>Here's how the message flow looks, step by step:</p>
+									</div>
+
+									<div class="blg-arch-stack">
+										<div class="blg-arch-layer al-blue">
+											<div class="blg-arch-icon">💬</div>
+											<div class="blg-arch-name">HumanMessage</div>
+											<div class="blg-arch-desc">User asks: "What's my monthly payment on a $20,000 loan at 6% for 48 months?"</div>
+										</div>
+										<div class="blg-arch-layer al-purple">
+											<div class="blg-arch-icon">🤖</div>
+											<div class="blg-arch-name">Agent Node (LLM)</div>
+											<div class="blg-arch-desc">Reads the question and returns an AIMessage with tool_calls: [{"name": "calculate_loan_payment", "args": {"principal": 20000, "annual_rate_pct": 6, "months": 48}}]</div>
+										</div>
+										<div class="blg-arch-layer al-teal">
+											<div class="blg-arch-icon">⚙️</div>
+											<div class="blg-arch-name">ToolNode</div>
+											<div class="blg-arch-desc">Finds calculate_loan_payment, calls it with the args, wraps result in ToolMessage("Monthly payment: $469.70 for 48 months. Total paid: $22,545.60.")</div>
+										</div>
+										<div class="blg-arch-layer al-purple">
+											<div class="blg-arch-icon">🤖</div>
+											<div class="blg-arch-name">Agent Node (LLM) — second call</div>
+											<div class="blg-arch-desc">Reads the ToolMessage and writes a plain-text answer: "Your monthly payment would be $469.70 for 48 months..."</div>
+										</div>
+										<div class="blg-arch-layer al-green">
+											<div class="blg-arch-icon">✅</div>
+											<div class="blg-arch-name">AIMessage (Final Answer)</div>
+											<div class="blg-arch-desc">No tool_calls — tools_condition routes to END and the answer is returned to the user.</div>
+										</div>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>You create a <span class="code-soft">ToolNode</span> by passing it the list of registered tools. It uses the tool names to match the LLM's requests to the right functions:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">from langgraph.prebuilt import ToolNode
+from tools import TOOLS
+
+tool_node = ToolNode(TOOLS)</div>
+
+									<blockquote class="blg-callout-tip">
+										✅ <strong>No execution code to write.</strong> Before LangGraph's <span class="code-soft">ToolNode</span> existed, developers had to manually parse the LLM's response, dispatch to the right function, handle errors, and format the result. <span class="code-soft">ToolNode</span> handles all of this. You only need to define the tools and register them — the loop runs itself.
+									</blockquote>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- 5. Binding Tools to the LLM                           -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="bind-tools" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🔗 5. Binding Tools to the LLM</h2></div>
+
+									<div class="blg-paragraph">
+										<p>By default, a language model knows nothing about your custom functions. It doesn't know <span class="code-soft">calculate_loan_payment</span> exists. Before the LLM can choose to call a tool, it needs to be told what tools are available — and that's exactly what <span class="code-soft">bind_tools()</span> does.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">from langchain_google_genai import ChatGoogleGenerativeAI
+from tools import TOOLS
+
+llm = ChatGoogleGenerativeAI(model="gemini-3-flash-preview")
+
+# Without binding — LLM knows nothing about your tools
+llm.invoke("What's my monthly payment on a $20,000 loan?")
+# → might guess an answer (potentially wrong)
+
+# With binding — LLM has the full tool schema injected into its context
+llm_with_tools = llm.bind_tools(TOOLS)
+llm_with_tools.invoke("What's my monthly payment on a $20,000 loan?")
+# → returns an AIMessage with tool_calls, not a guessed text answer</div>
+
+									<div class="blg-paragraph">
+										<p>After calling <span class="code-soft">bind_tools()</span>, the LLM's response to any message will be one of two things:</p>
+									</div>
+
+									<div class="blg-table">
+										<table>
+											<thead>
+												<tr><th>Response type</th><th>When it happens</th><th>What's inside</th><th>Next step</th></tr>
+											</thead>
+											<tbody>
+												<tr><td>AIMessage with <span class="code-soft">tool_calls</span></td><td>The LLM decides a tool is needed</td><td>Tool name + chosen arguments</td><td>Route to ToolNode</td></tr>
+												<tr><td>AIMessage with text</td><td>The LLM has a final answer</td><td>Plain text the user sees</td><td>Route to END</td></tr>
+											</tbody>
+										</table>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The LLM picks which path to take entirely on its own, based on the tool descriptions and the conversation so far. You don't write any <span class="code-soft">if</span> statements to decide this — that decision is the LLM's job. Your job is to write good tool descriptions and wire up the routing, which we'll do next.</p>
+									</div>
+
+									<blockquote class="blg-callout-note">
+										📌 <strong>Important:</strong> Call <span class="code-soft">bind_tools()</span> before passing the LLM to any node. In our project, this happens inside <span class="code-soft">FinanceNodes.__init__()</span>. If you forget to bind tools, the LLM will never return <span class="code-soft">tool_calls</span> — it'll just answer directly (and possibly incorrectly).
+									</blockquote>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- 6. Routing with tools_condition                        -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="tools-condition" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🔀 6. Routing with tools_condition</h2></div>
+
+									<div class="blg-paragraph">
+										<p>After the agent node runs and returns an AIMessage, LangGraph needs to decide where to go next: run <span class="code-soft">ToolNode</span> if the LLM wants a tool, or end the graph if the LLM has a final answer. In Part 3 of this series, you wrote your own router functions. For tool-calling agents, LangGraph provides a prebuilt one: <span class="highlight-teal">tools_condition</span>.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">tools_condition</span> inspects the last message in state. If the message is an <span class="code-soft">AIMessage</span> with a non-empty <span class="code-soft">tool_calls</span> list, it returns the string <span class="code-soft">"tools"</span>. If <span class="code-soft">tool_calls</span> is empty, it returns <span class="code-soft">END</span>. That's its entire job.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">from langgraph.prebuilt import tools_condition
+
+# Wire the conditional edge from the agent node
+graph.add_conditional_edges("agent", tools_condition)
+
+# Under the hood, tools_condition does roughly this:
+def tools_condition(state):
+    last_message = state["messages"][-1]
+    if last_message.tool_calls:   # LLM wants a tool
+        return "tools"
+    return END                    # LLM has a final answer</div>
+
+									<div class="blg-paragraph">
+										<p>Combined with a regular edge from <span class="code-soft">"tools"</span> back to <span class="code-soft">"agent"</span>, this creates the ReAct loop automatically:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">graph.add_edge(START, "agent")                       # Always start with the agent
+graph.add_conditional_edges("agent", tools_condition) # Agent → tools or END
+graph.add_edge("tools", "agent")                      # After tools, go back to agent</div>
+
+									<div class="blg-paragraph">
+										<p>The loop looks like this: the agent runs → if it wants a tool, ToolNode runs it → the result goes back to the agent → the agent either picks another tool or answers the user → if it answers, the graph ends. This is the complete ReAct cycle, and you get it with just three lines of graph wiring.</p>
+									</div>
+
+									<blockquote class="blg-callout-info">
+										💡 <strong>Why loop back to the agent after tools?</strong> The tool result (a <span class="code-soft">ToolMessage</span>) is added to state, but the LLM hasn't read it yet. The loop sends execution back to the agent so the LLM can read the result and decide what to do next — call another tool, or write a final answer for the user.
+									</blockquote>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- 7. Complete Example                                    -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="complete-example" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🏗️ 7. Complete Example: Personal Finance Assistant</h2></div>
+
+									<div class="blg-paragraph">
+										<p>Now that we understand tools, ToolNode, bind_tools, and tools_condition separately, let's put them all together into a working agent. This section walks through every file in the project.</p>
+									</div>
+
+									<!-- 7.1 -->
+									<a id="scenario-arch" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">7.1</span>
+										<h3>🏛️ Scenario &amp; Architecture</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Priya sends a question → the <strong>agent node</strong> (LLM with tools bound) reads it and either answers directly or requests a tool → if a tool is needed, <strong>ToolNode</strong> runs the Python function and returns the result → the agent reads the result and writes a final answer → <span class="code-soft">tools_condition</span> sends the graph to END.</p>
+									</div>
+
+									<div class="blg-feature-grid">
+										<div class="blg-feature-card card-blue">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">🤖</span>
+												<h4>agent node</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Calls the tool-bound LLM. Returns either a <span class="code-soft">tool_calls</span> response (needs a tool) or a plain text response (has the answer).</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-teal">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">⚙️</span>
+												<h4>tools node (ToolNode)</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Executes the requested Python function and adds a <span class="code-soft">ToolMessage</span> with the result to state.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-purple">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">🔀</span>
+												<h4>tools_condition</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Reads the last message after the agent runs. Routes to "tools" if <span class="code-soft">tool_calls</span> is present, otherwise routes to END.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-green">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">💬</span>
+												<h4>FinanceState</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Holds the full conversation: HumanMessages, AIMessages, and ToolMessages, all accumulated by the <span class="code-soft">add_messages</span> reducer.</p>
+											</div>
+										</div>
+									</div>
+
+									<!-- 7.2 -->
+									<a id="state-design" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">7.2</span>
+										<h3>📦 State Design — state.py</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Tool-calling agents need to store the full conversation — including <span class="code-soft">ToolMessage</span> results — so the LLM can read tool outputs on its next turn. We define <span class="code-soft">FinanceState</span> as our own <span class="code-soft">TypedDict</span> rather than using LangGraph's <span class="code-soft">MessagesState</span> shortcut. The key field is <span class="code-soft">messages</span> with the <span class="code-soft">add_messages</span> reducer, which appends every new message (HumanMessage, AIMessage, ToolMessage) rather than replacing the list.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">from typing import Annotated
+
+from langchain_core.messages import BaseMessage
+from langgraph.graph.message import add_messages
+from typing_extensions import TypedDict
+
+
+class FinanceState(TypedDict):
+    # add_messages appends every new message (HumanMessage, AIMessage, ToolMessage)
+    # instead of replacing the list. This gives the agent the full conversation
+    # history — including tool results — on every subsequent turn.
+    messages: Annotated[list[BaseMessage], add_messages]</div>
+
+									<div class="blg-paragraph">
+										<p>Using an explicit <span class="code-soft">TypedDict</span> rather than the <span class="code-soft">MessagesState</span> shortcut makes the state definition self-documenting — you can see exactly what field exists, what type it holds, and which reducer runs on it without having to look up the base class. It also leaves room to add extra fields later (like <span class="code-soft">user_name</span> or <span class="code-soft">currency_preference</span>) without changing the graph structure.</p>
+									</div>
+
+									<!-- 7.3 -->
+									<a id="tools-file" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">7.3</span>
+										<h3>🔧 Tools — tools/ Package</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The project uses Method 3 from Section 3 — <span class="code-soft">BaseTool</span> subclassing — with one class per file inside a <span class="code-soft">tools/</span> package. The <span class="code-soft">__init__.py</span> is the only file the rest of the project needs to import from:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python"># tools/__init__.py
+from .compound_interest import CompoundInterestTool
+from .convert_currency import ConvertCurrencyTool
+from .loan_payment import LoanPaymentTool
+from .split_budget import SplitBudgetTool
+
+TOOLS = [
+    LoanPaymentTool(),
+    CompoundInterestTool(),
+    ConvertCurrencyTool(),
+    SplitBudgetTool(),
+]</div>
+
+									<div class="blg-paragraph">
+										<p>Each tool file is a standalone class. Here is <span class="code-soft">loan_payment.py</span> as a representative example — all four files follow the same pattern:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python"># tools/loan_payment.py
+import os
+from typing import Type
+
+from langchain_core.tools import BaseTool
+from pydantic import BaseModel
+
+_PROMPTS_DIR = os.path.join(os.path.dirname(__file__), "..", "prompts")
+
+
+def _load_prompt(filename: str) -> str:
+    with open(os.path.join(_PROMPTS_DIR, filename), "r") as f:
+        return f.read().strip()
+
+
+class LoanPaymentInput(BaseModel):
+    principal: float
+    annual_rate_pct: float
+    months: int
+
+
+class LoanPaymentTool(BaseTool):
+    name: str = "calculate_loan_payment"
+    description: str = _load_prompt("loan_payment.txt")
+    args_schema: Type[BaseModel] = LoanPaymentInput
+
+    def _run(self, principal: float, annual_rate_pct: float, months: int) -> str:
+        if annual_rate_pct == 0:
+            monthly_payment = principal / months
+        else:
+            r = annual_rate_pct / 100 / 12
+            monthly_payment = principal * (r * (1 + r) ** months) / ((1 + r) ** months - 1)
+        total_paid = monthly_payment * months
+        return (
+            f"Monthly payment: ${monthly_payment:.2f} for {months} months. "
+            f"Total paid: ${total_paid:.2f}."
+        )
+
+    async def _arun(self, principal: float, annual_rate_pct: float, months: int) -> str:
+        return self._run(principal, annual_rate_pct, months)</div>
+
+									<div class="blg-paragraph">
+										<p>The <span class="code-soft">from tools import TOOLS</span> import works identically whether <span class="code-soft">tools</span> is a file or a package — Python's module system handles both the same way. Both <span class="code-soft">nodes.py</span> (for <span class="code-soft">bind_tools</span>) and <span class="code-soft">graph.py</span> (for <span class="code-soft">ToolNode</span>) use this same single import.</p>
+									</div>
+
+									<!-- 7.4 -->
+									<a id="agent-node" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">7.4</span>
+										<h3>🤖 Agent Node — nodes.py</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The agent node has one job: call the LLM (with tools bound) on the current conversation and return the response. The system prompt is loaded from <span class="code-soft">prompts/system.txt</span> — this tells the LLM its role and instructs it always to use tools for calculations, never to guess.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>First, the system prompt (<span class="code-soft">prompts/system.txt</span>):</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="markdown">You are a helpful personal finance assistant. You have access to specialized tools that perform accurate financial calculations.
+
+Always use the available tools when a calculation is needed — never estimate or guess numerical results. When a user asks about loan payments, savings growth, currency conversion, or budget splits, use the appropriate tool to compute the exact answer.
+
+Be friendly, concise, and explain the results in plain language so anyone — regardless of financial background — can understand them.</div>
+
+									<div class="blg-paragraph">
+										<p>Now <span class="code-soft">nodes.py</span>:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">import os
+
+from langchain_core.messages import SystemMessage
+
+from llm import GeminiLLM
+from tools import TOOLS
+
+_PROMPTS_DIR = os.path.join(os.path.dirname(__file__), "prompts")
+
+
+def _load_prompt(filename: str) -> str:
+    with open(os.path.join(_PROMPTS_DIR, filename), "r") as f:
+        return f.read()
+
+
+class FinanceNodes:
+    def __init__(self):
+        llm = GeminiLLM().get_llm()
+        self.llm_with_tools = llm.bind_tools(TOOLS)
+        self.system_prompt  = _load_prompt("system.txt")
+
+    def agent_node(self, state: dict) -> dict:
+        messages = [SystemMessage(content=self.system_prompt)] + state["messages"]
+        response = self.llm_with_tools.invoke(messages)
+        return {"messages": [response]}</div>
+
+									<div class="blg-paragraph">
+										<p>Let's walk through the key parts:</p>
+									</div>
+
+									<ul class="blg-ul">
+										<li class="blg-li"><strong><span class="code-soft">_load_prompt()</span></strong> — a module-level helper that reads a text file from the <span class="code-soft">prompts/</span> subfolder. Keeping prompts in files (rather than inline strings) lets you tune the system prompt without touching Python code.</li>
+										<li class="blg-li"><strong><span class="code-soft">llm.bind_tools(TOOLS)</span></strong> — called once in <span class="code-soft">__init__</span>, not on every request. Binding is expensive; doing it once and reusing the bound LLM is the right pattern.</li>
+										<li class="blg-li"><strong><span class="code-soft">agent_node(state)</span></strong> — prepends the system prompt to the conversation before invoking the LLM. This ensures every LLM call knows it's a finance assistant, regardless of where in the loop it is.</li>
+										<li class="blg-li"><strong><span class="code-soft">return {"messages": [response]}</span></strong> — returns only the new message. The <span class="code-soft">add_messages</span> reducer in state takes care of appending it to the full conversation list.</li>
+									</ul>
+
+									<!-- 7.5 -->
+									<a id="graph-assembly" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">7.5</span>
+										<h3>🕸️ Graph Assembly — graph.py</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>This is where everything comes together. <span class="code-soft">graph.py</span> builds the <span class="code-soft">StateGraph</span>, registers both nodes, wires the edges (including the conditional edge), and compiles the graph. It also saves the graph figure on demand.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">import os
+from langgraph.graph import StateGraph, START
+from langgraph.prebuilt import ToolNode, tools_condition
+from state import FinanceState
+from nodes import FinanceNodes
+from tools import TOOLS
+
+FIGURE_DIR = os.path.join(os.path.dirname(__file__), "figure")
+
+
+class FinanceGraph:
+    def __init__(self):
+        self.nodes = FinanceNodes()
+        self.compiled_graph = self._build()
+
+    def _build(self):
+        graph = StateGraph(FinanceState)
+
+        # Register nodes
+        graph.add_node("agent", self.nodes.agent_node)
+        graph.add_node("tools", ToolNode(TOOLS))
+
+        # Wire edges — three lines for the full ReAct loop
+        graph.add_edge(START, "agent")
+        graph.add_conditional_edges("agent", tools_condition)
+        graph.add_edge("tools", "agent")
+
+        return graph.compile()
+
+    def get_compiled_graph(self):
+        return self.compiled_graph
+
+    def save_figure(self):
+        os.makedirs(FIGURE_DIR, exist_ok=True)
+
+        mmd = self.compiled_graph.get_graph().draw_mermaid()
+        mmd_path = os.path.join(FIGURE_DIR, "graph.mmd")
+        with open(mmd_path, "w") as f:
+            f.write(mmd)
+        print(f"Graph saved → {mmd_path}")
+
+        png_bytes = self.compiled_graph.get_graph().draw_mermaid_png()
+        png_path = os.path.join(FIGURE_DIR, "graph.png")
+        with open(png_path, "wb") as f:
+            f.write(png_bytes)
+        print(f"Graph saved → {png_path}")</div>
+
+									<div class="blg-paragraph">
+										<p>The graph wiring is deliberately minimal — three lines is all you need for a complete ReAct agent. Here's what each line does:</p>
+									</div>
+
+									<ul class="blg-ul">
+										<li class="blg-li"><strong><span class="code-soft">graph.add_edge(START, "agent")</span></strong> — every invocation starts at the agent node. The agent reads the user's message and decides what to do.</li>
+										<li class="blg-li"><strong><span class="code-soft">graph.add_conditional_edges("agent", tools_condition)</span></strong> — after the agent runs, <span class="code-soft">tools_condition</span> checks whether the response has <span class="code-soft">tool_calls</span>. If yes → "tools". If no → END.</li>
+										<li class="blg-li"><strong><span class="code-soft">graph.add_edge("tools", "agent")</span></strong> — after the tool runs, always go back to the agent. This lets the LLM read the tool result and either call another tool or produce a final answer.</li>
+									</ul>
+
+									<!-- 7.6 -->
+									<a id="runner-output" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">7.6</span>
+										<h3>🚀 Runner &amp; Console Output — finance_runner.py</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The runner wraps the compiled graph in a clean <span class="code-soft">chat()</span> method and provides a demo that runs four of Priya's questions:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">from langchain_core.messages import HumanMessage
+
+from graph import FinanceGraph
+
+
+class FinanceRunner:
+    def __init__(self):
+        self.finance_graph = FinanceGraph()
+        self.app           = self.finance_graph.get_compiled_graph()
+
+    def save_figure(self):
+        self.finance_graph.save_figure()
+
+    def chat(self, message: str) -> str:
+        result  = self.app.invoke({"messages": [HumanMessage(content=message)]})
+        content = result["messages"][-1].content
+        if isinstance(content, list):
+            return "".join(
+                block.get("text", "")
+                for block in content
+                if isinstance(block, dict) and block.get("type") == "text"
+            )
+        return content
+
+
+if __name__ == "__main__":
+    SEP = "=" * 60
+
+    print(SEP)
+    print("   LangGraph Basics — Personal Finance Assistant Demo")
+    print(SEP)
+
+    runner = FinanceRunner()
+
+    print("\n  Saving graph architecture...")
+    runner.save_figure()
+
+    queries = [
+        "What would my monthly payment be on a $20,000 car loan at 6% interest for 48 months?",
+        "If I invest $5,000 at 7% annual interest, how much will I have after 10 years?",
+        "How much is 1,000 USD in EUR?",
+        "I earn $4,500 per month. Split my budget: 30% rent, 20% food, and 20% savings.",
+    ]
+
+    print()
+    for query in queries:
+        print(f"💬 Priya:     {query}")
+        print(f"🤖 Assistant: {runner.chat(query)}")
+        print("-" * 60)
+
+    print(SEP)</div>
+
+									<div class="blg-paragraph">
+										<p>A few things worth noting in the <span class="code-soft">chat()</span> method:</p>
+									</div>
+
+									<ul class="blg-ul">
+										<li class="blg-li"><strong><span class="code-soft">result["messages"][-1]</span></strong> — the last message in state after <span class="code-soft">invoke()</span> is always the final <span class="code-soft">AIMessage</span> (because <span class="code-soft">tools_condition</span> only ends the graph when there are no more <span class="code-soft">tool_calls</span>).</li>
+										<li class="blg-li"><strong>The <span class="code-soft">isinstance(content, list)</span> check</strong> — <span class="code-soft">langchain-google-genai 4.x</span> returns content as a list of typed blocks rather than a plain string. This guard handles both formats safely.</li>
+										<li class="blg-li"><strong><span class="code-soft">graph.save_figure()</span> first</strong> — calling this at the very start of <span class="code-soft">__main__</span> ensures the figure is always saved before any demo runs.</li>
+									</ul>
+
+									<div class="blg-paragraph">
+										<p>Run <span class="code-soft">python finance_runner.py</span> from inside <span class="code-soft">basics-5-tools-toolnode/</span> and you'll see:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="bash">============================================================
+   LangGraph Basics — Personal Finance Assistant Demo
+============================================================
+
+  Saving graph architecture...
+Graph saved → /path/to/basics-5-tools-toolnode/figure/graph.mmd
+Graph saved → /path/to/basics-5-tools-toolnode/figure/graph.png
+
+💬 Priya:     What would my monthly payment be on a $20,000 car loan at 6% interest for 48 months?
+🤖 Assistant: Your monthly payment would be $469.70 for 48 months, with a total
+              repayment of $22,545.60. That's $2,545.60 in interest over 4 years.
+------------------------------------------------------------
+💬 Priya:     If I invest $5,000 at 7% annual interest, how much will I have after 10 years?
+🤖 Assistant: With 7% annual compound interest, your $5,000 will grow to $9,835.76
+              after 10 years. You'll earn $4,835.76 in interest — nearly doubling
+              your initial investment!
+------------------------------------------------------------
+💬 Priya:     How much is 1,000 USD in EUR?
+🤖 Assistant: 1,000.00 USD is approximately 925.93 EUR at the current exchange rate.
+------------------------------------------------------------
+💬 Priya:     I earn $4,500 per month. Split my budget: 30% rent, 20% food, and 20% savings.
+🤖 Assistant: Here's your monthly budget breakdown for $4,500:
+              Rent: $1,350.00 (30%), Food: $900.00 (20%),
+              Savings: $900.00 (20%), Discretionary: $1,350.00 (30%).
+------------------------------------------------------------
+============================================================</div>
+
+									<div class="blg-paragraph">
+										<p>Every answer is exact, because the LLM delegated the math to Python rather than estimating it. Notice that none of these answers required you to write any routing logic — <span class="code-soft">tools_condition</span> handles that automatically based on whether the LLM's response has <span class="code-soft">tool_calls</span>.</p>
+									</div>
+
+									<!-- 7.7 -->
+									<a id="mermaid-diagram" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">7.7</span>
+										<h3>📊 Graph Diagram</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Here is the compiled graph structure. Solid arrows are fixed edges; dashed arrows are the two branches of the conditional edge from <span class="code-soft">tools_condition</span>:</p>
+									</div>
+
+									<div class="blg-img-container">
+										<div class="blg-mermaid-container">
+											<pre class="mermaid">%%{init: {'flowchart': {'curve': 'linear'}}}%%
+graph TD;
+    __start__([<p>__start__</p>]):::first
+    agent([agent])
+    tools([tools])
+    __end__([<p>__end__</p>]):::last
+    __start__ --> agent;
+    agent -.-> tools;
+    agent -.-> __end__;
+    tools --> agent;
+    classDef default fill:#f2f0ff,line-height:1.2
+    classDef first fill-opacity:0
+    classDef last fill:#bfb6fc</pre>
+										</div>
+										<p class="blg-img-caption">Figure 1: The compiled Finance Assistant graph. Dashed arrows show the conditional edge from tools_condition — the agent routes to "tools" when it has tool_calls, or to END when it has a final answer. The solid arrow from tools back to agent creates the ReAct loop.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The graph is intentionally simple: two nodes, three edges, one loop. That simplicity is deceptive — inside that loop, the LLM can call as many tools as it needs, in any order, before deciding it has enough information to answer the user.</p>
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- 8. create_react_agent                                  -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="create-react-agent" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>⚡ 8. Using create_react_agent — The Shortcut</h2></div>
+
+									<div class="blg-paragraph">
+										<p>Everything you just built — state, agent node, ToolNode, tools_condition, graph wiring — can be replaced with a single function call. LangGraph provides <span class="highlight-purple">create_react_agent</span>, a prebuilt helper that assembles the exact same graph for you.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">from langgraph.prebuilt import create_react_agent
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.messages import HumanMessage
+from tools import TOOLS
+
+llm = ChatGoogleGenerativeAI(model="gemini-3-flash-preview")  # reads GEMINI_API_KEY from .env
+
+system_prompt = (
+    "You are a helpful personal finance assistant. "
+    "Use the available tools for all calculations — never estimate."
+)
+
+# One function call — same graph as the manual build above
+app = create_react_agent(
+    model=llm,          # plain LLM — create_react_agent calls bind_tools() internally
+    tools=TOOLS,
+    prompt=system_prompt,
+)
+
+result = app.invoke({
+    "messages": [HumanMessage(content="What's my monthly payment on a $15,000 loan at 5% for 36 months?")]
+})
+print(result["messages"][-1].content)</div>
+
+									<div class="blg-paragraph">
+										<p>Notice the key difference: you pass the <strong>plain LLM</strong> to <span class="code-soft">create_react_agent</span>, not <span class="code-soft">llm.bind_tools()</span>. The function handles binding internally. If you pass an already-bound LLM, the tools get bound twice, which can cause unexpected behaviour.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>So when should you use the manual approach versus <span class="code-soft">create_react_agent</span>? The table below captures the trade-offs:</p>
+									</div>
+
+									<div class="blg-table">
+										<table>
+											<thead>
+												<tr><th>Situation</th><th>Manual build</th><th>create_react_agent</th></tr>
+											</thead>
+											<tbody>
+												<tr><td>Learning how ReAct works</td><td>✅ Better — see every piece</td><td>⬜ Hides the internals</td></tr>
+												<tr><td>Custom state fields beyond messages</td><td>✅ Easy — add to TypedDict</td><td>⬜ Limited support</td></tr>
+												<tr><td>Extra nodes (e.g. validator, formatter)</td><td>✅ Just add more nodes</td><td>❌ Not possible</td></tr>
+												<tr><td>Custom routing logic</td><td>✅ Write your own router</td><td>❌ Fixed ReAct loop only</td></tr>
+												<tr><td>Quick prototype or demo</td><td>⬜ More code to write</td><td>✅ Five lines and done</td></tr>
+												<tr><td>Standard ReAct agent, no customisation</td><td>⬜ Unnecessary complexity</td><td>✅ Perfect fit</td></tr>
+											</tbody>
+										</table>
+									</div>
+
+									<blockquote class="blg-callout-tip">
+										✅ <strong>Recommendation:</strong> Learn the manual approach first (you just did). Once you understand what <span class="code-soft">ToolNode</span> and <span class="code-soft">tools_condition</span> do under the hood, use <span class="code-soft">create_react_agent</span> freely for standard agents. Switch back to the manual approach the moment you need anything the shortcut can't do.
+									</blockquote>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- 9. Web Interface                                       -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="web-ui" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🌐 9. Web Interface</h2></div>
+
+									<div class="blg-paragraph">
+										<p>The Gradio web UI wraps the same <span class="code-soft">FinanceRunner</span> from the console demo in a chat interface. Because each question is stateless (no checkpointer — we didn't add one since this post focuses on tools, not memory), each message is a fresh invocation. The UI is intentionally simple: a chat box, a few example questions, and a submit button.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">import gradio as gr
+
+from finance_runner import FinanceRunner
+
+
+class FinanceApp:
+    def __init__(self):
+        self.runner = FinanceRunner()
+
+    def respond(self, message: str, _history: list) -> str:
+        if not message.strip():
+            return ""
+        return self.runner.chat(message)
+
+    def launch(self):
+        demo = gr.ChatInterface(
+            fn=self.respond,
+            title="💰 Personal Finance Assistant",
+            description=(
+                "Ask me about loan payments, savings growth, currency conversion, "
+                "or budget planning. Powered by LangGraph + Google Gemini."
+            ),
+            examples=[
+                "What's my monthly payment on a $20,000 car loan at 6% for 48 months?",
+                "If I save $10,000 at 5% annual interest for 15 years, how much will I have?",
+                "Convert 500 EUR to USD.",
+                "I earn $5,000/month. Split my budget: 30% rent, 15% food, 25% savings.",
+            ],
+            theme=gr.themes.Soft(),
+        )
+        demo.launch()
+
+
+if __name__ == "__main__":
+    FinanceApp().launch()</div>
+
+									<div class="blg-paragraph">
+										<p>Run it with <span class="code-soft">python app.py</span> from inside <span class="code-soft">basics-5-tools-toolnode/</span>. Gradio opens a browser window at <span class="code-soft">http://127.0.0.1:7860</span>. Type any finance question in the chat box and the agent will call the right tool and answer with precise numbers.</p>
+									</div>
+
+									<div class="blg-img-container">
+										<img src="../img/blog_12/web_ui.webp" alt="Personal Finance Assistant Gradio web UI" class="blg-img" />
+										<p class="blg-img-caption">Figure 2: The Personal Finance Assistant Gradio web UI. The agent uses tools behind the scenes — the user sees only the final, accurate answer.</p>
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- 10. Conclusion                                         -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="conclusion" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>✅ 10. Conclusion</h2></div>
+
+									<div class="blg-paragraph">
+										<p>Tools are how you make an LLM agent reliable for tasks that require precision. Language models are great at reasoning, planning, and communicating — but they're not deterministic calculators. The pattern you've learned in this post — define tools, bind them to the LLM, route with <span class="code-soft">tools_condition</span>, execute with <span class="code-soft">ToolNode</span> — turns a conversational model into a dependable assistant that delegates computation to Python.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Here's a quick recap of everything this post covered:</p>
+									</div>
+
+									<ul class="blg-ul">
+										<li class="blg-li-check"><strong>Three ways to define tools</strong> — <span class="code-soft">@tool</span> decorator (fast, minimal), <span class="code-soft">StructuredTool.from_function()</span> (explicit schema, wraps existing functions), and <span class="code-soft">BaseTool</span> subclass (full OOP, most testable and production-ready).</li>
+										<li class="blg-li-check"><strong>bind_tools()</strong> — injects the tool schemas into the LLM's context so it knows what tools are available and when to call them.</li>
+										<li class="blg-li-check"><strong>ToolNode</strong> — a prebuilt LangGraph node that reads <span class="code-soft">tool_calls</span> from the last AIMessage, executes the matching Python function, and returns a ToolMessage to state.</li>
+										<li class="blg-li-check"><strong>tools_condition</strong> — a prebuilt conditional edge that routes to "tools" if the agent has tool_calls, or to END if it has a final answer.</li>
+										<li class="blg-li-check"><strong>The ReAct loop</strong> — START → agent → tools → agent → … → END. Three edges. Infinite potential for multi-step reasoning.</li>
+										<li class="blg-li-check"><strong>create_react_agent</strong> — the prebuilt shortcut that builds the same graph in one function call. Best for standard agents; switch to manual when you need customisation.</li>
+									</ul>
+
+									<div class="blg-paragraph">
+										<p><strong>What's next?</strong> In <strong>Part 6 — Subgraphs, Interrupt &amp; Human-in-the-Loop</strong>, we'll look at how to pause a graph mid-run and wait for a human to review or approve something before continuing. This is essential for any agent that makes decisions with real consequences — think approving a financial transaction before it executes, not just calculating it.</p>
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- 11. Technical Stacks                                   -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- Technical Stacks -->
+								<div class="blg-trailing-section">
+									<div class="blg-trailing-header">
+										<img src="../img/technical_stack/stack.png" alt="Technical Stacks">
+										<h2>Technical Stacks</h2>
+									</div>
+									<div class="blg-tech-grid">
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/python.svg" alt="Python"> Python
+										</div>
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/langgraph.svg" alt="LangGraph"> LangGraph
+										</div>
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/langchain.svg" alt="LangChain"> LangChain
+										</div>
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/gemini.svg" alt="Gemini"> Gemini
+										</div>
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/gradio.svg" alt="Gradio"> Gradio
+										</div>
+									</div>
+								</div>
+								<!-- End: Technical Stacks -->
+
+								<!-- Download Source Code -->
+								<div class="blg-download-card">
+									<img src="../img/others/download.svg" alt="Download">
+									<div class="blg-download-info">
+										<h3>Download Source Code</h3>
+										<p>LangGraph Basics — Personal Finance Assistant</p>
+									</div>
+									<a href="https://github.com/shafiqul-islam-sumon/langgraph/tree/main/basics-5-tools-toolnode" class="blg-download-btn" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+								</div>
+								<!-- End: Download Source Code -->
+
+								<!-- References -->
+								<div class="blg-trailing-section">
+									<div class="blg-trailing-header">
+										<span style="font-size: 22px; line-height: 1;">📚</span>
+										<h2>References</h2>
+									</div>
+									<ul class="blg-ul">
+										<li class="blg-li">
+											<img src="../img/technical_stack/github.svg" alt="GitHub" width="18" style="vertical-align: middle; margin-right: 6px;">
+											<strong>GitHub Repository:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://github.com/shafiqul-islam-sumon/langgraph/tree/main/basics-5-tools-toolnode">shafiqul-islam-sumon/langgraph — basics-5-tools-toolnode</a>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/langgraph.svg" alt="LangGraph" width="18" style="vertical-align: middle; margin-right: 6px;">
+											<strong>LangGraph Tool Calling Documentation:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://langchain-ai.github.io/langgraph/how-tos/tool-calling/">langchain-ai.github.io/langgraph/how-tos/tool-calling</a>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/langchain.svg" alt="LangChain" width="18" style="vertical-align: middle; margin-right: 6px;">
+											<strong>LangChain @tool Decorator:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://python.langchain.com/docs/concepts/tools/">python.langchain.com/docs/concepts/tools</a>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/gemini.svg" alt="Gemini" width="18" style="vertical-align: middle; margin-right: 6px;">
+											<strong>Google AI Studio (API key):</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://aistudio.google.com/apikey">aistudio.google.com/apikey</a>
+										</li>
+									</ul>
+								</div>
+								<!-- End: References -->
+
+							</div><!-- end #blogContainer -->
+						</div><!-- end .blog-detail-main -->
+					</div><!-- end .blog-detail-layout -->
+
+					<!-- Related posts — OUTSIDE .blog-detail-layout, INSIDE .container -->
+					<div class="related-posts-section">
+						<div class="blog-title-bar">
+							<img src="../img/others/blog.png" alt="blog post" style="width: 24px; height: auto;">
+							<h2>Related Blog Posts</h2>
+						</div>
+						<div class="related-posts-wrapper">
+							<div class="related-posts-swiper-area">
+								<div class="swiper" id="postContainer">
+									<div class="swiper-wrapper"><!-- populated by detail.js --></div>
+								</div>
+								<div class="swiper-button-prev"></div>
+								<div class="swiper-button-next"></div>
+							</div>
+							<div class="blg-slide-counter">
+								<div class="slide-progress-bar">
+									<div class="slide-progress-fill" id="slideProgressFill"></div>
+								</div>
+								<div class="slide-counter-label">
+									<span id="currentSlide">1</span> / <span id="totalSlides">1</span>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div><!-- end .container -->
+			</section>
+
+			<div id="site-footer"></div>
+		</div><!-- end #wrapper -->
+
+		<script src="../js/bootstrap.bundle.min.js"></script>
+		<script src="../js/components.js"></script>
+		<script src="../js/site.js"></script>
+		<script src="../js/swiper-bundle.min.js"></script>
+		<script src="../js/prism.js" data-manual></script>
+		<script src="../js/code-highlight.js"></script>
+		<script src="../js/detail.js"></script>
+		<script src="../js/mermaid.min.js"></script>
+		<script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+	</body>
+</html>
