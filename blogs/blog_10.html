@@ -923,27 +923,24 @@ ticket through the Help Center and we'll respond within
 									</div>
 
 									<div class="blg-img-container">
-										<div class="blg-mermaid-container">
-											<pre class="mermaid">
-%%{init: {"flowchart": {"curve": "linear"}}}%%
-graph TD
-    S([__start__]):::first
-    CL(classify)
-    BS(billing_support)
-    TS(technical_support)
-    GS(general_support)
-    E([__end__]):::last
-    S  --> CL
-    CL -.-> BS
-    CL -.-> TS
-    CL -.-> GS
-    BS --> E
+										<div class="blg-mermaid-wrap">
+											<div class="mermaid" style="min-width:460px;font-size:16px;">
+flowchart TD
+    S([__start__]) --> CL(classify)
+    CL -.-> BS(billing_support)
+    CL -.-> TS(technical_support)
+    CL -.-> GS(general_support)
+    BS --> E([__end__])
     TS --> E
     GS --> E
-    classDef default fill:#f2f0ff,line-height:1.2
-    classDef first fill-opacity:0
-    classDef last fill:#bfb6fc
-											</pre>
+
+    style S  fill:#e8f5e9,stroke:#43a047,color:#1b5e20
+    style E  fill:#fce4ec,stroke:#e53935,color:#b71c1c
+    style CL fill:#e3f2fd,stroke:#1e88e5,color:#0d47a1
+    style BS fill:#fff3e0,stroke:#fb8c00,color:#e65100
+    style TS fill:#f3e5f5,stroke:#8e24aa,color:#4a148c
+    style GS fill:#e0f2f1,stroke:#00897b,color:#004d40
+											</div>
 										</div>
 										<p class="blg-img-caption">Graph architecture of the Customer Support Router. Solid arrows (→) are normal edges; dashed arrows (- -→) are conditional edges. Only one dashed branch is followed per run.</p>
 									</div>
@@ -1023,20 +1020,24 @@ if __name__ == "__main__":
 									</div>
 
 									<div class="blg-paragraph">
+										<p>The conditional edge pattern scales to any branching problem. Add more destination nodes and the router handles them without touching classify_node at all — each specialist is just another registered name in the path map. Chain two conditional routers together (classify category, then classify urgency) and the graph dispatches on two independent dimensions. Replace the classify node's <span class="code-soft">Literal</span> with a structured LLM output and routing decisions become explainable. Every graph that needs runtime decision-making — whether routing, error recovery, or retry loops — builds on this same mechanism.</p>
+									</div>
+
+									<div class="blg-paragraph">
 										<p>Here's what you learned in this post:</p>
 									</div>
 
 									<ul class="blg-ul">
-										<li class="blg-li">Normal edges (<span class="code-soft">add_edge</span>) are fixed; conditional edges (<span class="code-soft">add_conditional_edges</span>) choose the next node at runtime based on state.</li>
-										<li class="blg-li">A <strong>router function</strong> is a plain Python function that takes the current state and returns a string naming the next node to run.</li>
-										<li class="blg-li">It runs <em>after</em> the source node has already updated state — so it can safely read values written by that node.</li>
-										<li class="blg-li">Annotating the return type with <span class="code-soft">Literal</span> documents valid destinations, catches typos early, and helps LangGraph render accurate graph diagrams.</li>
-										<li class="blg-li"><span class="code-soft">add_conditional_edges(source, path, path_map)</span> wires the router into the graph. The path map translates router return values to registered node names.</li>
-										<li class="blg-li">In the Customer Support Router, <span class="code-soft">classify_node</span> labels each message; the router reads the label and sends execution to the matching specialist node.</li>
+										<li class="blg-li-check">Normal edges (<span class="code-soft">add_edge</span>) are fixed; conditional edges (<span class="code-soft">add_conditional_edges</span>) choose the next node at runtime based on state.</li>
+										<li class="blg-li-check">A <strong>router function</strong> is a plain Python function that takes the current state and returns a string naming the next node to run.</li>
+										<li class="blg-li-check">It runs <em>after</em> the source node has already updated state — so it can safely read values written by that node.</li>
+										<li class="blg-li-check">Annotating the return type with <span class="code-soft">Literal</span> documents valid destinations, catches typos early, and helps LangGraph render accurate graph diagrams.</li>
+										<li class="blg-li-check"><span class="code-soft">add_conditional_edges(source, path, path_map)</span> wires the router into the graph. The path map translates router return values to registered node names.</li>
+										<li class="blg-li-check">In the Customer Support Router, <span class="code-soft">classify_node</span> labels each message; the router reads the label and sends execution to the matching specialist node.</li>
 									</ul>
 
-									<blockquote class="blg-callout-tip">
-										✅ <strong>Up next:</strong> <a class="blg-link" href="./blog_11.html">Part 4 — Checkpointers, Memory &amp; Streaming</a> shows how to persist state across calls using <strong>checkpointers</strong>, keeping different users' conversations isolated with <strong>thread IDs</strong>, and streaming LLM output token by token as it's generated. We build a Personal Study Buddy that remembers every question a student asks across a full multi-turn session.
+									<blockquote class="blg-callout-purple">
+										🔗 <strong>LangGraph Basics series:</strong> Parts 1–2 covered StateGraph fundamentals and reducers. This post (Part 3) added <span class="highlight-blue">Conditional Edges &amp; Routing Logic</span>. <a class="blg-link" href="./blog_11.html">Part 4 — Checkpointers, Memory &amp; Streaming</a> shows how to persist state across sessions using checkpointers and thread IDs, building a Personal Study Buddy that remembers every question across a full multi-turn conversation.
 									</blockquote>
 
 									<hr class="blg-hr" />

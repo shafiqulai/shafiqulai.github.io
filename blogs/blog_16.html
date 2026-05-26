@@ -1,0 +1,1389 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-6SEFZQJHM1"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() { dataLayer.push(arguments); }
+			gtag("js", new Date());
+			gtag("config", "G-6SEFZQJHM1", { cookie_domain: "shafiqulai.github.io" });
+		</script>
+		<meta charset="utf-8" />
+		<title>LangGraph Advanced: Part 3 — RAG Pipeline with Conditional Routing</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="description" content="Most AI agents answer from training data alone — but company policies change. This post builds a Corrective RAG pipeline in LangGraph: retrieve documents, grade their relevance, rewrite the query if needed, and loop back — all wired as a conditional graph. An AI Company Onboarding Assistant (OnboardBot) answers new-hire questions grounded in the official policy knowledge base." />
+		<meta name="author" content="MD SHAFIQUL ISLAM" />
+		<link rel="canonical" href="https://shafiqulai.github.io/blogs/blog_16.html" />
+		<link rel="icon" href="../img/others/favicon.ico" type="image/x-icon" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+		<link rel="stylesheet" href="../css/swiper-bundle.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/style.css" />
+		<link rel="stylesheet" type="text/css" href="../css/prism.css" />
+	</head>
+	<body>
+		<div id="reading-progress"></div>
+		<div id="wrapper">
+			<div id="site-header"></div>
+			<section id="content">
+				<div class="container">
+					<div class="blog-detail-layout">
+
+						<aside class="toc-sidebar" id="tocSidebar">
+							<div class="toc-sidebar-header">
+								<p class="toc-sidebar-title">Contents</p>
+							</div>
+							<ul class="toc-sidebar-list">
+								<li><a href="#intro">1. Why RAG for AI Agents?</a></li>
+								<li class="toc-sidebar-sub"><a href="#retrieval-problem">1.1 The Retrieval Problem</a></li>
+								<li class="toc-sidebar-sub"><a href="#corrective-rag">1.2 Corrective RAG</a></li>
+								<li class="toc-sidebar-sub"><a href="#scenario-intro">1.3 Our Scenario: OnboardBot</a></li>
+								<li><a href="#installation-setup">2. Installation &amp; Setup</a></li>
+								<li class="toc-sidebar-sub"><a href="#configuring-llm">2.1 Configuring the LLM</a></li>
+								<li><a href="#understanding-rag">3. Understanding Corrective RAG</a></li>
+								<li><a href="#knowledge-base">4. Building the Knowledge Base</a></li>
+								<li><a href="#state-design">5. Building the State</a></li>
+								<li><a href="#building-nodes">6. Building the Nodes</a></li>
+								<li class="toc-sidebar-sub"><a href="#retrieve-node">6.1 Retrieve Node</a></li>
+								<li class="toc-sidebar-sub"><a href="#grade-node">6.2 Grade Documents Node</a></li>
+								<li class="toc-sidebar-sub"><a href="#rewrite-node">6.3 Rewrite Query Node</a></li>
+								<li class="toc-sidebar-sub"><a href="#generate-node">6.4 Generate Node</a></li>
+								<li class="toc-sidebar-sub"><a href="#fallback-node">6.5 Fallback Node</a></li>
+								<li><a href="#graph-assembly">7. Assembling the Graph</a></li>
+								<li class="toc-sidebar-sub"><a href="#route-function">7.1 The Route Function</a></li>
+								<li class="toc-sidebar-sub"><a href="#wiring-graph">7.2 Wiring the Pipeline</a></li>
+								<li><a href="#complete-example">8. Complete Example: OnboardBot</a></li>
+								<li class="toc-sidebar-sub"><a href="#arch-overview">8.1 Architecture Overview</a></li>
+								<li class="toc-sidebar-sub"><a href="#project-structure">8.2 Project Structure</a></li>
+								<li class="toc-sidebar-sub"><a href="#runner-output">8.3 Runner &amp; Console Output</a></li>
+								<li class="toc-sidebar-sub"><a href="#what-to-try">8.4 What to Try</a></li>
+								<li class="toc-sidebar-sub"><a href="#mermaid-diagram">8.5 Graph Diagram</a></li>
+								<li><a href="#web-ui">9. Web Interface</a></li>
+								<li class="toc-sidebar-sub"><a href="#what-to-try-ui">9.1 What to Try</a></li>
+								<li><a href="#conclusion">10. Conclusion</a></li>
+							</ul>
+						</aside>
+
+						<div class="blog-detail-main">
+							<div id="blogContainer">
+
+								<div class="container blg-title-container">
+									<h2 class="blg-title">LangGraph Advanced: Part 3 — RAG Pipeline with Conditional Routing</h2>
+								</div>
+
+								<div class="author_section">
+									<img id="author_img" src="" alt="Author Photo" class="author_img">
+									<div class="author_details">
+										<span id="author_name" class="author_name"></span>
+										<span id="published_date" class="published_date"></span>
+									</div>
+								</div>
+
+								<div class="blg-img-container">
+									<img src="../img/blog_16/thumbnail.webp" alt="LangGraph Advanced: Part 3 — RAG Pipeline with Conditional Routing" class="blg-thumbnail" />
+								</div>
+
+								<!-- INLINE TOC -->
+								<div class="blg-toc-container">
+									<h2>📚 Table of Contents</h2>
+									<ol class="blg-toc-ol">
+										<li class="blg-toc-li"><a href="#intro">1. Why RAG for AI Agents?</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#retrieval-problem">1.1 The Retrieval Problem</a></li>
+											<li class="blg-toc-li"><a href="#corrective-rag">1.2 Corrective RAG</a></li>
+											<li class="blg-toc-li"><a href="#scenario-intro">1.3 Our Scenario: OnboardBot</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#installation-setup">2. Installation &amp; Setup</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#configuring-llm">2.1 Configuring the LLM</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#understanding-rag">3. Understanding Corrective RAG</a></li>
+										<li class="blg-toc-li"><a href="#knowledge-base">4. Building the Knowledge Base</a></li>
+										<li class="blg-toc-li"><a href="#state-design">5. Building the State</a></li>
+										<li class="blg-toc-li"><a href="#building-nodes">6. Building the Nodes</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#retrieve-node">6.1 Retrieve Node</a></li>
+											<li class="blg-toc-li"><a href="#grade-node">6.2 Grade Documents Node</a></li>
+											<li class="blg-toc-li"><a href="#rewrite-node">6.3 Rewrite Query Node</a></li>
+											<li class="blg-toc-li"><a href="#generate-node">6.4 Generate Node</a></li>
+											<li class="blg-toc-li"><a href="#fallback-node">6.5 Fallback Node</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#graph-assembly">7. Assembling the Graph</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#route-function">7.1 The Route Function</a></li>
+											<li class="blg-toc-li"><a href="#wiring-graph">7.2 Wiring the Pipeline</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#complete-example">8. Complete Example: OnboardBot</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#arch-overview">8.1 Architecture Overview</a></li>
+											<li class="blg-toc-li"><a href="#project-structure">8.2 Project Structure</a></li>
+											<li class="blg-toc-li"><a href="#runner-output">8.3 Runner &amp; Console Output</a></li>
+											<li class="blg-toc-li"><a href="#what-to-try">8.4 What to Try</a></li>
+											<li class="blg-toc-li"><a href="#mermaid-diagram">8.5 Graph Diagram</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#web-ui">9. Web Interface</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#what-to-try-ui">9.1 What to Try</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#conclusion">10. Conclusion</a></li>
+									</ol>
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════════ -->
+								<!-- SECTION 1 -->
+								<!-- ═══════════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="intro" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🏢 1. Why RAG for AI Agents?</h2></div>
+
+									<a id="retrieval-problem" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">1.1</span>
+										<h3>🤔 The Retrieval Problem</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Picture your first day at TechCore, a mid-size tech company. HR has sent a welcome email, your laptop is on your desk, and you have forty questions before lunch: How many vacation days do I get? Is remote work allowed? What's the 401k match? What tools does the team use? The answers exist somewhere in a 40-page employee handbook — but no one reads that on day one.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>You could ask a plain LLM those questions. It'll answer confidently — and most of what it says will be made up. An LLM has no idea that TechCore's PTO policy changed last quarter, or that the 401k match vests after exactly one year. General training knowledge simply can't substitute for company-specific facts, and hallucinations here mean real problems: filing incorrect leave requests, setting wrong expectations with a manager.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><strong>Retrieval-Augmented Generation (RAG)</strong> fixes this by grounding the LLM's response in actual documents. Instead of relying on training data, the system retrieves the relevant sections of the handbook and feeds them into the prompt as context. The LLM's job shifts from guessing to synthesising.</p>
+									</div>
+
+									<a id="corrective-rag" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">1.2</span>
+										<h3>🔄 Corrective RAG</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>But retrieval alone isn't enough. What happens when the vector store returns documents that don't actually address the employee's question? If the system blindly generates from irrelevant chunks, it produces confident answers that are wrong — just wrong in a different way. That's where <span class="highlight-blue">conditional routing</span> comes in: the graph must <em>assess</em> whether retrieved documents are relevant before deciding how to proceed.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>This pattern — retrieve, grade, and then loop back to refine if the result is poor — is known as <span class="highlight-teal">Corrective RAG (CRAG)</span>. LangGraph is the ideal framework for implementing it because each step is a discrete node. Nodes can inspect state, make decisions, and route to different successors — giving RAG the ability to be self-correcting.</p>
+									</div>
+
+									<a id="scenario-intro" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">1.3</span>
+										<h3>🤖 Our Scenario: OnboardBot</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Throughout this post we'll build <strong>OnboardBot</strong> — an AI Company Onboarding Assistant for TechCore. New employees ask OnboardBot questions in plain English. The bot retrieves the relevant policy documents from a Chroma vector store, grades their relevance with a structured-output LLM call, and then either generates a grounded answer, rewrites the query for a second retrieval pass, or falls back to general knowledge if all retries are exhausted.</p>
+									</div>
+
+									<blockquote class="blg-callout-info">
+										<strong>What you'll build:</strong> A fully functional RAG pipeline as a LangGraph graph — five nodes (retrieve, grade, rewrite, generate, fallback) connected by conditional edges, wrapped in a Gradio chat UI. The knowledge base contains 10 TechCore policy documents covering PTO, benefits, remote work, equipment, the code of conduct, and more.
+									</blockquote>
+
+									<div class="blg-feature-grid">
+										<div class="blg-feature-card card-blue">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">🔍</span>
+												<h4>Retrieve Node</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Fetches the top-K most similar policy documents from the Chroma vector store using Google Gemini embeddings on every question.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-teal">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">⚖️</span>
+												<h4>Grade Documents Node</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Uses a structured-output LLM call to score retrieved documents as <span class="code-soft">relevant</span> or <span class="code-soft">not_relevant</span> before any answer is generated.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-orange">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">✏️</span>
+												<h4>Rewrite Query Node</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>When documents are irrelevant, rewrites the question with HR-friendly terminology and loops back to retrieve for a second attempt.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-green">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">💬</span>
+												<h4>Generate &amp; Fallback Nodes</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Generate produces grounded answers from retrieved policy text. Fallback responds from general knowledge when all retries are exhausted.</p>
+											</div>
+										</div>
+									</div>
+
+									<hr class="blg-hr">
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════════ -->
+								<!-- SECTION 2 -->
+								<!-- ═══════════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="installation-setup" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>⚙️ 2. Installation &amp; Setup</h2></div>
+
+									<div class="blg-paragraph">
+										<p>This project requires Python 3.12 and a Google Gemini API key. It adds two new packages compared to earlier posts in this series — <span class="code-soft">chromadb</span> for the vector store engine and <span class="code-soft">langchain-chroma</span> for the LangChain integration layer.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><strong>1. Check your Python version:</strong></p>
+									</div>
+									<div class="blg-code-block" data-lang="bash">python --version
+# Python 3.12.x</div>
+
+									<div class="blg-paragraph">
+										<p><strong>2. Create and activate a virtual environment:</strong></p>
+									</div>
+									<div class="blg-code-block" data-lang="bash">python -m venv langgraph
+source langgraph/bin/activate      # macOS / Linux
+langgraph\Scripts\activate         # Windows</div>
+
+									<div class="blg-paragraph">
+										<p><strong>3. Install dependencies from <span class="code-soft">requirements.txt</span>:</strong></p>
+									</div>
+									<div class="blg-code-block" data-lang="properties">langchain==1.2.17
+langgraph==1.1.10
+langchain-google-genai==4.2.2
+python-dotenv==1.2.2
+gradio==6.14.0
+chromadb==0.6.3
+langchain-chroma==0.2.0</div>
+
+									<div class="blg-code-block" data-lang="bash">pip install -r requirements.txt</div>
+
+									<div class="blg-paragraph">
+										<p><strong>4. Create your <span class="code-soft">.env</span> file</strong> in the <span class="code-soft">langgraph/</span> root folder. Get a free key at <a href="https://aistudio.google.com/app/apikey" class="blg-link" target="_blank" rel="noopener noreferrer">Google AI Studio</a>:</p>
+									</div>
+									<div class="blg-code-block" data-lang="properties">GOOGLE_API_KEY=your_google_api_key_here
+GEMINI_MODEL_NAME=gemini-3-flash-preview
+GEMINI_TEMPERATURE=0.7
+GEMINI_MAX_RETRIES=2
+GEMINI_EMBEDDING_MODEL=models/text-embedding-004
+RAG_RETRIEVER_K=4
+RAG_MAX_QUERY_RETRIES=2</div>
+
+									<blockquote class="blg-callout-warning">
+										⚠️ Never commit your <span class="code-soft">.env</span> file. Add it to <span class="code-soft">.gitignore</span> before your first commit — it contains your API key.
+									</blockquote>
+
+									<div class="blg-paragraph">
+										<p><strong>5. Project structure:</strong></p>
+									</div>
+									<div class="blg-tree"><span class="tree-root">advanced-3-rag-conditional-routing/</span>
+<span class="tree-pipe">├── </span><span class="tree-file">config.py</span>                 <span class="tree-comment"># Config class — reads .env settings</span>
+<span class="tree-pipe">├── </span><span class="tree-file">llm.py</span>                    <span class="tree-comment"># GeminiLLM wrapper (Section 2.1)</span>
+<span class="tree-pipe">├── </span><span class="tree-file">state.py</span>                  <span class="tree-comment"># OnboardingState TypedDict (Section 5)</span>
+<span class="tree-pipe">├── </span><span class="tree-file">knowledge_base.py</span>         <span class="tree-comment"># 10 policy docs + build_vectorstore() (Section 4)</span>
+<span class="tree-pipe">├── </span><span class="tree-file">nodes.py</span>                  <span class="tree-comment"># RAGNodes — all 5 node methods (Section 6)</span>
+<span class="tree-pipe">├── </span><span class="tree-file">graph.py</span>                  <span class="tree-comment"># OnboardingGraph — conditional routing (Section 7)</span>
+<span class="tree-pipe">├── </span><span class="tree-file">onboarding_runner.py</span>      <span class="tree-comment"># console runner + 4 demo queries (Section 8)</span>
+<span class="tree-pipe">├── </span><span class="tree-file">app.py</span>                    <span class="tree-comment"># Gradio ChatInterface (Section 9)</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">prompts/</span>                  <span class="tree-comment"># LLM prompt templates, one file per node</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">grade_documents.txt</span>   <span class="tree-comment"># relevance grading instructions</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">rewrite_query.txt</span>     <span class="tree-comment"># query rewriting instructions</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">generate_with_rag.txt</span> <span class="tree-comment"># RAG answer prompt (with {context} slot)</span>
+<span class="tree-pipe">│   └── </span><span class="tree-file">generate_fallback.txt</span> <span class="tree-comment"># fallback answer instructions</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">figure/</span>                   <span class="tree-comment"># auto-created by save_figure() at runtime</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">graph.mmd</span>             <span class="tree-comment"># Mermaid source diagram</span>
+<span class="tree-pipe">│   └── </span><span class="tree-file">graph.png</span>             <span class="tree-comment"># PNG render of the graph</span>
+<span class="tree-pipe">└── </span><span class="tree-spec">.env</span>                      <span class="tree-comment"># API keys — never commit this file</span></div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">config.py</span> and <span class="code-soft">llm.py</span> handle environment loading (Section 2.1). <span class="code-soft">knowledge_base.py</span> builds the vector store (Section 4). <span class="code-soft">state.py</span> defines what flows through the graph (Section 5). <span class="code-soft">nodes.py</span> implements all five node methods (Section 6). <span class="code-soft">graph.py</span> wires them together with conditional edges (Section 7). <span class="code-soft">onboarding_runner.py</span> runs demo queries (Section 8) and <span class="code-soft">app.py</span> launches the web UI (Section 9).</p>
+									</div>
+
+									<a id="configuring-llm" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">2.1</span>
+										<h3>⚙️ Configuring the LLM</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">config.py</span> reads all settings from the <span class="code-soft">.env</span> file. Two fields are new compared to previous posts: <span class="code-soft">EMBEDDING_MODEL</span> names the Google embeddings model used to index and query the vector store, and <span class="code-soft">MAX_QUERY_RETRIES</span> sets the maximum number of rewrite loops before the graph falls back to general knowledge.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">import os
+from dotenv import load_dotenv
+
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
+
+
+class Config:
+    MODEL_NAME        = os.getenv("GEMINI_MODEL_NAME", "gemini-3-flash-preview")
+    TEMPERATURE       = float(os.getenv("GEMINI_TEMPERATURE", 0.7))
+    MAX_RETRIES       = int(os.getenv("GEMINI_MAX_RETRIES", 2))
+    EMBEDDING_MODEL   = os.getenv("GEMINI_EMBEDDING_MODEL", "models/text-embedding-004")
+    RETRIEVER_K       = int(os.getenv("RAG_RETRIEVER_K", 4))
+    MAX_QUERY_RETRIES = int(os.getenv("RAG_MAX_QUERY_RETRIES", 2))</div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">llm.py</span> is the same thin wrapper used across the LangGraph Advanced series — a <span class="code-soft">ChatGoogleGenerativeAI</span> instance that reads model settings from <span class="code-soft">Config</span>:</p>
+									</div>
+									<div class="blg-code-block" data-lang="python">from langchain_google_genai import ChatGoogleGenerativeAI
+from config import Config
+
+
+class GeminiLLM:
+    def __init__(self):
+        self.llm = ChatGoogleGenerativeAI(
+            model=Config.MODEL_NAME,
+            temperature=Config.TEMPERATURE,
+            max_retries=Config.MAX_RETRIES,
+        )
+
+    def get_llm(self):
+        return self.llm</div>
+
+									<hr class="blg-hr">
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════════ -->
+								<!-- SECTION 3 -->
+								<!-- ═══════════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="understanding-rag" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🧠 3. Understanding Corrective RAG</h2></div>
+
+									<div class="blg-paragraph">
+										<p>Standard RAG is a three-step linear pipeline: embed the question, search a vector store for similar documents, and generate a response using those documents as context. You can implement this as a LangChain chain — a single, sequential pipeline that runs all three steps in one call. That works for prototypes, but chains have a fundamental limitation: there's no way to branch based on what retrieval returned.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>What if the retrieved documents are completely irrelevant? A chain generates from them anyway. What if the question was phrased in a way that the vector store missed the right documents? A chain has no mechanism to rephrase and retry. LangGraph changes this by modelling each step as a <span class="highlight-blue">discrete node</span>. Nodes can inspect state and route to different successors — giving RAG the ability to be <em>self-correcting</em>.</p>
+									</div>
+
+									<blockquote class="blg-callout-tip">
+										✅ <strong>RAG as a chain vs. RAG as a graph:</strong> A chain executes all steps unconditionally. A graph can check the quality of retrieval and take a different path — rewrite the query, call a different retriever, or fall back to general knowledge. That's the fundamental upgrade this post teaches.
+									</blockquote>
+
+									<div class="blg-paragraph">
+										<p>The OnboardBot graph has five nodes connected by conditional edges. Every question starts with <span class="code-soft">retrieve</span>. The fetched documents go to <span class="code-soft">grade_documents</span>, which asks an LLM whether they're relevant. The router reads that grade — and the current <span class="code-soft">retry_count</span> — and picks one of three paths:</p>
+									</div>
+
+									<ul class="blg-ul">
+										<li class="blg-li-check"><strong>Relevant documents:</strong> route to <span class="code-soft">generate</span> — produce a grounded answer from the retrieved policy text.</li>
+										<li class="blg-li-check"><strong>Not relevant, retries remaining:</strong> route to <span class="code-soft">rewrite_query</span> — rephrase the question with better terminology, increment <span class="code-soft">retry_count</span>, and loop back to <span class="code-soft">retrieve</span> for a second attempt.</li>
+										<li class="blg-li-check"><strong>Not relevant, retries exhausted:</strong> route to <span class="code-soft">fallback_generate</span> — answer from general LLM knowledge and point the employee to HR for official guidance.</li>
+									</ul>
+
+									<div class="blg-paragraph">
+										<p>The <span class="code-soft">rewrite_query → retrieve</span> edge is what creates the loop. Each pass re-embeds the (now rewritten) question and fetches a fresh set of documents. The <span class="code-soft">retry_count</span> field in state ensures the loop terminates — once it reaches <span class="code-soft">Config.MAX_QUERY_RETRIES</span>, the router stops returning <span class="code-soft">"rewrite_query"</span> and routes to the fallback instead.</p>
+									</div>
+
+									<hr class="blg-hr">
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════════ -->
+								<!-- SECTION 4 -->
+								<!-- ═══════════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="knowledge-base" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🗄️ 4. Building the Knowledge Base</h2></div>
+
+									<div class="blg-paragraph">
+										<p>The knowledge base is TechCore's employee handbook — 10 policy documents covering the topics a new hire asks about most. Each document is a self-contained paragraph, which keeps chunks at a sensible size for embedding and retrieval. They live as a Python list in <span class="code-soft">knowledge_base.py</span>, making the project fully self-contained without any file loading or preprocessing pipeline.</p>
+									</div>
+
+									<blockquote class="blg-callout-info">
+										💡 <strong>Why hardcode the documents?</strong> For this tutorial, hardcoded documents mean zero setup friction. In a production system you'd replace <span class="code-soft">POLICY_DOCUMENTS</span> with a document loader — <span class="code-soft">PyPDFLoader</span> for PDFs, <span class="code-soft">ConfluenceLoader</span> for your team wiki, etc. The rest of the graph stays identical.
+									</blockquote>
+
+									<div class="blg-paragraph">
+										<p>The 10 policy documents cover:</p>
+									</div>
+									<ul class="blg-ul">
+										<li class="blg-li-check">PTO policy — 20 days accrual, 10-day rollover cap, advance notice rules</li>
+										<li class="blg-li-check">Sick leave — 10 days, mental health days, family care coverage</li>
+										<li class="blg-li-check">Benefits — health insurance, 401k 4% match, $1,200 wellness stipend, parental leave</li>
+										<li class="blg-li-check">Work hours &amp; remote work — core hours, 3-day remote policy, $500 home office stipend</li>
+										<li class="blg-li-check">Equipment — MacBook Pro M3, peripherals portal, MDM enrolment</li>
+										<li class="blg-li-check">Code of conduct — harassment policy, compliance training, ethics hotline</li>
+										<li class="blg-li-check">Development tools &amp; tech stack — Python, React, AWS, GitHub, Jira, Confluence</li>
+										<li class="blg-li-check">Communication channels — Slack, Google Meet, response time expectations</li>
+										<li class="blg-li-check">Performance review — bi-annual cycle, 360 feedback, salary and promotion timeline</li>
+										<li class="blg-li-check">Week-1 onboarding checklist — I-9, dev-setup repo, 1:1 scheduling, Workday profile</li>
+									</ul>
+
+									<div class="blg-code-block" data-lang="python">from langchain_chroma import Chroma
+from langchain_core.documents import Document
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+
+from config import Config
+
+POLICY_DOCUMENTS = [
+    Document(
+        page_content=(
+            "TechCore PTO Policy: Full-time employees accrue 20 days of paid time off (PTO) "
+            "per year, calculated as 1.67 days per month. PTO rolls over up to a maximum of 10 "
+            "days at the end of each calendar year; any excess is forfeited..."
+        ),
+        metadata={"source": "pto_policy"},
+    ),
+    # ... 9 more documents: sick leave, benefits, remote work, equipment, etc.
+]
+
+
+def build_vectorstore() -> Chroma:
+    embeddings = GoogleGenerativeAIEmbeddings(model=Config.EMBEDDING_MODEL)
+    return Chroma.from_documents(POLICY_DOCUMENTS, embeddings)</div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">build_vectorstore()</span> uses <span class="code-soft">GoogleGenerativeAIEmbeddings</span> with the <span class="code-soft">models/text-embedding-004</span> model to embed all documents and stores them in an in-memory Chroma index. The entire knowledge base is embedded once at startup when <span class="code-soft">OnboardingGraph.__init__</span> runs — not on every question. The <span class="code-soft">metadata</span> on each document (e.g. <span class="code-soft">"source": "pto_policy"</span>) can be used for filtering or source citation in a production system.</p>
+									</div>
+
+									<hr class="blg-hr">
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════════ -->
+								<!-- SECTION 5 -->
+								<!-- ═══════════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="state-design" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🗂️ 5. Building the State</h2></div>
+
+									<div class="blg-paragraph">
+										<p>The state is the shared data structure that flows through every node in the graph. For a RAG pipeline with conditional routing, the state carries more than just messages — it needs to hold the current question (which changes on a rewrite), the retrieved documents, the relevance grade, and a retry counter. Each field serves a specific purpose in the routing logic.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">from typing import Annotated
+
+from langchain_core.documents import Document
+from langchain_core.messages import BaseMessage
+from langgraph.graph.message import add_messages
+from typing_extensions import TypedDict
+
+
+class OnboardingState(TypedDict):
+    # add_messages appends new messages instead of overwriting.
+    messages:     Annotated[list[BaseMessage], add_messages]
+    # The current question being processed — used for retrieval and grading.
+    question:     str
+    # Documents retrieved from the vector store for the current question.
+    documents:    list[Document]
+    # Relevance decision from the grade_documents node: "relevant" | "not_relevant".
+    doc_grade:    str
+    # How many times the query has been rewritten so far (prevents infinite loops).
+    retry_count:  int</div>
+
+									<div class="blg-paragraph">
+										<p>Here's why each field exists and how it flows through the graph:</p>
+									</div>
+
+									<div class="blg-table">
+										<table>
+											<thead>
+												<tr>
+													<th>Field</th>
+													<th>Type</th>
+													<th>Purpose</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td><span class="code-soft">messages</span></td>
+													<td><span class="code-soft">Annotated[list, add_messages]</span></td>
+													<td>Accumulates the conversation (user question + AI answer). The <span class="code-soft">add_messages</span> reducer appends rather than overwrites, so the full exchange is preserved.</td>
+												</tr>
+												<tr>
+													<td><span class="code-soft">question</span></td>
+													<td><span class="code-soft">str</span></td>
+													<td>The working search term used for vector store retrieval. Stored separately from <span class="code-soft">messages</span> so <span class="code-soft">rewrite_query_node</span> can update it without touching the message history.</td>
+												</tr>
+												<tr>
+													<td><span class="code-soft">documents</span></td>
+													<td><span class="code-soft">list[Document]</span></td>
+													<td>Policy documents returned by the last retrieval pass. Uses last-write-wins — each retrieval replaces the previous results. Read by both the grader and the generate node.</td>
+												</tr>
+												<tr>
+													<td><span class="code-soft">doc_grade</span></td>
+													<td><span class="code-soft">str</span></td>
+													<td>Set by <span class="code-soft">grade_documents_node</span> to <span class="code-soft">"relevant"</span> or <span class="code-soft">"not_relevant"</span>. The router function reads this to pick the next node.</td>
+												</tr>
+												<tr>
+													<td><span class="code-soft">retry_count</span></td>
+													<td><span class="code-soft">int</span></td>
+													<td>Incremented by <span class="code-soft">rewrite_query_node</span> each pass. Once it reaches <span class="code-soft">Config.MAX_QUERY_RETRIES</span>, the router routes to <span class="code-soft">fallback_generate</span> instead of retrying.</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+
+									<blockquote class="blg-callout-note">
+										📌 <strong>Why is <span class="code-soft">question</span> separate from <span class="code-soft">messages</span>?</strong> The user's original phrasing in <span class="code-soft">messages</span> is the conversation record — it's never modified. <span class="code-soft">question</span> is the working search term. On a retry, <span class="code-soft">rewrite_query_node</span> updates <span class="code-soft">question</span> with better vocabulary so the second retrieval uses more precise terms, while the conversation history still shows the original phrasing.
+									</blockquote>
+
+									<hr class="blg-hr">
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════════ -->
+								<!-- SECTION 6 -->
+								<!-- ═══════════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="building-nodes" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🔧 6. Building the Nodes</h2></div>
+
+									<div class="blg-paragraph">
+										<p>All five node methods live in the <span class="code-soft">RAGNodes</span> class in <span class="code-soft">nodes.py</span>. The class receives the vector store in its constructor, wraps it in a retriever, and loads all four prompt files. Every prompt lives in the <span class="code-soft">prompts/</span> subfolder and is loaded once at construction — never hardcoded inline.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">import os
+from typing import Literal
+
+from langchain_chroma import Chroma
+from langchain_core.messages import HumanMessage, SystemMessage
+from pydantic import BaseModel
+
+from config import Config
+from llm import GeminiLLM
+from state import OnboardingState
+
+_PROMPTS_DIR = os.path.join(os.path.dirname(__file__), "prompts")
+
+
+def _load_prompt(filename: str) -> str:
+    with open(os.path.join(_PROMPTS_DIR, filename), "r") as f:
+        return f.read().strip()
+
+
+def _extract_text(content) -> str:
+    """Normalise langchain-google-genai 4.x content (list or str) to plain str."""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        return "".join(
+            b.get("text", "")
+            for b in content
+            if isinstance(b, dict) and b.get("type") == "text"
+        )
+    return str(content)
+
+
+class GradeDecision(BaseModel):
+    score:     Literal["relevant", "not_relevant"]
+    reasoning: str
+
+
+class RAGNodes:
+    def __init__(self, vectorstore: Chroma):
+        self.llm             = GeminiLLM().get_llm()
+        self.retriever       = vectorstore.as_retriever(
+            search_kwargs={"k": Config.RETRIEVER_K}
+        )
+        self.grade_prompt    = _load_prompt("grade_documents.txt")
+        self.rewrite_prompt  = _load_prompt("rewrite_query.txt")
+        self.generate_prompt = _load_prompt("generate_with_rag.txt")
+        self.fallback_prompt = _load_prompt("generate_fallback.txt")
+        # Bind structured output so the grader always returns a valid decision.
+        self.grader_llm      = self.llm.with_structured_output(GradeDecision)</div>
+
+									<div class="blg-paragraph">
+										<p>The <span class="code-soft">GradeDecision</span> Pydantic model uses <span class="highlight-purple">Literal types</span> so the grader LLM can only return exactly <span class="code-soft">"relevant"</span> or <span class="code-soft">"not_relevant"</span> — the same structured-output approach used for supervisor routing in Part 2. <span class="code-soft">self.grader_llm</span> is a separate binding for the same underlying LLM; the main <span class="code-soft">self.llm</span> is used for text generation without constraints.</p>
+									</div>
+
+									<a id="retrieve-node" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">6.1</span>
+										<h3>🔍 Retrieve Node</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The retrieve node calls the retriever with the <span class="code-soft">question</span> field from state and stores the returned documents back in state. On the first pass, <span class="code-soft">question</span> is the original employee query. On a retry after <span class="code-soft">rewrite_query</span>, it's the rewritten version — so the second retrieval uses better search terms without any other changes to this node.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">    def retrieve_node(self, state: OnboardingState) -> dict:
+        """Fetch the top-K policy documents most similar to the current question."""
+        docs = self.retriever.invoke(state["question"])
+        return {"documents": docs}</div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">self.retriever.invoke(question)</span> embeds the question using the same Google Gemini embeddings model used to index the documents, then returns the <span class="code-soft">k</span> most similar chunks by cosine distance. The result list is stored under <span class="code-soft">"documents"</span> — using last-write-wins, so each retrieval pass replaces the previous results.</p>
+									</div>
+
+									<a id="grade-node" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">6.2</span>
+										<h3>⚖️ Grade Documents Node</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The grade documents node is the quality gate of the pipeline. It sends the question and all retrieved documents to the LLM and asks: do these documents actually help answer this question? The response is constrained to <span class="code-soft">GradeDecision</span> via <span class="code-soft">with_structured_output</span>, so the router always receives a clean string — never unexpected free text.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">    def grade_documents_node(self, state: OnboardingState) -> dict:
+        """Ask the LLM whether the retrieved documents are relevant to the question."""
+        if not state.get("documents"):
+            return {"doc_grade": "not_relevant"}
+
+        docs_text = "\n\n".join(
+            f"Document {i + 1}:\n{d.page_content}"
+            for i, d in enumerate(state["documents"])
+        )
+        messages = [
+            SystemMessage(content=self.grade_prompt),
+            HumanMessage(content=f"Question: {state['question']}\n\nDocuments:\n{docs_text}"),
+        ]
+        decision = self.grader_llm.invoke(messages)
+        return {"doc_grade": decision.score}</div>
+
+									<div class="blg-paragraph">
+										<p>The prompt in <span class="code-soft">prompts/grade_documents.txt</span> instructs the LLM to grade <span class="code-soft">"relevant"</span> only when documents genuinely address the question — tangential mentions that wouldn't help form a useful answer should be graded <span class="code-soft">"not_relevant"</span>. The <span class="code-soft">reasoning</span> field in <span class="code-soft">GradeDecision</span> is included so the LLM explains its decision, which helps with debugging.</p>
+									</div>
+
+									<a id="rewrite-node" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">6.3</span>
+										<h3>✏️ Rewrite Query Node</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>When the grader returns <span class="code-soft">"not_relevant"</span> and retries remain, the rewrite node tries to fix the retrieval failure by rephrasing the question. The prompt instructs the LLM to use HR-friendly terminology — for example, "paid time off" instead of "vacation days", or "401k contribution matching" instead of "retirement savings" — which increases the chance of matching the exact phrasing in the policy documents. The rewritten question replaces <span class="code-soft">state["question"]</span>, and <span class="code-soft">retry_count</span> is incremented.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">    def rewrite_query_node(self, state: OnboardingState) -> dict:
+        """Rewrite the question with HR-friendly terminology for a better retrieval pass."""
+        messages = [
+            SystemMessage(content=self.rewrite_prompt),
+            HumanMessage(content=f"Original question: {state['question']}"),
+        ]
+        response     = self.llm.invoke(messages)
+        new_question = _extract_text(response.content)
+        return {
+            "question":    new_question,
+            "retry_count": state.get("retry_count", 0) + 1,
+        }</div>
+
+									<blockquote class="blg-callout-tip">
+										✅ <strong>Why update <span class="code-soft">retry_count</span> here and not in the router?</strong> The router is a pure function — it reads state, returns a string, and has no side effects. Incrementing a counter is a state mutation, so it belongs in a node. The rewrite node is the logical place because it's the action that triggers the retry.
+									</blockquote>
+
+									<a id="generate-node" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">6.4</span>
+										<h3>💬 Generate Node</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The generate node runs only when the grader has confirmed that retrieved documents are relevant. It formats all documents into a single context string and injects them into the system prompt via the <span class="code-soft">{context}</span> placeholder defined in <span class="code-soft">prompts/generate_with_rag.txt</span>. The LLM then generates an answer grounded in those policy excerpts.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">    def generate_node(self, state: OnboardingState) -> dict:
+        """Generate a grounded answer using the retrieved policy documents as context."""
+        docs_text      = "\n\n".join(d.page_content for d in state["documents"])
+        system_content = self.generate_prompt.format(context=docs_text)
+        messages       = [SystemMessage(content=system_content)] + list(state["messages"])
+        response       = self.llm.invoke(messages)
+        return {"messages": [response]}</div>
+
+									<div class="blg-paragraph">
+										<p>Prepending the conversation after the system message means the LLM sees policy context first, then the employee's question — the standard pattern across this series. The response is returned as a new message, and the <span class="code-soft">add_messages</span> reducer appends it to <span class="code-soft">state["messages"]</span> automatically.</p>
+									</div>
+
+									<a id="fallback-node" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">6.5</span>
+										<h3>🔄 Fallback Generate Node</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>When all retrieval retries are exhausted, the fallback node responds from general LLM knowledge. The prompt in <span class="code-soft">prompts/generate_fallback.txt</span> instructs OnboardBot to provide a helpful general answer and recommend the employee contact HR for official TechCore-specific guidance. This keeps the user experience graceful — the bot doesn't just say "I don't know", it gives what it can and points to the right resource.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">    def fallback_generate_node(self, state: OnboardingState) -> dict:
+        """Generate a general answer when no relevant policy documents are found."""
+        messages = [SystemMessage(content=self.fallback_prompt)] + list(state["messages"])
+        response = self.llm.invoke(messages)
+        return {"messages": [response]}</div>
+
+									<hr class="blg-hr">
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════════ -->
+								<!-- SECTION 7 -->
+								<!-- ═══════════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="graph-assembly" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🔗 7. Assembling the Graph</h2></div>
+
+									<a id="route-function" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">7.1</span>
+										<h3>🔀 The Route Function</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The router is a plain Python function — no decorators, no LangGraph magic. It reads two fields from state and returns a string that names the next node. The three possible return values map directly to the three branches of the pipeline:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">def route_by_relevance(state: OnboardingState) -> str:
+    """Route after grade_documents: generate, rewrite, or fall back."""
+    if state.get("doc_grade") == "relevant":
+        return "generate"
+    if state.get("retry_count", 0) >= Config.MAX_QUERY_RETRIES:
+        return "fallback_generate"
+    return "rewrite_query"</div>
+
+									<div class="blg-paragraph">
+										<p>The logic reads from top to bottom: relevance check first, then the retry guard, then the default rewrite path. If <span class="code-soft">doc_grade</span> is <span class="code-soft">"relevant"</span>, the answer is generated regardless of <span class="code-soft">retry_count</span>. If documents are not relevant and retries are exhausted, the fallback fires. Otherwise, the query is rewritten and retrieval is retried.</p>
+									</div>
+
+									<a id="wiring-graph" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">7.2</span>
+										<h3>🔌 Wiring the Pipeline</h3>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">class OnboardingGraph:
+    def __init__(self):
+        print("  Building knowledge base (embedding policy documents)...")
+        self.vectorstore    = build_vectorstore()
+        print("  Knowledge base ready — 10 documents indexed.")
+        self.nodes          = RAGNodes(self.vectorstore)
+        self.compiled_graph = self._build()
+
+    def _build(self):
+        graph = StateGraph(OnboardingState)
+
+        graph.add_node("retrieve",          self.nodes.retrieve_node)
+        graph.add_node("grade_documents",   self.nodes.grade_documents_node)
+        graph.add_node("rewrite_query",     self.nodes.rewrite_query_node)
+        graph.add_node("generate",          self.nodes.generate_node)
+        graph.add_node("fallback_generate", self.nodes.fallback_generate_node)
+
+        # Entry point: every question starts with document retrieval.
+        graph.add_edge(START, "retrieve")
+        graph.add_edge("retrieve", "grade_documents")
+
+        # After grading: branch to generate, rewrite, or fallback.
+        graph.add_conditional_edges(
+            "grade_documents",
+            route_by_relevance,
+            {
+                "generate":          "generate",
+                "rewrite_query":     "rewrite_query",
+                "fallback_generate": "fallback_generate",
+            },
+        )
+
+        # Rewrite loops back to retrieval for a second attempt.
+        graph.add_edge("rewrite_query",     "retrieve")
+        graph.add_edge("generate",          END)
+        graph.add_edge("fallback_generate", END)
+
+        return graph.compile()</div>
+
+									<div class="blg-paragraph">
+										<p>The explicit mapping dict in <span class="code-soft">add_conditional_edges</span> does two things: it validates that the router can only return one of the three named keys (any other value raises a runtime error at test time), and it ensures those keys appear as edge labels in the generated Mermaid diagram. Without the dict, LangGraph still routes correctly but the graph visualisation loses the label context.</p>
+									</div>
+
+									<blockquote class="blg-callout-note">
+										📌 <strong>How does LangGraph handle the retry loop?</strong> <span class="code-soft">graph.add_edge("rewrite_query", "retrieve")</span> is a regular forward edge that happens to point to a node that was already visited. LangGraph has no concept of "backwards" edges — it follows directed connections. The loop terminates because <span class="code-soft">retry_count</span> grows with each pass until the router stops returning <span class="code-soft">"rewrite_query"</span>.
+									</blockquote>
+
+									<div class="blg-paragraph">
+										<p>The graph is compiled without a checkpointer — each question is a fresh, independent invocation with no cross-question memory. This is the right choice for a policy lookup tool where every question stands on its own. If you wanted to support multi-turn follow-up questions, adding <span class="code-soft">MemorySaver</span> and a thread ID would be enough — the graph structure itself doesn't need to change.</p>
+									</div>
+
+									<hr class="blg-hr">
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════════ -->
+								<!-- SECTION 8 -->
+								<!-- ═══════════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="complete-example" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🏗️ 8. Complete Example: OnboardBot</h2></div>
+
+									<a id="arch-overview" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">8.1</span>
+										<h3>🔍 Architecture Overview</h3>
+									</div>
+
+									<div class="blg-arch-stack">
+										<div class="blg-arch-layer al-blue">
+											<div class="blg-arch-icon">🙋</div>
+											<div class="blg-arch-name">Employee Question</div>
+											<div class="blg-arch-desc">New hire asks a question in the Gradio chat UI. The question is stored in both <span class="code-soft">messages</span> (conversation record) and <span class="code-soft">question</span> (search term).</div>
+										</div>
+										<div class="blg-arch-layer al-teal">
+											<div class="blg-arch-icon">🔍</div>
+											<div class="blg-arch-name">Retrieve Node</div>
+											<div class="blg-arch-desc">Embeds the question using <span class="code-soft">GoogleGenerativeAIEmbeddings</span> and fetches the top-K most similar policy documents from the Chroma vector store.</div>
+										</div>
+										<div class="blg-arch-layer al-amber">
+											<div class="blg-arch-icon">⚖️</div>
+											<div class="blg-arch-name">Grade Documents Node</div>
+											<div class="blg-arch-desc">Uses <span class="code-soft">with_structured_output(GradeDecision)</span> to ask the LLM whether retrieved documents are relevant. Sets <span class="code-soft">doc_grade</span> to <span class="code-soft">"relevant"</span> or <span class="code-soft">"not_relevant"</span>.</div>
+										</div>
+										<div class="blg-arch-layer al-purple">
+											<div class="blg-arch-icon">🔀</div>
+											<div class="blg-arch-name">Conditional Router</div>
+											<div class="blg-arch-desc">Reads <span class="code-soft">doc_grade</span> and <span class="code-soft">retry_count</span>. Routes to <span class="code-soft">generate</span>, <span class="code-soft">rewrite_query</span>, or <span class="code-soft">fallback_generate</span>.</div>
+										</div>
+										<div class="blg-arch-layer al-green">
+											<div class="blg-arch-icon">💬</div>
+											<div class="blg-arch-name">Generate / Fallback Node</div>
+											<div class="blg-arch-desc">Generate produces a grounded answer from retrieved policy text. Fallback answers from general knowledge and recommends contacting HR for official guidance.</div>
+										</div>
+									</div>
+
+									<a id="project-structure" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">8.2</span>
+										<h3>📁 Project Structure</h3>
+									</div>
+
+									<div class="blg-tree"><span class="tree-root">advanced-3-rag-conditional-routing/</span>
+<span class="tree-pipe">├── </span><span class="tree-file">config.py</span>                 <span class="tree-comment"># GEMINI_MODEL_NAME, EMBEDDING_MODEL, MAX_QUERY_RETRIES</span>
+<span class="tree-pipe">├── </span><span class="tree-file">llm.py</span>                    <span class="tree-comment"># GeminiLLM wrapper — ChatGoogleGenerativeAI</span>
+<span class="tree-pipe">├── </span><span class="tree-file">state.py</span>                  <span class="tree-comment"># OnboardingState TypedDict (5 fields)</span>
+<span class="tree-pipe">├── </span><span class="tree-file">knowledge_base.py</span>         <span class="tree-comment"># POLICY_DOCUMENTS list + build_vectorstore()</span>
+<span class="tree-pipe">├── </span><span class="tree-file">nodes.py</span>                  <span class="tree-comment"># RAGNodes class — GradeDecision, 5 node methods</span>
+<span class="tree-pipe">├── </span><span class="tree-file">graph.py</span>                  <span class="tree-comment"># OnboardingGraph — route_by_relevance + compile</span>
+<span class="tree-pipe">├── </span><span class="tree-file">onboarding_runner.py</span>      <span class="tree-comment"># OnboardingRunner.ask() + 4 demo queries</span>
+<span class="tree-pipe">├── </span><span class="tree-file">app.py</span>                    <span class="tree-comment"># OnboardingApp — gr.ChatInterface</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">prompts/</span>                  <span class="tree-comment"># one .txt file per LLM call</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">grade_documents.txt</span>   <span class="tree-comment"># relevance grading instructions</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">rewrite_query.txt</span>     <span class="tree-comment"># HR-friendly rewrite instructions</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">generate_with_rag.txt</span> <span class="tree-comment"># RAG answer prompt with {context} slot</span>
+<span class="tree-pipe">│   └── </span><span class="tree-file">generate_fallback.txt</span> <span class="tree-comment"># fallback answer + HR referral instructions</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">figure/</span>                   <span class="tree-comment"># auto-created on first run</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">graph.mmd</span>             <span class="tree-comment"># Mermaid source</span>
+<span class="tree-pipe">│   └── </span><span class="tree-file">graph.png</span>             <span class="tree-comment"># PNG render</span>
+<span class="tree-pipe">└── </span><span class="tree-spec">.env</span>                      <span class="tree-comment"># GOOGLE_API_KEY — never commit</span></div>
+
+									<a id="runner-output" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">8.3</span>
+										<h3>▶️ Runner &amp; Console Output</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">OnboardingRunner</span> wraps the graph and exposes a single <span class="code-soft">ask(question)</span> method. Each call is a fresh, independent graph invocation — state initialises with the question, an empty documents list, and <span class="code-soft">retry_count = 0</span>. The <span class="code-soft">if __name__ == "__main__"</span> block runs four demo queries that exercise the different paths through the graph.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="bash">cd advanced-3-rag-conditional-routing && python onboarding_runner.py</div>
+
+									<div class="blg-code-block" data-lang="bash">============================================================
+   LangGraph Advanced — AI Company Onboarding Assistant Demo
+============================================================
+
+  Building knowledge base (embedding policy documents)...
+  Knowledge base ready — 10 documents indexed.
+
+  Saving graph architecture...
+  Graph saved → figure/graph.mmd
+  Graph saved → figure/graph.png
+
+────────────────────────────────────────────────────────────
+  Demo 1: Relevant docs — PTO policy query
+────────────────────────────────────────────────────────────
+
+🙋  Alex: How many vacation days do I get per year, and can I roll them over?
+
+🤖  OnboardBot:
+You receive 20 days of paid time off per year, accrued at 1.67 days per month.
+At year-end, unused PTO rolls over up to a maximum of 10 days — any excess is forfeited...
+
+────────────────────────────────────────────────────────────
+  Demo 2: Relevant docs — 401k benefits query
+────────────────────────────────────────────────────────────
+
+🙋  Alex: What is the 401k matching contribution at TechCore?
+
+🤖  OnboardBot:
+TechCore matches 401(k) contributions at 4% of your salary.
+The employer match vests after one year of continuous employment...
+
+────────────────────────────────────────────────────────────
+  Demo 3: Out-of-scope query — triggers rewrite + fallback
+────────────────────────────────────────────────────────────
+
+🙋  Alex: What are the best Python libraries for machine learning?
+
+🤖  OnboardBot:
+That topic isn't covered in TechCore's employee handbook. In general, widely used
+Python ML libraries include scikit-learn, TensorFlow, and PyTorch. For TechCore's
+preferred tools, I'd recommend asking your engineering team lead or checking Confluence...
+
+────────────────────────────────────────────────────────────
+  Demo 4: Relevant docs — dev environment setup query
+────────────────────────────────────────────────────────────
+
+🙋  Alex: How do I set up my development environment on my first day?
+
+🤖  OnboardBot:
+Based on TechCore's onboarding checklist and dev tools policy: clone and run the
+dev-setup repository from GitHub to configure your local environment. The stack uses
+Python (FastAPI/Django) for backend, React + TypeScript for frontend...
+
+============================================================</div>
+
+									<div class="blg-paragraph">
+										<p>Demos 1, 2, and 4 retrieve relevant policy documents on the first pass and generate grounded answers. Demo 3 — asking about Python ML libraries — retrieves documents about TechCore's dev stack (tech stack policy and remote work policy), but the grader correctly identifies these as not answering the question. After rewriting and retrying, the results are still not relevant, and the fallback node answers from general knowledge with a pointer to the engineering team.</p>
+									</div>
+
+									<a id="what-to-try" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">8.4</span>
+										<h3>💡 What to Try in the Web UI</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>These queries exercise the different paths through the graph — from direct retrieval hits to the rewrite loop and the fallback path:</p>
+									</div>
+
+									<div class="blg-query-list">
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Policy hit</span>
+												"How many vacation days do I get, and can unused days roll over to next year?"
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">Observe</span>
+												OnboardBot retrieves the PTO policy document on the first pass — the grader marks it relevant and generates a grounded answer with exact numbers (20 days, 10-day rollover cap).
+											</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Benefits hit</span>
+												"Does TechCore match my 401k? When does the match vest?"
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">Observe</span>
+												Retrieves the benefits document. OnboardBot answers: 4% match, vests after 1 year of continuous employment. Fully grounded in the handbook text.
+											</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Rewrite loop</span>
+												"Can I work from home? Are there rules about it?"
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">Observe</span>
+												May trigger a rewrite to "remote work policy" or "telecommuting guidelines" before hitting the remote work document. Final answer covers the 3-day remote limit, core hours, and the $500 home office stipend.
+											</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Fallback path</span>
+												"What's the best JavaScript framework for building microservices?"
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">Observe</span>
+												Completely out of scope for the employee handbook. After rewriting and retrying, the grader still marks documents not relevant. Fallback node answers with general knowledge and recommends asking the engineering team lead.
+											</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Multi-doc hit</span>
+												"Walk me through everything I need to do in my first week at TechCore."
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">Observe</span>
+												Retrieves the Week-1 onboarding checklist and possibly the communication channels or equipment policy too. OnboardBot synthesises a structured Day 1 through Week 1 plan from multiple policy excerpts.
+											</div>
+										</div>
+									</div>
+
+									<a id="mermaid-diagram" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">8.5</span>
+										<h3>📊 Graph Diagram</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The graph is visualised automatically when you run <span class="code-soft">onboarding_runner.py</span>. The <span class="code-soft">save_figure()</span> method in <span class="code-soft">OnboardingGraph</span> exports both a <span class="code-soft">graph.mmd</span> (Mermaid source) and a <span class="code-soft">graph.png</span> to the <span class="code-soft">figure/</span> folder.</p>
+									</div>
+
+									<div class="blg-img-container">
+										<div class="blg-mermaid-wrap">
+											<div class="mermaid" style="min-width:460px;font-size:16px;">
+flowchart TD
+    S([__start__]) --> retrieve(retrieve)
+    retrieve --> grade_documents(grade_documents)
+    grade_documents -.->|"generate"| generate(generate)
+    grade_documents -.->|"rewrite_query"| rewrite_query(rewrite_query)
+    grade_documents -.->|"fallback_generate"| fallback_generate(fallback_generate)
+    rewrite_query --> retrieve
+    generate --> E([__end__])
+    fallback_generate --> E
+
+    style S                fill:#e8f5e9,stroke:#43a047,color:#1b5e20
+    style E                fill:#fce4ec,stroke:#e53935,color:#b71c1c
+    style retrieve         fill:#e3f2fd,stroke:#1e88e5,color:#0d47a1
+    style grade_documents  fill:#fff3e0,stroke:#fb8c00,color:#e65100
+    style rewrite_query    fill:#f3e5f5,stroke:#8e24aa,color:#4a148c
+    style generate         fill:#e0f2f1,stroke:#00897b,color:#004d40
+    style fallback_generate fill:#e8eaf6,stroke:#3949ab,color:#1a237e
+											</div>
+										</div>
+										<p class="blg-img-caption">Figure 1: The OnboardBot graph — five nodes with a conditional branch at <span class="code-soft">grade_documents</span>. The <span class="code-soft">rewrite_query → retrieve</span> back-edge creates the retry loop.</p>
+									</div>
+
+									<hr class="blg-hr">
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════════ -->
+								<!-- SECTION 9 -->
+								<!-- ═══════════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="web-ui" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🌐 9. Web Interface</h2></div>
+
+									<div class="blg-paragraph">
+										<p>The Gradio interface wraps <span class="code-soft">OnboardingRunner.ask()</span> in a clean chat UI. Because each question is stateless — no thread IDs, no session memory — the app is the simplest pattern in this series: a bare <span class="code-soft">gr.ChatInterface</span> with a two-argument <span class="code-soft">respond</span> function.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">import gradio as gr
+
+from onboarding_runner import OnboardingRunner
+
+
+class OnboardingApp:
+    def __init__(self):
+        self.runner = OnboardingRunner()
+
+    def respond(self, message: str, _history: list) -> str:
+        """Return OnboardBot's answer for the employee's question."""
+        if not message.strip():
+            return ""
+        return self.runner.ask(message)
+
+    def launch(self):
+        with gr.Blocks(title="🏢 TechCore Onboarding Assistant — OnboardBot") as demo:
+            gr.ChatInterface(
+                fn=self.respond,
+                title="🏢 TechCore Onboarding Assistant — OnboardBot",
+                description=(
+                    "Welcome to TechCore! Ask OnboardBot anything about company policies — "
+                    "PTO, benefits, remote work, equipment, code of conduct, and more. "
+                    "Answers are grounded in the official employee handbook."
+                ),
+            )
+        demo.launch(css=".gradio-container { max-width: 860px !important; margin: auto; }")
+
+
+if __name__ == "__main__":
+    OnboardingApp().launch()</div>
+
+									<div class="blg-code-block" data-lang="bash">cd advanced-3-rag-conditional-routing && python app.py</div>
+
+									<div class="blg-paragraph">
+										<p>The web UI starts at <span class="code-soft">http://127.0.0.1:7860</span>. The knowledge base is embedded when the app starts — expect a few seconds of startup time while documents are indexed. Once running, each question goes through the full retrieve → grade → (generate or rewrite → fallback) pipeline. Responses are grounded in actual policy text for known topics and fall back gracefully for everything outside the handbook.</p>
+									</div>
+
+									<div class="blg-img-container">
+										<img src="../img/blog_16/web_ui.webp" alt="OnboardBot Gradio web UI" class="blg-img" />
+										<p class="blg-img-caption">OnboardBot web UI — asking about PTO policy returns a grounded answer from the employee handbook.</p>
+									</div>
+
+									<blockquote class="blg-callout-tip">
+										✅ <strong>Extending the knowledge base:</strong> To point OnboardBot at real documents, replace <span class="code-soft">POLICY_DOCUMENTS</span> in <span class="code-soft">knowledge_base.py</span> with your own <span class="code-soft">list[Document]</span> objects — the rest of the graph is unchanged.
+									</blockquote>
+
+									<div class="blg-paragraph">
+										<p>OnboardBot's knowledge base contains <strong>10 TechCore policy documents</strong> that are embedded into the vector store at startup. Every question is matched against these documents — no external files need to be uploaded:</p>
+									</div>
+									<div class="blg-table">
+										<table>
+											<thead>
+												<tr>
+													<th>#</th>
+													<th>Document</th>
+													<th>Key Details</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td>1</td>
+													<td><span class="code-soft">pto_policy</span></td>
+													<td>20 days/year accrual, 10-day rollover cap, advance notice rules, full payout on separation</td>
+												</tr>
+												<tr>
+													<td>2</td>
+													<td><span class="code-soft">sick_leave_policy</span></td>
+													<td>10 paid sick days, resets Jan 1, family care covered, mental health days fully recognised</td>
+												</tr>
+												<tr>
+													<td>3</td>
+													<td><span class="code-soft">benefits_overview</span></td>
+													<td>Medical (85% company-paid), 401k with 4% match (vests after 1 yr), $1,200 wellness stipend, parental leave</td>
+												</tr>
+												<tr>
+													<td>4</td>
+													<td><span class="code-soft">work_hours_policy</span></td>
+													<td>40-hr week, core hours 10 AM–4 PM, 3 remote days/week, $500 home office stipend, 1.5× overtime</td>
+												</tr>
+												<tr>
+													<td>5</td>
+													<td><span class="code-soft">equipment_policy</span></td>
+													<td>MacBook Pro M3 on Day 1, IT portal for peripherals, VPN required, MDM enrolled</td>
+												</tr>
+												<tr>
+													<td>6</td>
+													<td><span class="code-soft">code_of_conduct</span></td>
+													<td>Harassment policy, annual compliance training within 30 days, anonymous ethics hotline</td>
+												</tr>
+												<tr>
+													<td>7</td>
+													<td><span class="code-soft">dev_tools</span></td>
+													<td>Python/FastAPI, React/TS, PostgreSQL, AWS, Docker/K8s, GitHub, Jira, Confluence</td>
+												</tr>
+												<tr>
+													<td>8</td>
+													<td><span class="code-soft">communication_policy</span></td>
+													<td>Slack primary, Google Meet for calls, async preferred, Slack reply ≤4 hrs / email ≤24 hrs</td>
+												</tr>
+												<tr>
+													<td>9</td>
+													<td><span class="code-soft">performance_review</span></td>
+													<td>Bi-annual (June + December), 5-point scale, salary and promotions decided at year-end</td>
+												</tr>
+												<tr>
+													<td>10</td>
+													<td><span class="code-soft">onboarding_checklist</span></td>
+													<td>Day-by-day tasks for Week 1: I-9, laptop setup, Slack profile, security training, dev environment</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+
+									<a id="what-to-try-ui" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">9.1</span>
+										<h3>💡 What to Try</h3>
+									</div>
+									<div class="blg-paragraph">
+										<p>These queries exercise each routing path in the graph — from direct policy hits to the rewrite loop and the fallback path:</p>
+									</div>
+									<div class="blg-query-list">
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Policy hit</span>
+												"How many PTO days do I get per year, and do they roll over?"
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">Observe</span>
+												The PTO policy document is retrieved and graded relevant. The <span class="code-soft">generate</span> node answers directly with exact numbers from the handbook — 20 days accrual, 10-day rollover cap.
+											</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Benefits hit</span>
+												"Does the company match my 401(k) contributions? When does vesting start?"
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">Observe</span>
+												The benefits document is retrieved. Response covers the 4% employer match and 1-year vesting period — grounded in policy, no hallucination.
+											</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Rewrite loop</span>
+												"What's the vacation situation here?"
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">Observe</span>
+												The vague phrasing may retrieve lower-relevance docs and fail grading. The <span class="code-soft">rewrite_query</span> node rephrases to "TechCore PTO and vacation policy" for a sharper second retrieval — the retry loop in action.
+											</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Fallback path</span>
+												"What's the office Wi-Fi password?"
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">Observe</span>
+												No policy document covers Wi-Fi passwords. After <span class="code-soft">MAX_QUERY_RETRIES</span> attempts the graph routes to <span class="code-soft">fallback_generate</span> — OnboardBot responds honestly that it can't find this in the handbook and suggests contacting IT.
+											</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Multi-doc hit</span>
+												"What laptop do I get on day one, and how do I connect from home?"
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">Observe</span>
+												Both the equipment policy (MacBook Pro M3) and the remote work policy (VPN requirement, $500 stipend) are retrieved. The grader finds them relevant and the generator combines both into one cohesive answer.
+											</div>
+										</div>
+									</div>
+
+									<hr class="blg-hr">
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════════ -->
+								<!-- SECTION 10 -->
+								<!-- ═══════════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="conclusion" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>✅ 10. Conclusion</h2></div>
+
+									<div class="blg-paragraph">
+										<p>In this post you built OnboardBot — a self-correcting RAG pipeline implemented entirely as a LangGraph graph. Rather than a linear chain that blindly generates from whatever retrieval returns, the graph grades document relevance, rewrites failing queries, and falls back gracefully when retries are exhausted. Every decision is a discrete, inspectable node — not buried inside a single black-box call.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>This Corrective RAG pattern scales naturally beyond a single onboarding use case. Swap the in-memory document loader for a production vector store (Pinecone, Weaviate, or a managed ChromaDB instance) and the same graph handles millions of documents without a node change. Add a re-ranker between <span class="code-soft">retrieve</span> and <span class="code-soft">grade_documents</span> to push retrieval precision higher before the LLM ever sees the results. Chain OnboardBot's output into the Multi-Agent Supervisor from Part 2 and it becomes one specialist agent in a broader workforce — the supervisor simply routes HR questions to OnboardBot while routing technical queries elsewhere. The graph structure remains identical; only the surrounding orchestration changes.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The five core concepts to take away:</p>
+									</div>
+									<ul class="blg-ul">
+										<li class="blg-li-check"><strong>RAG as a graph:</strong> modelling retrieve, grade, rewrite, generate, and fallback as separate nodes makes each step observable and independently testable.</li>
+										<li class="blg-li-check"><strong>Structured output for routing:</strong> <span class="code-soft">with_structured_output(GradeDecision)</span> ensures the grader always returns a valid routing key — never unexpected free text.</li>
+										<li class="blg-li-check"><strong>Retry loops with a safety valve:</strong> <span class="code-soft">rewrite_query → retrieve</span> is just a back-edge in the graph. <span class="code-soft">retry_count</span> in state guarantees termination.</li>
+										<li class="blg-li-check"><strong>Separate <span class="code-soft">question</span> from <span class="code-soft">messages</span>:</strong> the working search term can be rewritten without touching the conversation record the user sees.</li>
+										<li class="blg-li-check"><strong>Graceful fallback:</strong> when retrieval fails completely, a dedicated fallback node keeps the user experience useful rather than returning an empty error.</li>
+									</ul>
+
+									<blockquote class="blg-callout-purple">
+										🔗 <strong>LangGraph Advanced series:</strong> Part 1 covered bounded conversation memory with <span class="highlight-blue">LangGraph Advanced: Part 1 — Bounded Memory Window</span>. Part 2 built a <span class="highlight-blue">Multi-Agent Supervisor Architecture</span>. This post (Part 3) implemented a <span class="highlight-teal">RAG Pipeline with Conditional Routing</span>. Parts 4 and 5 continue with tool orchestration patterns and production deployment — coming up next.
+									</blockquote>
+
+									<hr class="blg-hr">
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════════ -->
+								<!-- TRAILING SECTIONS -->
+								<!-- ═══════════════════════════════════════════════════════════ -->
+
+								<!-- 11. Technical Stacks -->
+								<div class="blg-trailing-section">
+									<div class="blg-trailing-header">
+										<img src="../img/technical_stack/stack.png" alt="Technical Stacks">
+										<h2>Technical Stacks</h2>
+									</div>
+									<div class="blg-tech-grid">
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/python.svg" alt="Python"> Python
+										</div>
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/langgraph.svg" alt="LangGraph"> LangGraph
+										</div>
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/langchain.svg" alt="LangChain"> LangChain
+										</div>
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/gemini.svg" alt="Google Gemini"> Gemini AI
+										</div>
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/chroma.svg" alt="Chroma"> Chroma
+										</div>
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/rag.png" alt="RAG"> RAG
+										</div>
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/gradio.svg" alt="Gradio"> Gradio
+										</div>
+									</div>
+								</div>
+								<!-- End: Technical Stacks -->
+
+								<!-- 12. Download Source Code -->
+								<div class="blg-download-card">
+									<img src="../img/others/download.svg" alt="Download">
+									<div class="blg-download-info">
+										<h3>Download Source Code</h3>
+										<p>advanced-3-rag-conditional-routing — OnboardBot RAG pipeline</p>
+									</div>
+									<a href="https://github.com/shafiqul-islam-sumon/langgraph/tree/main/advanced-3-rag-conditional-routing" class="blg-download-btn" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+								</div>
+								<!-- End: Download Source Code -->
+
+								<!-- 13. References -->
+								<div class="blg-trailing-section">
+									<div class="blg-trailing-header">
+										<span style="font-size: 22px; line-height: 1;">📚</span>
+										<h2>References</h2>
+									</div>
+									<ul class="blg-ul">
+										<li class="blg-li">
+											<img src="../img/technical_stack/github.svg" alt="GitHub" width="18" style="vertical-align: middle; margin-right: 6px;">
+											<strong>GitHub Repository:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://github.com/shafiqul-islam-sumon/langgraph/tree/main/advanced-3-rag-conditional-routing">advanced-3-rag-conditional-routing</a>
+										</li>
+										<li class="blg-li">
+											<strong>LangGraph Documentation:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://langchain-ai.github.io/langgraph/">langchain-ai.github.io/langgraph</a>
+										</li>
+										<li class="blg-li">
+											<strong>LangChain — Chroma Integration:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://python.langchain.com/docs/integrations/vectorstores/chroma/">LangChain Chroma docs</a>
+										</li>
+										<li class="blg-li">
+											<strong>LangChain — Google Generative AI Embeddings:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://python.langchain.com/docs/integrations/text_embedding/google_generative_ai/">Google Embeddings docs</a>
+										</li>
+										<li class="blg-li">
+											<strong>Corrective RAG (CRAG) Paper — Shi et al., 2024:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://arxiv.org/abs/2401.15884">arxiv.org/abs/2401.15884</a>
+										</li>
+										<li class="blg-li">
+											<strong>Google AI Studio (API key):</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://aistudio.google.com/app/apikey">aistudio.google.com</a>
+										</li>
+									</ul>
+								</div>
+								<!-- End: References -->
+
+							</div><!-- end #blogContainer -->
+						</div><!-- end .blog-detail-main -->
+					</div><!-- end .blog-detail-layout -->
+
+					<div class="related-posts-section">
+						<div class="blog-title-bar">
+							<img src="../img/others/blog.png" alt="blog post" style="width: 24px; height: auto;">
+							<h2>Related Blog Posts</h2>
+						</div>
+						<div class="related-posts-wrapper">
+							<div class="related-posts-swiper-area">
+								<div class="swiper" id="postContainer">
+									<div class="swiper-wrapper">
+										<!-- populated by detail.js -->
+									</div>
+								</div>
+								<div class="swiper-button-prev"></div>
+								<div class="swiper-button-next"></div>
+							</div>
+							<div class="blg-slide-counter">
+								<div class="slide-progress-bar">
+									<div class="slide-progress-fill" id="slideProgressFill"></div>
+								</div>
+								<div class="slide-counter-label">
+									<span id="currentSlide">1</span> / <span id="totalSlides">1</span>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div><!-- end .container -->
+			</section>
+			<div id="site-footer"></div>
+		</div><!-- end #wrapper -->
+
+		<script src="../js/bootstrap.bundle.min.js"></script>
+		<script src="../js/components.js"></script>
+		<script src="../js/site.js"></script>
+		<script src="../js/swiper-bundle.min.js"></script>
+		<script src="../js/prism.js" data-manual></script>
+		<script src="../js/code-highlight.js"></script>
+		<script src="../js/detail.js"></script>
+		<script src="../js/mermaid.min.js"></script>
+		<script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+	</body>
+</html>

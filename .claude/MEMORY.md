@@ -144,3 +144,105 @@ Always propose a TOC and get user approval before writing any blog post.
 | # | Section | What it covers | Status |
 - Use ⬜ for pending, 🔄 for in progress, ✅ for done
 - Store each blog's TOC under its entry in LangGraph.md
+
+## LangGraph Basics Series — Complete (blog_8–13)
+
+All 6 posts in the Basics series are done. Scenarios used (do not repeat in Series 2):
+- blog_8: Simple Q&A Bot (StateGraph, nodes, edges)
+- blog_9: Topic Expander (state, Annotated, reducers)
+- blog_10: Customer Support Router (conditional edges, routing)
+- blog_11: Personal Study Buddy (checkpointers, memory, streaming)
+- blog_12: Personal Finance Assistant (tools, ToolNode, create_react_agent)
+- blog_13: AI Travel Planner (subgraphs, interrupt(), Human-in-the-Loop)
+
+## Subgraph & HITL Conventions (established in blog_13)
+
+**Subgraphs:**
+- Compile the subgraph once in `__init__`, store as `self.compiled`, expose via `get_compiled()`.
+- Subgraph has its own `TypedDict` state — keys never shared directly with parent state.
+- Parent node calls `self.subgraph.invoke({...})` and explicitly maps result keys back into parent state.
+- Subgraph does NOT need a checkpointer — only the parent graph needs one for HITL.
+
+**Human-in-the-Loop:**
+- `from langgraph.types import interrupt` — call `interrupt(payload)` inside a node to pause execution.
+- `from langgraph.types import Command` — call `app.invoke(Command(resume=value), config=config)` to resume.
+- The same `thread_id` must be passed in `config` for both the initial invoke and every resume call.
+- `MemorySaver` (or any checkpointer) is **required** — without it `interrupt()` cannot persist the paused state.
+- Approved keywords set: `{"approved", "approve", "yes", "ok", "looks good", "great", "perfect"}`.
+- Runner exposes two methods: `start_planning(request, thread_id)` and `resume(feedback, thread_id)`.
+
+## LangGraph Advanced Series — Conventions (blog_14–18)
+
+**Advanced series scenarios used (do not repeat):**
+- blog_14: Personal Recipe Assistant (messages + summary, RemoveMessage, SqliteSaver, streaming)
+- blog_15: AI Personal Wellness Coach (multi-agent supervisor, structured output, MemorySaver)
+- blog_16: AI Company Onboarding Assistant — OnboardBot (RAG pipeline, Chroma, grade_documents, rewrite_query, retry loop, fallback, no checkpointer)
+- blog_17: AI Real Estate Advisor — HomeBot (ReAct agent, 5 BaseTool subclasses, ToolNode, tools_condition, MemorySaver, Gradio gr.Blocks with thread_id)
+- blog_18: AI Smart Notes Assistant — NoteBot (MCP, FastMCP, MultiServerMCPClient, create_react_agent, background asyncio thread for persistent MCP connection in Gradio)
+
+### Multi-Agent Supervisor Pattern (established in blog_15)
+
+**State:** `TypedDict` with `messages: Annotated[list[BaseMessage], add_messages]` plus a routing field `next_agent: str` (last-write-wins, no reducer). Supervisor writes only to `next_agent`; specialists write only to `messages`.
+
+**SupervisorDecision schema:**
+```python
+from typing import Literal
+from pydantic import BaseModel
+
+class SupervisorDecision(BaseModel):
+    next_agent: Literal["agent_a", "agent_b", ..., "FINISH"]
+    reasoning:  str
+```
+Always use `Literal` to enumerate every valid destination — prevents hallucinated node names.
+
+**Structured output binding:**
+```python
+self.supervisor_llm = self.llm.with_structured_output(SupervisorDecision)
+```
+
+**Supervisor node — never adds messages, only updates `next_agent`:**
+```python
+def supervisor_node(self, state) -> dict:
+    messages = [SystemMessage(content=self.supervisor_prompt)] + list(state["messages"])
+    decision = self.supervisor_llm.invoke(messages)
+    return {"next_agent": decision.next_agent}
+```
+
+**Route function:**
+```python
+def route_by_agent(state) -> str:
+    return state.get("next_agent", "FINISH")
+```
+
+**Graph wiring — the supervisor loop:**
+```python
+graph.add_edge(START, "supervisor")
+graph.add_conditional_edges("supervisor", route_by_agent, {"agent_a": "agent_a", ..., "FINISH": END})
+graph.add_edge("agent_a", "supervisor")   # return edges create the loop
+graph.add_edge("agent_b", "supervisor")
+```
+
+**Runner `chat()` — collect all new AI messages from one invocation:**
+```python
+def chat(self, message, thread_id) -> str:
+    state_before = self.app.get_state(config)
+    count_before = len(state_before.values.get("messages", [])) if state_before.values else 0
+    self.app.invoke({"messages": [HumanMessage(content=message)]}, config=config)
+    state_after = self.app.get_state(config)
+    new_ai = [m for m in state_after.values.get("messages", [])[count_before:] if m.type == "ai"]
+    return "\n\n".join(_extract_text(m.content) for m in new_ai)
+```
+
+**Gradio app for multi-agent:** Use a regular function (not a generator/yield) — streaming is complex with multiple sequential LLM calls. `respond()` returns a string, not a generator.
+
+**Checkpointer:** Use `MemorySaver()` (in-process, session-scoped) rather than `SqliteSaver` when cross-restart persistence is not needed. Pass to `graph.compile(checkpointer=MemorySaver())`.
+
+**Specialist agent persona prefix:** Each specialist prompt instructs the agent to start every response with a branded emoji prefix (e.g. `🥦 **Nutrition Coach:**`). This makes multi-specialist responses readable when joined.
+
+## Blog HTML Writing Rule Update (from blog_13 experience)
+
+Stream stalls occur when Claude generates large HTML blocks in one turn. The safe pattern:
+1. Write skeleton only (head + shell + `<!-- SECTION N PLACEHOLDER -->` comments) — one small Write call.
+2. Edit in each section one at a time — one `Edit` per `<div class="blg-section">` block.
+3. Replace `<!-- TRAILING PLACEHOLDER -->` with Tech Stacks + Download + References last.
+This prevents any single generation from exceeding ~3 KB before a tool call.

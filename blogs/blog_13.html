@@ -1,0 +1,1377 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-6SEFZQJHM1"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() { dataLayer.push(arguments); }
+			gtag("js", new Date());
+			gtag("config", "G-6SEFZQJHM1", { cookie_domain: "shafiqulai.github.io" });
+		</script>
+		<meta charset="utf-8" />
+		<title>LangGraph Basics: Part 6 — Subgraphs &amp; Human-in-the-Loop</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="description" content="LangGraph graphs can grow complex — subgraphs let you nest a compiled graph inside another as a reusable, modular node with its own private state. Human-in-the-Loop uses interrupt() to pause graph execution mid-run and wait for human input before taking a critical action." />
+		<meta name="author" content="MD SHAFIQUL ISLAM" />
+		<link rel="canonical" href="https://shafiqulai.github.io/blogs/blog_13.html" />
+		<link rel="icon" href="../img/others/favicon.ico" type="image/x-icon" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+		<link rel="stylesheet" href="../css/swiper-bundle.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/style.css" />
+		<link rel="stylesheet" type="text/css" href="../css/prism.css" />
+	</head>
+	<body>
+		<div id="reading-progress"></div>
+		<div id="wrapper">
+			<div id="site-header"></div>
+			<section id="content">
+				<div class="container">
+					<div class="blog-detail-layout">
+						<aside class="toc-sidebar" id="tocSidebar">
+							<div class="toc-sidebar-header">
+								<p class="toc-sidebar-title">Contents</p>
+							</div>
+							<ul class="toc-sidebar-list">
+								<li><a href="#intro">1. Why Graphs Need Subgraphs &amp; Human Control</a></li>
+								<li class="toc-sidebar-sub"><a href="#subgraphs-concept">1.1 Subgraphs: Nesting Graphs Inside Graphs</a></li>
+								<li class="toc-sidebar-sub"><a href="#hitl-concept">1.2 Human-in-the-Loop: Keeping Humans in Charge</a></li>
+								<li class="toc-sidebar-sub"><a href="#scenario-intro">1.3 Our Scenario: AI Travel Planner</a></li>
+								<li><a href="#installation-setup">2. Installation &amp; Setup</a></li>
+								<li class="toc-sidebar-sub"><a href="#configuring-llm">2.1 Configuring the LLM</a></li>
+								<li><a href="#subgraphs-api">3. Subgraphs: Concept &amp; API</a></li>
+								<li class="toc-sidebar-sub"><a href="#subgraph-vs-node">3.1 What Makes a Subgraph Different</a></li>
+								<li class="toc-sidebar-sub"><a href="#state-isolation">3.2 State Isolation: Private vs Shared State</a></li>
+								<li class="toc-sidebar-sub"><a href="#build-compile-call">3.3 Building, Compiling &amp; Calling a Subgraph</a></li>
+								<li><a href="#hitl-api">4. Human-in-the-Loop: interrupt() and Command</a></li>
+								<li class="toc-sidebar-sub"><a href="#interrupt-pause">4.1 How interrupt() Pauses Execution</a></li>
+								<li class="toc-sidebar-sub"><a href="#command-resume">4.2 Resuming with Command(resume=...)</a></li>
+								<li class="toc-sidebar-sub"><a href="#memorysaver-required">4.3 Why MemorySaver Is Required for HITL</a></li>
+								<li><a href="#complete-example">5. Complete Example: AI Travel Planner</a></li>
+								<li class="toc-sidebar-sub"><a href="#arch-overview">5.1 Architecture Overview</a></li>
+								<li class="toc-sidebar-sub"><a href="#project-structure">5.2 Project Structure</a></li>
+								<li class="toc-sidebar-sub"><a href="#state-design">5.3 State Design (state.py)</a></li>
+								<li class="toc-sidebar-sub"><a href="#planner-subgraph">5.4 Planner Subgraph (subgraph.py)</a></li>
+								<li class="toc-sidebar-sub"><a href="#parent-nodes">5.5 Parent Graph Nodes (nodes.py)</a></li>
+								<li class="toc-sidebar-sub"><a href="#graph-assembly">5.6 Graph Assembly (graph.py)</a></li>
+								<li class="toc-sidebar-sub"><a href="#runner-output">5.7 Runner &amp; Console Output (travel_runner.py)</a></li>
+								<li class="toc-sidebar-sub"><a href="#mermaid-diagram">5.8 Graph Diagram</a></li>
+								<li><a href="#web-ui">6. Web Interface</a></li>
+								<li><a href="#conclusion">7. Conclusion</a></li>
+							</ul>
+						</aside>
+						<div class="blog-detail-main">
+							<div id="blogContainer">
+
+								<div class="container blg-title-container">
+									<h2 class="blg-title">LangGraph Basics: Part 6 — Subgraphs &amp; Human-in-the-Loop</h2>
+								</div>
+
+								<div class="author_section">
+									<img id="author_img" src="" alt="Author Photo" class="author_img">
+									<div class="author_details">
+										<span id="author_name" class="author_name"></span>
+										<span id="published_date" class="published_date"></span>
+									</div>
+								</div>
+
+								<div class="blg-img-container">
+									<img src="../img/blog_13/thumbnail.webp" alt="LangGraph Basics: Part 6 — Subgraphs &amp; Human-in-the-Loop" class="blg-thumbnail" />
+								</div>
+
+								<!-- Inline TOC -->
+								<div class="blg-toc-container">
+									<h2>📚 Table of Contents</h2>
+									<ol class="blg-toc-ol">
+										<li class="blg-toc-li"><a href="#intro">1. Why Graphs Need Subgraphs &amp; Human Control</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#subgraphs-concept">1.1 Subgraphs: Nesting Graphs Inside Graphs</a></li>
+											<li class="blg-toc-li"><a href="#hitl-concept">1.2 Human-in-the-Loop: Keeping Humans in Charge</a></li>
+											<li class="blg-toc-li"><a href="#scenario-intro">1.3 Our Scenario: AI Travel Planner</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#installation-setup">2. Installation &amp; Setup</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#configuring-llm">2.1 Configuring the LLM</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#subgraphs-api">3. Subgraphs: Concept &amp; API</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#subgraph-vs-node">3.1 What Makes a Subgraph Different</a></li>
+											<li class="blg-toc-li"><a href="#state-isolation">3.2 State Isolation: Private vs Shared State</a></li>
+											<li class="blg-toc-li"><a href="#build-compile-call">3.3 Building, Compiling &amp; Calling a Subgraph</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#hitl-api">4. Human-in-the-Loop: interrupt() and Command</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#interrupt-pause">4.1 How interrupt() Pauses Execution</a></li>
+											<li class="blg-toc-li"><a href="#command-resume">4.2 Resuming with Command(resume=...)</a></li>
+											<li class="blg-toc-li"><a href="#memorysaver-required">4.3 Why MemorySaver Is Required for HITL</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#complete-example">5. Complete Example: AI Travel Planner</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#arch-overview">5.1 Architecture Overview</a></li>
+											<li class="blg-toc-li"><a href="#project-structure">5.2 Project Structure</a></li>
+											<li class="blg-toc-li"><a href="#state-design">5.3 State Design (state.py)</a></li>
+											<li class="blg-toc-li"><a href="#planner-subgraph">5.4 Planner Subgraph (subgraph.py)</a></li>
+											<li class="blg-toc-li"><a href="#parent-nodes">5.5 Parent Graph Nodes (nodes.py)</a></li>
+											<li class="blg-toc-li"><a href="#graph-assembly">5.6 Graph Assembly (graph.py)</a></li>
+											<li class="blg-toc-li"><a href="#runner-output">5.7 Runner &amp; Console Output (travel_runner.py)</a></li>
+											<li class="blg-toc-li"><a href="#mermaid-diagram">5.8 Graph Diagram</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#web-ui">6. Web Interface</a></li>
+										<li class="blg-toc-li"><a href="#conclusion">7. Conclusion</a></li>
+									</ol>
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- 1. Why Graphs Need Subgraphs & Human Control           -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="intro" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🗺️ 1. Why Graphs Need Subgraphs &amp; Human Control</h2></div>
+
+									<div class="blg-paragraph">
+										<p>The first five parts of this series built every foundational piece of LangGraph: nodes, edges, state, reducers, conditional routing, checkpointers, streaming, and tool calling. You can now assemble a working AI agent in a single graph file. But what happens when that graph grows? A real-world application — say, one that plans a trip, routes customer tickets, or generates a research report — quickly becomes a tangle of dozens of nodes, complex routing, and mixed responsibilities. Two features address this directly: <span class="highlight-blue">subgraphs</span> let you split a large graph into composable, independently testable modules, and <span class="highlight-purple">Human-in-the-Loop</span> lets you pause execution mid-run so a person can review, correct, or approve before the graph continues.</p>
+									</div>
+
+									<a id="subgraphs-concept" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">1.1</span>
+										<h3>🧩 Subgraphs: Nesting Graphs Inside Graphs</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>A <strong>subgraph</strong> is a compiled <span class="code-soft">StateGraph</span> that is used as a node inside another graph. From the outside, the parent graph sees it as just another callable — it receives a state dict, runs its internal pipeline, and returns an updated state dict. The internal nodes, edges, and state keys are completely invisible to the parent. This is the same modular thinking you use when breaking a large Python program into functions and classes: hide the complexity, expose only the interface.</p>
+									</div>
+
+									<div class="blg-feature-grid">
+										<div class="blg-feature-card card-blue">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">🔒</span>
+												<h4>Private State</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Each subgraph has its own <span class="code-soft">TypedDict</span>. Its internal keys never pollute the parent's state namespace.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-teal">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">♻️</span>
+												<h4>Reusable Module</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>The same compiled subgraph can be called multiple times within one parent graph or shared across different parent graphs.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-green">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">🧪</span>
+												<h4>Independently Testable</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Because it is a compiled graph, you can invoke a subgraph directly in isolation — no need to run the full parent to test it.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-purple">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">🏗️</span>
+												<h4>Composable Architecture</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Large multi-agent systems (supervisor + workers) are built by nesting multiple subgraphs under a coordinator parent graph.</p>
+											</div>
+										</div>
+									</div>
+
+									<a id="hitl-concept" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">1.2</span>
+										<h3>🛑 Human-in-the-Loop: Keeping Humans in Charge</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><strong>Human-in-the-Loop (HITL)</strong> is the ability to pause a running graph, show something to a human, and wait for their response before continuing. You might need this when the stakes are too high to let an AI act alone — booking a flight, sending an email, deleting data, committing a purchase. In LangGraph, HITL is implemented with two primitives: <span class="code-soft">interrupt()</span> suspends the graph at a specific node and captures an optional payload to show the user, and <span class="code-soft">Command(resume=...)</span> resumes the graph from where it stopped, injecting the human's response back into state.</p>
+									</div>
+
+									<blockquote class="blg-callout-purple">
+										🔗 <strong>Key distinction:</strong> <span class="code-soft">interrupt()</span> is not an exception or an error — it is a controlled pause. The graph's full state (including conversation history and intermediate results) is preserved in the checkpointer. When the human responds, execution resumes from the exact node that called <span class="code-soft">interrupt()</span>, as if nothing happened.
+									</blockquote>
+
+									<a id="scenario-intro" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">1.3</span>
+										<h3>✈️ Our Scenario: AI Travel Planner</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Picture a traveler — let's call her Mia — who wants an AI to build her a complete trip plan. She types: <em>"4-day cultural trip to Kyoto, Japan — budget $1,500."</em> The AI needs to research the destination, build a day-by-day itinerary, and estimate costs. That is three distinct LLM tasks, each depending on the previous result — a perfect job for a subgraph. But before anything is booked, Mia needs to review and approve (or revise) the plan. That requires Human-in-the-Loop.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The application is structured as two graphs. The <strong>PlannerSubGraph</strong> handles the AI work: research the destination → create the itinerary → estimate the budget, all with their own private state. The <strong>TravelGraph</strong> (the parent) calls the subgraph as a single node, then pauses at <span class="code-soft">human_review</span> for Mia's feedback. If she approves, the graph writes a final confirmation. If she asks for changes, the graph loops back and re-runs the subgraph with her revision notes. This scenario requires both concepts taught in this post and would be impossible without them.</p>
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- 2. Installation & Setup                                 -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="installation-setup" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>⚙️ 2. Installation &amp; Setup</h2></div>
+
+									<div class="blg-paragraph">
+										<p>The Travel Planner shares the same environment as every other post in this series. All packages live in the root <span class="code-soft">langgraph/</span> folder — one virtual environment, one <span class="code-soft">requirements.txt</span>, one <span class="code-soft">.env</span> file.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><strong>Step 1 — Python version.</strong> This project requires Python 3.12.</p>
+									</div>
+									<div class="blg-code-block" data-lang="bash">python --version
+# Python 3.12.x</div>
+
+									<div class="blg-paragraph">
+										<p><strong>Step 2 — Virtual environment.</strong></p>
+									</div>
+									<div class="blg-code-block" data-lang="bash">python -m venv langgraph
+source langgraph/bin/activate      # macOS / Linux
+langgraph\Scripts\activate         # Windows</div>
+
+									<div class="blg-paragraph">
+										<p><strong>Step 3 — Install dependencies.</strong> The <span class="code-soft">requirements.txt</span> is shared at the <span class="code-soft">langgraph/</span> folder level:</p>
+									</div>
+									<div class="blg-code-block" data-lang="properties">langchain==1.2.17
+langgraph==1.1.10
+langchain-google-genai==4.2.2
+python-dotenv==1.2.2
+gradio==6.14.0</div>
+									<div class="blg-code-block" data-lang="bash">pip install -r requirements.txt</div>
+
+									<div class="blg-paragraph">
+										<p><strong>Step 4 — Gemini API key.</strong> Get your free key from <a class="blg-link" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio</a>. Create a <span class="code-soft">.env</span> file inside <span class="code-soft">langgraph/</span>:</p>
+									</div>
+									<div class="blg-code-block" data-lang="properties">GEMINI_API_KEY=your_api_key_here
+GEMINI_MODEL_NAME=gemini-2.0-flash
+GEMINI_TEMPERATURE=0.7
+GEMINI_MAX_RETRIES=2</div>
+
+									<blockquote class="blg-callout-warning">
+										⚠️ Add <span class="code-soft">.env</span> to your <span class="code-soft">.gitignore</span> — never commit API keys to a public repository.
+									</blockquote>
+
+									<a id="configuring-llm" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">2.1</span>
+										<h3>🤖 Configuring the LLM</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">config.py</span> loads the <span class="code-soft">.env</span> file and exposes settings as class attributes. <span class="code-soft">llm.py</span> wraps <span class="code-soft">ChatGoogleGenerativeAI</span> in a <span class="code-soft">GeminiLLM</span> class that every node imports.</p>
+									</div>
+									<div class="blg-code-block" data-lang="python">import os
+from dotenv import load_dotenv
+
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
+
+class Config:
+    MODEL_NAME  = os.getenv("GEMINI_MODEL_NAME", "gemini-2.0-flash")
+    TEMPERATURE = float(os.getenv("GEMINI_TEMPERATURE", 0.7))
+    MAX_RETRIES = int(os.getenv("GEMINI_MAX_RETRIES", 2))</div>
+
+									<div class="blg-code-block" data-lang="python">from langchain_google_genai import ChatGoogleGenerativeAI
+from config import Config
+
+class GeminiLLM:
+    def __init__(self):
+        self.llm = ChatGoogleGenerativeAI(
+            model=Config.MODEL_NAME,
+            temperature=Config.TEMPERATURE,
+            max_retries=Config.MAX_RETRIES,
+        )
+
+    def get_llm(self):
+        return self.llm</div>
+
+									<div class="blg-paragraph">
+										<p>Every node that needs the LLM calls <span class="code-soft">GeminiLLM().get_llm()</span> once in <span class="code-soft">__init__</span> and stores the result. This keeps the model instantiation in one place and makes it easy to swap providers later.</p>
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- 3. Subgraphs: Concept & API                             -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="subgraphs-api" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🧩 3. Subgraphs: Concept &amp; API</h2></div>
+
+									<div class="blg-paragraph">
+										<p>Before writing a subgraph, it helps to understand exactly how it differs from a regular node and why state isolation matters.</p>
+									</div>
+
+									<a id="subgraph-vs-node" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">3.1</span>
+										<h3>⚖️ What Makes a Subgraph Different from a Regular Node</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>A regular node is a Python function: it receives the current state, does something, and returns a partial update. A subgraph is a <em>compiled graph</em> used where a function would normally go. When the parent graph reaches the subgraph node, LangGraph invokes the compiled subgraph with the supplied input state, runs its full internal pipeline, and merges the result back into the parent's state.</p>
+									</div>
+
+									<div class="blg-table">
+										<table>
+											<thead>
+												<tr><th>Aspect</th><th>Regular Node</th><th>Subgraph Node</th></tr>
+											</thead>
+											<tbody>
+												<tr><td>What it is</td><td>A Python callable</td><td>A compiled <span class="code-soft">StateGraph</span></td></tr>
+												<tr><td>Internal structure</td><td>Flat — single function body</td><td>Multiple nodes &amp; edges inside</td></tr>
+												<tr><td>State</td><td>Reads/writes parent state keys</td><td>Has its own private <span class="code-soft">TypedDict</span></td></tr>
+												<tr><td>Testability</td><td>Unit-test the function directly</td><td>Invoke the subgraph independently</td></tr>
+												<tr><td>Reusability</td><td>Call the function from anywhere</td><td>Compile once, nest anywhere</td></tr>
+											</tbody>
+										</table>
+									</div>
+
+									<a id="state-isolation" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">3.2</span>
+										<h3>🔒 State Isolation: Private vs Shared State</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The most important rule of subgraphs is this: <strong>the subgraph's state keys never appear in the parent's state</strong>. The parent hands the subgraph an input, the subgraph runs its pipeline internally, and the parent reads back only the keys it cares about from the result. Neither side can accidentally read or overwrite the other's private keys.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>In the Travel Planner, the subgraph uses <span class="code-soft">PlannerState</span> with four keys: <span class="code-soft">trip_request</span>, <span class="code-soft">destination_info</span>, <span class="code-soft">itinerary</span>, and <span class="code-soft">budget_estimate</span>. These represent the pipeline's intermediate and final outputs. The parent graph uses <span class="code-soft">TravelState</span>, which also has <span class="code-soft">itinerary</span> and <span class="code-soft">budget_estimate</span> — but those are copied over from the subgraph result by the <span class="code-soft">run_planner</span> node, not shared directly.</p>
+									</div>
+
+									<blockquote class="blg-callout-note">
+										📌 <strong>Why does isolation matter?</strong> Imagine a subgraph that uses a key called <span class="code-soft">messages</span> to track intermediate LLM conversation steps. Without isolation, those internal messages would accumulate in the parent's <span class="code-soft">messages</span> field alongside the main conversation — corrupting the chat history. Private state prevents this class of bug entirely.
+									</blockquote>
+
+									<a id="build-compile-call" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">3.3</span>
+										<h3>🔧 Building, Compiling &amp; Calling a Subgraph</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The three steps to use a subgraph are: define its state, build and compile it (just like any graph), then call <span class="code-soft">.invoke()</span> on the compiled object from inside a parent node. Here is the minimal pattern:</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">from langgraph.graph import StateGraph, START, END
+from typing_extensions import TypedDict
+
+# Step 1: Define the subgraph's private state
+class InnerState(TypedDict):
+    input_data: str
+    result:     str
+
+# Step 2: Build and compile the subgraph
+def inner_node(state: InnerState) -> dict:
+    return {"result": f"processed: {state['input_data']}"}
+
+inner_graph = StateGraph(InnerState)
+inner_graph.add_node("inner", inner_node)
+inner_graph.add_edge(START, "inner")
+inner_graph.add_edge("inner", END)
+compiled_inner = inner_graph.compile()   # ← compile returns a CompiledStateGraph
+
+# Step 3: Call it from a parent node
+def outer_node(state) -> dict:
+    result = compiled_inner.invoke({
+        "input_data": state["user_query"],
+        "result": "",
+    })
+    return {"processed_result": result["result"]}   # merge only what the parent needs</div>
+
+									<div class="blg-paragraph">
+										<p>Notice that <span class="code-soft">outer_node</span> builds the input dict manually, passing only the keys <span class="code-soft">InnerState</span> expects. It then reads only <span class="code-soft">result</span> from the subgraph's output and maps it into the parent's own key. This explicit mapping is the interface contract between parent and subgraph.</p>
+									</div>
+
+									<blockquote class="blg-callout-tip">
+										✅ <strong>Best practice:</strong> Compile the subgraph once in <span class="code-soft">__init__</span> (not on every call). Compilation is expensive — each <span class="code-soft">StateGraph.compile()</span> call validates the graph structure and builds internal routing tables. Store the compiled result and reuse it.
+									</blockquote>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- 4. Human-in-the-Loop: interrupt() and Command           -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="hitl-api" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🛑 4. Human-in-the-Loop: interrupt() and Command</h2></div>
+
+									<div class="blg-paragraph">
+										<p>Now that subgraphs handle modularity, let's tackle the second concept: pausing a graph mid-run for human input. This section explains the two primitives — <span class="code-soft">interrupt()</span> and <span class="code-soft">Command</span> — and why a checkpointer is non-negotiable.</p>
+									</div>
+
+									<a id="interrupt-pause" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">4.1</span>
+										<h3>⏸️ How interrupt() Pauses Execution</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Calling <span class="code-soft">interrupt(payload)</span> inside a node tells LangGraph to <strong>stop graph execution immediately</strong> at that point and surface the payload to the caller. The caller (your application code) can then display the payload to the user and wait. The graph's full state — including every message, every intermediate result, every prior node output — is frozen in the checkpointer.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">from langgraph.types import interrupt
+
+def human_review_node(state) -> dict:
+    # Build a summary to show the human
+    payload = {
+        "plan":        state["itinerary"],
+        "instruction": "Type 'approved' to confirm, or describe your changes.",
+    }
+    # Execution stops here. The value returned by interrupt() is whatever
+    # the caller later passes via Command(resume=...).
+    feedback = interrupt(payload)
+    approved = feedback.strip().lower() in {"approved", "approve", "yes", "ok"}
+    return {"human_feedback": feedback, "approved": approved}</div>
+
+									<div class="blg-paragraph">
+										<p>A few things to notice: <span class="code-soft">interrupt()</span> takes any serialisable Python value as its payload — a string, a dict, a list. That value is what your application code receives from the first <span class="code-soft">invoke()</span> call, which you can display in a UI. The return value of <span class="code-soft">interrupt()</span> — assigned to <span class="code-soft">feedback</span> — is not set yet. It will be filled in only when the graph is resumed with <span class="code-soft">Command(resume=...)</span>.</p>
+									</div>
+
+									<a id="command-resume" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">4.2</span>
+										<h3>▶️ Resuming with Command(resume=...)</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>After the human has responded, you resume the paused graph by passing a <span class="code-soft">Command</span> object to <span class="code-soft">invoke()</span> instead of a state dict. <span class="code-soft">Command(resume=value)</span> tells LangGraph: "wake up the paused graph, set the return value of <span class="code-soft">interrupt()</span> to <span class="code-soft">value</span>, and continue from where you left off."</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">from langgraph.types import Command
+
+# First call: start the graph and get the interrupted state
+result = app.invoke({"trip_request": "4-day Kyoto trip"}, config=config)
+# → graph runs to interrupt(), pauses; result holds state up to that point
+
+# The human reads result["itinerary"] and types their response
+human_response = "Add more traditional tea ceremony experiences."
+
+# Second call: resume the same thread with the human's response
+result = app.invoke(Command(resume=human_response), config=config)
+# → interrupt() returns human_response; graph continues from human_review node</div>
+
+									<div class="blg-paragraph">
+										<p>The <span class="code-soft">config</span> dict must carry the same <span class="code-soft">thread_id</span> in both calls. LangGraph uses the thread ID to find the correct paused state in the checkpointer. If the thread ID does not match, the resume will fail or start a new conversation.</p>
+									</div>
+
+									<blockquote class="blg-callout-info">
+										💡 <strong>Multiple revision rounds:</strong> If the human requests changes instead of approving, the graph can loop back (via a conditional edge) and call the subgraph again with the revision feedback. The same <span class="code-soft">thread_id</span> is reused across all rounds — the checkpointer accumulates the full history of each round.
+									</blockquote>
+
+									<a id="memorysaver-required" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">4.3</span>
+										<h3>💾 Why MemorySaver Is Required for HITL</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Human-in-the-Loop <em>requires</em> a checkpointer. When <span class="code-soft">interrupt()</span> is called, LangGraph serialises the entire current state and saves it to the checkpointer keyed by <span class="code-soft">thread_id</span>. Without a checkpointer, there is nowhere to persist the paused state — the graph would have no way to resume after the human responds.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">from langgraph.checkpoint.memory import MemorySaver
+
+# MemorySaver keeps state in process memory (good for development and demos).
+# For production, swap in SqliteSaver or a database-backed checkpointer.
+graph.compile(checkpointer=MemorySaver())</div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">MemorySaver</span> stores the state in a Python dict — fast and zero-configuration, but it is lost when the process restarts. For a production HITL system where the human might not respond for hours, use a persistent checkpointer like <span class="code-soft">SqliteSaver</span> (introduced in Part 4) so the paused state survives server restarts.</p>
+									</div>
+
+									<div class="blg-arch-stack">
+										<div class="blg-arch-layer al-blue">
+											<div class="blg-arch-icon">1️⃣</div>
+											<div class="blg-arch-name">First invoke()</div>
+											<div class="blg-arch-desc">Graph runs until <span class="code-soft">interrupt()</span>. State is saved to checkpointer. Partial state dict returned to caller.</div>
+										</div>
+										<div class="blg-arch-layer al-amber">
+											<div class="blg-arch-icon">⏸️</div>
+											<div class="blg-arch-name">Human Reviews</div>
+											<div class="blg-arch-desc">Application displays the payload. Human types a response. State remains frozen in checkpointer.</div>
+										</div>
+										<div class="blg-arch-layer al-green">
+											<div class="blg-arch-icon">2️⃣</div>
+											<div class="blg-arch-name">Second invoke() with Command</div>
+											<div class="blg-arch-desc">Graph resumes from the interrupted node. <span class="code-soft">interrupt()</span> returns the human's text. Execution continues.</div>
+										</div>
+										<div class="blg-arch-layer al-purple">
+											<div class="blg-arch-icon">✅</div>
+											<div class="blg-arch-name">Conditional Edge</div>
+											<div class="blg-arch-desc">Approved → finalize. Not approved → re-run subgraph with feedback and pause again.</div>
+										</div>
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- 5. Complete Example: AI Travel Planner                 -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="complete-example" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🏗️ 5. Complete Example: AI Travel Planner</h2></div>
+
+									<div class="blg-paragraph">
+										<p>With the concepts in place, let's walk through every file in the project. Each file maps to one concept from Sections 3 and 4.</p>
+									</div>
+
+									<!-- 5.1 Architecture Overview -->
+									<a id="arch-overview" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">5.1</span>
+										<h3>🏛️ Architecture Overview</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Two graphs work together. The <strong>PlannerSubGraph</strong> is a sequential pipeline: research the destination → build the itinerary → estimate the budget. It runs inside a dedicated <span class="code-soft">PlannerState</span> and is compiled independently. The <strong>TravelGraph</strong> (parent) treats the entire subgraph as a single node called <span class="code-soft">run_planner</span>. After the plan is ready, it pauses at <span class="code-soft">human_review</span> via <span class="code-soft">interrupt()</span>. A conditional edge then routes to <span class="code-soft">finalize_plan</span> (approved) or loops back to <span class="code-soft">run_planner</span> (revision requested).</p>
+									</div>
+
+									<div class="blg-feature-grid">
+										<div class="blg-feature-card card-teal">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">🗺️</span>
+												<h4>PlannerSubGraph</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p><span class="code-soft">research_destination</span> → <span class="code-soft">create_itinerary</span> → <span class="code-soft">estimate_budget</span>. All three nodes share <span class="code-soft">PlannerState</span> privately.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-blue">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">✈️</span>
+												<h4>TravelGraph (parent)</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p><span class="code-soft">run_planner</span> → <span class="code-soft">human_review</span> → conditional → <span class="code-soft">finalize_plan</span> or back to <span class="code-soft">run_planner</span>.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-orange">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">🛑</span>
+												<h4>interrupt() + MemorySaver</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Graph pauses at <span class="code-soft">human_review</span>. State is frozen in <span class="code-soft">MemorySaver</span>. Resumes with <span class="code-soft">Command(resume=feedback)</span>.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-green">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">✅</span>
+												<h4>Revision Loop</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>If not approved, traveler feedback is merged into <span class="code-soft">trip_request</span> and the subgraph re-runs until the plan is confirmed.</p>
+											</div>
+										</div>
+									</div>
+
+									<!-- 5.2 Project Structure -->
+									<a id="project-structure" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">5.2</span>
+										<h3>📁 Project Structure</h3>
+									</div>
+
+									<div class="blg-tree"><span class="tree-root">basics-6-subgraphs-interrupt-hitl/</span>
+<span class="tree-pipe">├── </span><span class="tree-file">config.py</span>              <span class="tree-comment"># Config class — loads .env settings</span>
+<span class="tree-pipe">├── </span><span class="tree-file">llm.py</span>                 <span class="tree-comment"># GeminiLLM wrapper class</span>
+<span class="tree-pipe">├── </span><span class="tree-file">state.py</span>               <span class="tree-comment"># PlannerState + TravelState TypedDicts</span>
+<span class="tree-pipe">├── </span><span class="tree-file">subgraph.py</span>            <span class="tree-comment"># PlannerSubGraph — 3 sequential LLM nodes</span>
+<span class="tree-pipe">├── </span><span class="tree-file">nodes.py</span>               <span class="tree-comment"># TravelNodes — run_planner, human_review, finalize_plan</span>
+<span class="tree-pipe">├── </span><span class="tree-file">graph.py</span>               <span class="tree-comment"># TravelGraph — builds and compiles the parent graph</span>
+<span class="tree-pipe">├── </span><span class="tree-file">travel_runner.py</span>       <span class="tree-comment"># TravelRunner class + demo entrypoint</span>
+<span class="tree-pipe">├── </span><span class="tree-file">app.py</span>                 <span class="tree-comment"># Gradio web UI</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">prompts/</span>               <span class="tree-comment"># LLM prompt templates, one file per node</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">research.txt</span>       <span class="tree-comment"># destination research prompt</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">itinerary.txt</span>      <span class="tree-comment"># day-by-day itinerary prompt</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">budget.txt</span>         <span class="tree-comment"># budget estimate prompt</span>
+<span class="tree-pipe">│   └── </span><span class="tree-file">finalize.txt</span>       <span class="tree-comment"># trip confirmation prompt</span>
+<span class="tree-pipe">└── </span><span class="tree-dir">figure/</span>                <span class="tree-comment"># auto-created at runtime by save_figure()</span>
+<span class="tree-pipe">    ├── </span><span class="tree-file">graph.mmd</span>          <span class="tree-comment"># Mermaid diagram source</span>
+<span class="tree-pipe">    └── </span><span class="tree-file">graph.png</span>          <span class="tree-comment"># graph PNG exported by LangGraph</span></div>
+
+									<div class="blg-paragraph">
+										<p>Each file maps to one part of the implementation. <span class="code-soft">state.py</span> defines both state classes (Section 5.3). <span class="code-soft">subgraph.py</span> contains the inner graph (Section 5.4). <span class="code-soft">nodes.py</span> and <span class="code-soft">graph.py</span> build the outer graph (Sections 5.5–5.6). <span class="code-soft">travel_runner.py</span> runs the demo (Section 5.7). All LLM prompts live in <span class="code-soft">prompts/</span> as plain text files — editing a prompt never requires touching Python code.</p>
+									</div>
+
+									<!-- 5.3 State Design -->
+									<a id="state-design" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">5.3</span>
+										<h3>📦 State Design — state.py</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Two <span class="code-soft">TypedDict</span> classes live in <span class="code-soft">state.py</span>. They share some key names (<span class="code-soft">itinerary</span>, <span class="code-soft">budget_estimate</span>) but are completely separate types — sharing a name does not create a shared reference. The parent copies values from the subgraph result explicitly in <span class="code-soft">run_planner</span>.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">from typing_extensions import TypedDict
+
+
+class PlannerState(TypedDict):
+    """Private state for PlannerSubGraph — never touches TravelState."""
+    trip_request:     str   # user's original request (+ revision notes on re-runs)
+    destination_info: str   # filled by research_destination
+    itinerary:        str   # filled by create_itinerary
+    budget_estimate:  str   # filled by estimate_budget
+
+
+class TravelState(TypedDict):
+    """Shared state for the parent TravelGraph."""
+    trip_request:     str   # user's original request
+    destination_info: str   # merged from subgraph result
+    itinerary:        str   # merged from subgraph result
+    budget_estimate:  str   # merged from subgraph result
+    human_feedback:   str   # set by human_review after interrupt()
+    approved:         bool  # True when traveler types "approved"
+    final_plan:       str   # set by finalize_plan node</div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">TravelState</span> has three extra keys that <span class="code-soft">PlannerState</span> does not need: <span class="code-soft">human_feedback</span> (the traveler's raw response), <span class="code-soft">approved</span> (the boolean flag the conditional edge reads), and <span class="code-soft">final_plan</span> (the polished confirmation written by <span class="code-soft">finalize_plan</span>). The subgraph never sees these keys.</p>
+									</div>
+
+									<!-- 5.4 Planner Subgraph -->
+									<a id="planner-subgraph" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">5.4</span>
+										<h3>🗺️ Planner Subgraph — subgraph.py</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">subgraph.py</span> contains two classes: <span class="code-soft">PlannerNodes</span> (the three LLM node methods) and <span class="code-soft">PlannerSubGraph</span> (which builds, compiles, and exposes the inner graph). All three prompts are loaded from <span class="code-soft">prompts/</span> in <span class="code-soft">__init__</span> — only once, not on every node call.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">import os
+from langchain_core.messages import HumanMessage
+from langgraph.graph import END, START, StateGraph
+from llm import GeminiLLM
+from state import PlannerState
+
+_PROMPTS_DIR = os.path.join(os.path.dirname(__file__), "prompts")
+
+def _load_prompt(filename: str) -> str:
+    with open(os.path.join(_PROMPTS_DIR, filename), "r") as f:
+        return f.read().strip()
+
+
+class PlannerNodes:
+    def __init__(self):
+        self.llm              = GeminiLLM().get_llm()
+        self.research_prompt  = _load_prompt("research.txt")
+        self.itinerary_prompt = _load_prompt("itinerary.txt")
+        self.budget_prompt    = _load_prompt("budget.txt")
+
+    def research_destination(self, state: PlannerState) -> dict:
+        prompt   = self.research_prompt.format(trip_request=state["trip_request"])
+        response = self.llm.invoke([HumanMessage(content=prompt)])
+        return {"destination_info": response.content}
+
+    def create_itinerary(self, state: PlannerState) -> dict:
+        prompt = self.itinerary_prompt.format(
+            destination_info=state["destination_info"],
+            trip_request=state["trip_request"],
+        )
+        response = self.llm.invoke([HumanMessage(content=prompt)])
+        return {"itinerary": response.content}
+
+    def estimate_budget(self, state: PlannerState) -> dict:
+        prompt = self.budget_prompt.format(
+            trip_request=state["trip_request"],
+            itinerary=state["itinerary"],
+        )
+        response = self.llm.invoke([HumanMessage(content=prompt)])
+        return {"budget_estimate": response.content}
+
+
+class PlannerSubGraph:
+    def __init__(self):
+        self.nodes    = PlannerNodes()
+        self.compiled = self._build()
+
+    def _build(self):
+        graph = StateGraph(PlannerState)
+        graph.add_node("research_destination", self.nodes.research_destination)
+        graph.add_node("create_itinerary",     self.nodes.create_itinerary)
+        graph.add_node("estimate_budget",      self.nodes.estimate_budget)
+        graph.add_edge(START,                  "research_destination")
+        graph.add_edge("research_destination", "create_itinerary")
+        graph.add_edge("create_itinerary",     "estimate_budget")
+        graph.add_edge("estimate_budget",      END)
+        return graph.compile()    # no checkpointer — the parent handles persistence
+
+    def get_compiled(self):
+        return self.compiled</div>
+
+									<div class="blg-paragraph">
+										<p>Notice that <span class="code-soft">PlannerSubGraph._build()</span> calls <span class="code-soft">graph.compile()</span> with <em>no checkpointer</em>. The subgraph does not need one — it runs to completion synchronously each time the parent node calls <span class="code-soft">self.planner.invoke()</span>. The parent graph holds the checkpointer, and that is enough for the <span class="code-soft">interrupt()</span> in <span class="code-soft">human_review</span> to work.</p>
+									</div>
+
+									<!-- 5.5 Parent Graph Nodes -->
+									<a id="parent-nodes" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">5.5</span>
+										<h3>⚙️ Parent Graph Nodes — nodes.py</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">TravelNodes</span> defines the three nodes of the parent graph. The first calls the subgraph, the second uses <span class="code-soft">interrupt()</span>, and the third writes the final confirmation.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">import os
+from langchain_core.messages import HumanMessage
+from langgraph.types import interrupt
+from llm import GeminiLLM
+from state import TravelState
+from subgraph import PlannerSubGraph
+
+_PROMPTS_DIR = os.path.join(os.path.dirname(__file__), "prompts")
+_APPROVED_KEYWORDS = {"approved", "approve", "yes", "ok", "looks good", "great", "perfect"}
+
+def _load_prompt(filename: str) -> str:
+    with open(os.path.join(_PROMPTS_DIR, filename), "r") as f:
+        return f.read().strip()
+
+
+class TravelNodes:
+    def __init__(self):
+        planner          = PlannerSubGraph()
+        self.planner     = planner.get_compiled()
+        self.llm         = GeminiLLM().get_llm()
+        self.finalize_prompt = _load_prompt("finalize.txt")
+
+    # Node 1: invoke the PlannerSubGraph
+    def run_planner(self, state: TravelState) -> dict:
+        trip_request = state["trip_request"]
+        feedback     = state.get("human_feedback", "")
+        # On a revision pass, append the traveler's notes to the request
+        if feedback and not state.get("approved", True):
+            trip_request = (
+                f"{state['trip_request']}\n\n"
+                f"Revision feedback from traveler: {feedback}"
+            )
+        result = self.planner.invoke({
+            "trip_request":     trip_request,
+            "destination_info": "",
+            "itinerary":        "",
+            "budget_estimate":  "",
+        })
+        return {
+            "destination_info": result["destination_info"],
+            "itinerary":        result["itinerary"],
+            "budget_estimate":  result["budget_estimate"],
+        }
+
+    # Node 2: pause and wait for the traveler's review
+    def human_review(self, state: TravelState) -> dict:
+        plan_summary = (
+            f"DESTINATION OVERVIEW:\n{state['destination_info']}\n\n"
+            f"DAY-BY-DAY ITINERARY:\n{state['itinerary']}\n\n"
+            f"ESTIMATED BUDGET:\n{state['budget_estimate']}"
+        )
+        feedback = interrupt({
+            "plan":        plan_summary,
+            "instruction": "Type 'approved' to confirm, or describe the changes you'd like.",
+        })
+        approved = feedback.strip().lower() in _APPROVED_KEYWORDS
+        return {"human_feedback": feedback, "approved": approved}
+
+    # Node 3: write the polished confirmation
+    def finalize_plan(self, state: TravelState) -> dict:
+        prompt   = self.finalize_prompt.format(
+            itinerary=state["itinerary"],
+            budget_estimate=state["budget_estimate"],
+        )
+        response = self.llm.invoke([HumanMessage(content=prompt)])
+        return {"final_plan": response.content}</div>
+
+									<div class="blg-paragraph">
+										<p>The revision logic in <span class="code-soft">run_planner</span> is worth a close look. On the first pass, <span class="code-soft">human_feedback</span> is an empty string, so <span class="code-soft">trip_request</span> is used unchanged. On a second pass (after the traveler requests changes), the feedback is appended to the original request before it is handed to the subgraph. This means the subgraph always receives a complete, self-contained request — it never needs to know about the revision history or look at <span class="code-soft">TravelState</span> directly.</p>
+									</div>
+
+									<!-- 5.6 Graph Assembly -->
+									<a id="graph-assembly" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">5.6</span>
+										<h3>🔗 Graph Assembly — graph.py</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">graph.py</span> wires everything together: registers the three nodes, adds the edges, attaches <span class="code-soft">MemorySaver</span>, and exports the figure. The conditional edge after <span class="code-soft">human_review</span> reads <span class="code-soft">state["approved"]</span> and routes accordingly.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">import os
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.graph import END, START, StateGraph
+from nodes import TravelNodes
+from state import TravelState
+
+FIGURE_DIR = os.path.join(os.path.dirname(__file__), "figure")
+
+
+def route_after_review(state: TravelState) -> str:
+    """Approved → write confirmation. Not approved → re-run subgraph."""
+    return "finalize_plan" if state.get("approved") else "run_planner"
+
+
+class TravelGraph:
+    def __init__(self):
+        self.nodes          = TravelNodes()
+        self.compiled_graph = self._build()
+
+    def _build(self):
+        graph = StateGraph(TravelState)
+
+        graph.add_node("run_planner",   self.nodes.run_planner)
+        graph.add_node("human_review",  self.nodes.human_review)
+        graph.add_node("finalize_plan", self.nodes.finalize_plan)
+
+        graph.add_edge(START,          "run_planner")
+        graph.add_edge("run_planner",  "human_review")
+        graph.add_conditional_edges("human_review", route_after_review)
+        graph.add_edge("finalize_plan", END)
+
+        # MemorySaver is required: interrupt() must persist state between
+        # the first invoke() (pause) and the second invoke() (resume).
+        return graph.compile(checkpointer=MemorySaver())
+
+    def save_figure(self):
+        os.makedirs(FIGURE_DIR, exist_ok=True)
+        mmd_path = os.path.join(FIGURE_DIR, "graph.mmd")
+        png_path = os.path.join(FIGURE_DIR, "graph.png")
+        with open(mmd_path, "w") as f:
+            f.write(self.compiled_graph.get_graph().draw_mermaid())
+        with open(png_path, "wb") as f:
+            f.write(self.compiled_graph.get_graph().draw_mermaid_png())
+        print(f"  Graph saved → {mmd_path}")
+        print(f"  Graph saved → {png_path}")
+
+    def get_compiled_graph(self):
+        return self.compiled_graph</div>
+
+									<div class="blg-paragraph">
+										<p>The <span class="code-soft">route_after_review</span> function is a simple one-liner, but it is what makes the revision loop possible. When <span class="code-soft">approved</span> is <span class="code-soft">False</span>, the graph goes back to <span class="code-soft">run_planner</span> — which calls the subgraph again with the updated request — and then arrives back at <span class="code-soft">human_review</span> for another round. The loop repeats until the traveler approves.</p>
+									</div>
+
+									<!-- 5.7 Runner & Console Output -->
+									<a id="runner-output" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">5.7</span>
+										<h3>🚀 Runner &amp; Console Output — travel_runner.py</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p><span class="code-soft">TravelRunner</span> wraps the compiled graph and exposes two methods: <span class="code-soft">start_planning()</span> for the first invoke and <span class="code-soft">resume()</span> for subsequent invokes. Each method passes the same <span class="code-soft">thread_id</span> so the checkpointer can match the correct paused state.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">from langgraph.types import Command
+from graph import TravelGraph
+
+
+class TravelRunner:
+    def __init__(self):
+        self.travel_graph = TravelGraph()
+        self.app          = self.travel_graph.get_compiled_graph()
+
+    def save_figure(self):
+        self.travel_graph.save_figure()
+
+    def _config(self, thread_id: str) -> dict:
+        return {"configurable": {"thread_id": thread_id}}
+
+    def start_planning(self, trip_request: str, thread_id: str) -> dict:
+        """First invoke — runs until interrupt() and returns current state."""
+        return self.app.invoke(
+            {
+                "trip_request":     trip_request,
+                "destination_info": "",
+                "itinerary":        "",
+                "budget_estimate":  "",
+                "human_feedback":   "",
+                "approved":         False,
+                "final_plan":       "",
+            },
+            config=self._config(thread_id),
+        )
+
+    def resume(self, feedback: str, thread_id: str) -> dict:
+        """Resume a paused graph — passes the traveler's response via Command."""
+        return self.app.invoke(
+            Command(resume=feedback),
+            config=self._config(thread_id),
+        )
+
+
+if __name__ == "__main__":
+    SEP = "=" * 60
+    print(SEP)
+    print("   LangGraph Basics — AI Travel Planner Demo")
+    print(SEP)
+
+    runner = TravelRunner()
+    print("\n  Saving graph architecture...")
+    runner.save_figure()
+
+    # Demo 1: direct approval
+    print("\n" + "─" * 60)
+    print("  Demo 1: 4-day Kyoto trip (direct approval)")
+    print("─" * 60)
+    thread_1 = "kyoto-001"
+    result   = runner.start_planning(
+        "4-day cultural trip to Kyoto, Japan — budget $1,500", thread_1
+    )
+    print("\n✈️  GENERATED PLAN:")
+    print(result.get("itinerary", ""))
+    print("\n💰  BUDGET ESTIMATE:")
+    print(result.get("budget_estimate", ""))
+    print("\n👤  Traveler: approved")
+    result = runner.resume("approved", thread_1)
+    print("\n✅  FINAL CONFIRMED PLAN:")
+    print(result.get("final_plan", ""))
+
+    # Demo 2: revision then approval
+    print("\n" + "─" * 60)
+    print("  Demo 2: 5-day Barcelona trip (revise, then approve)")
+    print("─" * 60)
+    thread_2 = "barcelona-001"
+    result   = runner.start_planning(
+        "5-day beach &amp; culture trip to Barcelona, Spain — budget $2,000", thread_2
+    )
+    print("\n✈️  GENERATED PLAN:")
+    print(result.get("itinerary", ""))
+    feedback = "Please add more beach time on days 3 and 4, and swap the Picasso Museum for a tapas food tour."
+    print(f"\n👤  Traveler: {feedback}")
+    result = runner.resume(feedback, thread_2)
+    print("\n✈️  REVISED PLAN:")
+    print(result.get("itinerary", ""))
+    print("\n👤  Traveler: approved")
+    result = runner.resume("approved", thread_2)
+    print("\n✅  FINAL CONFIRMED PLAN:")
+    print(result.get("final_plan", ""))
+    print("\n" + SEP)</div>
+
+									<div class="blg-paragraph">
+										<p>Running <span class="code-soft">python travel_runner.py</span> produces output like this (LLM text abbreviated for clarity):</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="bash">============================================================
+   LangGraph Basics — AI Travel Planner Demo
+============================================================
+
+  Saving graph architecture...
+  Graph saved → .../basics-6-subgraphs-interrupt-hitl/figure/graph.mmd
+  Graph saved → .../basics-6-subgraphs-interrupt-hitl/figure/graph.png
+
+────────────────────────────────────────────────────────────
+  Demo 1: 4-day Kyoto trip (direct approval)
+────────────────────────────────────────────────────────────
+
+✈️  GENERATED PLAN:
+Day 1: Temples & Zen Gardens
+  Morning: Fushimi Inari Shrine (arrive before 8 a.m. to beat the crowds)
+  Afternoon: Arashiyama bamboo grove and Tenryu-ji garden
+  Evening: Dinner at Nishiki Market food stalls
+
+Day 2: Imperial Kyoto
+  ...
+
+💰  BUDGET ESTIMATE:
+Accommodation: $75/night × 4 nights = $300
+Food: $45/day × 4 days = $180
+Local transportation: $35
+Activities and entrance fees: $75
+─────────────────────────────
+Total estimated cost: $590 (well within the $1,500 budget)
+
+👤  Traveler: approved
+
+✅  FINAL CONFIRMED PLAN:
+✅ Your trip is confirmed! Here's your final travel plan:
+Day 1: Temples & Zen Gardens ...
+...
+Pack light and enjoy every moment — Kyoto awaits!
+
+────────────────────────────────────────────────────────────
+  Demo 2: 5-day Barcelona trip (revise, then approve)
+────────────────────────────────────────────────────────────
+
+✈️  GENERATED PLAN:
+Day 1: Gothic Quarter & Waterfront
+  ...
+Day 3: Gaudí Day
+  Morning: Sagrada Família tour
+  Afternoon: Picasso Museum
+  Evening: Tapas bar in El Born
+
+👤  Traveler: Please add more beach time on days 3 and 4, and swap the Picasso Museum for a tapas food tour.
+
+✈️  REVISED PLAN:
+Day 3: Gaudí & Food Tour
+  Morning: Sagrada Família
+  Afternoon: Barcelona tapas food tour through El Born & Barceloneta
+  Evening: Sunset on Barceloneta beach
+Day 4: Beach & Relaxation
+  Morning: Barceloneta beach swim
+  Afternoon: Paddleboarding at Bogatell beach
+  ...
+
+👤  Traveler: approved
+
+✅  FINAL CONFIRMED PLAN:
+✅ Your trip is confirmed! Here's your final travel plan:
+...
+Buen viaje — Barcelona is waiting!
+
+============================================================</div>
+
+								<!-- 5.8 Graph Diagram -->
+								<a id="mermaid-diagram" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<span class="blg-sub-badge">5.8</span>
+									<h3>📊 Graph Diagram</h3>
+								</div>
+
+								<div class="blg-paragraph">
+									<p>The diagram below shows the parent <span class="code-soft">TravelGraph</span>. <span class="code-soft">run_planner</span> wraps the entire subgraph pipeline as a single node; <span class="code-soft">human_review</span> is where <span class="code-soft">interrupt()</span> fires. The conditional edge creates the revision loop.</p>
+								</div>
+
+								<div class="blg-img-container">
+									<div class="blg-mermaid-wrap">
+										<div class="mermaid" style="min-width:460px;font-size:16px;">
+flowchart TD
+    S([__start__]) --> run_planner(run_planner)
+    run_planner --> human_review(human_review)
+    human_review -->|approved| finalize_plan(finalize_plan)
+    human_review -->|revision| run_planner
+    finalize_plan --> E([__end__])
+
+    style S            fill:#e8f5e9,stroke:#43a047,color:#1b5e20
+    style E            fill:#fce4ec,stroke:#e53935,color:#b71c1c
+    style run_planner  fill:#e3f2fd,stroke:#1e88e5,color:#0d47a1
+    style human_review fill:#fff3e0,stroke:#fb8c00,color:#e65100
+    style finalize_plan fill:#f3e5f5,stroke:#8e24aa,color:#4a148c
+										</div>
+									</div>
+									<p class="blg-img-caption">Figure 1: TravelGraph — run_planner invokes the PlannerSubGraph; human_review pauses with interrupt(); the conditional edge loops back for revisions.</p>
+								</div>
+
+								<div class="blg-paragraph">
+									<p>The PlannerSubGraph is hidden inside <span class="code-soft">run_planner</span> — from the parent's perspective it is a single step. Its internal structure is a simple linear chain:</p>
+								</div>
+
+								<div class="blg-img-container">
+									<div class="blg-mermaid-wrap">
+										<div class="mermaid" style="min-width:560px;font-size:16px;">
+flowchart LR
+    s([__start__]) --> A["research_destination"]
+    A --> B["create_itinerary"]
+    B --> C["estimate_budget"]
+    C --> e([__end__])
+
+    style s fill:#e8f5e9,stroke:#43a047,color:#1b5e20
+    style e fill:#fce4ec,stroke:#e53935,color:#b71c1c
+    style A fill:#e3f2fd,stroke:#1e88e5,color:#0d47a1
+    style B fill:#fff3e0,stroke:#fb8c00,color:#e65100
+    style C fill:#f3e5f5,stroke:#8e24aa,color:#4a148c
+										</div>
+									</div>
+									<p class="blg-img-caption">Figure 2: PlannerSubGraph — three sequential LLM nodes with their own private PlannerState.</p>
+								</div>
+
+								<hr class="blg-hr" />
+								</div><!-- end blg-section: complete example -->
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- 6. Web Interface                                        -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+
+								<div class="blg-section">
+									<a id="web-ui" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🖥️ 6. Web Interface</h2></div>
+
+									<div class="blg-paragraph">
+										<p>The Gradio app in <span class="code-soft">app.py</span> brings the Travel Planner to the browser. Because HITL requires two separate <span class="code-soft">invoke()</span> calls, the UI needs a way to pass the same <span class="code-soft">thread_id</span> between the "Generate Plan" button click and the "Submit Response" button click. A hidden <span class="code-soft">gr.State</span> component solves this.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>The UI has three phases: the traveler types their trip request and clicks "Generate My Plan" → the plan appears in a read-only textbox and an approval/feedback row becomes visible → the traveler types their response (or "approved") and clicks "Submit Response" → if approved, the final plan replaces the plan text and the feedback row hides; if revision, the revised plan shows and the row stays visible for another round.</p>
+									</div>
+
+									<div class="blg-code-block" data-lang="python">import gradio as gr
+from travel_runner import TravelRunner
+
+
+class TravelApp:
+    def __init__(self):
+        self.runner   = TravelRunner()
+        self._counter = 0
+
+    def _new_thread_id(self) -> str:
+        self._counter += 1
+        return f"trip-session-{self._counter}"
+
+    def _format_plan(self, result: dict) -> str:
+        parts = []
+        if result.get("destination_info"):
+            parts.append(f"📍 DESTINATION OVERVIEW\n{result['destination_info']}")
+        if result.get("itinerary"):
+            parts.append(f"📅 DAY-BY-DAY ITINERARY\n{result['itinerary']}")
+        if result.get("budget_estimate"):
+            parts.append(f"💰 ESTIMATED BUDGET\n{result['budget_estimate']}")
+        return "\n\n".join(parts) if parts else ""
+
+    def plan_trip(self, trip_request: str, thread_id: str):
+        if not trip_request.strip():
+            return "⚠️ Please describe your trip first.", thread_id, gr.update(visible=False)
+        new_thread = self._new_thread_id()
+        result     = self.runner.start_planning(trip_request, new_thread)
+        return self._format_plan(result), new_thread, gr.update(visible=True)
+
+    def submit_feedback(self, feedback: str, thread_id: str):
+        if not feedback.strip():
+            return "⚠️ Please enter your response.", thread_id, gr.update(visible=True)
+        result = self.runner.resume(feedback, thread_id)
+        if result.get("final_plan"):
+            return result["final_plan"], thread_id, gr.update(visible=False)
+        return self._format_plan(result), thread_id, gr.update(visible=True)
+
+    def launch(self):
+        with gr.Blocks(title="✈️ AI Travel Planner") as demo:
+            thread_state = gr.State("")
+            gr.Markdown("## ✈️ AI Travel Planner\n*Built with LangGraph Subgraphs + Human-in-the-Loop*")
+            trip_input  = gr.Textbox(label="Your Trip Request", lines=2,
+                                     placeholder="e.g. 4-day cultural trip to Kyoto, Japan — budget $1,500")
+            plan_btn    = gr.Button("🗺️ Generate My Plan", variant="primary")
+            plan_output = gr.Textbox(label="Generated Travel Plan", lines=18, interactive=False)
+            with gr.Row(visible=False) as approval_section:
+                feedback_input = gr.Textbox(label="Your Response", lines=2,
+                                            placeholder="Type 'approved' to confirm, or describe your changes.")
+                submit_btn = gr.Button("✅ Submit Response", variant="primary")
+            plan_btn.click(fn=self.plan_trip,
+                           inputs=[trip_input, thread_state],
+                           outputs=[plan_output, thread_state, approval_section])
+            submit_btn.click(fn=self.submit_feedback,
+                             inputs=[feedback_input, thread_state],
+                             outputs=[plan_output, thread_state, approval_section])
+        demo.launch()
+
+
+if __name__ == "__main__":
+    TravelApp().launch()</div>
+
+									<div class="blg-paragraph">
+										<p>The <span class="code-soft">approval_section</span> row starts hidden (<span class="code-soft">visible=False</span>) and only appears after the first plan is generated. This keeps the UI clean — the traveler is not asked to approve something that does not exist yet. The <span class="code-soft">thread_id</span> in <span class="code-soft">gr.State</span> is set by <span class="code-soft">plan_trip</span> and reused unchanged by every subsequent <span class="code-soft">submit_feedback</span> call, ensuring all resume calls reach the correct paused state in the checkpointer.</p>
+									</div>
+
+									<div class="blg-img-container">
+										<img src="../img/blog_13/web_ui.webp" alt="AI Travel Planner Gradio web interface" class="blg-img" />
+										<p class="blg-img-caption">Figure 3: AI Travel Planner web UI — trip request input, generated plan, and approval/feedback section.</p>
+									</div>
+
+									<div class="blg-sub-header">
+										<h3>✨ What to Try</h3>
+									</div>
+
+									<div class="blg-query-list">
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Q</span>
+												"5-day cultural trip to Kyoto and Osaka, Japan — budget $2,000."
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">A</span>
+												The subgraph researches both cities, builds a combined day-by-day itinerary, and estimates the full budget. Review the plan and approve or request changes.
+											</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Q</span>
+												"7-day beach holiday in Bali, Indonesia — budget $1,800. Please add a cooking class."
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">A</span>
+												After reviewing the initial plan, type a revision request — the subgraph re-runs with your feedback and surfaces a revised itinerary for another round of approval.
+											</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Q</span>
+												"3-day food and architecture tour of Barcelona, Spain — budget $1,200."
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">A</span>
+												Type "approved" to accept the plan immediately and trigger the finalize node — which writes your polished, confirmed travel confirmation.
+											</div>
+										</div>
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<!-- 7. Conclusion                                           -->
+								<!-- ═══════════════════════════════════════════════════════ -->
+								<div class="blg-section">
+									<a id="conclusion" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>✅ 7. Conclusion</h2></div>
+
+									<div class="blg-paragraph">
+										<p>This post added two of the most powerful patterns in LangGraph to your toolkit. <span class="highlight-blue">Subgraphs</span> let you nest a compiled graph inside another as a reusable, black-box node with its own private state — each subgraph is independently testable, independently composable, and keeps its internals completely hidden from the parent. <span class="highlight-purple">Human-in-the-Loop</span> via <span class="code-soft">interrupt()</span> and <span class="code-soft">Command(resume=...)</span> lets you pause a running graph, surface information to a user, and continue only after receiving their input — enabling review-and-approve workflows that simply are not possible in a stateless pipeline.</p>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>Together, these two features address different sides of the same scaling problem. As graph complexity grows, subgraphs keep it manageable by decomposing the logic into focused, tested modules. As the stakes of automation grow, HITL keeps humans in control by inserting review checkpoints at exactly the right moments. The AI Travel Planner showed both working in tandem: a three-node subgraph handles all the LLM planning work privately, while the parent graph orchestrates the human review cycle and loops back for revisions until the traveler is satisfied.</p>
+									</div>
+
+									<ul>
+										<li class="blg-li-check">Subgraphs — nested compiled graphs with private state, compiled once and reused as a black-box node</li>
+										<li class="blg-li-check"><span class="code-soft">interrupt(payload)</span> — pauses graph execution and surfaces a payload to the caller for review</li>
+										<li class="blg-li-check"><span class="code-soft">Command(resume=value)</span> — resumes a paused graph, injecting the human's response as the return value of <span class="code-soft">interrupt()</span></li>
+										<li class="blg-li-check"><span class="code-soft">MemorySaver</span> — required checkpointer that persists state between the first invoke (pause) and the second invoke (resume)</li>
+										<li class="blg-li-check">Revision loop — conditional edge that re-runs the subgraph with traveler feedback until the plan is approved</li>
+									</ul>
+
+									<blockquote class="blg-callout-purple">
+										🔗 <strong>LangGraph Basics Series — Complete!</strong><br>
+										This is <strong>Part 6 of 6</strong> in the LangGraph Basics series. You now have every foundational building block: StateGraph, nodes, edges, state, reducers, conditional routing, checkpointers, streaming, tool calling, subgraphs, and Human-in-the-Loop. The <strong>LangGraph Advanced series</strong> (Parts 14–18 of this blog) puts all of these together in five production-grade applications.
+									</blockquote>
+
+									<div class="blg-paragraph">
+										<p>Next up is the <strong>LangGraph Advanced series</strong> — five end-to-end projects that put everything together in production-grade applications:</p>
+										<ul class="blg-ul">
+											<li class="blg-li"><span class="highlight-blue">Part 1</span> — Conversational Chatbot with Memory</li>
+											<li class="blg-li"><span class="highlight-blue">Part 2</span> — Multi-Agent Supervisor Architecture</li>
+											<li class="blg-li"><span class="highlight-blue">Part 3</span> — RAG Pipeline with Conditional Routing</li>
+											<li class="blg-li"><span class="highlight-blue">Part 4</span> — ReAct Agent with Tool Calling</li>
+											<li class="blg-li"><span class="highlight-blue">Part 5</span> — MCP Integration with LangGraph</li>
+										</ul>
+									</div>
+
+									<hr class="blg-hr" />
+								</div>
+
+								<!-- 13. Technical Stacks -->
+								<div class="blg-trailing-section">
+									<div class="blg-trailing-header">
+										<img src="../img/technical_stack/stack.png" alt="Technical Stacks">
+										<h2>Technical Stacks</h2>
+									</div>
+									<div class="blg-tech-grid">
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/python.svg" alt="Python"> Python
+										</div>
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/langgraph.svg" alt="LangGraph"> LangGraph
+										</div>
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/langchain.svg" alt="LangChain"> LangChain
+										</div>
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/gemini.svg" alt="Gemini"> Gemini
+										</div>
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/gradio.svg" alt="Gradio"> Gradio
+										</div>
+									</div>
+								</div>
+								<!-- End: Technical Stacks -->
+
+								<!-- 14. Download Source Code -->
+								<div class="blg-download-card">
+									<img src="../img/others/download.svg" alt="Download">
+									<div class="blg-download-info">
+										<h3>Download Source Code</h3>
+										<p>AI Travel Planner — LangGraph Basics Part 6</p>
+									</div>
+									<a href="https://github.com/shafiqul-islam-sumon/langgraph/tree/main/basics-6-subgraphs-interrupt-hitl" class="blg-download-btn" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+								</div>
+								<!-- End: Download Source Code -->
+
+								<!-- 15. References -->
+								<div class="blg-trailing-section">
+									<div class="blg-trailing-header">
+										<span style="font-size: 22px; line-height: 1;">📚</span>
+										<h2>References</h2>
+									</div>
+									<ul class="blg-ul">
+										<li class="blg-li">
+											<img src="../img/technical_stack/github.svg" alt="GitHub" width="18" style="vertical-align: middle; margin-right: 6px;">
+											<strong>GitHub Repository:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://github.com/shafiqul-islam-sumon/langgraph">shafiqul-islam-sumon/langgraph</a>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/langgraph.svg" alt="LangGraph" width="18" style="vertical-align: middle; margin-right: 6px;">
+											<strong>LangGraph Docs — Subgraphs:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://langchain-ai.github.io/langgraph/concepts/subgraphs/">langchain-ai.github.io/langgraph/concepts/subgraphs</a>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/langgraph.svg" alt="LangGraph" width="18" style="vertical-align: middle; margin-right: 6px;">
+											<strong>LangGraph Docs — Human-in-the-Loop:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://langchain-ai.github.io/langgraph/concepts/human_in_the_loop/">langchain-ai.github.io/langgraph/concepts/human_in_the_loop</a>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/gemini.svg" alt="Gemini" width="18" style="vertical-align: middle; margin-right: 6px;">
+											<strong>Google AI Studio (Gemini API key):</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://aistudio.google.com/app/apikey">aistudio.google.com</a>
+										</li>
+									</ul>
+								</div>
+								<!-- End: References -->
+
+							</div><!-- end #blogContainer -->
+						</div><!-- end .blog-detail-main -->
+					</div><!-- end .blog-detail-layout -->
+
+					<!-- Related Posts -->
+					<div class="related-posts-section">
+						<div class="blog-title-bar">
+							<img src="../img/others/blog.png" alt="blog post" style="width: 24px; height: auto;">
+							<h2>Related Blog Posts</h2>
+						</div>
+						<div class="related-posts-wrapper">
+							<div class="related-posts-swiper-area">
+								<div class="swiper" id="postContainer">
+									<div class="swiper-wrapper"></div>
+								</div>
+								<div class="swiper-button-prev"></div>
+								<div class="swiper-button-next"></div>
+							</div>
+							<div class="blg-slide-counter">
+								<div class="slide-progress-bar">
+									<div class="slide-progress-fill" id="slideProgressFill"></div>
+								</div>
+								<div class="slide-counter-label">
+									<span id="currentSlide">1</span> / <span id="totalSlides">1</span>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div><!-- end .container -->
+			</section>
+			<div id="site-footer"></div>
+		</div><!-- end #wrapper -->
+
+		<script src="../js/bootstrap.bundle.min.js"></script>
+		<script src="../js/components.js"></script>
+		<script src="../js/site.js"></script>
+		<script src="../js/swiper-bundle.min.js"></script>
+		<script src="../js/prism.js" data-manual></script>
+		<script src="../js/code-highlight.js"></script>
+		<script src="../js/detail.js"></script>
+		<script src="../js/mermaid.min.js"></script>
+		<script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+	</body>
+</html>

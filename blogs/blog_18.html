@@ -1,0 +1,987 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6SEFZQJHM1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag("js", new Date());
+    gtag("config", "G-6SEFZQJHM1", { cookie_domain: "shafiqulai.github.io" });
+  </script>
+  <meta charset="utf-8" />
+  <title>LangGraph Advanced: Part 5 — MCP Integration with LangGraph</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="The Model Context Protocol (MCP) is an open standard that lets AI agents connect to tools and data sources through a common interface, eliminating the need to write custom wrappers for every service. This post builds NoteBot, an AI Smart Notes Assistant powered by a Python MCP server built with FastMCP and a LangGraph ReAct agent assembled via create_react_agent. The MCP server exposes four tools — list_notes, read_note, search_notes, and create_note — that NoteBot uses to manage a markdown notes collection." />
+  <meta name="author" content="MD SHAFIQUL ISLAM" />
+  <link rel="canonical" href="https://shafiqulai.github.io/blogs/blog_18.html" />
+  <link rel="icon" href="../img/others/favicon.ico" type="image/x-icon" />
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+  <!-- CSS -->
+  <link rel="stylesheet" href="../css/bootstrap.min.css" />
+  <link rel="stylesheet" href="../css/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/prism.css" />
+</head>
+<body>
+  <div id="reading-progress"></div>
+  <div id="wrapper">
+    <div id="site-header"></div>
+    <section id="content">
+      <div class="container">
+        <div class="blog-detail-layout">
+
+          <!-- TOC Sidebar -->
+          <aside class="toc-sidebar" id="tocSidebar">
+            <div class="toc-sidebar-header">
+              <p class="toc-sidebar-title">Contents</p>
+            </div>
+            <ul class="toc-sidebar-list">
+              <li><a href="#section-1">1. Introduction</a></li>
+              <li><a href="#section-2">2. Installation &amp; Setup</a></li>
+              <li class="toc-sidebar-sub"><a href="#sub-2-1">2.1 Configuring the LLM</a></li>
+              <li><a href="#section-3">3. What is MCP?</a></li>
+              <li><a href="#section-4">4. The Notes MCP Server</a></li>
+              <li><a href="#section-5">5. Building the Graph</a></li>
+              <li class="toc-sidebar-sub"><a href="#graph-diagram">5.1 Graph Diagram</a></li>
+              <li><a href="#section-6">6. Running the Demo</a></li>
+              <li><a href="#section-7">7. Gradio Web UI</a></li>
+              <li class="toc-sidebar-sub"><a href="#what-to-try">7.1 What to Try</a></li>
+              <li><a href="#conclusion">8. Conclusion</a></li>
+            </ul>
+          </aside>
+
+          <div class="blog-detail-main">
+            <div id="blogContainer">
+
+              <!-- Title -->
+              <div class="container blg-title-container">
+                <h2 class="blg-title">LangGraph Advanced: Part 5 — MCP Integration with LangGraph</h2>
+              </div>
+
+              <!-- Author -->
+              <div class="author_section">
+                <img id="author_img" src="" alt="Author Photo" class="author_img">
+                <div class="author_details">
+                  <span id="author_name" class="author_name"></span>
+                  <span id="published_date" class="published_date"></span>
+                </div>
+              </div>
+
+              <!-- Thumbnail -->
+              <div class="blg-img-container">
+                <img src="../img/blog_18/thumbnail.webp" alt="LangGraph Advanced Part 5 — MCP Integration with LangGraph" class="blg-thumbnail">
+              </div>
+
+              <!-- Inline TOC -->
+              <div class="blg-toc-container">
+                <h2>📚 Table of Contents</h2>
+                <ol class="blg-toc-ol">
+                  <li class="blg-toc-li"><a href="#section-1">1. Introduction</a></li>
+                  <li class="blg-toc-li"><a href="#section-2">2. Installation &amp; Setup</a></li>
+                  <ul class="blg-toc-ul">
+                    <li class="blg-toc-li"><a href="#sub-2-1">2.1 Configuring the LLM</a></li>
+                  </ul>
+                  <li class="blg-toc-li"><a href="#section-3">3. What is MCP?</a></li>
+                  <li class="blg-toc-li"><a href="#section-4">4. The Notes MCP Server</a></li>
+                  <li class="blg-toc-li"><a href="#section-5">5. Building the Graph</a></li>
+                  <ul class="blg-toc-ul">
+                    <li class="blg-toc-li"><a href="#graph-diagram">5.1 Graph Diagram</a></li>
+                  </ul>
+                  <li class="blg-toc-li"><a href="#section-6">6. Running the Demo</a></li>
+                  <li class="blg-toc-li"><a href="#section-7">7. Gradio Web UI</a></li>
+                  <ul class="blg-toc-ul">
+                    <li class="blg-toc-li"><a href="#what-to-try">7.1 What to Try</a></li>
+                  </ul>
+                  <li class="blg-toc-li"><a href="#conclusion">8. Conclusion</a></li>
+                </ol>
+              </div>
+
+              <!-- Section 1: Introduction -->
+              <div class="blg-section">
+                <a id="section-1" class="blg-anchor"></a>
+                <div class="blg-main-header"><h2>🧩 1. Introduction</h2></div>
+
+                <p class="blg-paragraph">
+                  Every tool built in the previous posts — the finance tools in Basics Part 5, the real estate tools in Advanced Part 4 — had something in common: someone had to write Python code for each one. When requirements change, you update the code. When you want the same tools in a different agent, you copy the code. This approach works, but it doesn't scale.
+                </p>
+                <p class="blg-paragraph">
+                  The <strong>Model Context Protocol (MCP)</strong> changes this. MCP is an open standard that defines a common interface for AI agents to connect to external tools, resources, and data sources — regardless of which AI framework they use. Instead of writing a custom Python wrapper for every service, you build one MCP server and any compliant agent can use it.
+                </p>
+                <p class="blg-paragraph">
+                  In this post, we build <strong>NoteBot</strong> — an AI Smart Notes Assistant. NoteBot connects to a Python MCP server that manages a folder of markdown notes and exposes four tools: <span class="code-soft">list_notes</span>, <span class="code-soft">read_note</span>, <span class="code-soft">search_notes</span>, and <span class="code-soft">create_note</span>. NoteBot uses those tools through a LangGraph ReAct agent to answer questions, find relevant notes, summarise content, and create new notes on demand.
+                </p>
+
+                <div class="blg-feature-grid">
+                  <div class="blg-feature-card card-blue">
+                    <div class="blg-feature-card-header">
+                      <span class="blg-feature-card-icon">🔌</span>
+                      <h4>MCP Server</h4>
+                    </div>
+                    <div class="blg-feature-card-body">
+                      <p>A Python FastMCP server that exposes notes tools through a standardised protocol interface.</p>
+                    </div>
+                  </div>
+                  <div class="blg-feature-card card-purple">
+                    <div class="blg-feature-card-header">
+                      <span class="blg-feature-card-icon">🔗</span>
+                      <h4>MultiServerMCPClient</h4>
+                    </div>
+                    <div class="blg-feature-card-body">
+                      <p>Connects to one or more MCP servers and returns LangChain-compatible tool objects.</p>
+                    </div>
+                  </div>
+                  <div class="blg-feature-card card-green">
+                    <div class="blg-feature-card-header">
+                      <span class="blg-feature-card-icon">🤖</span>
+                      <h4>ReAct Agent</h4>
+                    </div>
+                    <div class="blg-feature-card-body">
+                      <p>Built with <span class="code-soft">create_react_agent</span> — same loop as Part 4, tools now come from MCP.</p>
+                    </div>
+                  </div>
+                  <div class="blg-feature-card card-orange">
+                    <div class="blg-feature-card-header">
+                      <span class="blg-feature-card-icon">🧵</span>
+                      <h4>Persistent Connection</h4>
+                    </div>
+                    <div class="blg-feature-card-body">
+                      <p>Background asyncio thread keeps the MCP connection alive inside the Gradio web UI.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <hr class="blg-hr">
+              </div>
+              <!-- Section 2: Installation & Setup -->
+              <div class="blg-section">
+                <a id="section-2" class="blg-anchor"></a>
+                <div class="blg-main-header"><h2>⚙️ 2. Installation &amp; Setup</h2></div>
+
+                <p class="blg-paragraph">
+                  This project is part of the shared LangGraph series environment. All packages are installed once from a single <span class="code-soft">requirements.txt</span> at the root of the <span class="code-soft">langgraph/</span> folder.
+                </p>
+
+                <p class="blg-paragraph"><strong>Python version:</strong></p>
+                <div class="blg-code-block" data-lang="bash">python --version
+# Python 3.12.x</div>
+
+                <p class="blg-paragraph"><strong>Create and activate a virtual environment:</strong></p>
+                <div class="blg-code-block" data-lang="bash"># Create
+python -m venv langgraph
+
+# Activate — macOS / Linux
+source langgraph/bin/activate
+
+# Activate — Windows
+langgraph\Scripts\activate</div>
+
+                <p class="blg-paragraph"><strong>Install dependencies</strong> — two new packages are added for MCP:</p>
+                <div class="blg-code-block" data-lang="properties">langchain==1.2.17
+langgraph==1.1.10
+langchain-google-genai==4.2.2
+python-dotenv==1.2.2
+gradio==6.14.0
+chromadb==0.6.3
+mcp==1.9.0
+langchain-mcp-adapters==0.1.7</div>
+
+                <div class="blg-code-block" data-lang="bash">pip install -r requirements.txt</div>
+
+                <blockquote class="blg-callout-info">
+                  <strong>Two new packages:</strong> <span class="code-soft">mcp</span> is the official Python SDK for building MCP servers (provides <span class="code-soft">FastMCP</span>). <span class="code-soft">langchain-mcp-adapters</span> bridges those servers to LangChain/LangGraph by converting MCP tools into <span class="code-soft">StructuredTool</span> objects the agent can call.
+                </blockquote>
+
+                <p class="blg-paragraph"><strong>Gemini API key</strong> — create a <span class="code-soft">.env</span> file in the <span class="code-soft">langgraph/</span> folder:</p>
+                <div class="blg-code-block" data-lang="properties">GOOGLE_API_KEY=your_google_api_key_here
+GEMINI_MODEL_NAME=gemini-3-flash-preview
+GEMINI_TEMPERATURE=0.7
+GEMINI_MAX_RETRIES=2</div>
+
+                <p class="blg-paragraph">Get a free key at <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio</a>. Never commit <span class="code-soft">.env</span> — it is already in <span class="code-soft">.gitignore</span>.</p>
+
+                <a id="sub-2-1" class="blg-anchor"></a>
+                <div class="blg-sub-header">
+                  <span class="blg-sub-badge">2.1</span>
+                  <h3>⚙️ Configuring the LLM</h3>
+                </div>
+
+                <p class="blg-paragraph"><span class="code-soft">config.py</span> reads the environment variables; <span class="code-soft">llm.py</span> wraps <span class="code-soft">ChatGoogleGenerativeAI</span> — identical to every other post in this series:</p>
+
+                <div class="blg-code-block" data-lang="python"># config.py
+import os
+from dotenv import load_dotenv
+
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
+
+class Config:
+    MODEL_NAME  = os.getenv("GEMINI_MODEL_NAME", "gemini-3-flash-preview")
+    TEMPERATURE = float(os.getenv("GEMINI_TEMPERATURE", 0.7))
+    MAX_RETRIES = int(os.getenv("GEMINI_MAX_RETRIES", 2))</div>
+
+                <div class="blg-code-block" data-lang="python"># llm.py
+from langchain_google_genai import ChatGoogleGenerativeAI
+from config import Config
+
+class GeminiLLM:
+    def __init__(self):
+        self.llm = ChatGoogleGenerativeAI(
+            model=Config.MODEL_NAME,
+            temperature=Config.TEMPERATURE,
+            max_retries=Config.MAX_RETRIES,
+        )
+
+    def get_llm(self):
+        return self.llm</div>
+
+                <hr class="blg-hr">
+              </div>
+              <!-- Section 3: What is MCP? -->
+              <div class="blg-section">
+                <a id="section-3" class="blg-anchor"></a>
+                <div class="blg-main-header"><h2>🔌 3. What is MCP?</h2></div>
+
+                <p class="blg-paragraph">
+                  The <strong>Model Context Protocol (MCP)</strong> is an open standard published by Anthropic that defines how AI models connect to external tools and data sources. Think of it like a USB standard for AI: instead of every device needing a custom cable for every computer, you build to the standard once and everything just works together.
+                </p>
+
+                <p class="blg-paragraph">
+                  MCP has two sides: a <strong>server</strong> that exposes tools, resources, or prompts; and a <strong>client</strong> that connects to servers and calls their tools. The server and client communicate via a <strong>transport layer</strong> — the most common being <span class="code-soft">stdio</span> (subprocess pipes, for local servers) and <span class="code-soft">SSE</span> (HTTP server-sent events, for remote servers).
+                </p>
+
+                <blockquote class="blg-callout-info">
+                  <strong>MCP vs custom tools:</strong> In previous posts, tools were Python classes or functions defined directly in the agent's codebase. With MCP, the tools live in a separate server process. The agent only knows the tool's name, description, and parameter schema — not the implementation. This means you can swap, update, or share the server without touching the agent.
+                </blockquote>
+
+                <p class="blg-paragraph">
+                  Here's a side-by-side comparison of both approaches for the same tool:
+                </p>
+
+                <div class="blg-table">
+                  <table>
+                    <thead>
+                      <tr><th>Aspect</th><th>Custom BaseTool (Part 4)</th><th>MCP Tool (Part 5)</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>Defined in</td><td>Agent's Python codebase</td><td>Separate MCP server process</td></tr>
+                      <tr><td>Schema</td><td>Pydantic <span class="code-soft">BaseModel</span> (<span class="code-soft">args_schema</span>)</td><td>Auto-generated from type hints + docstring</td></tr>
+                      <tr><td>Agent change needed?</td><td>Yes — import new tool class, add to <span class="code-soft">TOOLS</span></td><td>No — server exposes it; client discovers it</td></tr>
+                      <tr><td>Reuse across agents</td><td>Copy the file / package</td><td>Connect any agent to the same MCP server</td></tr>
+                      <tr><td>Language</td><td>Must be Python</td><td>Any language (Python, Node.js, Go, …)</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <p class="blg-paragraph">
+                  In this project, <span class="code-soft">MultiServerMCPClient</span> from <span class="code-soft">langchain-mcp-adapters</span> handles the connection. Instantiate it directly, then call <span class="code-soft">await client.get_tools()</span> to retrieve all tools from all connected servers as a flat list — those tools work exactly like any other LangChain tool.
+                </p>
+
+                <div class="blg-code-block" data-lang="python">from langchain_mcp_adapters.client import MultiServerMCPClient
+
+MCP_CONFIG = {
+    "notes": {                             # server name (any string)
+        "command": "python",               # start command
+        "args": ["-m", "mcp_server.notes_server"],
+        "transport": "stdio",              # communicate via subprocess pipes
+    }
+}
+
+client = MultiServerMCPClient(MCP_CONFIG)
+tools  = await client.get_tools()          # list of StructuredTool objects
+print(tools)                               # [list_notes, read_note, search_notes, create_note]</div>
+
+                <p class="blg-paragraph">
+                  The <span class="code-soft">MCP_CONFIG</span> dict maps server names to connection settings. With <span class="code-soft">stdio</span> transport, <span class="code-soft">MultiServerMCPClient</span> starts the server as a subprocess when you enter the context and terminates it when you exit. With <span class="code-soft">sse</span> transport, it connects to an already-running HTTP server instead.
+                </p>
+
+                <hr class="blg-hr">
+              </div>
+              <!-- Section 4: The Notes MCP Server -->
+              <div class="blg-section">
+                <a id="section-4" class="blg-anchor"></a>
+                <div class="blg-main-header"><h2>📂 4. The Notes MCP Server</h2></div>
+
+                <p class="blg-paragraph">
+                  The MCP server lives in <span class="code-soft">mcp_server/notes_server.py</span> and uses <span class="code-soft">FastMCP</span> — a high-level Python helper that turns annotated functions into MCP tools with minimal boilerplate. The server manages a <span class="code-soft">notes/</span> folder containing markdown files.
+                </p>
+
+                <p class="blg-paragraph"><strong>Project structure:</strong></p>
+                <div class="blg-tree"><span class="tree-root">advanced-5-mcp-integration/</span>
+<span class="tree-pipe">├── </span><span class="tree-file">config.py</span>              <span class="tree-comment"># Config — reads .env</span>
+<span class="tree-pipe">├── </span><span class="tree-file">llm.py</span>                 <span class="tree-comment"># GeminiLLM wrapper</span>
+<span class="tree-pipe">├── </span><span class="tree-file">graph.py</span>               <span class="tree-comment"># NoteGraph — create_react_agent + MemorySaver</span>
+<span class="tree-pipe">├── </span><span class="tree-file">notebot_runner.py</span>      <span class="tree-comment"># Async console entry point</span>
+<span class="tree-pipe">├── </span><span class="tree-file">app.py</span>                 <span class="tree-comment"># Gradio Blocks with background MCP thread</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">mcp_server/</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">__init__.py</span>        <span class="tree-comment"># Package marker</span>
+<span class="tree-pipe">│   └── </span><span class="tree-file">notes_server.py</span>   <span class="tree-comment"># FastMCP server — 4 notes tools</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">notes/</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">langgraph_notes.md</span> <span class="tree-comment"># Sample note — LangGraph concepts</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">python_tips.md</span>     <span class="tree-comment"># Sample note — Python async and OOP tips</span>
+<span class="tree-pipe">│   └── </span><span class="tree-file">project_ideas.md</span>   <span class="tree-comment"># Sample note — AI project ideas</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">prompts/</span>
+<span class="tree-pipe">│   └── </span><span class="tree-file">system.txt</span>         <span class="tree-comment"># NoteBot persona + tool-use instructions</span>
+<span class="tree-pipe">└── </span><span class="tree-dir">figure/</span>                 <span class="tree-comment"># Auto-generated diagrams (git-ignored)</span></div>
+
+                <p class="blg-paragraph">The full server is shown below — notice that there is no manual Pydantic schema, no <span class="code-soft">BaseTool</span> subclass, and no separate description file. <span class="code-soft">FastMCP</span> reads the function name, type hints, and docstring to generate the MCP tool schema automatically:</p>
+
+                <div class="blg-code-block" data-lang="python">from pathlib import Path
+from mcp.server.fastmcp import FastMCP
+
+NOTES_DIR = Path(__file__).parent.parent / "notes"
+mcp = FastMCP("Notes MCP Server")
+
+
+@mcp.tool()
+def list_notes() -> str:
+    """Return a newline-separated list of all note filenames."""
+    files = sorted(f.name for f in NOTES_DIR.glob("*.md") if f.is_file())
+    return "\n".join(files) if files else "No notes found."
+
+
+@mcp.tool()
+def read_note(filename: str) -> str:
+    """Read and return the full content of a note.
+
+    Args:
+        filename: The name of the note file to read (e.g. 'python_tips.md').
+    """
+    path = NOTES_DIR / filename
+    if not path.exists() or path.suffix != ".md":
+        return f"Note '{filename}' not found."
+    return path.read_text(encoding="utf-8")
+
+
+@mcp.tool()
+def search_notes(query: str) -> str:
+    """Search all notes for lines containing the query text (case-insensitive).
+
+    Args:
+        query: The text to search for across all notes.
+    """
+    results = []
+    for f in sorted(NOTES_DIR.glob("*.md")):
+        matches = [
+            f"  [{f.name}] {line.strip()}"
+            for line in f.read_text(encoding="utf-8").splitlines()
+            if query.lower() in line.lower()
+        ]
+        results.extend(matches)
+    return "\n".join(results) if results else f"No matches found for '{query}'."
+
+
+@mcp.tool()
+def create_note(filename: str, content: str) -> str:
+    """Create a new markdown note with the given content.
+
+    Args:
+        filename: Filename for the new note — '.md' is appended if missing.
+        content:  Full markdown content to write into the note.
+    """
+    if not filename.endswith(".md"):
+        filename += ".md"
+    path = NOTES_DIR / filename
+    path.write_text(content, encoding="utf-8")
+    return f"Note '{filename}' created successfully ({len(content)} characters)."
+
+
+if __name__ == "__main__":
+    mcp.run()</div>
+
+                <blockquote class="blg-callout-tip">
+                  <strong>How <span class="code-soft">@mcp.tool()</span> generates the schema:</strong> The function name becomes the tool name (<span class="code-soft">read_note</span>). The first line of the docstring becomes the description. The <span class="code-soft">Args:</span> section in the docstring provides per-parameter descriptions. Python type hints (<span class="code-soft">filename: str</span>) determine the JSON schema types. The MCP client sends this schema to the LLM so it knows exactly how to call the tool.
+                </blockquote>
+
+                <p class="blg-paragraph">
+                  The server is started as a subprocess by <span class="code-soft">MultiServerMCPClient</span> using the <span class="code-soft">stdio</span> transport — the agent communicates with it through standard input and output pipes. This means the server and agent run as separate processes but on the same machine, connected by the MCP protocol.
+                </p>
+
+                <hr class="blg-hr">
+              </div>
+              <!-- Section 5: Building the Graph -->
+              <div class="blg-section">
+                <a id="section-5" class="blg-anchor"></a>
+                <div class="blg-main-header"><h2>🔧 5. Building the Graph</h2></div>
+
+                <p class="blg-paragraph">
+                  Because the ReAct loop was already covered in detail in Advanced Part 4, this post uses <span class="code-soft">create_react_agent</span> — the prebuilt LangGraph helper that assembles the full agent-node → ToolNode → tools_condition pattern in one call. The main focus here is on <em>where the tools come from</em>: they are passed in as a parameter from the MCP client rather than imported from a local module.
+                </p>
+
+                <p class="blg-paragraph"><span class="code-soft">NoteGraph</span> takes <span class="code-soft">tools</span> and <span class="code-soft">system_prompt</span> as constructor arguments — both provided by the caller <em>after</em> the MCP connection is established:</p>
+
+                <div class="blg-code-block" data-lang="python">import os
+
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.prebuilt import create_react_agent
+
+from llm import GeminiLLM
+
+FIGURE_DIR = os.path.join(os.path.dirname(__file__), "figure")
+
+
+class NoteGraph:
+    def __init__(self, tools: list, system_prompt: str):
+        self.tools          = tools
+        self.system_prompt  = system_prompt
+        self.compiled_graph = self._build()
+
+    def _build(self):
+        llm = GeminiLLM().get_llm()
+        return create_react_agent(
+            model=llm,
+            tools=self.tools,
+            prompt=self.system_prompt,
+            checkpointer=MemorySaver(),
+        )
+
+    def get_compiled_graph(self):
+        return self.compiled_graph
+
+    def save_figure(self):
+        os.makedirs(FIGURE_DIR, exist_ok=True)
+        mmd_path = os.path.join(FIGURE_DIR, "graph.mmd")
+        with open(mmd_path, "w") as f:
+            f.write(self.compiled_graph.get_graph().draw_mermaid())
+        png_path = os.path.join(FIGURE_DIR, "graph.png")
+        with open(png_path, "wb") as f:
+            f.write(self.compiled_graph.get_graph().draw_mermaid_png())
+        print(f"  Graph saved → {mmd_path}")
+        print(f"  Graph saved → {png_path}")</div>
+
+                <p class="blg-paragraph">Line by line:</p>
+                <ul class="blg-ul">
+                  <li class="blg-li"><span class="code-soft">tools: list</span> — the <span class="code-soft">StructuredTool</span> objects returned by <span class="code-soft">client.get_tools()</span>. They behave identically to tools built with <span class="code-soft">@tool</span> or <span class="code-soft">BaseTool</span>.</li>
+                  <li class="blg-li"><span class="code-soft">prompt=self.system_prompt</span> — a string that <span class="code-soft">create_react_agent</span> converts to a <span class="code-soft">SystemMessage</span> and prepends to every turn. NoteBot's persona and tool-use instructions live in <span class="code-soft">prompts/system.txt</span>.</li>
+                  <li class="blg-li"><span class="code-soft">checkpointer=MemorySaver()</span> — enables conversation memory. Each <span class="code-soft">thread_id</span> gets its own isolated session history.</li>
+                  <li class="blg-li"><span class="code-soft">save_figure()</span> — same pattern as all previous posts: saves the graph as <span class="code-soft">graph.mmd</span> and <span class="code-soft">graph.png</span> into <span class="code-soft">figure/</span>.</li>
+                </ul>
+
+                <blockquote class="blg-callout-info">
+                  <strong>Why no <span class="code-soft">state.py</span> or <span class="code-soft">nodes.py</span>?</strong> <span class="code-soft">create_react_agent</span> builds the agent node, ToolNode, and tools_condition routing internally. There is no custom <span class="code-soft">TypedDict</span> state because the agent uses LangGraph's built-in messages state. When the main new concept is MCP (not the ReAct internals), the prebuilt shortcut keeps the code focused on what matters.
+                </blockquote>
+
+                <p class="blg-paragraph">
+                  The resulting graph has the same structure as Advanced Part 4: <span class="code-soft">START → agent → (tools → agent loop) → END</span>. The difference is that the tools node executes MCP tools — functions running in a separate subprocess — rather than local Python methods.
+                </p>
+
+                <a id="graph-diagram" class="blg-anchor"></a>
+                <div class="blg-sub-header">
+                  <span class="blg-sub-badge">5.1</span>
+                  <h3>📊 Graph Diagram</h3>
+                </div>
+                <p class="blg-paragraph">
+                  The compiled NoteBot graph — identical topology to Part 4's ReAct agent, but the <span class="code-soft">tools</span> node now dispatches MCP tool calls to the running <span class="code-soft">notes_server</span> subprocess instead of local Python methods.
+                </p>
+                <div class="blg-mermaid-wrap">
+                  <div class="mermaid" style="min-width:460px;font-size:16px;">
+flowchart TD
+    S([__start__]) --> agent["🤖 agent\ncreate_react_agent"]
+    agent -- "has tool_calls" --> tools["🔌 tools\nMCP ToolNode"]
+    tools -- "returns ToolMessages" --> agent
+    agent -- "no tool_calls" --> E([__end__])
+
+    style S     fill:#e8f5e9,stroke:#43a047,color:#1b5e20
+    style E     fill:#fce4ec,stroke:#e53935,color:#b71c1c
+    style agent fill:#e3f2fd,stroke:#1e88e5,color:#0d47a1
+    style tools fill:#fff3e0,stroke:#fb8c00,color:#e65100
+                  </div>
+                </div>
+
+                <hr class="blg-hr">
+              </div>
+              <!-- Section 6: Running the Demo -->
+              <div class="blg-section">
+                <a id="section-6" class="blg-anchor"></a>
+                <div class="blg-main-header"><h2>▶️ 6. Running the Demo</h2></div>
+
+                <p class="blg-paragraph">
+                  <span class="code-soft">notebot_runner.py</span> is an <strong>async module</strong>. The MCP client is created with <span class="code-soft">MultiServerMCPClient(MCP_CONFIG)</span> and tools are fetched with <span class="code-soft">await client.get_tools()</span> — no context manager needed in <span class="code-soft">langchain-mcp-adapters ≥ 0.1.0</span>. <span class="code-soft">asyncio.run(main())</span> starts the event loop and keeps the client alive for the duration of the run.
+                </p>
+
+                <div class="blg-code-block" data-lang="python">import asyncio
+import os
+
+from langchain_core.messages import HumanMessage
+from langchain_mcp_adapters.client import MultiServerMCPClient
+
+from graph import NoteGraph
+
+MCP_CONFIG = {
+    "notes": {
+        "command": "python",
+        "args": ["-m", "mcp_server.notes_server"],
+        "transport": "stdio",
+    }
+}
+
+_PROMPTS_DIR = os.path.join(os.path.dirname(__file__), "prompts")
+
+
+def _load_prompt(filename: str) -> str:
+    with open(os.path.join(_PROMPTS_DIR, filename), "r") as f:
+        return f.read().strip()
+
+
+def _extract_text(content) -> str:
+    if isinstance(content, list):
+        return "".join(
+            b.get("text", "") for b in content
+            if isinstance(b, dict) and b.get("type") == "text"
+        )
+    return str(content)
+
+
+class NoteBotRunner:
+    def __init__(self, app):
+        self.app = app
+
+    def _config(self, thread_id: str) -> dict:
+        return {"configurable": {"thread_id": thread_id}}
+
+    async def chat(self, message: str, thread_id: str) -> str:
+        result = await self.app.ainvoke(
+            {"messages": [HumanMessage(content=message)]},
+            config=self._config(thread_id),
+        )
+        ai_messages = [
+            m for m in result["messages"]
+            if m.type == "ai" and not getattr(m, "tool_calls", [])
+        ]
+        if not ai_messages:
+            return "I'm sorry, I couldn't generate a response. Please try again."
+        return _extract_text(ai_messages[-1].content)
+
+
+async def main():
+    print("=" * 60)
+    print("   LangGraph Advanced — AI Smart Notes Assistant Demo")
+    print("=" * 60)
+
+    client        = MultiServerMCPClient(MCP_CONFIG)
+    tools         = await client.get_tools()
+    system_prompt = _load_prompt("system.txt")
+
+    graph  = NoteGraph(tools, system_prompt)
+    runner = NoteBotRunner(graph.get_compiled_graph())
+
+    print("\n  Saving graph architecture...")
+    graph.save_figure()
+
+    # run demos ...
+
+if __name__ == "__main__":
+    asyncio.run(main())</div>
+
+                <p class="blg-paragraph">
+                  The filter <span class="code-soft">not getattr(m, "tool_calls", [])</span> skips intermediate <span class="code-soft">AIMessage</span>s that contain tool requests — only the last message with plain text content is returned as the answer.
+                </p>
+
+                <div class="blg-code-block" data-lang="bash">cd advanced-5-mcp-integration && python notebot_runner.py</div>
+
+                <p class="blg-paragraph">Expected console output:</p>
+                <div class="blg-code-block" data-lang="bash">============================================================
+   LangGraph Advanced — AI Smart Notes Assistant Demo
+============================================================
+
+  Saving graph architecture...
+  Graph saved → /path/to/figure/graph.mmd
+  Graph saved → /path/to/figure/graph.png
+
+────────────────────────────────────────────────────────────
+  Demo 1: List available notes
+────────────────────────────────────────────────────────────
+
+🙋  User: What notes do I have in my collection?
+
+🤖  NoteBot:
+You have 3 notes in your collection:
+• langgraph_notes.md
+• python_tips.md
+• project_ideas.md
+Would you like me to read or summarise any of them?
+
+────────────────────────────────────────────────────────────
+  Demo 2: Read and summarise a note
+────────────────────────────────────────────────────────────
+
+🙋  User: Summarise my LangGraph notes for me.
+
+🤖  NoteBot:
+Here's a summary of your LangGraph notes:
+
+**Core primitives:** StateGraph, State (TypedDict), Nodes (callables
+returning partial state updates), Edges (static or conditional), and
+Checkpointers (MemorySaver for RAM, SqliteSaver for disk persistence).
+
+**ReAct pattern:** START → agent ←→ tools → END. The agent node uses
+bind_tools(); ToolNode executes calls; tools_condition routes based on
+whether the last message contains tool_calls.
+
+**Advanced patterns covered:** Supervisor multi-agent, RAG with conditional
+routing, Human-in-the-Loop with interrupt(), Subgraphs, and MCP integration
+using MultiServerMCPClient and create_react_agent.
+
+────────────────────────────────────────────────────────────
+  Demo 3: Search across notes
+────────────────────────────────────────────────────────────
+
+🙋  User: Which of my notes mention Python?
+
+🤖  NoteBot:
+I found Python-related content in 2 notes:
+
+• **python_tips.md** — multiple sections on async programming, type hints,
+  and OOP conventions.
+• **langgraph_notes.md** — Python import examples for LangGraph and
+  LangChain MCP adapters.
+• **project_ideas.md** — mentions Python briefly in the MCP server ideas.
+
+────────────────────────────────────────────────────────────
+  Demo 4: Create a new note
+────────────────────────────────────────────────────────────
+
+🙋  User: Create a note called 'mcp_summary.md' that explains what the
+         Model Context Protocol is and why it matters for AI agents.
+
+🤖  NoteBot:
+Done! I've created 'mcp_summary.md' with a structured overview of the
+Model Context Protocol. The note covers what MCP is, how it differs from
+custom tool wrappers, the client-server architecture, supported transports
+(stdio and SSE), and why protocol-level standardisation matters for
+building reusable, language-agnostic AI tools.
+
+============================================================</div>
+
+                <hr class="blg-hr">
+              </div>
+              <!-- Section 7: Gradio Web UI -->
+              <div class="blg-section">
+                <a id="section-7" class="blg-anchor"></a>
+                <div class="blg-main-header"><h2>🌐 7. Gradio Web UI</h2></div>
+
+                <p class="blg-paragraph">
+                  The Gradio app has one challenge the console runner doesn't: <span class="code-soft">MultiServerMCPClient</span> must stay alive across all requests, but Gradio's request handler is called from a synchronous thread. Calling <span class="code-soft">asyncio.run()</span> inside a Gradio handler fails if an event loop is already running — and creating a new client per request would kill and restart the MCP server subprocess on every message.
+                </p>
+
+                <p class="blg-paragraph">
+                  The solution is a <strong>persistent background event loop</strong>. At startup, a daemon thread is started that owns a dedicated asyncio event loop. That thread instantiates <span class="code-soft">MultiServerMCPClient(MCP_CONFIG)</span>, fetches tools, builds the graph, then suspends at <span class="code-soft">await asyncio.Future()</span> — keeping the client alive indefinitely. Gradio request handlers submit coroutines into that loop using <span class="code-soft">asyncio.run_coroutine_threadsafe()</span>.
+                </p>
+
+                <div class="blg-code-block" data-lang="python">import asyncio
+import os
+import threading
+import uuid
+
+import gradio as gr
+from langchain_core.messages import HumanMessage
+from langchain_mcp_adapters.client import MultiServerMCPClient
+
+from graph import NoteGraph
+
+MCP_CONFIG = {
+    "notes": {
+        "command": "python",
+        "args": ["-m", "mcp_server.notes_server"],
+        "transport": "stdio",
+    }
+}
+
+
+class NoteBotApp:
+    def __init__(self):
+        self._app   = None
+        self._loop  = asyncio.new_event_loop()
+        self._ready = threading.Event()
+
+        t = threading.Thread(target=self._run_loop, daemon=True)
+        t.start()
+        self._ready.wait()   # block until MCP tools are loaded and graph is built
+
+    def _run_loop(self):
+        asyncio.set_event_loop(self._loop)
+        self._loop.run_until_complete(self._setup_and_hold())
+
+    async def _setup_and_hold(self):
+        self._client  = MultiServerMCPClient(MCP_CONFIG)
+        tools         = await self._client.get_tools()
+        system_prompt = _load_prompt("system.txt")
+        self._app     = NoteGraph(tools, system_prompt).get_compiled_graph()
+        self._ready.set()
+        await asyncio.Future()   # keep the event loop (and MCP client) alive indefinitely
+
+    async def _chat(self, message: str, thread_id: str) -> str:
+        config = {"configurable": {"thread_id": thread_id}}
+        result = await self._app.ainvoke(
+            {"messages": [HumanMessage(content=message)]}, config=config
+        )
+        ai_msgs = [
+            m for m in result["messages"]
+            if m.type == "ai" and not getattr(m, "tool_calls", [])
+        ]
+        if not ai_msgs:
+            return "I'm sorry, I couldn't generate a response. Please try again."
+        return _extract_text(ai_msgs[-1].content)
+
+    def respond(self, message: str, _history: list, thread_id: str):
+        if not message.strip():
+            yield ""
+            return
+        future = asyncio.run_coroutine_threadsafe(
+            self._chat(message, thread_id), self._loop
+        )
+        yield future.result(timeout=120)
+
+    def launch(self):
+        with gr.Blocks(title="📝 NoteBot — AI Smart Notes Assistant") as demo:
+            thread_state = gr.State(value=str(uuid.uuid4()))
+
+            chat = gr.ChatInterface(
+                fn=self.respond,
+                title="📝 NoteBot — AI Smart Notes Assistant",
+                description=(
+                    "Ask NoteBot to list, read, search, or create your markdown notes. "
+                    "NoteBot connects to a live MCP server that manages your notes folder."
+                ),
+                additional_inputs=[thread_state],
+            )
+
+            gr.ClearButton(
+                [chat.chatbot, chat.textbox],
+                value="🔄 New Session",
+                variant="primary",
+            ).click(
+                fn=lambda: str(uuid.uuid4()),
+                outputs=[thread_state],
+            )
+
+        demo.launch(css=".gradio-container { max-width: 860px !important; margin: auto; }")
+
+
+if __name__ == "__main__":
+    NoteBotApp().launch()</div>
+
+                <blockquote class="blg-callout-info">
+                  <strong>How the background thread pattern works:</strong>
+                  <ol style="margin: 0.5rem 0 0 1.2rem; padding: 0;">
+                    <li style="margin-bottom: 0.3rem;"><span class="code-soft">asyncio.new_event_loop()</span> creates a loop not yet attached to any thread.</li>
+                    <li style="margin-bottom: 0.3rem;">A daemon thread calls <span class="code-soft">loop.run_until_complete(_setup_and_hold())</span> — this thread now owns the loop.</li>
+                    <li style="margin-bottom: 0.3rem;"><span class="code-soft">_setup_and_hold()</span> builds the graph, sets the <span class="code-soft">threading.Event</span>, then suspends at <span class="code-soft">await asyncio.Future()</span> — the MCP connection stays open.</li>
+                    <li style="margin-bottom: 0.3rem;">The main thread unblocks at <span class="code-soft">self._ready.wait()</span> and Gradio starts.</li>
+                    <li><span class="code-soft">asyncio.run_coroutine_threadsafe(coro, loop)</span> safely submits each chat coroutine to the background loop and blocks the Gradio thread until the result is ready.</li>
+                  </ol>
+                </blockquote>
+
+                <div class="blg-code-block" data-lang="bash">cd advanced-5-mcp-integration && python app.py</div>
+
+                <p class="blg-paragraph">
+                  The web UI starts at <span class="code-soft">http://127.0.0.1:7860</span>. Within a session, NoteBot remembers previous context — ask "What notes do I have?", then follow up with "Read the project ideas one" and it will remember which note you were discussing. The "New Session" button resets the conversation thread without restarting the MCP server.
+                </p>
+
+                <div class="blg-img-container">
+                  <img src="../img/blog_18/web_ui.webp" alt="NoteBot Gradio web UI" class="blg-img">
+                  <p class="blg-img-caption">NoteBot web UI — asking about notes triggers the appropriate MCP tool and returns grounded answers.</p>
+                </div>
+
+                <blockquote class="blg-callout-tip">
+                  <strong>Extending NoteBot with more servers:</strong> Adding a second MCP server (e.g. a calendar server) is a single dict entry in <span class="code-soft">MCP_CONFIG</span>. <span class="code-soft">client.get_tools()</span> returns tools from <em>all</em> connected servers in one flat list. The graph, agent node, and Gradio app require zero changes.
+                </blockquote>
+
+                <a id="what-to-try" class="blg-anchor"></a>
+                <div class="blg-sub-header">
+                  <span class="blg-sub-badge">7.1</span>
+                  <h3>💡 What to Try</h3>
+                </div>
+                <p class="blg-paragraph">
+                  Each query exercises one of the four MCP tools. Try them in sequence within the same session — NoteBot remembers context across follow-up messages:
+                </p>
+                <div class="blg-query-list">
+                  <div class="blg-query-card">
+                    <div class="blg-query-q">
+                      <span class="blg-query-badge bq-query">list_notes</span>
+                      "What notes do I have?"
+                    </div>
+                    <div class="blg-query-a">
+                      Triggers <span class="code-soft">list_notes</span>. Returns all <span class="code-soft">.md</span> filenames in the notes folder so you can see what's available at a glance.
+                    </div>
+                  </div>
+                  <div class="blg-query-card">
+                    <div class="blg-query-q">
+                      <span class="blg-query-badge bq-query">read_note</span>
+                      "Read my meeting-notes.md file."
+                    </div>
+                    <div class="blg-query-a">
+                      Triggers <span class="code-soft">read_note</span>. NoteBot fetches the full content of the specified file and displays it in the chat.
+                    </div>
+                  </div>
+                  <div class="blg-query-card">
+                    <div class="blg-query-q">
+                      <span class="blg-query-badge bq-query">search_notes</span>
+                      "Search my notes for anything related to LangGraph."
+                    </div>
+                    <div class="blg-query-a">
+                      Triggers <span class="code-soft">search_notes</span>. Scans all notes for the keyword and returns matching filenames and excerpts.
+                    </div>
+                  </div>
+                  <div class="blg-query-card">
+                    <div class="blg-query-q">
+                      <span class="blg-query-badge bq-query">create_note</span>
+                      "Create a note called mcp-summary.md with a brief summary of what MCP is."
+                    </div>
+                    <div class="blg-query-a">
+                      Triggers <span class="code-soft">create_note</span>. NoteBot writes a new markdown file to the notes folder. You can then read it back to verify.
+                    </div>
+                  </div>
+                  <div class="blg-query-card">
+                    <div class="blg-query-q">
+                      <span class="blg-query-badge bq-query">Multi-step</span>
+                      "List my notes, then read the first one and summarise it in three bullet points."
+                    </div>
+                    <div class="blg-query-a">
+                      Triggers <span class="code-soft">list_notes</span> then <span class="code-soft">read_note</span> in sequence. Watch the agent reason across two MCP tool calls before producing its final answer.
+                    </div>
+                  </div>
+                </div>
+
+                <hr class="blg-hr">
+              </div>
+              <!-- Section 8: Conclusion -->
+              <div class="blg-section">
+                <a id="conclusion" class="blg-anchor"></a>
+                <div class="blg-main-header"><h2>✅ 8. Conclusion</h2></div>
+
+                <p class="blg-paragraph">
+                  In this post you built <strong>NoteBot</strong> — an AI Smart Notes Assistant that connects a LangGraph ReAct agent to a live MCP server over the Model Context Protocol. Instead of defining tools inside the agent's codebase, NoteBot discovers them at runtime from a running subprocess, calls them through the standardised MCP protocol, and returns grounded answers drawn directly from real file contents.
+                </p>
+
+                <p class="blg-paragraph">
+                  This is the architecture shift MCP enables: the agent doesn't need to know <em>how</em> a tool works — only its name, description, and parameter schema. You can update, replace, or add servers without touching the agent code. That separation is what makes MCP a meaningful step beyond hand-crafted <span class="code-soft">BaseTool</span> subclasses.
+                </p>
+
+                <p class="blg-paragraph">Five key takeaways from this post:</p>
+                <ul class="blg-ul">
+                  <li class="blg-li-check"><strong>MCP separates tool implementation from tool consumption.</strong> The server owns the logic; the agent only sees the schema. Update one without touching the other.</li>
+                  <li class="blg-li-check"><strong>FastMCP generates schemas automatically.</strong> Function name → tool name. First docstring line → description. Type hints → JSON schema. No Pydantic classes or manual registration needed.</li>
+                  <li class="blg-li-check"><strong><span class="code-soft">MultiServerMCPClient</span> is the bridge.</strong> Instantiate it with a server config dict, call <span class="code-soft">await client.get_tools()</span>, and get a flat list of LangChain-compatible tool objects — ready to pass directly to <span class="code-soft">create_react_agent</span>.</li>
+                  <li class="blg-li-check"><strong>Background asyncio thread solves the sync/async boundary.</strong> A daemon thread owns the event loop and keeps the MCP subprocess alive. Gradio handlers submit coroutines with <span class="code-soft">run_coroutine_threadsafe()</span> — no new subprocess per request.</li>
+                  <li class="blg-li-check"><strong><span class="code-soft">create_react_agent</span> is the right shortcut here.</strong> When the graph topology is standard (agent ⟷ tools loop), the prebuilt helper keeps the code focused on what's actually new — the MCP integration — rather than rewiring a graph you've already built.</li>
+                </ul>
+
+                <blockquote class="blg-callout-purple">
+                  🎉 <strong>LangGraph Advanced series complete!</strong> This is Part 5 of 5. Here's what the full series covered:
+                  <ul style="margin: 0.6rem 0 0 1.2rem; padding: 0; line-height: 1.9;">
+                    <li><strong>Part 1 — Bounded Memory Window:</strong> managing conversation history with <span class="code-soft">RemoveMessage</span> and a summary node.</li>
+                    <li><strong>Part 2 — Multi-Agent Supervisor:</strong> routing queries to specialist agents with structured-output LLM decisions.</li>
+                    <li><strong>Part 3 — RAG with Conditional Routing:</strong> retrieve → grade → rewrite → generate loop with a fallback path.</li>
+                    <li><strong>Part 4 — ReAct Agent with Tool Calling:</strong> manual ReAct loop using production-grade <span class="code-soft">BaseTool</span> subclasses.</li>
+                    <li><strong>Part 5 — MCP Integration (this post):</strong> connecting a LangGraph agent to external tools via the Model Context Protocol.</li>
+                  </ul>
+                </blockquote>
+
+                <hr class="blg-hr">
+              </div>
+
+              <!-- Trailing: Tech Stacks + Download + References -->
+              <div class="blg-trailing-section">
+
+                <!-- Tech Stacks -->
+                <div class="blg-main-header"><h2>🛠️ Tech Stacks Used</h2></div>
+                <div class="blg-tech-grid">
+                  <div class="blg-tech-card">
+                    <img src="../img/technical_stack/python.svg" alt="Python">
+                    <span>Python 3.12</span>
+                  </div>
+                  <div class="blg-tech-card">
+                    <img src="../img/technical_stack/langgraph.svg" alt="LangGraph">
+                    <span>LangGraph</span>
+                  </div>
+                  <div class="blg-tech-card">
+                    <img src="../img/technical_stack/langchain.svg" alt="LangChain">
+                    <span>LangChain</span>
+                  </div>
+                  <div class="blg-tech-card">
+                    <img src="../img/technical_stack/gemini.svg" alt="Google Gemini">
+                    <span>Google Gemini</span>
+                  </div>
+                  <div class="blg-tech-card">
+                    <img src="../img/technical_stack/mcp.svg" alt="MCP">
+                    <span>MCP</span>
+                  </div>
+                  <div class="blg-tech-card">
+                    <img src="../img/technical_stack/gradio.svg" alt="Gradio">
+                    <span>Gradio</span>
+                  </div>
+                </div>
+
+                <!-- Download -->
+                <div class="blg-download-card">
+                  <div class="blg-download-icon">
+                    <img src="../img/others/download.svg" alt="Download">
+                  </div>
+                  <div class="blg-download-content">
+                    <h3>Source Code</h3>
+                    <p>Full project — NoteBot source code, MCP server, sample notes, and system prompt.</p>
+                    <a href="https://github.com/shafiqul-islam-sumon/langgraph/tree/main/advanced-5-mcp-integration" target="_blank" rel="noopener noreferrer" class="blg-download-btn">View on GitHub</a>
+                  </div>
+                </div>
+
+                <!-- References -->
+                <div class="blg-main-header"><h2>📚 References</h2></div>
+                <ul class="blg-ul">
+                  <li class="blg-li"><a href="https://modelcontextprotocol.io/introduction" target="_blank" rel="noopener noreferrer">Model Context Protocol — Official Documentation</a></li>
+                  <li class="blg-li"><a href="https://github.com/modelcontextprotocol/python-sdk" target="_blank" rel="noopener noreferrer">MCP Python SDK — GitHub</a></li>
+                  <li class="blg-li"><a href="https://github.com/langchain-ai/langchain-mcp-adapters" target="_blank" rel="noopener noreferrer">langchain-mcp-adapters — GitHub</a></li>
+                  <li class="blg-li"><a href="https://langchain-ai.github.io/langgraph/" target="_blank" rel="noopener noreferrer">LangGraph Documentation</a></li>
+                  <li class="blg-li"><a href="https://langchain-ai.github.io/langgraph/reference/prebuilt/" target="_blank" rel="noopener noreferrer">LangGraph Prebuilt — create_react_agent</a></li>
+                  <li class="blg-li"><a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio — Get a Gemini API Key</a></li>
+                </ul>
+
+              </div>
+
+            </div><!-- end #blogContainer -->
+          </div><!-- end .blog-detail-main -->
+        </div><!-- end .blog-detail-layout -->
+
+        <!-- Related posts -->
+        <div class="related-posts-section">
+          <div class="blog-title-bar">
+            <img src="../img/others/blog.png" alt="blog post" style="width: 24px; height: auto;">
+            <h2>Related Blog Posts</h2>
+          </div>
+          <div class="related-posts-wrapper">
+            <div class="related-posts-swiper-area">
+              <div class="swiper" id="postContainer">
+                <div class="swiper-wrapper"></div>
+              </div>
+              <div class="swiper-button-prev"></div>
+              <div class="swiper-button-next"></div>
+            </div>
+            <div class="blg-slide-counter">
+              <div class="slide-progress-bar">
+                <div class="slide-progress-fill" id="slideProgressFill"></div>
+              </div>
+              <div class="slide-counter-label">
+                <span id="currentSlide">1</span> / <span id="totalSlides">1</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+    <div id="site-footer"></div>
+  </div>
+
+  <script src="../js/bootstrap.bundle.min.js"></script>
+  <script src="../js/components.js"></script>
+  <script src="../js/site.js"></script>
+  <script src="../js/swiper-bundle.min.js"></script>
+  <script src="../js/prism.js" data-manual></script>
+  <script src="../js/code-highlight.js"></script>
+  <script src="../js/detail.js"></script>
+  <script src="../js/mermaid.min.js"></script>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+</body>
+</html>

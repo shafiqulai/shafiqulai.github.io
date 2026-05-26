@@ -1235,20 +1235,19 @@ Graph saved → /path/to/basics-5-tools-toolnode/figure/graph.png
 									</div>
 
 									<div class="blg-img-container">
-										<div class="blg-mermaid-container">
-											<pre class="mermaid">%%{init: {'flowchart': {'curve': 'linear'}}}%%
-graph TD;
-    __start__([<p>__start__</p>]):::first
-    agent([agent])
-    tools([tools])
-    __end__([<p>__end__</p>]):::last
-    __start__ --> agent;
-    agent -.-> tools;
-    agent -.-> __end__;
-    tools --> agent;
-    classDef default fill:#f2f0ff,line-height:1.2
-    classDef first fill-opacity:0
-    classDef last fill:#bfb6fc</pre>
+										<div class="blg-mermaid-wrap">
+											<div class="mermaid" style="min-width:460px;font-size:16px;">
+flowchart TD
+    S([__start__]) --> agent([agent])
+    agent -.-> tools([tools])
+    agent -.-> E([__end__])
+    tools --> agent
+
+    style S     fill:#e8f5e9,stroke:#43a047,color:#1b5e20
+    style E     fill:#fce4ec,stroke:#e53935,color:#b71c1c
+    style agent fill:#e3f2fd,stroke:#1e88e5,color:#0d47a1
+    style tools fill:#fff3e0,stroke:#fb8c00,color:#e65100
+											</div>
 										</div>
 										<p class="blg-img-caption">Figure 1: The compiled Finance Assistant graph. Dashed arrows show the conditional edge from tools_condition — the agent routes to "tools" when it has tool_calls, or to END when it has a final answer. The solid arrow from tools back to agent creates the ReAct loop.</p>
 									</div>
@@ -1365,9 +1364,8 @@ class FinanceApp:
                 "Convert 500 EUR to USD.",
                 "I earn $5,000/month. Split my budget: 30% rent, 15% food, 25% savings.",
             ],
-            theme=gr.themes.Soft(),
         )
-        demo.launch()
+        demo.launch(css=".gradio-container { max-width: 860px !important; margin: auto; }")
 
 
 if __name__ == "__main__":
@@ -1397,6 +1395,10 @@ if __name__ == "__main__":
 									</div>
 
 									<div class="blg-paragraph">
+										<p>The tools pattern scales by swapping implementations, not by rewriting graphs. Give the agent access to a live stock-price API tool and it handles real-time portfolio queries without a single graph change. Wrap a database query in a BaseTool and it becomes a precise retrieval agent. Chain this tool-calling graph as a specialist node inside a Multi-Agent Supervisor (covered in Advanced Part 2) and it handles all financial sub-tasks automatically while the supervisor routes general queries elsewhere. The ReAct loop is the same; only the tool implementations change.</p>
+									</div>
+
+									<div class="blg-paragraph">
 										<p>Here's a quick recap of everything this post covered:</p>
 									</div>
 
@@ -1409,9 +1411,9 @@ if __name__ == "__main__":
 										<li class="blg-li-check"><strong>create_react_agent</strong> — the prebuilt shortcut that builds the same graph in one function call. Best for standard agents; switch to manual when you need customisation.</li>
 									</ul>
 
-									<div class="blg-paragraph">
-										<p><strong>What's next?</strong> In <strong>Part 6 — Subgraphs, Interrupt &amp; Human-in-the-Loop</strong>, we'll look at how to pause a graph mid-run and wait for a human to review or approve something before continuing. This is essential for any agent that makes decisions with real consequences — think approving a financial transaction before it executes, not just calculating it.</p>
-									</div>
+									<blockquote class="blg-callout-purple">
+										🔗 <strong>LangGraph Basics series:</strong> Parts 1–4 covered StateGraph, reducers, routing, and memory. This post (Part 5) added <span class="highlight-blue">Tools, ToolNode &amp; Prebuilt Components</span>. <a class="blg-link" href="./blog_13.html">Part 6 — Subgraphs &amp; Human-in-the-Loop</a> shows how to pause a graph mid-run and wait for human review before continuing — essential for any agent making decisions with real consequences.
+									</blockquote>
 
 									<hr class="blg-hr" />
 								</div>

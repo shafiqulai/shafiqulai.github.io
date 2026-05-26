@@ -43,7 +43,7 @@ Append at the **end** of the array (order determines the related posts slider se
 {
     "id": 8,
     "author": "MD SHAFIQUL ISLAM",
-    "author_img": "../img/author/shafiqul.jpg",
+    "author_img": "../img/author/shafiqul.png",
     "category": ["Tag1", "Tag2"],
     "image": "./img/blog_8/thumbnail.webp",
     "title": "Full title of the post",

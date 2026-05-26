@@ -130,5 +130,71 @@
         "date": "13 May 2026",
         "description": "LangGraph agents can call custom Python functions — called tools — to perform tasks an LLM can't do reliably on its own. ToolNode executes those calls automatically, and tools_condition routes the graph based on whether the LLM wants a tool or a final answer. This post covers the @tool decorator, bind_tools(), ToolNode, tools_condition, and the create_react_agent shortcut. A Personal Finance Assistant is built that calculates loan EMIs, projects compound savings, converts currencies, and splits budgets — all powered by tool calling with Google Gemini.",
         "readMoreUrl": "./blogs/blog_12.html"
+    },
+    {
+        "id": 13,
+        "author": "MD SHAFIQUL ISLAM",
+        "author_img": "../img/author/shafiqul.png",
+        "category": ["LangGraph"],
+        "image": "./img/blog_13/thumbnail.webp",
+        "title": "LangGraph Basics: Part 6 — Subgraphs & Human-in-the-Loop",
+        "date": "14 May 2026",
+        "description": "LangGraph graphs can grow complex — subgraphs let you nest a compiled graph inside another as a reusable, modular node with its own private state. Human-in-the-Loop uses interrupt() to pause graph execution mid-run and wait for human input before taking a critical action. This post builds an AI Travel Planner where a PlannerSubGraph handles destination research, itinerary creation, and budget estimation, and the main graph pauses for the traveler to approve or revise the plan before it is confirmed.",
+        "readMoreUrl": "./blogs/blog_13.html"
+    },
+    {
+        "id": 14,
+        "author": "MD SHAFIQUL ISLAM",
+        "author_img": "../img/author/shafiqul.png",
+        "category": ["LangGraph"],
+        "image": "./img/blog_14/thumbnail.webp",
+        "title": "LangGraph Advanced: Part 1 — Conversational Chatbot with Memory",
+        "date": "15 May 2026",
+        "description": "Long conversations exhaust an LLM's context window and drive up cost — simply persisting every message is not enough for production chatbots. This post covers the canonical LangGraph solution: a state that holds both the recent message list and a compressed summary field, a summarisation node that uses the LLM itself to compress older turns, and conditional routing that decides when to summarise. A Personal Recipe Assistant is built with SqliteSaver for cross-session persistence and a Gradio streaming UI.",
+        "readMoreUrl": "./blogs/blog_14.html"
+    },
+    {
+        "id": 15,
+        "author": "MD SHAFIQUL ISLAM",
+        "author_img": "../img/author/shafiqul.png",
+        "category": ["LangGraph"],
+        "image": "./img/blog_15/thumbnail.webp",
+        "title": "LangGraph Advanced: Part 2 — Multi-Agent Supervisor Architecture",
+        "date": "16 May 2026",
+        "description": "A single-agent chatbot handles one domain well — but real-world queries often span nutrition, fitness, and mindfulness at once. This post covers the multi-agent supervisor pattern: a supervisor LLM with structured output reads the conversation and dynamically routes to the right specialist, loops back after each response, and can call multiple agents in sequence for complex queries. An AI Personal Wellness Coach (Coach Alex) is built with three specialist agents coordinated by a supervisor and a Gradio web UI.",
+        "readMoreUrl": "./blogs/blog_15.html"
+    },
+    {
+        "id": 16,
+        "author": "MD SHAFIQUL ISLAM",
+        "author_img": "../img/author/shafiqul.png",
+        "category": ["LangGraph", "RAG"],
+        "image": "./img/blog_16/thumbnail.webp",
+        "title": "LangGraph Advanced: Part 3 — RAG Pipeline with Conditional Routing",
+        "date": "17 May 2026",
+        "description": "A single LLM can hallucinate company-specific facts — RAG grounds answers in actual documents. This post builds a full RAG pipeline as a LangGraph graph: a retrieve node fetches policy documents from a Chroma vector store, a grade_documents node uses an LLM with structured output to assess relevance, and a conditional router either generates a grounded answer, rewrites the query for a better retrieval pass, or falls back to general knowledge when retries are exhausted. An AI Company Onboarding Assistant (OnboardBot) is built with a 10-document employee handbook and a Gradio web UI.",
+        "readMoreUrl": "./blogs/blog_16.html"
+    },
+    {
+        "id": 17,
+        "author": "MD SHAFIQUL ISLAM",
+        "author_img": "../img/author/shafiqul.png",
+        "category": ["LangGraph", "Agent"],
+        "image": "./img/blog_17/thumbnail.webp",
+        "title": "LangGraph Advanced: Part 4 — ReAct Agent with Tool Calling",
+        "date": "18 May 2026",
+        "description": "An LLM alone can't do reliable arithmetic — it needs tools. This post builds a ReAct (Reasoning + Acting) agent from scratch in LangGraph: an agent node backed by Gemini LLM with bound tools, a ToolNode that executes function calls, and tools_condition routing that loops the graph until the LLM produces a final answer. Tools are defined using production-grade BaseTool subclasses with Pydantic schemas and file-loaded descriptions. An AI Real Estate Advisor (HomeBot) is built with five financial tools covering mortgage payments, home affordability, property tax, rental ROI, and buy-vs-rent comparison.",
+        "readMoreUrl": "./blogs/blog_17.html"
+    },
+    {
+        "id": 18,
+        "author": "MD SHAFIQUL ISLAM",
+        "author_img": "../img/author/shafiqul.png",
+        "category": ["LangGraph", "MCP"],
+        "image": "./img/blog_18/thumbnail.webp",
+        "title": "LangGraph Advanced: Part 5 — MCP Integration with LangGraph",
+        "date": "19 May 2026",
+        "description": "The Model Context Protocol (MCP) is an open standard that lets AI agents connect to tools and data sources through a common interface, eliminating the need to write custom wrappers for every service. This post builds NoteBot, an AI Smart Notes Assistant powered by a Python MCP server built with FastMCP and a LangGraph ReAct agent assembled via create_react_agent. The MCP server exposes four tools — list_notes, read_note, search_notes, and create_note — that NoteBot uses to manage a markdown notes collection. The post covers FastMCP server construction, MultiServerMCPClient connection patterns, async MCP integration, and how to keep a persistent MCP connection alive inside a Gradio web UI.",
+        "readMoreUrl": "./blogs/blog_18.html"
     }
 ]

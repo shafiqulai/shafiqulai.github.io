@@ -1,0 +1,1407 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-6SEFZQJHM1"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() { dataLayer.push(arguments); }
+			gtag("js", new Date());
+			gtag("config", "G-6SEFZQJHM1", { cookie_domain: "shafiqulai.github.io" });
+		</script>
+		<meta charset="utf-8" />
+		<title>LangGraph Advanced: Part 2 — Multi-Agent Supervisor Architecture</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="description" content="A single-agent chatbot handles one domain well — but real-world queries often span nutrition, fitness, and mindfulness at once. This post covers the multi-agent supervisor pattern: a supervisor LLM with structured output reads the conversation and dynamically routes to the right specialist, loops back after each response, and can call multiple agents in sequence for complex queries. An AI Personal Wellness Coach (Coach Alex) is built with three specialist agents coordinated by a supervisor and a Gradio web UI." />
+		<meta name="author" content="MD SHAFIQUL ISLAM" />
+		<link rel="canonical" href="https://shafiqulai.github.io/blogs/blog_15.html" />
+		<link rel="icon" href="../img/others/favicon.ico" type="image/x-icon" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+		<link rel="stylesheet" href="../css/swiper-bundle.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/style.css" />
+		<link rel="stylesheet" type="text/css" href="../css/prism.css" />
+	</head>
+	<body>
+		<div id="reading-progress"></div>
+		<div id="wrapper">
+			<div id="site-header"></div>
+			<section id="content">
+				<div class="container">
+					<div class="blog-detail-layout">
+
+						<aside class="toc-sidebar" id="tocSidebar">
+							<div class="toc-sidebar-header">
+								<p class="toc-sidebar-title">Contents</p>
+							</div>
+							<ul class="toc-sidebar-list">
+								<li><a href="#intro">1. Why Multi-Agent Architectures?</a></li>
+								<li class="toc-sidebar-sub"><a href="#single-agent-limit">1.1 The Single-Agent Bottleneck</a></li>
+								<li class="toc-sidebar-sub"><a href="#supervisor-pattern">1.2 The Supervisor Pattern</a></li>
+								<li class="toc-sidebar-sub"><a href="#scenario-intro">1.3 Our Scenario: AI Personal Wellness Coach</a></li>
+								<li><a href="#installation-setup">2. Installation &amp; Setup</a></li>
+								<li class="toc-sidebar-sub"><a href="#configuring-llm">2.1 Configuring the LLM</a></li>
+								<li><a href="#understanding-supervisor">3. Understanding the Supervisor Pattern</a></li>
+								<li class="toc-sidebar-sub"><a href="#llm-vs-rule">3.1 LLM-Based vs Rule-Based Routing</a></li>
+								<li class="toc-sidebar-sub"><a href="#structured-output">3.2 Structured Output for Routing</a></li>
+								<li class="toc-sidebar-sub"><a href="#supervisor-loop">3.3 The Supervisor Loop</a></li>
+								<li><a href="#state-design">4. State Design</a></li>
+								<li><a href="#building-supervisor">5. Building the Supervisor Agent</a></li>
+								<li class="toc-sidebar-sub"><a href="#decision-schema">5.1 The SupervisorDecision Schema</a></li>
+								<li class="toc-sidebar-sub"><a href="#supervisor-node">5.2 The Supervisor Node</a></li>
+								<li class="toc-sidebar-sub"><a href="#supervisor-prompt">5.3 The Supervisor Prompt</a></li>
+								<li><a href="#specialist-agents">6. Building the Specialist Agents</a></li>
+								<li><a href="#graph-assembly">7. Assembling the Graph</a></li>
+								<li class="toc-sidebar-sub"><a href="#route-function">7.1 The Route Function</a></li>
+								<li class="toc-sidebar-sub"><a href="#wiring-loop">7.2 Wiring the Supervisor Loop</a></li>
+								<li><a href="#complete-example">8. Complete Example: AI Personal Wellness Coach</a></li>
+								<li class="toc-sidebar-sub"><a href="#arch-overview">8.1 Architecture Overview</a></li>
+								<li class="toc-sidebar-sub"><a href="#project-structure">8.2 Project Structure</a></li>
+								<li class="toc-sidebar-sub"><a href="#state-file">8.3 State (state.py)</a></li>
+								<li class="toc-sidebar-sub"><a href="#nodes-file">8.4 Nodes (nodes.py)</a></li>
+								<li class="toc-sidebar-sub"><a href="#graph-file">8.5 Graph Assembly (graph.py)</a></li>
+								<li class="toc-sidebar-sub"><a href="#runner-output">8.6 Runner &amp; Console Output</a></li>
+								<li class="toc-sidebar-sub"><a href="#mermaid-diagram">8.7 Graph Diagram</a></li>
+								<li><a href="#web-ui">9. Web Interface</a></li>
+								<li class="toc-sidebar-sub"><a href="#what-to-try">9.1 What to Try</a></li>
+								<li><a href="#conclusion">10. Conclusion</a></li>
+							</ul>
+						</aside>
+
+						<div class="blog-detail-main">
+							<div id="blogContainer">
+
+								<div class="container blg-title-container">
+									<h2 class="blg-title">LangGraph Advanced: Part 2 — Multi-Agent Supervisor Architecture</h2>
+								</div>
+
+								<div class="author_section">
+									<img id="author_img" src="" alt="Author Photo" class="author_img">
+									<div class="author_details">
+										<span id="author_name" class="author_name"></span>
+										<span id="published_date" class="published_date"></span>
+									</div>
+								</div>
+
+								<div class="blg-img-container">
+									<img src="../img/blog_15/thumbnail.webp" alt="LangGraph Advanced: Part 2 — Multi-Agent Supervisor Architecture" class="blg-thumbnail" />
+								</div>
+
+								<!-- INLINE TOC -->
+								<div class="blg-toc-container">
+									<h2>📚 Table of Contents</h2>
+									<ol class="blg-toc-ol">
+										<li class="blg-toc-li"><a href="#intro">1. Why Multi-Agent Architectures?</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#single-agent-limit">1.1 The Single-Agent Bottleneck</a></li>
+											<li class="blg-toc-li"><a href="#supervisor-pattern">1.2 The Supervisor Pattern</a></li>
+											<li class="blg-toc-li"><a href="#scenario-intro">1.3 Our Scenario: AI Personal Wellness Coach</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#installation-setup">2. Installation &amp; Setup</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#configuring-llm">2.1 Configuring the LLM</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#understanding-supervisor">3. Understanding the Supervisor Pattern</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#llm-vs-rule">3.1 LLM-Based vs Rule-Based Routing</a></li>
+											<li class="blg-toc-li"><a href="#structured-output">3.2 Structured Output for Routing</a></li>
+											<li class="blg-toc-li"><a href="#supervisor-loop">3.3 The Supervisor Loop</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#state-design">4. State Design</a></li>
+										<li class="blg-toc-li"><a href="#building-supervisor">5. Building the Supervisor Agent</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#decision-schema">5.1 The SupervisorDecision Schema</a></li>
+											<li class="blg-toc-li"><a href="#supervisor-node">5.2 The Supervisor Node</a></li>
+											<li class="blg-toc-li"><a href="#supervisor-prompt">5.3 The Supervisor Prompt</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#specialist-agents">6. Building the Specialist Agents</a></li>
+										<li class="blg-toc-li"><a href="#graph-assembly">7. Assembling the Graph</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#route-function">7.1 The Route Function</a></li>
+											<li class="blg-toc-li"><a href="#wiring-loop">7.2 Wiring the Supervisor Loop</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#complete-example">8. Complete Example: AI Personal Wellness Coach</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#arch-overview">8.1 Architecture Overview</a></li>
+											<li class="blg-toc-li"><a href="#project-structure">8.2 Project Structure</a></li>
+											<li class="blg-toc-li"><a href="#state-file">8.3 State (state.py)</a></li>
+											<li class="blg-toc-li"><a href="#nodes-file">8.4 Nodes (nodes.py)</a></li>
+											<li class="blg-toc-li"><a href="#graph-file">8.5 Graph Assembly (graph.py)</a></li>
+											<li class="blg-toc-li"><a href="#runner-output">8.6 Runner &amp; Console Output</a></li>
+											<li class="blg-toc-li"><a href="#mermaid-diagram">8.7 Graph Diagram</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#web-ui">9. Web Interface</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#what-to-try">9.1 What to Try</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#conclusion">10. Conclusion</a></li>
+									</ol>
+								</div>
+
+								<!-- 1. Why Multi-Agent Architectures? -->
+								<div class="blg-section">
+									<a id="intro" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🤝 1. Why Multi-Agent Architectures?</h2></div>
+
+									<p class="blg-paragraph">
+										By the end of the LangGraph Basics series, you could build a stateful chatbot with tool use, human-in-the-loop approval, and cross-session memory. Those are powerful ingredients — but they all share one underlying assumption: <strong>a single LLM node handles everything</strong>. The user asks a question, the agent thinks, and the agent responds. For narrow use cases that works perfectly. For real-world applications, it starts to break down.
+									</p>
+									<p class="blg-paragraph">
+										Consider a wellness app. A user might ask: <em>"I want to build lean muscle — what should I eat and how should I train?"</em> A single generalist agent will attempt to answer both the nutrition and the fitness question in one go. The response will likely be acceptable, but shallow in both areas because the model is spreading its reasoning across two domains simultaneously. If you had a dedicated Nutrition Coach and a dedicated Fitness Coach — each fine-tuned on their domain through carefully crafted system prompts — they would each provide better, deeper, more contextually relevant advice.
+									</p>
+									<p class="blg-paragraph">
+										That is the core insight behind <span class="highlight-purple">multi-agent architectures</span>: instead of one generalist handling everything, you compose a team of specialists. Each specialist focuses on what it knows best. A coordinator — the <span class="highlight-blue">supervisor</span> — decides who talks to the user and when.
+									</p>
+
+									<a id="single-agent-limit" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">1.1</span>
+										<h3>🧱 The Single-Agent Bottleneck</h3>
+									</div>
+									<p class="blg-paragraph">
+										A single LLM node becomes a bottleneck in three common scenarios:
+									</p>
+									<div class="blg-feature-grid">
+										<div class="blg-feature-card card-orange">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">🎭</span>
+												<h4>Domain Depth</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>A single system prompt can't make an agent simultaneously expert in nutrition science, exercise physiology, and mindfulness research. Specialists carry deeper, more focused knowledge.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-red">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">🔀</span>
+												<h4>Context Pollution</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>When one agent handles everything, unrelated conversation history piles up and can confuse the model. Specialists each maintain a cleaner, domain-focused context.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-purple">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">🔧</span>
+												<h4>Maintainability</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Tuning a single monolithic prompt for all domains is brittle — changing one domain's instructions can break another. Each specialist has its own isolated prompt file.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-teal">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">📈</span>
+												<h4>Scalability</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Adding a new domain means adding a new specialist node and updating the supervisor prompt — no changes to existing specialists. Monolithic agents require full rewrites.</p>
+											</div>
+										</div>
+									</div>
+
+									<a id="supervisor-pattern" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">1.2</span>
+										<h3>🎯 The Supervisor Pattern</h3>
+									</div>
+									<p class="blg-paragraph">
+										The supervisor pattern is the canonical multi-agent architecture in LangGraph. It has two types of components:
+									</p>
+									<ul class="blg-ul">
+										<li class="blg-li"><strong>Supervisor node</strong> — an LLM node that reads the full conversation history and decides which specialist to call next, or whether the question has been fully answered. The supervisor never adds a message visible to the user; it only controls routing.</li>
+										<li class="blg-li"><strong>Specialist nodes</strong> — LLM nodes, each with a focused system prompt. When called, a specialist reads the full conversation, generates a domain-specific response, appends it to the message list, and hands control back to the supervisor.</li>
+									</ul>
+									<p class="blg-paragraph">
+										The critical structural difference from basic conditional routing (covered in Basics Part 3) is the <strong>feedback loop</strong>. In conditional routing, the flow is: <span class="code-soft">START → supervisor → specialist → END</span>. In the supervisor pattern, every specialist routes <em>back</em> to the supervisor: <span class="code-soft">START → supervisor → specialist → supervisor → ... → END</span>. The supervisor re-reads the updated conversation — including the specialist's response — and decides the next step. This means a single user query can trigger multiple specialists in sequence.
+									</p>
+									<blockquote class="blg-callout-note">
+										📌 <strong>Key distinction:</strong> Conditional routing (blog_10) is rule-based and always takes exactly one hop. The supervisor pattern is LLM-driven and can take one or more hops depending on the complexity of the query.
+									</blockquote>
+
+									<a id="scenario-intro" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">1.3</span>
+										<h3>🧘 Our Scenario: AI Personal Wellness Coach</h3>
+									</div>
+									<p class="blg-paragraph">
+										Throughout this post we'll build <strong>Coach Alex</strong> — an AI Personal Wellness Coach. Users can ask Coach Alex about nutrition, fitness, mindfulness, or any combination. Here's why this scenario genuinely requires multi-agent architecture:
+									</p>
+									<ul class="blg-ul">
+										<li class="blg-li">A question like <em>"What should I eat to lose weight?"</em> needs a focused nutrition answer — the fitness agent shouldn't interfere.</li>
+										<li class="blg-li">A question like <em>"I want to build lean muscle — what should I eat and how should I train?"</em> needs both a nutrition response <em>and</em> a fitness response, in sequence, each building on the other.</li>
+										<li class="blg-li">A question like <em>"I can't sleep because of work stress"</em> needs a mindfulness response — neither nutrition nor fitness is relevant.</li>
+									</ul>
+									<p class="blg-paragraph">
+										No rule-based router can handle all three scenarios correctly — it can't know from a single classification that the second query needs two specialists. The supervisor LLM reads the conversation after each agent responds and decides whether to call another specialist or stop. That dynamic reasoning is exactly what makes multi-agent necessary here.
+									</p>
+									<hr class="blg-hr">
+								</div>
+								<!-- End: 1. Why Multi-Agent Architectures? -->
+
+								<!-- 2. Installation & Setup -->
+								<div class="blg-section">
+									<a id="installation-setup" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>⚙️ 2. Installation &amp; Setup</h2></div>
+
+									<p class="blg-paragraph">
+										This post uses Python 3.12. Verify your version before creating the virtual environment:
+									</p>
+									<div class="blg-code-block" data-lang="bash">python --version
+# Python 3.12.x</div>
+
+									<p class="blg-paragraph">
+										Create and activate a virtual environment named <span class="code-soft">langgraph</span>:
+									</p>
+									<div class="blg-code-block" data-lang="bash">python -m venv langgraph
+
+# macOS / Linux
+source langgraph/bin/activate
+
+# Windows
+langgraph\Scripts\activate</div>
+
+									<p class="blg-paragraph">
+										All posts in the LangGraph series share a single <span class="code-soft">requirements.txt</span> at the repo root. Install everything with:
+									</p>
+									<div class="blg-code-block" data-lang="properties">langchain==1.2.17
+langgraph==1.1.10
+langchain-google-genai==4.2.2
+python-dotenv==1.2.2
+gradio==6.14.0</div>
+									<div class="blg-code-block" data-lang="bash">pip install -r requirements.txt</div>
+
+									<p class="blg-paragraph">
+										Get a free Gemini API key at <a href="https://aistudio.google.com/app/apikey" class="blg-link" target="_blank" rel="noopener noreferrer">Google AI Studio</a>. Create a <span class="code-soft">.env</span> file inside the <span class="code-soft">langgraph/</span> root:
+									</p>
+									<div class="blg-code-block" data-lang="properties">GOOGLE_API_KEY=your_google_api_key_here
+GEMINI_MODEL_NAME=gemini-3-flash-preview
+GEMINI_TEMPERATURE=0.7
+GEMINI_MAX_RETRIES=2</div>
+									<blockquote class="blg-callout-warning">
+										⚠️ Never commit <span class="code-soft">.env</span> to version control. Add it to <span class="code-soft">.gitignore</span> immediately.
+									</blockquote>
+
+									<p class="blg-paragraph">
+										Here is the complete project tree for this post:
+									</p>
+									<div class="blg-tree"><span class="tree-root">advanced-2-multi-agent-supervisor/</span>
+<span class="tree-pipe">├── </span><span class="tree-file">config.py</span>              <span class="tree-comment"># Config class — reads .env</span>
+<span class="tree-pipe">├── </span><span class="tree-file">llm.py</span>                 <span class="tree-comment"># GeminiLLM wrapper</span>
+<span class="tree-pipe">├── </span><span class="tree-file">state.py</span>               <span class="tree-comment"># WellnessState TypedDict  → Section 4</span>
+<span class="tree-pipe">├── </span><span class="tree-file">nodes.py</span>               <span class="tree-comment"># WellnessNodes — supervisor + 3 specialists → Sections 5–6</span>
+<span class="tree-pipe">├── </span><span class="tree-file">graph.py</span>               <span class="tree-comment"># WellnessGraph — supervisor loop, MemorySaver → Section 7</span>
+<span class="tree-pipe">├── </span><span class="tree-file">wellness_runner.py</span>     <span class="tree-comment"># Console entry point with 4-demo run → Section 8</span>
+<span class="tree-pipe">├── </span><span class="tree-file">app.py</span>                 <span class="tree-comment"># Gradio Blocks with New Session button → Section 9</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">prompts/</span>               <span class="tree-comment"># LLM prompt templates, one file per agent</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">supervisor.txt</span>     <span class="tree-comment"># Supervisor routing instructions</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">nutrition.txt</span>      <span class="tree-comment"># Nutrition Coach persona + response rules</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">fitness.txt</span>        <span class="tree-comment"># Fitness Coach persona + response rules</span>
+<span class="tree-pipe">│   └── </span><span class="tree-file">mindfulness.txt</span>    <span class="tree-comment"># Mindfulness Coach persona + response rules</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">figure/</span>                <span class="tree-comment"># Auto-generated graph diagrams (git-ignored)</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">graph.mmd</span>          <span class="tree-comment"># Mermaid source</span>
+<span class="tree-pipe">│   └── </span><span class="tree-file">graph.png</span>          <span class="tree-comment"># PNG export</span>
+<span class="tree-pipe">└── </span><span class="tree-spec">.env</span>                   <span class="tree-comment"># API keys — never commit</span></div>
+
+									<p class="blg-paragraph">
+										<span class="code-soft">config.py</span> and <span class="code-soft">llm.py</span> are covered in Section 2.1. <span class="code-soft">state.py</span> in Section 4. <span class="code-soft">nodes.py</span> in Sections 5 and 6. <span class="code-soft">graph.py</span> in Section 7. The runner and app are walked through in Sections 8 and 9.
+									</p>
+
+									<a id="configuring-llm" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">2.1</span>
+										<h3>🔧 Configuring the LLM</h3>
+									</div>
+									<p class="blg-paragraph">
+										<span class="code-soft">config.py</span> reads all settings from the <span class="code-soft">.env</span> file, making it trivial to tune the model name or temperature without touching any logic files:
+									</p>
+									<div class="blg-code-block" data-lang="python">import os
+from dotenv import load_dotenv
+
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
+
+class Config:
+    MODEL_NAME  = os.getenv("GEMINI_MODEL_NAME", "gemini-3-flash-preview")
+    TEMPERATURE = float(os.getenv("GEMINI_TEMPERATURE", 0.7))
+    MAX_RETRIES = int(os.getenv("GEMINI_MAX_RETRIES", 2))</div>
+
+									<p class="blg-paragraph">
+										<span class="code-soft">llm.py</span> wraps Google Gemini in a thin class. Every node that needs an LLM calls <span class="code-soft">GeminiLLM().get_llm()</span>:
+									</p>
+									<div class="blg-code-block" data-lang="python">from langchain_google_genai import ChatGoogleGenerativeAI
+from config import Config
+
+class GeminiLLM:
+    def __init__(self):
+        self.llm = ChatGoogleGenerativeAI(
+            model=Config.MODEL_NAME,
+            temperature=Config.TEMPERATURE,
+            max_retries=Config.MAX_RETRIES,
+        )
+
+    def get_llm(self):
+        return self.llm</div>
+									<hr class="blg-hr">
+								</div>
+								<!-- End: 2. Installation & Setup -->
+
+								<!-- 3. Understanding the Supervisor Pattern -->
+								<div class="blg-section">
+									<a id="understanding-supervisor" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🧠 3. Understanding the Supervisor Pattern</h2></div>
+
+									<p class="blg-paragraph">
+										Before writing any code, it's worth understanding exactly what makes the supervisor pattern different from the conditional routing you already know from Basics Part 3.
+									</p>
+
+									<a id="llm-vs-rule" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">3.1</span>
+										<h3>🔁 LLM-Based vs Rule-Based Routing</h3>
+									</div>
+									<p class="blg-paragraph">
+										In Basics Part 3, the Customer Support Router used a <span class="highlight-teal">classification node</span> that invoked the LLM to label the message as <em>billing</em>, <em>technical</em>, or <em>general</em>. Then a separate Python function read that label and returned the correct node name. Once the specialist handled the message, the graph went directly to <span class="code-soft">END</span>. The entire flow was a straight line — always exactly one hop.
+									</p>
+									<p class="blg-paragraph">
+										The supervisor pattern is fundamentally different. The routing decision is made by an <span class="highlight-purple">LLM with structured output</span> that reads the <em>entire conversation history</em> — including messages added by specialists in previous hops. After a specialist responds, control returns to the supervisor node, which re-reads the conversation and asks itself: <em>"Has the question been fully answered? Should I call another specialist?"</em> Only the LLM can make that contextual judgment. No Python function can.
+									</p>
+									<div class="blg-table">
+										<table>
+											<thead>
+												<tr>
+													<th>Aspect</th>
+													<th>Conditional Routing (blog_10)</th>
+													<th>Supervisor Pattern (this post)</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td>Routing decision</td>
+													<td>Rule-based Python function</td>
+													<td>LLM with structured output</td>
+												</tr>
+												<tr>
+													<td>Hops per query</td>
+													<td>Always exactly 1</td>
+													<td>1 or more, dynamically decided</td>
+												</tr>
+												<tr>
+													<td>After specialist responds</td>
+													<td>Goes to END</td>
+													<td>Returns to supervisor</td>
+												</tr>
+												<tr>
+													<td>Multi-specialist queries</td>
+													<td>Not possible</td>
+													<td>Supervisor calls both in sequence</td>
+												</tr>
+												<tr>
+													<td>Reads previous agent output</td>
+													<td>No</td>
+													<td>Yes — full conversation history</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+
+									<a id="structured-output" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">3.2</span>
+										<h3>📋 Structured Output for Routing</h3>
+									</div>
+									<p class="blg-paragraph">
+										The supervisor must always return a valid routing decision — it can't say "I think maybe nutrition?" or write a sentence explaining its reasoning. We enforce this with <span class="highlight-orange">structured output</span>: a Pydantic <span class="code-soft">BaseModel</span> that constrains the LLM's response to a fixed schema.
+									</p>
+									<p class="blg-paragraph">
+										LangChain's <span class="code-soft">with_structured_output()</span> method wraps any chat model and forces it to return a typed object instead of free text. Under the hood, it uses the model's native tool-calling or JSON mode to guarantee schema compliance:
+									</p>
+									<div class="blg-code-block" data-lang="python">from typing import Literal
+from pydantic import BaseModel
+
+class SupervisorDecision(BaseModel):
+    next_agent: Literal["nutrition", "fitness", "mindfulness", "FINISH"]
+    reasoning:  str
+
+supervisor_llm = llm.with_structured_output(SupervisorDecision)</div>
+
+									<p class="blg-paragraph">
+										The <span class="code-soft">Literal</span> type in <span class="code-soft">next_agent</span> is critical. It tells the LLM that the only valid values are the four listed strings. The LLM cannot hallucinate a node name like <span class="code-soft">"sleep_agent"</span> or <span class="code-soft">"DONE"</span>. The conditional router in <span class="code-soft">graph.py</span> can then use a simple dictionary mapping without any error-handling for unexpected values.
+									</p>
+									<blockquote class="blg-callout-tip">
+										✅ <strong>Always use <span class="code-soft">Literal</span> for routing decisions.</strong> It prevents the LLM from inventing node names and makes the routing dictionary in your graph exhaustive by construction.
+									</blockquote>
+
+									<a id="supervisor-loop" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">3.3</span>
+										<h3>🔄 The Supervisor Loop</h3>
+									</div>
+									<p class="blg-paragraph">
+										The loop is created by wiring the graph so that every specialist node has an outgoing edge back to the supervisor. Here is what the execution trace looks like for a multi-domain query:
+									</p>
+									<div class="blg-arch-stack">
+										<div class="blg-arch-layer al-blue">
+											<div class="blg-arch-icon">👤</div>
+											<div class="blg-arch-name">User Query</div>
+											<div class="blg-arch-desc">"I want to build lean muscle — what should I eat and how should I train?"</div>
+										</div>
+										<div class="blg-arch-layer al-amber">
+											<div class="blg-arch-icon">🎯</div>
+											<div class="blg-arch-name">Supervisor (Turn 1)</div>
+											<div class="blg-arch-desc">Reads query. Decides: both nutrition and fitness are needed. Routes to nutrition first. Sets next_agent = "nutrition".</div>
+										</div>
+										<div class="blg-arch-layer al-green">
+											<div class="blg-arch-icon">🥦</div>
+											<div class="blg-arch-name">Nutrition Agent</div>
+											<div class="blg-arch-desc">Reads full conversation (user query only so far). Generates a diet plan for muscle building. Appends AI message to state. Returns to supervisor.</div>
+										</div>
+										<div class="blg-arch-layer al-amber">
+											<div class="blg-arch-icon">🎯</div>
+											<div class="blg-arch-name">Supervisor (Turn 2)</div>
+											<div class="blg-arch-desc">Reads updated conversation (user query + nutrition response). Sees fitness hasn't responded yet. Routes to fitness. Sets next_agent = "fitness".</div>
+										</div>
+										<div class="blg-arch-layer al-teal">
+											<div class="blg-arch-icon">💪</div>
+											<div class="blg-arch-name">Fitness Agent</div>
+											<div class="blg-arch-desc">Reads full conversation including nutrition response. Generates a training plan that complements the diet advice. Appends AI message to state. Returns to supervisor.</div>
+										</div>
+										<div class="blg-arch-layer al-amber">
+											<div class="blg-arch-icon">🎯</div>
+											<div class="blg-arch-name">Supervisor (Turn 3)</div>
+											<div class="blg-arch-desc">Reads updated conversation (user query + nutrition response + fitness response). All domains covered. Sets next_agent = "FINISH". Graph ends.</div>
+										</div>
+										<div class="blg-arch-layer al-purple">
+											<div class="blg-arch-icon">✅</div>
+											<div class="blg-arch-name">User Sees Both Responses</div>
+											<div class="blg-arch-desc">The nutrition and fitness AI messages are combined and returned — a comprehensive, multi-specialist answer to one query.</div>
+										</div>
+									</div>
+									<hr class="blg-hr">
+								</div>
+								<!-- End: 3. Understanding the Supervisor Pattern -->
+
+								<!-- 4. State Design -->
+								<div class="blg-section">
+									<a id="state-design" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🗂️ 4. State Design</h2></div>
+
+									<p class="blg-paragraph">
+										<span class="code-soft">WellnessState</span> has exactly two fields — one for the conversation and one for routing:
+									</p>
+									<div class="blg-code-block" data-lang="python">from typing import Annotated
+from langchain_core.messages import BaseMessage
+from langgraph.graph.message import add_messages
+from typing_extensions import TypedDict
+
+class WellnessState(TypedDict):
+    # add_messages appends new messages instead of overwriting the list.
+    messages:   Annotated[list[BaseMessage], add_messages]
+    # Set by the supervisor node to control which specialist to call next.
+    # "FINISH" signals the conditional router to route to END.
+    next_agent: str</div>
+
+									<p class="blg-paragraph">
+										The <span class="code-soft">messages</span> field uses the <span class="highlight-teal">add_messages reducer</span> from LangGraph (introduced in Basics Part 2), so every new message is appended rather than overwriting the list. All nodes — supervisor and specialists — read from this same list. This is how the supervisor can see what specialists have already said: their responses are ordinary <span class="code-soft">AIMessage</span> objects inside <span class="code-soft">messages</span>.
+									</p>
+									<p class="blg-paragraph">
+										The <span class="code-soft">next_agent</span> field is a plain string with <strong>last-write-wins</strong> semantics (the default for fields without a reducer). The supervisor node is the only node that writes to it. Specialist nodes never touch it. The conditional router reads it to determine which edge to follow.
+									</p>
+									<blockquote class="blg-callout-purple">
+										🔗 <strong>Design principle:</strong> Keep routing state separate from conversation state. <span class="code-soft">messages</span> is the shared blackboard that every agent reads and writes to; <span class="code-soft">next_agent</span> is a control signal that only the supervisor writes. Mixing them would make the graph logic harder to reason about.
+									</blockquote>
+									<p class="blg-paragraph">
+										We define <span class="code-soft">WellnessState</span> as our own <span class="code-soft">TypedDict</span> rather than using LangGraph's <span class="code-soft">MessagesState</span> shortcut, because we need the additional <span class="code-soft">next_agent</span> field for routing control. <span class="code-soft">MessagesState</span> only provides <span class="code-soft">messages</span>.
+									</p>
+									<hr class="blg-hr">
+								</div>
+								<!-- End: 4. State Design -->
+
+								<!-- 5. Building the Supervisor Agent -->
+								<div class="blg-section">
+									<a id="building-supervisor" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🎯 5. Building the Supervisor Agent</h2></div>
+
+									<p class="blg-paragraph">
+										The supervisor is the heart of the multi-agent system. It has three components: a Pydantic schema that constrains its output, a node function that invokes the LLM, and a system prompt that describes the team and the routing rules.
+									</p>
+
+									<a id="decision-schema" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">5.1</span>
+										<h3>📐 The SupervisorDecision Schema</h3>
+									</div>
+									<p class="blg-paragraph">
+										We define a Pydantic model with two fields. <span class="code-soft">next_agent</span> uses <span class="code-soft">Literal</span> to enumerate every valid destination, including <span class="code-soft">"FINISH"</span>. The <span class="code-soft">reasoning</span> field encourages the LLM to reason explicitly before committing to a choice — this acts as a lightweight chain-of-thought that tends to improve routing accuracy:
+									</p>
+									<div class="blg-code-block" data-lang="python">from typing import Literal
+from pydantic import BaseModel
+
+class SupervisorDecision(BaseModel):
+    next_agent: Literal["nutrition", "fitness", "mindfulness", "FINISH"]
+    reasoning:  str</div>
+
+									<p class="blg-paragraph">
+										When the structured-output LLM processes a message, it always returns a <span class="code-soft">SupervisorDecision</span> instance. <span class="code-soft">decision.next_agent</span> is guaranteed to be one of the four valid strings. The conditional router can therefore use a simple <span class="code-soft">dict</span> mapping with no fallback needed.
+									</p>
+
+									<a id="supervisor-node" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">5.2</span>
+										<h3>🤖 The Supervisor Node</h3>
+									</div>
+									<p class="blg-paragraph">
+										The supervisor node is deliberately minimal. It prepends the system prompt, invokes the structured LLM, and returns only the routing decision — it never adds a user-visible message:
+									</p>
+									<div class="blg-code-block" data-lang="python">def supervisor_node(self, state: WellnessState) -> dict:
+    """Read the full conversation and decide which specialist to call next."""
+    messages = [SystemMessage(content=self.supervisor_prompt)] + list(state["messages"])
+    decision = self.supervisor_llm.invoke(messages)
+    return {"next_agent": decision.next_agent}</div>
+
+									<p class="blg-paragraph">
+										Notice that the return dictionary only updates <span class="code-soft">next_agent</span>. It does <em>not</em> include a <span class="code-soft">messages</span> key, so the message list is untouched. The specialist nodes are the only ones that append to <span class="code-soft">messages</span>. This keeps the supervisor transparent to the user — they only see specialist responses.
+									</p>
+									<blockquote class="blg-callout-info">
+										💡 The supervisor reads the full <span class="code-soft">state["messages"]</span>, which includes both the original user query and every specialist response added so far. After the nutrition agent responds, the supervisor sees the nutrition message in the list and uses that context when deciding whether to call the fitness agent next.
+									</blockquote>
+
+									<a id="supervisor-prompt" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">5.3</span>
+										<h3>📝 The Supervisor Prompt</h3>
+									</div>
+									<p class="blg-paragraph">
+										The supervisor prompt lives in <span class="code-soft">prompts/supervisor.txt</span>. It introduces the team, maps each specialist name to a domain, and gives concrete routing rules:
+									</p>
+									<div class="blg-code-block" data-lang="markdown">You are Coach Alex, a wellness supervisor who coordinates a team of specialist coaches.
+
+Your team:
+- nutrition    — Expert in diet, food, macronutrients, meal planning, and nutritional science
+- fitness      — Expert in exercise, workouts, cardio, strength training, and physical performance
+- mindfulness  — Expert in stress management, meditation, sleep hygiene, and mental wellbeing
+
+Your job is to read the current conversation and decide which specialist should respond next,
+or whether the question has already been fully answered.
+
+Routing rules:
+1. Route to exactly one specialist at a time.
+2. If a question touches multiple domains, route to the most relevant specialist first;
+   in your next turn after that specialist has responded, route to the next specialist.
+3. Once all relevant specialists have responded to the current user query,
+   output next_agent = "FINISH".
+4. Never output FINISH before at least one specialist has responded to the current user message.
+5. If the conversation already contains an AI response to the user's latest message
+   and all domains are covered, output FINISH.</div>
+
+									<p class="blg-paragraph">
+										Rule 4 is especially important. Without it, the supervisor might look at an empty conversation, decide the question is trivial, and immediately output <span class="code-soft">FINISH</span> before any specialist has responded — leaving the user with no answer at all. Rules 4 and 5 together ensure the supervisor always waits for at least one specialist and stops as soon as the query is fully covered.
+									</p>
+									<hr class="blg-hr">
+								</div>
+								<!-- End: 5. Building the Supervisor Agent -->
+
+								<!-- 6. Building the Specialist Agents -->
+								<div class="blg-section">
+									<a id="specialist-agents" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>👥 6. Building the Specialist Agents</h2></div>
+
+									<p class="blg-paragraph">
+										Each specialist is a simple LLM node that reads the full conversation history through its own domain-specific system prompt and appends its response to <span class="code-soft">messages</span>. Here is the nutrition specialist as an example:
+									</p>
+									<div class="blg-code-block" data-lang="python">def nutrition_node(self, state: WellnessState) -> dict:
+    messages = [SystemMessage(content=self.nutrition_prompt)] + list(state["messages"])
+    response = self.llm.invoke(messages)
+    return {"messages": [response]}</div>
+
+									<p class="blg-paragraph">
+										The fitness and mindfulness nodes are identical in structure — they differ only in which prompt they load. All three are defined inside the <span class="code-soft">WellnessNodes</span> class. The prompts are loaded in <span class="code-soft">__init__</span> using the standard <span class="code-soft">_load_prompt()</span> helper:
+									</p>
+									<div class="blg-code-block" data-lang="python">_PROMPTS_DIR = os.path.join(os.path.dirname(__file__), "prompts")
+
+def _load_prompt(filename: str) -> str:
+    with open(os.path.join(_PROMPTS_DIR, filename), "r") as f:
+        return f.read().strip()
+
+class WellnessNodes:
+    def __init__(self):
+        self.llm                = GeminiLLM().get_llm()
+        self.supervisor_prompt  = _load_prompt("supervisor.txt")
+        self.nutrition_prompt   = _load_prompt("nutrition.txt")
+        self.fitness_prompt     = _load_prompt("fitness.txt")
+        self.mindfulness_prompt = _load_prompt("mindfulness.txt")
+        # Bind structured output so the supervisor always returns a valid decision.
+        self.supervisor_llm     = self.llm.with_structured_output(SupervisorDecision)</div>
+
+									<p class="blg-paragraph">
+										Each specialist's prompt instructs it to begin every response with a branded prefix — <span class="code-soft">🥦 **Nutrition Coach:**</span>, <span class="code-soft">💪 **Fitness Coach:**</span>, or <span class="code-soft">🧘 **Mindfulness Coach:**</span>. This makes it clear in the Gradio UI which specialist is speaking, especially when multiple agents respond to one query.
+									</p>
+									<p class="blg-paragraph">
+										Because all specialists read the full <span class="code-soft">state["messages"]</span> (which includes previous specialist responses), a fitness agent responding after a nutrition agent will naturally reference the dietary context when suggesting a training plan. The shared message list creates cross-agent coherence without any explicit message-passing code.
+									</p>
+									<blockquote class="blg-callout-tip">
+										✅ <strong>Prompt separation pays off here.</strong> If you later want to make the Nutrition Coach more cautious (e.g. adding a medical disclaimer), you edit only <span class="code-soft">prompts/nutrition.txt</span>. The fitness and mindfulness agents are unaffected. This is the main operational advantage of separating prompts into individual files.
+									</blockquote>
+									<hr class="blg-hr">
+								</div>
+								<!-- End: 6. Building the Specialist Agents -->
+
+								<!-- 7. Assembling the Graph -->
+								<div class="blg-section">
+									<a id="graph-assembly" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🔗 7. Assembling the Graph</h2></div>
+
+									<p class="blg-paragraph">
+										The graph assembly is where the supervisor loop comes to life. There are two key steps: writing the route function and wiring the edges.
+									</p>
+
+									<a id="route-function" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">7.1</span>
+										<h3>🧭 The Route Function</h3>
+									</div>
+									<p class="blg-paragraph">
+										The route function reads <span class="code-soft">next_agent</span> from state and returns its value unchanged. LangGraph's <span class="code-soft">add_conditional_edges()</span> uses this return value as a key to look up the actual node name in the mapping dictionary:
+									</p>
+									<div class="blg-code-block" data-lang="python">def route_by_agent(state: WellnessState) -> str:
+    """Read next_agent from state and return the node name (or END)."""
+    return state.get("next_agent", "FINISH")</div>
+
+									<p class="blg-paragraph">
+										The default <span class="code-soft">"FINISH"</span> is a safety fallback for the very first graph invocation, before the supervisor has had a chance to set <span class="code-soft">next_agent</span>. In practice this edge is never taken because the graph always starts at the supervisor node (via <span class="code-soft">START → supervisor</span>), not at the conditional edge.
+									</p>
+
+									<a id="wiring-loop" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">7.2</span>
+										<h3>⚡ Wiring the Supervisor Loop</h3>
+									</div>
+									<p class="blg-paragraph">
+										The complete <span class="code-soft">_build()</span> method registers all nodes, sets up the conditional edges from the supervisor, and — the crucial detail — adds a return edge from each specialist back to the supervisor:
+									</p>
+									<div class="blg-code-block" data-lang="python">from langgraph.checkpoint.memory import MemorySaver
+from langgraph.graph import END, START, StateGraph
+
+def _build(self):
+    graph = StateGraph(WellnessState)
+
+    graph.add_node("supervisor",   self.nodes.supervisor_node)
+    graph.add_node("nutrition",    self.nodes.nutrition_node)
+    graph.add_node("fitness",      self.nodes.fitness_node)
+    graph.add_node("mindfulness",  self.nodes.mindfulness_node)
+
+    # Every run starts at the supervisor.
+    graph.add_edge(START, "supervisor")
+
+    # Supervisor decides which specialist to call, or FINISH to end.
+    graph.add_conditional_edges(
+        "supervisor",
+        route_by_agent,
+        {
+            "nutrition":   "nutrition",
+            "fitness":     "fitness",
+            "mindfulness": "mindfulness",
+            "FINISH":      END,
+        },
+    )
+
+    # Each specialist returns control to the supervisor after responding.
+    graph.add_edge("nutrition",   "supervisor")
+    graph.add_edge("fitness",     "supervisor")
+    graph.add_edge("mindfulness", "supervisor")
+
+    return graph.compile(checkpointer=MemorySaver())</div>
+
+									<p class="blg-paragraph">
+										The three <span class="code-soft">add_edge</span> calls at the bottom are what create the loop. Without them, the graph would be identical to Basics Part 3's conditional routing — specialists would run once and the graph would end. With them, the supervisor gets to re-evaluate after every specialist response, enabling multi-hop routing.
+									</p>
+									<p class="blg-paragraph">
+										<span class="code-soft">MemorySaver</span> is the in-memory checkpointer from LangGraph. It gives each <span class="code-soft">thread_id</span> its own conversation history that persists across multiple <span class="code-soft">invoke()</span> calls within the same process. Unlike <span class="code-soft">SqliteSaver</span> (used in Advanced Part 1), <span class="code-soft">MemorySaver</span> resets when the process restarts — it's ideal for session-scoped memory without the overhead of a database file.
+									</p>
+									<blockquote class="blg-callout-note">
+										📌 <strong>Loop safety:</strong> The supervisor loop can theoretically run indefinitely if the LLM never outputs <span class="code-soft">FINISH</span>. The supervisor prompt's rules 4 and 5 prevent this in practice — but for production systems, consider adding a <span class="code-soft">MAX_HOPS</span> counter to <span class="code-soft">WellnessState</span> as a hard ceiling.
+									</blockquote>
+									<hr class="blg-hr">
+								</div>
+								<!-- End: 7. Assembling the Graph -->
+
+								<!-- 8. Complete Example -->
+								<div class="blg-section">
+									<a id="complete-example" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🏗️ 8. Complete Example: AI Personal Wellness Coach</h2></div>
+
+									<p class="blg-paragraph">
+										With all the concepts in place, let's walk through the complete implementation of <strong>Coach Alex</strong> — an AI Personal Wellness Coach that uses the supervisor pattern to route queries to nutrition, fitness, and mindfulness specialists.
+									</p>
+
+									<a id="arch-overview" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">8.1</span>
+										<h3>🗺️ Architecture Overview</h3>
+									</div>
+									<div class="blg-feature-grid">
+										<div class="blg-feature-card card-orange">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">🎯</span>
+												<h4>Supervisor</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Reads the full conversation history and decides which specialist to call next (or <span class="code-soft">FINISH</span>), setting <span class="code-soft">next_agent</span> via structured output.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-green">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">🥦</span>
+												<h4>Nutrition Agent</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Answers diet, meal planning, and calorie questions. Appends its response to state, then returns to the supervisor.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-teal">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">💪</span>
+												<h4>Fitness Agent</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Handles workout plans and training frequency. Reads nutrition responses already in state so its advice complements the diet plan.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-purple">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">🧘</span>
+												<h4>Mindfulness Agent</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Covers stress management, sleep hygiene, and breathing techniques — called when the query touches mental wellness.</p>
+											</div>
+										</div>
+									</div>
+
+									<a id="project-structure" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">8.2</span>
+										<h3>📁 Project Structure</h3>
+									</div>
+									<div class="blg-tree"><span class="tree-root">advanced-2-multi-agent-supervisor/</span>
+<span class="tree-pipe">├── </span><span class="tree-file">config.py</span>              <span class="tree-comment"># Config class — reads .env</span>
+<span class="tree-pipe">├── </span><span class="tree-file">llm.py</span>                 <span class="tree-comment"># GeminiLLM wrapper</span>
+<span class="tree-pipe">├── </span><span class="tree-file">state.py</span>               <span class="tree-comment"># WellnessState TypedDict</span>
+<span class="tree-pipe">├── </span><span class="tree-file">nodes.py</span>               <span class="tree-comment"># WellnessNodes — supervisor + 3 specialist nodes</span>
+<span class="tree-pipe">├── </span><span class="tree-file">graph.py</span>               <span class="tree-comment"># WellnessGraph — supervisor loop, MemorySaver</span>
+<span class="tree-pipe">├── </span><span class="tree-file">wellness_runner.py</span>     <span class="tree-comment"># Console entry point with 4-demo run</span>
+<span class="tree-pipe">├── </span><span class="tree-file">app.py</span>                 <span class="tree-comment"># Gradio Blocks with New Session button</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">prompts/</span>               <span class="tree-comment"># LLM prompt templates — one file per agent</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">supervisor.txt</span>     <span class="tree-comment"># Supervisor routing instructions</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">nutrition.txt</span>      <span class="tree-comment"># Nutrition Coach persona + response rules</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">fitness.txt</span>        <span class="tree-comment"># Fitness Coach persona + response rules</span>
+<span class="tree-pipe">│   └── </span><span class="tree-file">mindfulness.txt</span>    <span class="tree-comment"># Mindfulness Coach persona + response rules</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">figure/</span>                <span class="tree-comment"># Auto-generated graph diagrams (git-ignored)</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">graph.mmd</span>          <span class="tree-comment"># Mermaid source</span>
+<span class="tree-pipe">│   └── </span><span class="tree-file">graph.png</span>          <span class="tree-comment"># PNG export</span>
+<span class="tree-pipe">└── </span><span class="tree-spec">.env</span>                   <span class="tree-comment"># API keys — never commit</span></div>
+
+									<a id="state-file" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">8.3</span>
+										<h3>🗂️ State (state.py)</h3>
+									</div>
+									<div class="blg-code-block" data-lang="python">from typing import Annotated
+from langchain_core.messages import BaseMessage
+from langgraph.graph.message import add_messages
+from typing_extensions import TypedDict
+
+class WellnessState(TypedDict):
+    # add_messages appends new messages instead of overwriting the list.
+    messages:   Annotated[list[BaseMessage], add_messages]
+    # Set by the supervisor node to control which specialist to call next.
+    # "FINISH" signals the conditional router to route to END.
+    next_agent: str</div>
+
+									<a id="nodes-file" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">8.4</span>
+										<h3>🤖 Nodes (nodes.py)</h3>
+									</div>
+									<div class="blg-code-block" data-lang="python">import os
+from typing import Literal
+from langchain_core.messages import SystemMessage
+from pydantic import BaseModel
+from llm import GeminiLLM
+from state import WellnessState
+
+_PROMPTS_DIR = os.path.join(os.path.dirname(__file__), "prompts")
+
+def _load_prompt(filename: str) -> str:
+    with open(os.path.join(_PROMPTS_DIR, filename), "r") as f:
+        return f.read().strip()
+
+def _extract_text(content) -> str:
+    """Normalise langchain-google-genai 4.x content (list or str) to plain str."""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        return "".join(
+            b.get("text", "")
+            for b in content
+            if isinstance(b, dict) and b.get("type") == "text"
+        )
+    return str(content)
+
+class SupervisorDecision(BaseModel):
+    next_agent: Literal["nutrition", "fitness", "mindfulness", "FINISH"]
+    reasoning:  str
+
+class WellnessNodes:
+    def __init__(self):
+        self.llm                = GeminiLLM().get_llm()
+        self.supervisor_prompt  = _load_prompt("supervisor.txt")
+        self.nutrition_prompt   = _load_prompt("nutrition.txt")
+        self.fitness_prompt     = _load_prompt("fitness.txt")
+        self.mindfulness_prompt = _load_prompt("mindfulness.txt")
+        self.supervisor_llm     = self.llm.with_structured_output(SupervisorDecision)
+
+    def supervisor_node(self, state: WellnessState) -> dict:
+        messages = [SystemMessage(content=self.supervisor_prompt)] + list(state["messages"])
+        decision = self.supervisor_llm.invoke(messages)
+        return {"next_agent": decision.next_agent}
+
+    def nutrition_node(self, state: WellnessState) -> dict:
+        messages = [SystemMessage(content=self.nutrition_prompt)] + list(state["messages"])
+        response = self.llm.invoke(messages)
+        return {"messages": [response]}
+
+    def fitness_node(self, state: WellnessState) -> dict:
+        messages = [SystemMessage(content=self.fitness_prompt)] + list(state["messages"])
+        response = self.llm.invoke(messages)
+        return {"messages": [response]}
+
+    def mindfulness_node(self, state: WellnessState) -> dict:
+        messages = [SystemMessage(content=self.mindfulness_prompt)] + list(state["messages"])
+        response = self.llm.invoke(messages)
+        return {"messages": [response]}</div>
+
+									<a id="graph-file" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">8.5</span>
+										<h3>🔗 Graph Assembly (graph.py)</h3>
+									</div>
+									<div class="blg-code-block" data-lang="python">import os
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.graph import END, START, StateGraph
+from nodes import WellnessNodes
+from state import WellnessState
+
+FIGURE_DIR = os.path.join(os.path.dirname(__file__), "figure")
+
+def route_by_agent(state: WellnessState) -> str:
+    return state.get("next_agent", "FINISH")
+
+class WellnessGraph:
+    def __init__(self):
+        self.nodes          = WellnessNodes()
+        self.compiled_graph = self._build()
+
+    def _build(self):
+        graph = StateGraph(WellnessState)
+
+        graph.add_node("supervisor",   self.nodes.supervisor_node)
+        graph.add_node("nutrition",    self.nodes.nutrition_node)
+        graph.add_node("fitness",      self.nodes.fitness_node)
+        graph.add_node("mindfulness",  self.nodes.mindfulness_node)
+
+        graph.add_edge(START, "supervisor")
+        graph.add_conditional_edges(
+            "supervisor",
+            route_by_agent,
+            {
+                "nutrition":   "nutrition",
+                "fitness":     "fitness",
+                "mindfulness": "mindfulness",
+                "FINISH":      END,
+            },
+        )
+        graph.add_edge("nutrition",   "supervisor")
+        graph.add_edge("fitness",     "supervisor")
+        graph.add_edge("mindfulness", "supervisor")
+
+        return graph.compile(checkpointer=MemorySaver())
+
+    def save_figure(self):
+        os.makedirs(FIGURE_DIR, exist_ok=True)
+        mmd_path = os.path.join(FIGURE_DIR, "graph.mmd")
+        with open(mmd_path, "w") as f:
+            f.write(self.compiled_graph.get_graph().draw_mermaid())
+        png_path = os.path.join(FIGURE_DIR, "graph.png")
+        with open(png_path, "wb") as f:
+            f.write(self.compiled_graph.get_graph().draw_mermaid_png())
+        print(f"  Graph saved → {mmd_path}")
+        print(f"  Graph saved → {png_path}")
+
+    def get_compiled_graph(self):
+        return self.compiled_graph</div>
+								</div>
+								<!-- End: 8. Complete Example (part 1) -->
+
+								<!-- 8. Complete Example (part 2) — Runner, Console Output, Diagram -->
+								<div class="blg-section">
+									<a id="runner-output" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">8.6</span>
+										<h3>▶️ Runner &amp; Console Output (wellness_runner.py)</h3>
+									</div>
+									<p class="blg-paragraph">
+										<span class="code-soft">WellnessRunner</span> wraps the compiled graph. Its <span class="code-soft">chat()</span> method snapshots the message count before invoking the graph, then collects every new AI message added during the run and joins them into a single string:
+									</p>
+									<div class="blg-code-block" data-lang="python">class WellnessRunner:
+    def __init__(self):
+        self.wellness_graph = WellnessGraph()
+        self.app            = self.wellness_graph.get_compiled_graph()
+
+    def save_figure(self):
+        self.wellness_graph.save_figure()
+
+    def _config(self, thread_id: str) -> dict:
+        return {"configurable": {"thread_id": thread_id}}
+
+    def chat(self, message: str, thread_id: str) -> str:
+        state_before  = self.app.get_state(self._config(thread_id))
+        count_before  = len(state_before.values.get("messages", [])) if state_before.values else 0
+
+        self.app.invoke(
+            {"messages": [HumanMessage(content=message)]},
+            config=self._config(thread_id),
+        )
+
+        state_after    = self.app.get_state(self._config(thread_id))
+        messages_after = state_after.values.get("messages", [])
+        new_ai = [m for m in messages_after[count_before:] if m.type == "ai"]
+        return "\n\n".join(_extract_text(m.content) for m in new_ai)
+
+    def get_history(self, thread_id: str) -> list:
+        state = self.app.get_state(self._config(thread_id))
+        return state.values.get("messages", []) if state.values else []</div>
+
+									<p class="blg-paragraph">
+										The demo section in <span class="code-soft">wellness_runner.py</span> runs four queries across two threads to showcase every key behaviour:
+									</p>
+									<div class="blg-query-list">
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Demo 1</span>
+												"I've been feeling stressed lately and can't sleep well. Can you help?"
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">Shows</span>
+												Single-hop routing — supervisor routes to mindfulness; mindfulness responds; supervisor outputs FINISH.
+											</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Demo 2</span>
+												"I want to build lean muscle. What should I eat and how should I train?"
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">Shows</span>
+												Multi-hop routing — supervisor routes to nutrition, then fitness. Both specialist responses are joined and returned together.
+											</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Demo 3</span>
+												"Can you give me a sample 3-day meal plan based on what you recommended?"
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">Shows</span>
+												Session memory — same thread_id, nutrition agent references the muscle-building context from Demo 2.
+											</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Demo 4</span>
+												"What are some breathing exercises I can do to calm anxiety at work?"
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">Shows</span>
+												Thread isolation — new thread_id, no knowledge of the previous user's conversation.
+											</div>
+										</div>
+									</div>
+
+									<p class="blg-paragraph">
+										Run the demo with:
+									</p>
+									<div class="blg-code-block" data-lang="bash">cd advanced-2-multi-agent-supervisor && python wellness_runner.py</div>
+
+									<p class="blg-paragraph">
+										Expected console output:
+									</p>
+									<div class="blg-code-block" data-lang="bash">============================================================
+   LangGraph Advanced — AI Personal Wellness Coach Demo
+============================================================
+
+  Saving graph architecture...
+  Graph saved → figure/graph.mmd
+  Graph saved → figure/graph.png
+
+────────────────────────────────────────────────────────────
+  Demo 1: Single-agent routing (stress & sleep)
+────────────────────────────────────────────────────────────
+
+🙋  User: I've been feeling stressed lately and can't sleep well. Can you help?
+
+🤖  Coach Alex:
+🧘 **Mindfulness Coach:**
+Stress and poor sleep form a feedback loop — addressing both together works better...
+
+────────────────────────────────────────────────────────────
+  Demo 2: Multi-agent routing (nutrition + fitness)
+────────────────────────────────────────────────────────────
+
+🙋  User: I want to build lean muscle. What should I eat and how should I train?
+
+  [Supervisor called 2 specialist(s) for this query]
+
+🤖  Coach Alex:
+🥦 **Nutrition Coach:**
+For lean muscle building, aim for a slight caloric surplus of 200–300 kcal above maintenance...
+
+💪 **Fitness Coach:**
+Here is a 4-day training split optimised for lean muscle growth...
+
+────────────────────────────────────────────────────────────
+  Demo 3: Follow-up question (session memory)
+────────────────────────────────────────────────────────────
+
+🙋  User: Can you give me a sample 3-day meal plan based on what you recommended?
+
+🤖  Coach Alex:
+🥦 **Nutrition Coach:**
+Based on the muscle-building guidelines I shared, here is a sample 3-day plan...
+
+  ✅ Nutrition Coach remembered the muscle-building context from turn 2.
+
+────────────────────────────────────────────────────────────
+  Demo 4: Thread isolation (new user, fresh context)
+────────────────────────────────────────────────────────────
+
+🙋  Sam: What are some breathing exercises I can do to calm anxiety at work?
+
+🤖  Coach Alex:
+🧘 **Mindfulness Coach:**
+Box breathing is one of the most effective techniques for workplace anxiety...
+
+  ✅ Sam's session has no knowledge of the previous user's conversation.
+
+============================================================</div>
+
+									<a id="mermaid-diagram" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">8.7</span>
+										<h3>📊 Graph Diagram</h3>
+									</div>
+									<p class="blg-paragraph">
+										Running <span class="code-soft">runner.save_figure()</span> at the start of the demo saves both a Mermaid source file and a PNG into the <span class="code-soft">figure/</span> folder. The generated Mermaid diagram looks like this:
+									</p>
+									<div class="blg-img-container">
+										<div class="blg-mermaid-wrap">
+											<div class="mermaid" style="min-width:460px;font-size:16px;">
+flowchart TD
+    S([__start__]) --> supervisor(supervisor)
+    supervisor -.->|"FINISH"| E([__end__])
+    supervisor -.->|"nutrition"| nutrition(nutrition)
+    supervisor -.->|"fitness"| fitness(fitness)
+    supervisor -.->|"mindfulness"| mindfulness(mindfulness)
+    nutrition --> supervisor
+    fitness --> supervisor
+    mindfulness --> supervisor
+
+    style S          fill:#e8f5e9,stroke:#43a047,color:#1b5e20
+    style E          fill:#fce4ec,stroke:#e53935,color:#b71c1c
+    style supervisor fill:#e3f2fd,stroke:#1e88e5,color:#0d47a1
+    style nutrition  fill:#fff3e0,stroke:#fb8c00,color:#e65100
+    style fitness    fill:#f3e5f5,stroke:#8e24aa,color:#4a148c
+    style mindfulness fill:#e0f2f1,stroke:#00897b,color:#004d40
+											</div>
+										</div>
+									</div>
+									<p class="blg-img-caption">Figure 2: The compiled LangGraph — supervisor routes to specialists via conditional edges; each specialist loops back. The graph ends when the supervisor returns <span class="code-soft">FINISH</span>.</p>
+									<hr class="blg-hr">
+								</div>
+								<!-- End: 8. Complete Example (part 2) -->
+
+								<!-- 9. Web Interface -->
+								<div class="blg-section">
+									<a id="web-ui" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>🖥️ 9. Web Interface</h2></div>
+
+									<p class="blg-paragraph">
+										The Gradio app in <span class="code-soft">app.py</span> wraps the runner in a <span class="code-soft">gr.Blocks</span> layout with a chat interface and a "New Session" button. The <span class="code-soft">respond</span> method uses <span class="code-soft">yield</span> (required by Gradio 6.x) — the full combined response is assembled from all specialist calls and then yielded as a single string:
+									</p>
+									<div class="blg-code-block" data-lang="python">import uuid
+import gradio as gr
+from wellness_runner import WellnessRunner
+
+class WellnessApp:
+    def __init__(self):
+        self.runner = WellnessRunner()
+
+    def respond(self, message: str, _history: list, thread_id: str):
+        if not message.strip():
+            yield ""
+            return
+        yield self.runner.chat(message, thread_id)
+
+    def launch(self):
+        with gr.Blocks(title="🧘 AI Personal Wellness Coach") as demo:
+            thread_state = gr.State(value=str(uuid.uuid4()))
+
+            chat = gr.ChatInterface(
+                fn=self.respond,
+                title="🧘 AI Personal Wellness Coach — Coach Alex",
+                description=(
+                    "Ask Coach Alex about nutrition, fitness, or mindfulness. "
+                    "Complex questions are handled by multiple specialist coaches."
+                ),
+                additional_inputs=[thread_state],
+            )
+
+            gr.ClearButton(
+                [chat.chatbot, chat.textbox],
+                value="🔄 New Session",
+                variant="primary",
+            ).click(
+                fn=lambda: str(uuid.uuid4()),
+                outputs=[thread_state],
+            )
+
+        demo.launch(css=".gradio-container { max-width: 860px !important; }")
+
+if __name__ == "__main__":
+    WellnessApp().launch()</div>
+
+									<p class="blg-paragraph">
+										Start the web UI with:
+									</p>
+									<div class="blg-code-block" data-lang="bash">cd advanced-2-multi-agent-supervisor && python app.py</div>
+
+									<div class="blg-img-container">
+										<img src="../img/blog_15/web_ui.webp" alt="AI Personal Wellness Coach — Gradio Web UI" class="blg-img" />
+										<p class="blg-img-caption">Figure 3: The Gradio web UI — Coach Alex chat interface with the New Session button.</p>
+									</div>
+
+									<p class="blg-paragraph">
+										The app opens at <span class="code-soft">http://127.0.0.1:7860</span>. Each <span class="code-soft">gr.State</span> holds a UUID that acts as the <span class="code-soft">thread_id</span>. Clicking "New Session" generates a fresh UUID, giving the user an isolated conversation history without restarting the server. If the user asks a multi-domain question — say, <em>"How can I reduce belly fat through diet and exercise?"</em> — they'll see two specialist responses, clearly labelled, returned as one cohesive answer.
+									</p>
+									<a id="what-to-try" class="blg-anchor"></a>
+									<div class="blg-sub-header">
+										<span class="blg-sub-badge">9.1</span>
+										<h3>💡 What to Try</h3>
+									</div>
+
+									<div class="blg-paragraph">
+										<p>These queries exercise the different routing paths — from single-specialist calls to full three-agent responses and the New Session flow:</p>
+									</div>
+
+									<div class="blg-query-list">
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Nutrition only</span>
+												"I want to lose 5 kg in two months. What should I eat daily?"
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">Observe</span>
+												Supervisor reads the query and routes only to the Nutrition Agent — no fitness or mindfulness call. You get one specialist response covering calorie targets, macros, and meal timing.
+											</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Fitness only</span>
+												"Can you build me a 3-day beginner workout plan for home, no equipment?"
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">Observe</span>
+												Supervisor routes only to the Fitness Agent. One response with a structured workout plan — bodyweight exercises, sets, reps, and rest days.
+											</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Two specialists</span>
+												"I want to build lean muscle. What should I eat and how should I train?"
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">Observe</span>
+												Supervisor routes to Nutrition first, then Fitness. The Fitness Agent reads the nutrition response already in state and aligns the training plan with the diet advice — two coordinated specialist replies in one answer.
+											</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">All three specialists</span>
+												"I'm exhausted, stressed at work, and gaining weight. I need help with diet, exercise, and stress — where do I start?"
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">Observe</span>
+												All three agents are called in sequence. Nutrition, Fitness, and Mindfulness each contribute a section. The Mindfulness Agent sees the other two responses in state and frames its advice as a complement — one comprehensive multi-specialist reply.
+											</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Memory + New Session</span>
+												Turn 1: "I'm vegan and lactose intolerant." — Turn 2: "Suggest a high-protein breakfast." — Then click <strong>New Session</strong> and ask the same breakfast question again.
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">Observe</span>
+												Turn 2 references your dietary restrictions from Turn 1 — Coach Alex remembers. After clicking New Session, the conversation resets to a fresh UUID thread and the dietary context is gone — breakfast suggestions become generic.
+											</div>
+										</div>
+									</div>
+
+									<hr class="blg-hr">
+								</div>
+								<!-- End: 9. Web Interface -->
+
+								<!-- 10. Conclusion -->
+								<div class="blg-section">
+									<a id="conclusion" class="blg-anchor"></a>
+									<div class="blg-main-header"><h2>✅ 10. Conclusion</h2></div>
+
+									<p class="blg-paragraph">
+										The multi-agent supervisor pattern extends everything you know about conditional routing with one important change: the routing decision is made by an LLM that reads the full conversation, and control returns to that LLM after every specialist responds. This creates a loop that can drive a query through one specialist or several, depending on what the conversation demands.
+									</p>
+									<p class="blg-paragraph">
+										In <strong>Coach Alex</strong>, that loop lets a single user message receive deep, domain-specific advice from a Nutrition Coach and a Fitness Coach in sequence, with each specialist naturally building on what the other said. No rule-based router could achieve this without knowing ahead of time exactly how many domains each query spans.
+									</p>
+									<p class="blg-paragraph">
+										The building blocks you've used in this post scale directly to more complex systems. Adding a fourth specialist — say, a Sleep Coach — means adding one node, one prompt file, one <span class="code-soft">Literal</span> option in <span class="code-soft">SupervisorDecision</span>, and one entry in the conditional edge mapping. The supervisor prompt needs a one-line description of the new agent's domain. Nothing else changes.
+									</p>
+									<ul>
+										<li class="blg-li-check"><strong>Structured output</strong> (<span class="code-soft">with_structured_output</span>) keeps routing deterministic — the LLM can never return an invalid destination.</li>
+										<li class="blg-li-check"><strong>The supervisor loop</strong> (specialist → supervisor → specialist → ...) enables multi-hop routing without any explicit loop counter in your code.</li>
+										<li class="blg-li-check"><strong>Prompt separation</strong> (<span class="code-soft">prompts/*.txt</span>) lets you tune each specialist's behaviour without touching the others.</li>
+										<li class="blg-li-check"><strong>MemorySaver</strong> gives every <span class="code-soft">thread_id</span> its own isolated conversation history across multiple invocations within the same session.</li>
+										<li class="blg-li-check"><strong>Scalability</strong> — adding a new specialist requires only one new node, one prompt file, one <span class="code-soft">Literal</span> option, and one entry in the routing map. Nothing else changes.</li>
+									</ul>
+									<p class="blg-paragraph">
+										In the next part of the LangGraph Advanced series, we'll go further and add real-world tool use to specialist agents — giving them the ability to call external APIs and perform computations rather than relying purely on LLM knowledge.
+									</p>
+									<blockquote class="blg-callout-purple">
+										🔗 <strong>LangGraph Advanced Series — Part 2 of 5:</strong> This post covers the Multi-Agent Supervisor pattern. <a href="blog_14.html" class="blg-link">Part 1</a> introduced ReAct agents with tool use. <a href="blog_16.html" class="blg-link">Part 3</a> adds RAG with conditional routing. <a href="blog_17.html" class="blg-link">Part 4</a> builds a real-estate advisor with financial tools. <a href="blog_18.html" class="blg-link">Part 5</a> completes the series with MCP integration.
+									</blockquote>
+									<hr class="blg-hr" />
+								</div>
+								<!-- End: 10. Conclusion -->
+
+								<!-- 11. Technical Stacks -->
+								<div class="blg-trailing-section">
+									<div class="blg-trailing-header">
+										<img src="../img/technical_stack/stack.png" alt="Technical Stacks">
+										<h2>Technical Stacks</h2>
+									</div>
+									<div class="blg-tech-grid">
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/python.svg" alt="Python"> Python
+										</div>
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/langgraph.svg" alt="LangGraph"> LangGraph
+										</div>
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/langchain.svg" alt="LangChain"> LangChain
+										</div>
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/gemini.svg" alt="Gemini"> Gemini
+										</div>
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/gradio.svg" alt="Gradio"> Gradio
+										</div>
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/prompt.png" alt="Pydantic"> Pydantic
+										</div>
+									</div>
+								</div>
+								<!-- End: Technical Stacks -->
+
+								<!-- 12. Download Source Code -->
+								<div class="blg-download-card">
+									<img src="../img/others/download.svg" alt="Download">
+									<div class="blg-download-info">
+										<h3>Download Source Code</h3>
+										<p>LangGraph Advanced Part 2 — AI Personal Wellness Coach</p>
+									</div>
+									<a href="https://github.com/shafiqul-islam-sumon/langgraph/tree/main/advanced-2-multi-agent-supervisor" class="blg-download-btn" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+								</div>
+								<!-- End: Download Source Code -->
+
+								<!-- 13. References -->
+								<div class="blg-trailing-section">
+									<div class="blg-trailing-header">
+										<span style="font-size: 22px; line-height: 1;">📚</span>
+										<h2>References</h2>
+									</div>
+									<ul class="blg-ul">
+										<li class="blg-li">
+											<img src="../img/technical_stack/github.svg" alt="GitHub" width="18" style="vertical-align: middle; margin-right: 6px;">
+											<strong>GitHub Repository:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://github.com/shafiqul-islam-sumon/langgraph/tree/main/advanced-2-multi-agent-supervisor">shafiqul-islam-sumon/langgraph — advanced-2-multi-agent-supervisor</a>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/langgraph.svg" alt="LangGraph" width="18" style="vertical-align: middle; margin-right: 6px;">
+											<strong>LangGraph Multi-Agent Docs:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://langchain-ai.github.io/langgraph/concepts/multi_agent/">langchain-ai.github.io/langgraph — Multi-Agent Systems</a>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/langchain.svg" alt="LangChain" width="18" style="vertical-align: middle; margin-right: 6px;">
+											<strong>Structured Output:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://python.langchain.com/docs/concepts/structured_outputs/">python.langchain.com — Structured Outputs</a>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/gemini.svg" alt="Gemini" width="18" style="vertical-align: middle; margin-right: 6px;">
+											<strong>Google Gemini API:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://ai.google.dev/gemini-api/docs">ai.google.dev — Gemini API Documentation</a>
+										</li>
+									</ul>
+								</div>
+								<!-- End: References -->
+
+							</div><!-- end #blogContainer -->
+						</div><!-- end .blog-detail-main -->
+					</div><!-- end .blog-detail-layout -->
+
+					<div class="related-posts-section">
+						<div class="blog-title-bar">
+							<img src="../img/others/blog.png" alt="blog post" style="width: 24px; height: auto;">
+							<h2>Related Blog Posts</h2>
+						</div>
+						<div class="related-posts-wrapper">
+							<div class="related-posts-swiper-area">
+								<div class="swiper" id="postContainer">
+									<div class="swiper-wrapper"><!-- populated by detail.js --></div>
+								</div>
+								<div class="swiper-button-prev"></div>
+								<div class="swiper-button-next"></div>
+							</div>
+							<div class="blg-slide-counter">
+								<div class="slide-progress-bar">
+									<div class="slide-progress-fill" id="slideProgressFill"></div>
+								</div>
+								<div class="slide-counter-label">
+									<span id="currentSlide">1</span> / <span id="totalSlides">1</span>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</section>
+			<div id="site-footer"></div>
+		</div>
+		<script src="../js/bootstrap.bundle.min.js"></script>
+		<script src="../js/components.js"></script>
+		<script src="../js/site.js"></script>
+		<script src="../js/swiper-bundle.min.js"></script>
+		<script src="../js/prism.js" data-manual></script>
+		<script src="../js/code-highlight.js"></script>
+		<script src="../js/detail.js"></script>
+		<script src="../js/mermaid.min.js"></script>
+		<script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+	</body>
+</html>

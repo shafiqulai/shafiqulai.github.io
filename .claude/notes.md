@@ -3,7 +3,7 @@
 ## LangGraph Series
 
 - GitHub repo: [github.com/shafiqul-islam-sumon/langgraph](https://github.com/shafiqul-islam-sumon/langgraph/tree/main)
-- Gemini model in use: `gemini-2.0-flash`
+- Gemini model in use: `gemini-3-flash-preview`
 
 ## Website
 
@@ -37,5 +37,5 @@
 
 - Google Search Console: [search.google.com/search-console](https://search.google.com/search-console?resource_id=https%3A%2F%2Fshafiqulai.github.io%2F)
 - Google Analytics: [analytics.google.com](https://analytics.google.com/analytics/web/#/p482235476/reports/intelligenthome?params=_u..nav%3Dmaui)
-- Check page indexed: `site:shafiqulai.github.io/blogs/blog_7.html`
+- Check page indexed: `site:shafiqulai.github.io/blogs/blog_18.html`
 

@@ -1006,19 +1006,16 @@ print()   # newline after the full response</div>
 									</div>
 
 									<div class="blg-img-container">
-										<div class="blg-mermaid-container">
-											<pre class="mermaid">
-%%{init: {"flowchart": {"curve": "linear"}}}%%
-graph TD
-    S([__start__]):::first
-    SB(study_buddy)
-    E([__end__]):::last
-    S  --> SB
-    SB --> E
-    classDef default fill:#f2f0ff,line-height:1.2
-    classDef first fill-opacity:0
-    classDef last fill:#bfb6fc
-											</pre>
+										<div class="blg-mermaid-wrap">
+											<div class="mermaid" style="min-width:460px;font-size:16px;">
+flowchart TD
+    S([__start__]) --> SB(study_buddy)
+    SB --> E([__end__])
+
+    style S  fill:#e8f5e9,stroke:#43a047,color:#1b5e20
+    style E  fill:#fce4ec,stroke:#e53935,color:#b71c1c
+    style SB fill:#e3f2fd,stroke:#1e88e5,color:#0d47a1
+											</div>
 										</div>
 										<p class="blg-img-caption">Graph architecture of the Study Buddy. One node — but the checkpointer (not shown) persists the full message history between every call.</p>
 									</div>
@@ -1482,14 +1479,15 @@ if __name__ == "__main__":
 
 								<a id="how-to-use" class="blg-anchor"></a>
 								<div class="blg-sub-header">
-									<h3><span class="blg-sub-badge">7.1</span> How to Use the App</h3>
+									<span class="blg-sub-badge">7.1</span>
+									<h3>How to Use the App</h3>
 								</div>
 
 								<div class="blg-paragraph">
 									<p><strong>Test multi-turn memory.</strong> Send these four messages one after another in the same tab. Turn 4 is the proof — the buddy should recall the analogy it used in turn 1 without you repeating anything.</p>
 								</div>
 
-								<table class="blg-table">
+								<div class="blg-table"><table>
 									<thead>
 										<tr>
 											<th>Turn</th>
@@ -1519,13 +1517,13 @@ if __name__ == "__main__":
 											<td>Proof that memory spans all prior turns</td>
 										</tr>
 									</tbody>
-								</table>
+								</table></div>
 
 								<div class="blg-paragraph">
 									<p><strong>Test thread isolation.</strong> Open a <strong>second browser tab</strong> at <span class="code-soft">http://127.0.0.1:7860</span> and send a completely different question:</p>
 								</div>
 
-								<table class="blg-table">
+								<div class="blg-table"><table>
 									<thead>
 										<tr>
 											<th>Turn</th>
@@ -1545,15 +1543,15 @@ if __name__ == "__main__":
 											<td>Should say list comprehensions — not recursion</td>
 										</tr>
 									</tbody>
-								</table>
+								</table></div>
 
 								<div class="blg-paragraph">
 									<p><strong>Test New Session.</strong> Back in Tab 1, click <strong>🔄 New Session</strong> to clear the chat and generate a new thread ID. Then ask:</p>
 								</div>
 
-								<div class="blg-callout-tip">
-									<p>💡 <em>"What did we talk about just now?"</em> — the buddy should have no memory of the recursion conversation. A fresh thread means a clean slate.</p>
-								</div>
+								<blockquote class="blg-callout-tip">
+									💡 <em>"What did we talk about just now?"</em> — the buddy should have no memory of the recursion conversation. A fresh thread means a clean slate.
+								</blockquote>
 
 								<div class="blg-img-container">
 									<img src="../img/blog_11/web_ui.webp" alt="Personal Study Buddy Gradio web interface" class="blg-img" />
@@ -1575,21 +1573,25 @@ if __name__ == "__main__":
 								</div>
 
 								<div class="blg-paragraph">
+									<p>The checkpointer pattern scales to any production deployment without architectural change. Swap <span class="code-soft">SqliteSaver</span> for a Redis or PostgreSQL backend and the same graph runs across a distributed fleet of workers — each worker reads and writes the same shared checkpoint store. Add a second checkpointer for long-term episodic memory (saving conversation summaries instead of full message lists) and the graph handles month-long sessions without context window overflow. The <span class="code-soft">thread_id</span> key is also the natural place to slot in multi-tenancy: scope it to a user ID and one deployed graph serves thousands of independent users simultaneously.</p>
+								</div>
+
+								<div class="blg-paragraph">
 									<p>Here's what you learned in this post:</p>
 								</div>
 
 								<ul class="blg-ul">
-									<li class="blg-li">LangGraph graphs are <strong>stateless by default</strong> — each <span class="code-soft">invoke()</span> starts fresh. A checkpointer is what gives them memory.</li>
-									<li class="blg-li"><span class="code-soft">MemorySaver</span> stores state in RAM — zero setup, lost on restart. <span class="code-soft">SqliteSaver</span> stores it in a <span class="code-soft">.db</span> file — survives restarts, production-ready for single-machine apps.</li>
-									<li class="blg-li">Swapping checkpointers is <strong>two lines</strong> — the import and the constructor. All other code stays the same.</li>
-									<li class="blg-li"><strong>Thread IDs</strong> are the namespace that keeps different users' histories separate. Always pass <span class="code-soft">{"configurable": {"thread_id": "..."}}</span> to every <span class="code-soft">invoke()</span> and <span class="code-soft">stream()</span> call on a checkpointed graph.</li>
-									<li class="blg-li"><span class="code-soft">get_state(config)</span> reads the latest checkpoint for a thread. <span class="code-soft">get_state_history(config)</span> reads the full checkpoint timeline — useful for time-travel debugging and audit trails.</li>
-									<li class="blg-li"><span class="code-soft">invoke()</span> blocks and returns the final state. <span class="code-soft">stream()</span> yields events as the graph runs. Three stream modes: <span class="code-soft">"values"</span> (full state per node), <span class="code-soft">"updates"</span> (partial state per node), <span class="code-soft">"messages"</span> (one token at a time from the LLM).</li>
-									<li class="blg-li">In Gradio, <span class="code-soft">gr.ChatInterface</span> with <span class="code-soft">additional_inputs=[gr.State(...)]</span> delivers per-tab thread isolation, and a generator <span class="code-soft">respond()</span> function powers token-level streaming without any extra configuration.</li>
+									<li class="blg-li-check">LangGraph graphs are <strong>stateless by default</strong> — each <span class="code-soft">invoke()</span> starts fresh. A checkpointer is what gives them memory.</li>
+									<li class="blg-li-check"><span class="code-soft">MemorySaver</span> stores state in RAM — zero setup, lost on restart. <span class="code-soft">SqliteSaver</span> stores it in a <span class="code-soft">.db</span> file — survives restarts, production-ready for single-machine apps.</li>
+									<li class="blg-li-check">Swapping checkpointers is <strong>two lines</strong> — the import and the constructor. All other code stays the same.</li>
+									<li class="blg-li-check"><strong>Thread IDs</strong> are the namespace that keeps different users' histories separate. Always pass <span class="code-soft">{"configurable": {"thread_id": "..."}}</span> to every <span class="code-soft">invoke()</span> and <span class="code-soft">stream()</span> call on a checkpointed graph.</li>
+									<li class="blg-li-check"><span class="code-soft">get_state(config)</span> reads the latest checkpoint for a thread. <span class="code-soft">get_state_history(config)</span> reads the full checkpoint timeline — useful for time-travel debugging and audit trails.</li>
+									<li class="blg-li-check"><span class="code-soft">invoke()</span> blocks and returns the final state. <span class="code-soft">stream()</span> yields events as the graph runs. Three stream modes: <span class="code-soft">"values"</span> (full state per node), <span class="code-soft">"updates"</span> (partial state per node), <span class="code-soft">"messages"</span> (one token at a time from the LLM).</li>
+									<li class="blg-li-check">In Gradio, <span class="code-soft">gr.ChatInterface</span> with <span class="code-soft">additional_inputs=[gr.State(...)]</span> delivers per-tab thread isolation, and a generator <span class="code-soft">respond()</span> function powers token-level streaming without any extra configuration.</li>
 								</ul>
 
-								<blockquote class="blg-callout-tip">
-									✅ <strong>Up next — Part 5: Tools, ToolNode &amp; Prebuilt Components.</strong> The Study Buddy knows everything in its training data — but what about current events, real-time calculations, or web search? In Part 5 you'll learn how to give LangGraph nodes access to <strong>tools</strong>: Python functions the LLM can call at runtime to fetch live data, run code, or interact with external services.
+								<blockquote class="blg-callout-purple">
+									🔗 <strong>LangGraph Basics series:</strong> Parts 1–3 covered StateGraph, reducers, and conditional routing. This post (Part 4) added <span class="highlight-blue">Checkpointers, Memory &amp; Streaming</span>. <a class="blg-link" href="./blog_12.html">Part 5 — Tools, ToolNode &amp; Prebuilt Components</a> shows how to give LangGraph nodes access to external tools: Python callables the LLM can invoke at runtime to fetch live data, run calculations, or call external APIs.
 								</blockquote>
 
 								<hr class="blg-hr" />

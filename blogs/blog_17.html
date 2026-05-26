@@ -1,0 +1,1107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6SEFZQJHM1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag("js", new Date());
+    gtag("config", "G-6SEFZQJHM1", { cookie_domain: "shafiqulai.github.io" });
+  </script>
+  <meta charset="utf-8" />
+  <title>LangGraph Advanced: Part 4 — ReAct Agent with Tool Calling</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="An LLM alone can't do reliable arithmetic — it needs tools. This post builds a ReAct (Reasoning + Acting) agent from scratch in LangGraph: an agent node backed by Gemini LLM with bound tools, a ToolNode that executes function calls, and tools_condition routing that loops the graph until the LLM produces a final answer. Tools are defined using production-grade BaseTool subclasses with Pydantic schemas and file-loaded descriptions. An AI Real Estate Advisor (HomeBot) is built with five financial tools covering mortgage payments, home affordability, property tax, rental ROI, and buy-vs-rent comparison." />
+  <meta name="author" content="MD SHAFIQUL ISLAM" />
+  <link rel="canonical" href="https://shafiqulai.github.io/blogs/blog_17.html" />
+  <link rel="icon" href="../img/others/favicon.ico" type="image/x-icon" />
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+  <!-- CSS -->
+  <link rel="stylesheet" href="../css/bootstrap.min.css" />
+  <link rel="stylesheet" href="../css/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/prism.css" />
+</head>
+<body>
+  <div id="reading-progress"></div>
+  <div id="wrapper">
+    <div id="site-header"></div>
+    <section id="content">
+      <div class="container">
+        <div class="blog-detail-layout">
+
+          <!-- TOC Sidebar -->
+          <aside class="toc-sidebar" id="tocSidebar">
+            <div class="toc-sidebar-header">
+              <p class="toc-sidebar-title">Contents</p>
+            </div>
+            <ul class="toc-sidebar-list">
+              <li><a href="#section-1">1. Introduction</a></li>
+              <li><a href="#section-2">2. Installation &amp; Setup</a></li>
+              <li class="toc-sidebar-sub"><a href="#sub-2-1">2.1 Configuring the LLM</a></li>
+              <li><a href="#section-3">3. The ReAct Pattern</a></li>
+              <li><a href="#section-4">4. Defining Tools with BaseTool</a></li>
+              <li class="toc-sidebar-sub"><a href="#sub-4-1">4.1 BaseTool Pattern</a></li>
+              <li class="toc-sidebar-sub"><a href="#sub-4-2">4.2 The Five Tools</a></li>
+              <li><a href="#section-5">5. Building the State</a></li>
+              <li><a href="#section-6">6. Building the Agent Node</a></li>
+              <li><a href="#section-7">7. Building the Graph</a></li>
+              <li class="toc-sidebar-sub"><a href="#graph-diagram">7.1 Graph Diagram</a></li>
+              <li><a href="#section-8">8. Running the Demo</a></li>
+              <li><a href="#section-9">9. Gradio Web UI</a></li>
+              <li class="toc-sidebar-sub"><a href="#what-to-try">9.1 What to Try</a></li>
+              <li><a href="#conclusion">10. Conclusion</a></li>
+            </ul>
+          </aside>
+
+          <div class="blog-detail-main">
+            <div id="blogContainer">
+
+              <!-- Title -->
+              <div class="container blg-title-container">
+                <h2 class="blg-title">LangGraph Advanced: Part 4 — ReAct Agent with Tool Calling</h2>
+              </div>
+
+              <!-- Author -->
+              <div class="author_section">
+                <img id="author_img" src="" alt="Author Photo" class="author_img">
+                <div class="author_details">
+                  <span id="author_name" class="author_name"></span>
+                  <span id="published_date" class="published_date"></span>
+                </div>
+              </div>
+
+              <!-- Thumbnail -->
+              <div class="blg-img-container">
+                <img src="../img/blog_17/thumbnail.webp" alt="LangGraph Advanced Part 4 — ReAct Agent with Tool Calling" class="blg-thumbnail">
+              </div>
+
+              <!-- Inline TOC -->
+              <div class="blg-toc-container">
+                <h2>📚 Table of Contents</h2>
+                <ol class="blg-toc-ol">
+                  <li class="blg-toc-li"><a href="#section-1">1. Introduction</a></li>
+                  <li class="blg-toc-li"><a href="#section-2">2. Installation &amp; Setup</a></li>
+                  <ul class="blg-toc-ul">
+                    <li class="blg-toc-li"><a href="#sub-2-1">2.1 Configuring the LLM</a></li>
+                  </ul>
+                  <li class="blg-toc-li"><a href="#section-3">3. The ReAct Pattern</a></li>
+                  <li class="blg-toc-li"><a href="#section-4">4. Defining Tools with BaseTool</a></li>
+                  <ul class="blg-toc-ul">
+                    <li class="blg-toc-li"><a href="#sub-4-1">4.1 BaseTool Pattern</a></li>
+                    <li class="blg-toc-li"><a href="#sub-4-2">4.2 The Five Tools</a></li>
+                  </ul>
+                  <li class="blg-toc-li"><a href="#section-5">5. Building the State</a></li>
+                  <li class="blg-toc-li"><a href="#section-6">6. Building the Agent Node</a></li>
+                  <li class="blg-toc-li"><a href="#section-7">7. Building the Graph</a></li>
+                  <ul class="blg-toc-ul">
+                    <li class="blg-toc-li"><a href="#graph-diagram">7.1 Graph Diagram</a></li>
+                  </ul>
+                  <li class="blg-toc-li"><a href="#section-8">8. Running the Demo</a></li>
+                  <li class="blg-toc-li"><a href="#section-9">9. Gradio Web UI</a></li>
+                  <ul class="blg-toc-ul">
+                    <li class="blg-toc-li"><a href="#what-to-try">9.1 What to Try</a></li>
+                  </ul>
+                  <li class="blg-toc-li"><a href="#conclusion">10. Conclusion</a></li>
+                </ol>
+              </div>
+
+              <!-- Section 1: Introduction -->
+              <div class="blg-section">
+                <a id="section-1" class="blg-anchor"></a>
+                <div class="blg-main-header"><h2>🏠 1. Introduction</h2></div>
+
+                <p class="blg-paragraph">
+                  Meet Alex — a first-time homebuyer staring at a $450,000 listing. Before making an offer, Alex has real questions that need real numbers: What's the monthly mortgage payment with 20% down? Can Alex actually afford this on a $95,000 salary with an existing car loan? What does property tax add to the monthly cost? The answers aren't estimates — they're formulas with exact inputs.
+                </p>
+                <p class="blg-paragraph">
+                  Ask a plain LLM for a mortgage payment and it might say something like "approximately $2,200 to $2,500 per month." That range is useless for a financial decision. The LLM isn't being evasive — it genuinely can't reliably execute the amortisation formula. What it <em>can</em> do is reason about what calculation is needed and delegate the execution to a tool.
+                </p>
+                <p class="blg-paragraph">
+                  That's the <strong>ReAct (Reasoning + Acting)</strong> pattern: the LLM reasons about what to do, acts by calling a tool, observes the precise result, reasons about whether it needs another tool call, and eventually produces a final answer grounded in exact numbers. LangGraph turns this loop into a graph — two nodes, one conditional edge, and the agent runs until it stops calling tools.
+                </p>
+
+                <blockquote class="blg-callout-info">
+                  <strong>What you'll build:</strong> <strong>HomeBot</strong> — an AI Real Estate Advisor backed by five financial tools. Users ask questions in plain English; HomeBot reasons about which tool to call, gets exact calculations, and synthesises a clear, grounded answer. Tools are defined using the production-grade <span class="code-soft">BaseTool</span> subclassing pattern — one class per file, Pydantic input schema, description loaded from a prompt file.
+                </blockquote>
+
+                <p class="blg-paragraph">
+                  This post is Part 4 of the LangGraph Advanced series. Part 5 of the Basics series introduced tool calling using the <span class="code-soft">@tool</span> decorator and the <span class="code-soft">create_react_agent</span> shortcut. Here the goal is different: build the ReAct loop manually so every component is visible, and use <span class="code-soft">BaseTool</span> subclassing — the production pattern that keeps tool definitions inspectable, testable, and easily prompt-tuned.
+                </p>
+
+                <div class="blg-feature-grid">
+                  <div class="blg-feature-card card-blue">
+                    <div class="blg-feature-card-header">
+                      <span class="blg-feature-card-icon">🔁</span>
+                      <h4>ReAct Loop</h4>
+                    </div>
+                    <div class="blg-feature-card-body">
+                      <p>Agent reasons → calls a tool → observes result → reasons again. Repeats until the LLM produces a final answer with no tool calls.</p>
+                    </div>
+                  </div>
+                  <div class="blg-feature-card card-purple">
+                    <div class="blg-feature-card-header">
+                      <span class="blg-feature-card-icon">🔧</span>
+                      <h4>BaseTool Subclasses</h4>
+                    </div>
+                    <div class="blg-feature-card-body">
+                      <p>Production tool pattern: one class per file, Pydantic <span class="code-soft">args_schema</span>, description loaded from <span class="code-soft">prompts/</span>. Testable and maintainable.</p>
+                    </div>
+                  </div>
+                  <div class="blg-feature-card card-orange">
+                    <div class="blg-feature-card-header">
+                      <span class="blg-feature-card-icon">⚙️</span>
+                      <h4>ToolNode + tools_condition</h4>
+                    </div>
+                    <div class="blg-feature-card-body">
+                      <p>Prebuilt LangGraph components: <span class="code-soft">ToolNode</span> executes function calls; <span class="code-soft">tools_condition</span> routes to tools or END.</p>
+                    </div>
+                  </div>
+                  <div class="blg-feature-card card-green">
+                    <div class="blg-feature-card-header">
+                      <span class="blg-feature-card-icon">🏡</span>
+                      <h4>5 Financial Tools</h4>
+                    </div>
+                    <div class="blg-feature-card-body">
+                      <p>Mortgage payment, home affordability (28/36 rule), property tax, rental ROI, and buy-vs-rent comparison — all with exact formulas.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <hr class="blg-hr">
+              </div>
+              <!-- Section 2: Installation & Setup -->
+              <div class="blg-section">
+                <a id="section-2" class="blg-anchor"></a>
+                <div class="blg-main-header"><h2>⚙️ 2. Installation &amp; Setup</h2></div>
+
+                <p class="blg-paragraph">
+                  This project uses the same shared dependencies as the rest of the LangGraph series — no new packages needed beyond what's already in <span class="code-soft">requirements.txt</span>.
+                </p>
+
+                <p class="blg-paragraph"><strong>1. Check your Python version:</strong></p>
+                <div class="blg-code-block" data-lang="bash">python --version
+# Python 3.12.x</div>
+
+                <p class="blg-paragraph"><strong>2. Create and activate a virtual environment:</strong></p>
+                <div class="blg-code-block" data-lang="bash">python -m venv langgraph
+source langgraph/bin/activate      # macOS / Linux
+langgraph\Scripts\activate         # Windows</div>
+
+                <p class="blg-paragraph"><strong>3. Install dependencies:</strong></p>
+                <div class="blg-code-block" data-lang="properties">langchain==1.2.17
+langgraph==1.1.10
+langchain-google-genai==4.2.2
+python-dotenv==1.2.2
+gradio==6.14.0</div>
+                <div class="blg-code-block" data-lang="bash">pip install -r requirements.txt</div>
+
+                <p class="blg-paragraph"><strong>4. Create your <span class="code-soft">.env</span> file:</strong></p>
+                <div class="blg-code-block" data-lang="properties">GOOGLE_API_KEY=your_google_api_key_here
+GEMINI_MODEL_NAME=gemini-3-flash-preview
+GEMINI_TEMPERATURE=0.7
+GEMINI_MAX_RETRIES=2</div>
+
+                <blockquote class="blg-callout-warning">
+                  <strong>⚠️ Never commit your <span class="code-soft">.env</span> file.</strong> Add it to <span class="code-soft">.gitignore</span> before your first commit.
+                </blockquote>
+
+                <p class="blg-paragraph"><strong>5. Project structure:</strong></p>
+                <div class="blg-tree"><span class="tree-root">advanced-4-react-agent-tool-calling/</span>
+<span class="tree-pipe">├── </span><span class="tree-file">config.py</span>              <span class="tree-comment"># Config class — reads .env settings (Section 2.1)</span>
+<span class="tree-pipe">├── </span><span class="tree-file">llm.py</span>                 <span class="tree-comment"># GeminiLLM wrapper (Section 2.1)</span>
+<span class="tree-pipe">├── </span><span class="tree-file">state.py</span>               <span class="tree-comment"># RealEstateState TypedDict (Section 5)</span>
+<span class="tree-pipe">├── </span><span class="tree-file">nodes.py</span>               <span class="tree-comment"># RealEstateNodes — agent_node with bind_tools (Section 6)</span>
+<span class="tree-pipe">├── </span><span class="tree-file">graph.py</span>               <span class="tree-comment"># RealEstateGraph — ReAct loop + MemorySaver (Section 7)</span>
+<span class="tree-pipe">├── </span><span class="tree-file">homebot_runner.py</span>      <span class="tree-comment"># console entry point + 4 demo queries (Section 8)</span>
+<span class="tree-pipe">├── </span><span class="tree-file">app.py</span>                 <span class="tree-comment"># Gradio Blocks with New Session button (Section 9)</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">tools/</span>                 <span class="tree-comment"># BaseTool subclasses — one file per tool (Section 4)</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">__init__.py</span>        <span class="tree-comment"># TOOLS = [MortgageTool(), AffordabilityTool(), ...]</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">mortgage.py</span>        <span class="tree-comment"># MortgageTool — amortisation formula</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">affordability.py</span>   <span class="tree-comment"># AffordabilityTool — 28/36 rule</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">property_tax.py</span>    <span class="tree-comment"># PropertyTaxTool — annual + monthly tax</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">rental_roi.py</span>      <span class="tree-comment"># RentalROITool — gross yield + net ROI</span>
+<span class="tree-pipe">│   └── </span><span class="tree-file">buy_vs_rent.py</span>     <span class="tree-comment"># BuyVsRentTool — multi-year cost comparison</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">prompts/</span>               <span class="tree-comment"># LLM prompt files — one per tool + system prompt</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">system.txt</span>         <span class="tree-comment"># HomeBot persona and behaviour rules</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">mortgage.txt</span>       <span class="tree-comment"># MortgageTool description</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">affordability.txt</span>  <span class="tree-comment"># AffordabilityTool description</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">property_tax.txt</span>   <span class="tree-comment"># PropertyTaxTool description</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">rental_roi.txt</span>     <span class="tree-comment"># RentalROITool description</span>
+<span class="tree-pipe">│   └── </span><span class="tree-file">buy_vs_rent.txt</span>    <span class="tree-comment"># BuyVsRentTool description</span>
+<span class="tree-pipe">├── </span><span class="tree-dir">figure/</span>                <span class="tree-comment"># auto-created by save_figure() at runtime</span>
+<span class="tree-pipe">│   ├── </span><span class="tree-file">graph.mmd</span>          <span class="tree-comment"># Mermaid source diagram</span>
+<span class="tree-pipe">│   └── </span><span class="tree-file">graph.png</span>          <span class="tree-comment"># PNG render of the graph</span>
+<span class="tree-pipe">└── </span><span class="tree-spec">.env</span>                   <span class="tree-comment"># API keys — never commit this file</span></div>
+
+                <p class="blg-paragraph">
+                  <span class="code-soft">tools/</span> contains one <span class="code-soft">BaseTool</span> subclass per file (Section 4). <span class="code-soft">tools/__init__.py</span> collects them into a single <span class="code-soft">TOOLS</span> list that both the agent node and the graph import. <span class="code-soft">nodes.py</span> defines the agent (Section 6) and <span class="code-soft">graph.py</span> wires the ReAct loop (Section 7).
+                </p>
+
+                <!-- Sub-section 2.1 -->
+                <a id="sub-2-1" class="blg-anchor"></a>
+                <div class="blg-sub-header">
+                  <span class="blg-sub-badge">2.1</span>
+                  <h3>⚙️ Configuring the LLM — <span class="code-soft">config.py</span> · <span class="code-soft">llm.py</span></h3>
+                </div>
+
+                <p class="blg-paragraph">
+                  <span class="code-soft">config.py</span> reads the three standard settings from <span class="code-soft">.env</span>. No new fields are needed for this post — tool calling uses the same LLM configured in previous parts.
+                </p>
+                <div class="blg-code-block" data-lang="python">import os
+from dotenv import load_dotenv
+
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
+
+
+class Config:
+    MODEL_NAME  = os.getenv("GEMINI_MODEL_NAME", "gemini-3-flash-preview")
+    TEMPERATURE = float(os.getenv("GEMINI_TEMPERATURE", 0.7))
+    MAX_RETRIES = int(os.getenv("GEMINI_MAX_RETRIES", 2))</div>
+
+                <p class="blg-paragraph">
+                  <span class="code-soft">llm.py</span> is the same thin wrapper used throughout the series:
+                </p>
+                <div class="blg-code-block" data-lang="python">from langchain_google_genai import ChatGoogleGenerativeAI
+from config import Config
+
+
+class GeminiLLM:
+    def __init__(self):
+        self.llm = ChatGoogleGenerativeAI(
+            model=Config.MODEL_NAME,
+            temperature=Config.TEMPERATURE,
+            max_retries=Config.MAX_RETRIES,
+        )
+
+    def get_llm(self):
+        return self.llm</div>
+
+                <hr class="blg-hr">
+              </div>
+              <!-- Section 3: The ReAct Pattern -->
+              <div class="blg-section">
+                <a id="section-3" class="blg-anchor"></a>
+                <div class="blg-main-header"><h2>🔁 3. The ReAct Pattern</h2></div>
+
+                <p class="blg-paragraph">
+                  ReAct stands for <strong>Reasoning + Acting</strong>. The idea is simple: the LLM doesn't just answer — it reasons about what to do, acts (calls a tool), observes the result, and reasons again. This loop continues until the LLM decides it has everything it needs to give a final answer and produces a response with no tool calls.
+                </p>
+                <p class="blg-paragraph">
+                  In LangGraph this translates directly to a two-node graph. The <span class="code-soft">agent</span> node calls the LLM. If the response contains tool calls, the graph routes to the <span class="code-soft">tools</span> node, which executes them and returns the results as <span class="code-soft">ToolMessage</span>s appended to state. The graph then routes back to <span class="code-soft">agent</span>. If the response contains no tool calls, the graph routes to <span class="code-soft">END</span>.
+                </p>
+
+                <div class="blg-mermaid-wrap">
+                  <div class="mermaid" style="min-width:420px;font-size:16px;">
+flowchart TD
+    S([START]) --> agent["🤖 agent\nLLM with bound tools"]
+    agent -- "has tool_calls" --> tools["🔧 tools\nToolNode"]
+    tools -- "returns ToolMessages" --> agent
+    agent -- "no tool_calls" --> E([END])
+
+    style S fill:#e8f5e9,stroke:#43a047,color:#1b5e20
+    style E fill:#fce4ec,stroke:#e53935,color:#b71c1c
+    style agent fill:#e3f2fd,stroke:#1e88e5,color:#0d47a1
+    style tools fill:#fff3e0,stroke:#fb8c00,color:#e65100
+                  </div>
+                </div>
+
+                <p class="blg-paragraph">
+                  The messages accumulate in state across every hop. By the time the final <span class="code-soft">AIMessage</span> is produced, state contains the complete reasoning trace: the user question, one or more <span class="code-soft">AIMessage</span>s with tool call requests, the corresponding <span class="code-soft">ToolMessage</span>s with exact results, and the final synthesised answer. This trace is what makes agent behaviour transparent and debuggable.
+                </p>
+
+                <blockquote class="blg-callout-tip">
+                  <strong>How does the LLM know which tools exist?</strong> <span class="code-soft">bind_tools(TOOLS)</span> serialises each tool's name, description, and Pydantic schema into the LLM's function-calling interface. The LLM reads those schemas to understand what each tool does and what arguments it needs. The <span class="code-soft">description</span> field on each tool is therefore part of the prompt — it directly influences whether the LLM calls the right tool for a given question.
+                </blockquote>
+
+                <p class="blg-paragraph">
+                  There are two ways a ReAct loop can terminate:
+                </p>
+                <ul class="blg-ul">
+                  <li class="blg-li-check"><strong>Natural stop:</strong> The LLM receives tool results and decides they're sufficient to answer the question. It produces an <span class="code-soft">AIMessage</span> with text content and no <span class="code-soft">tool_calls</span>. <span class="code-soft">tools_condition</span> routes to <span class="code-soft">END</span>.</li>
+                  <li class="blg-li-check"><strong>Multi-tool reasoning:</strong> A complex query may require two or more tool calls before the LLM can synthesise an answer. Each tool result is appended to state as a <span class="code-soft">ToolMessage</span>; the agent reads all of them before forming its response.</li>
+                </ul>
+
+                <p class="blg-paragraph">
+                  For HomeBot, a query like "Can I afford a $450,000 house on $95,000 salary?" might trigger <em>two</em> tool calls in sequence — first <span class="code-soft">calculate_home_affordability</span> to check the price ceiling, then <span class="code-soft">calculate_mortgage_payment</span> to give the exact monthly figure — before the agent synthesises both results into a final answer.
+                </p>
+
+                <hr class="blg-hr">
+              </div>
+              <!-- Section 4: Defining Tools with BaseTool -->
+              <div class="blg-section">
+                <a id="section-4" class="blg-anchor"></a>
+                <div class="blg-main-header"><h2>🔧 4. Defining Tools with BaseTool</h2></div>
+
+                <p class="blg-paragraph">
+                  LangChain offers several ways to define tools: the <span class="code-soft">@tool</span> decorator, <span class="code-soft">StructuredTool.from_function()</span>, and <span class="code-soft">BaseTool</span> subclassing. The decorator is the fastest to write; <span class="code-soft">BaseTool</span> subclassing is the most explicit, testable, and maintainable. For production code, <span class="code-soft">BaseTool</span> is the right choice — each tool is a proper Python class with a typed schema, a separately managed description, and a clean separation between definition and execution.
+                </p>
+
+                <!-- Sub-section 4.1 -->
+                <a id="sub-4-1" class="blg-anchor"></a>
+                <div class="blg-sub-header">
+                  <span class="blg-sub-badge">4.1</span>
+                  <h3>🔧 BaseTool Pattern — <span class="code-soft">tools/mortgage.py</span></h3>
+                </div>
+
+                <p class="blg-paragraph">
+                  Every tool in HomeBot follows this exact structure. <span class="code-soft">MortgageTool</span> is the canonical example:
+                </p>
+
+                <div class="blg-code-block" data-lang="python">import os
+from typing import Type
+
+from langchain_core.tools import BaseTool
+from pydantic import BaseModel
+
+_PROMPTS_DIR = os.path.join(os.path.dirname(__file__), "..", "prompts")
+
+
+def _load_prompt(filename: str) -> str:
+    with open(os.path.join(_PROMPTS_DIR, filename), "r") as f:
+        return f.read().strip()
+
+
+class MortgageInput(BaseModel):
+    principal:       float  # loan amount in USD (home price minus down payment)
+    annual_rate_pct: float  # annual interest rate as a percentage (e.g. 6.5 for 6.5%)
+    years:           int    # loan term in years
+
+
+class MortgageTool(BaseTool):
+    name:        str             = "calculate_mortgage_payment"
+    description: str             = _load_prompt("mortgage.txt")
+    args_schema: Type[BaseModel] = MortgageInput
+
+    def _run(self, principal: float, annual_rate_pct: float, years: int) -> str:
+        monthly_rate = annual_rate_pct / 100 / 12
+        n = years * 12
+        if monthly_rate == 0:
+            monthly = principal / n
+        else:
+            monthly = (
+                principal
+                * (monthly_rate * (1 + monthly_rate) ** n)
+                / ((1 + monthly_rate) ** n - 1)
+            )
+        total    = monthly * n
+        interest = total - principal
+        return (
+            f"Monthly payment: ${monthly:,.2f}\n"
+            f"Total paid over {years} years: ${total:,.2f}\n"
+            f"Total interest paid: ${interest:,.2f}"
+        )
+
+    async def _arun(self, principal: float, annual_rate_pct: float, years: int) -> str:
+        return self._run(principal, annual_rate_pct, years)</div>
+
+                <p class="blg-paragraph">Let's break down the key design decisions:</p>
+                <ul class="blg-ul">
+                  <li class="blg-li-check"><strong><span class="code-soft">MortgageInput(BaseModel)</span></strong> — a separate Pydantic model declares every parameter with its type and an inline comment. LangGraph serialises this schema and sends it to the LLM, so the LLM knows exactly which arguments to extract from the user's message.</li>
+                  <li class="blg-li-check"><strong><span class="code-soft">description: str = _load_prompt("mortgage.txt")</span></strong> — the description is loaded at class-definition time from a text file. Editing the description never touches Python code — you just update the prompt file. This separation is what makes the tool "prompt-tunable" without a code change.</li>
+                  <li class="blg-li-check"><strong><span class="code-soft">_PROMPTS_DIR</span> uses <span class="code-soft">".."</span></strong> — because tool files live in <span class="code-soft">tools/</span> (a subdirectory), the path must step up one level to reach <span class="code-soft">prompts/</span>. This is the canonical pattern for tools in a <span class="code-soft">tools/</span> package.</li>
+                  <li class="blg-li-check"><strong><span class="code-soft">_arun</span> delegates to <span class="code-soft">_run</span></strong> — since these tools are synchronous computations, the async method just calls the sync one. In a tool that makes async I/O calls (e.g. API requests), <span class="code-soft">_arun</span> would have its own implementation.</li>
+                </ul>
+
+                <blockquote class="blg-callout-note">
+                  <strong>Why not the <span class="code-soft">@tool</span> decorator?</strong> The decorator is fine for quick scripts. But it doesn't give you a typed schema class, you can't easily subclass it, and the description lives inline as a docstring — harder to manage as prompts grow. <span class="code-soft">BaseTool</span> is a first-class class you can inspect, mock, test, and extend. That's what production code needs.
+                </blockquote>
+
+                <p class="blg-paragraph">
+                  All five tools are assembled into a single list in <span class="code-soft">tools/__init__.py</span>. Every other module uses only this list — <span class="code-soft">from tools import TOOLS</span>:
+                </p>
+                <div class="blg-code-block" data-lang="python">from tools.affordability import AffordabilityTool
+from tools.buy_vs_rent import BuyVsRentTool
+from tools.mortgage import MortgageTool
+from tools.property_tax import PropertyTaxTool
+from tools.rental_roi import RentalROITool
+
+TOOLS = [
+    MortgageTool(),
+    AffordabilityTool(),
+    PropertyTaxTool(),
+    RentalROITool(),
+    BuyVsRentTool(),
+]</div>
+
+                <!-- Sub-section 4.2 -->
+                <a id="sub-4-2" class="blg-anchor"></a>
+                <div class="blg-sub-header">
+                  <span class="blg-sub-badge">4.2</span>
+                  <h3>🏡 The Five Tools — <span class="code-soft">tools/</span></h3>
+                </div>
+
+                <p class="blg-paragraph">HomeBot's five tools cover the full range of questions a homebuyer asks:</p>
+
+                <div class="blg-table">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Tool name</th>
+                        <th>File</th>
+                        <th>What it calculates</th>
+                        <th>Key inputs</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><span class="code-soft">calculate_mortgage_payment</span></td>
+                        <td><span class="code-soft">mortgage.py</span></td>
+                        <td>Monthly payment, total paid, total interest — standard amortisation formula</td>
+                        <td>principal, annual_rate_pct, years</td>
+                      </tr>
+                      <tr>
+                        <td><span class="code-soft">calculate_home_affordability</span></td>
+                        <td><span class="code-soft">affordability.py</span></td>
+                        <td>Maximum home price based on the 28/36 rule (front-end and back-end debt ratios)</td>
+                        <td>annual_income, monthly_debts, down_payment_pct, annual_rate_pct, years</td>
+                      </tr>
+                      <tr>
+                        <td><span class="code-soft">calculate_property_tax</span></td>
+                        <td><span class="code-soft">property_tax.py</span></td>
+                        <td>Annual and monthly property tax given assessed value and local tax rate</td>
+                        <td>home_value, annual_tax_rate_pct</td>
+                      </tr>
+                      <tr>
+                        <td><span class="code-soft">calculate_rental_roi</span></td>
+                        <td><span class="code-soft">rental_roi.py</span></td>
+                        <td>Gross yield, net annual income, monthly cash flow, and net ROI percentage</td>
+                        <td>purchase_price, annual_rent, annual_expenses</td>
+                      </tr>
+                      <tr>
+                        <td><span class="code-soft">compare_buy_vs_rent</span></td>
+                        <td><span class="code-soft">buy_vs_rent.py</span></td>
+                        <td>Multi-year cost comparison: net cost of buying (interest − appreciation) vs total rent paid, with a verdict</td>
+                        <td>home_price, down_payment_pct, annual_rate_pct, years, monthly_rent, annual_appreciation_pct</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <p class="blg-paragraph">
+                  The affordability tool uses the <strong>28/36 rule</strong>: the monthly mortgage payment (PITI) must not exceed 28% of gross monthly income (front-end ratio), and total monthly debts must not exceed 36% (back-end ratio). The lower of the two limits determines the maximum mortgage payment, from which the maximum home price is reverse-engineered.
+                </p>
+                <p class="blg-paragraph">
+                  The buy-vs-rent tool computes <em>net buying cost</em> as: down payment + total interest paid − appreciation gain. This accounts for the fact that buying builds equity through home appreciation, making the true financial comparison more nuanced than just mortgage payments vs rent.
+                </p>
+
+                <hr class="blg-hr">
+              </div>
+              <!-- Section 5: Building the State -->
+              <div class="blg-section">
+                <a id="section-5" class="blg-anchor"></a>
+                <div class="blg-main-header"><h2>🗂️ 5. Building the State</h2></div>
+
+                <p class="blg-paragraph">
+                  The state for a ReAct agent is intentionally minimal. All the reasoning — the question, tool calls, tool results, and final answer — lives in the <span class="code-soft">messages</span> list. There's no need for separate fields like <span class="code-soft">question</span> or <span class="code-soft">doc_grade</span> from the RAG pipeline in Part 3. The messages <em>are</em> the state.
+                </p>
+
+                <div class="blg-code-block" data-lang="python">from typing import Annotated
+
+from langchain_core.messages import BaseMessage
+from langgraph.graph.message import add_messages
+from typing_extensions import TypedDict
+
+
+class RealEstateState(TypedDict):
+    # add_messages appends each new message instead of overwriting.
+    # The full conversation — HumanMessage, AIMessage (with tool_calls),
+    # ToolMessage(s), and final AIMessage — all accumulate here.
+    messages: Annotated[list[BaseMessage], add_messages]</div>
+
+                <p class="blg-paragraph">
+                  The <span class="code-soft">add_messages</span> reducer is what makes the ReAct loop work. Every node returns <span class="code-soft">{"messages": [new_message]}</span>, and <span class="code-soft">add_messages</span> appends it to the existing list rather than overwriting. By the time the graph reaches <span class="code-soft">END</span>, the full exchange is preserved:
+                </p>
+
+                <blockquote class="blg-callout-info">
+                  <strong>Message sequence in a single ReAct turn:</strong>
+                  <ol style="margin:0.5rem 0 0 1.2rem;">
+                    <li><span class="code-soft">HumanMessage</span> — the user's question</li>
+                    <li><span class="code-soft">AIMessage(tool_calls=[...])</span> — the LLM decides which tool to call</li>
+                    <li><span class="code-soft">ToolMessage</span> — the tool's exact result</li>
+                    <li><span class="code-soft">AIMessage(content="...")</span> — the LLM's final answer, grounded in the tool result</li>
+                  </ol>
+                </blockquote>
+
+                <p class="blg-paragraph">
+                  For a multi-tool query, steps 2 and 3 repeat for each tool call before the final <span class="code-soft">AIMessage</span> is produced. The LLM sees the entire sequence on each pass through the agent node, so it always has full context about what's been calculated so far.
+                </p>
+
+                <hr class="blg-hr">
+              </div>
+              <!-- Section 6: Building the Agent Node -->
+              <div class="blg-section">
+                <a id="section-6" class="blg-anchor"></a>
+                <div class="blg-main-header"><h2>🤖 6. Building the Agent Node</h2></div>
+
+                <p class="blg-paragraph">
+                  The agent node is where the LLM does its reasoning. It reads the full message history, decides whether to call a tool or produce a final answer, and returns whichever <span class="code-soft">AIMessage</span> comes back. The critical line is <span class="code-soft">self.llm.bind_tools(TOOLS)</span> — this is what transforms a plain conversational LLM into a tool-aware agent.
+                </p>
+
+                <div class="blg-code-block" data-lang="python">import os
+
+from langchain_core.messages import SystemMessage
+
+from llm import GeminiLLM
+from state import RealEstateState
+from tools import TOOLS
+
+_PROMPTS_DIR = os.path.join(os.path.dirname(__file__), "prompts")
+
+
+def _load_prompt(filename: str) -> str:
+    with open(os.path.join(_PROMPTS_DIR, filename), "r") as f:
+        return f.read().strip()
+
+
+def _extract_text(content) -> str:
+    """Normalise langchain-google-genai 4.x content (list or str) to plain str."""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        return "".join(
+            b.get("text", "")
+            for b in content
+            if isinstance(b, dict) and b.get("type") == "text"
+        )
+    return str(content)
+
+
+class RealEstateNodes:
+    def __init__(self):
+        self.llm            = GeminiLLM().get_llm()
+        self.system_prompt  = _load_prompt("system.txt")
+        # Bind all tools to the LLM so it can decide which to call.
+        self.llm_with_tools = self.llm.bind_tools(TOOLS)
+
+    def agent_node(self, state: RealEstateState) -> dict:
+        """Call the LLM. It either returns a final answer or a tool-call request."""
+        messages = [SystemMessage(content=self.system_prompt)] + list(state["messages"])
+        response = self.llm_with_tools.invoke(messages)
+        return {"messages": [response]}</div>
+
+                <p class="blg-paragraph">
+                  <span class="code-soft">bind_tools(TOOLS)</span> serialises each tool's name, description, and Pydantic parameter schema into the format Gemini's function-calling API expects. When the LLM receives a message, it can return either:
+                </p>
+                <ul class="blg-ul">
+                  <li class="blg-li-check">An <span class="code-soft">AIMessage</span> with <span class="code-soft">tool_calls=[{"name": "...", "args": {...}}]</span> — a request to execute one or more tools.</li>
+                  <li class="blg-li-check">An <span class="code-soft">AIMessage</span> with <span class="code-soft">content="..."</span> and no <span class="code-soft">tool_calls</span> — a final answer ready for the user.</li>
+                </ul>
+                <p class="blg-paragraph">
+                  The agent node doesn't decide which path to take — it just returns whatever the LLM produced. The conditional edge (<span class="code-soft">tools_condition</span>) reads the returned message and makes the routing decision.
+                </p>
+
+                <blockquote class="blg-callout-tip">
+                  <strong>System prompt as tool guidance:</strong> The <span class="code-soft">prompts/system.txt</span> file instructs HomeBot to always use tools for financial calculations rather than estimating. This is important — without explicit instruction, the LLM might skip the tool and guess. The system prompt is the nudge that enforces grounded, exact answers.
+                </blockquote>
+
+                <hr class="blg-hr">
+              </div>
+              <!-- Section 7: Building the Graph -->
+              <div class="blg-section">
+                <a id="section-7" class="blg-anchor"></a>
+                <div class="blg-main-header"><h2>🔗 7. Building the Graph</h2></div>
+
+                <p class="blg-paragraph">
+                  The full ReAct graph is seven lines of wiring. The two-node structure is simpler than either the RAG pipeline (Part 3) or the supervisor architecture (Part 2) — the complexity lives inside the LLM, not in the graph topology.
+                </p>
+
+                <div class="blg-code-block" data-lang="python">import os
+
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.graph import END, START, StateGraph
+from langgraph.prebuilt import ToolNode, tools_condition
+
+from nodes import RealEstateNodes
+from state import RealEstateState
+from tools import TOOLS
+
+FIGURE_DIR = os.path.join(os.path.dirname(__file__), "figure")
+
+
+class RealEstateGraph:
+    def __init__(self):
+        self.nodes          = RealEstateNodes()
+        self.compiled_graph = self._build()
+
+    def _build(self):
+        graph = StateGraph(RealEstateState)
+
+        # The agent node: LLM with bound tools.
+        graph.add_node("agent", self.nodes.agent_node)
+        # The tools node: executes whichever tool the LLM requested.
+        graph.add_node("tools", ToolNode(TOOLS))
+
+        # Every turn starts at the agent.
+        graph.add_edge(START, "agent")
+
+        # tools_condition reads the last message:
+        #   - if it has tool_calls → route to "tools"
+        #   - if it has no tool_calls (final answer) → route to END
+        graph.add_conditional_edges("agent", tools_condition)
+
+        # After the tool executes, return to the agent for the next reasoning step.
+        graph.add_edge("tools", "agent")
+
+        return graph.compile(checkpointer=MemorySaver())
+
+    def save_figure(self):
+        os.makedirs(FIGURE_DIR, exist_ok=True)
+
+        mmd_path = os.path.join(FIGURE_DIR, "graph.mmd")
+        with open(mmd_path, "w") as f:
+            f.write(self.compiled_graph.get_graph().draw_mermaid())
+
+        png_path = os.path.join(FIGURE_DIR, "graph.png")
+        with open(png_path, "wb") as f:
+            f.write(self.compiled_graph.get_graph().draw_mermaid_png())
+
+        print(f"  Graph saved → {mmd_path}")
+        print(f"  Graph saved → {png_path}")
+
+    def get_compiled_graph(self):
+        return self.compiled_graph</div>
+
+                <p class="blg-paragraph">Three components do all the work here:</p>
+
+                <div class="blg-table">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Component</th>
+                        <th>Source</th>
+                        <th>What it does</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><span class="code-soft">ToolNode(TOOLS)</span></td>
+                        <td><span class="code-soft">langgraph.prebuilt</span></td>
+                        <td>Reads <span class="code-soft">tool_calls</span> from the last <span class="code-soft">AIMessage</span>, finds the matching tool by name, calls <span class="code-soft">_run()</span> with the provided arguments, and returns a <span class="code-soft">ToolMessage</span> with the result.</td>
+                      </tr>
+                      <tr>
+                        <td><span class="code-soft">tools_condition</span></td>
+                        <td><span class="code-soft">langgraph.prebuilt</span></td>
+                        <td>Inspects the last message in state: if <span class="code-soft">tool_calls</span> is non-empty → returns <span class="code-soft">"tools"</span>; if empty → returns <span class="code-soft">END</span>. This is the loop-or-stop decision point.</td>
+                      </tr>
+                      <tr>
+                        <td><span class="code-soft">MemorySaver()</span></td>
+                        <td><span class="code-soft">langgraph.checkpoint.memory</span></td>
+                        <td>Persists state between <span class="code-soft">invoke()</span> calls using <span class="code-soft">thread_id</span>. Enables multi-turn conversations where the agent remembers previous calculations in the same session.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <blockquote class="blg-callout-note">
+                  <strong>Why pass <span class="code-soft">TOOLS</span> to both <span class="code-soft">ToolNode</span> and <span class="code-soft">bind_tools</span>?</strong> <span class="code-soft">bind_tools(TOOLS)</span> in the agent node tells the LLM which tools exist (their schemas go into the prompt). <span class="code-soft">ToolNode(TOOLS)</span> in the graph tells the graph which Python objects to call when the LLM requests a tool. Both need the same list — <span class="code-soft">from tools import TOOLS</span> ensures they stay in sync automatically.
+                </blockquote>
+
+                <p class="blg-paragraph">
+                  <span class="code-soft">graph.add_conditional_edges("agent", tools_condition)</span> is called without an explicit routing map. <span class="code-soft">tools_condition</span> already knows it returns either <span class="code-soft">"tools"</span> or <span class="code-soft">END</span>, and LangGraph accepts those return values directly as node names — no mapping needed. This is a special convenience of the prebuilt router.
+                </p>
+
+                <a id="graph-diagram" class="blg-anchor"></a>
+                <div class="blg-sub-header">
+                  <span class="blg-sub-badge">7.1</span>
+                  <h3>📊 Graph Diagram</h3>
+                </div>
+                <p class="blg-paragraph">
+                  The compiled HomeBot graph as generated by <span class="code-soft">save_figure()</span>. Two nodes, one conditional edge, one fixed return edge — the simplest possible loop structure in LangGraph.
+                </p>
+                <div class="blg-mermaid-wrap">
+                  <div class="mermaid" style="min-width:460px;font-size:16px;">
+flowchart TD
+    S([__start__]) --> agent["agent"]
+    agent -- "has tool_calls" --> tools["tools"]
+    tools --> agent
+    agent -- "no tool_calls" --> E([__end__])
+
+    style S fill:#e8f5e9,stroke:#43a047,color:#1b5e20
+    style E fill:#fce4ec,stroke:#e53935,color:#b71c1c
+    style agent fill:#e3f2fd,stroke:#1e88e5,color:#0d47a1
+    style tools fill:#fff3e0,stroke:#fb8c00,color:#e65100
+                  </div>
+                </div>
+
+                <hr class="blg-hr">
+              </div>
+              <!-- Section 8: Running the Demo -->
+              <div class="blg-section">
+                <a id="section-8" class="blg-anchor"></a>
+                <div class="blg-main-header"><h2>▶️ 8. Running the Demo</h2></div>
+
+                <p class="blg-paragraph">
+                  <span class="code-soft">HomeBotRunner</span> wraps the compiled graph and exposes a <span class="code-soft">chat(message, thread_id)</span> method. The <span class="code-soft">thread_id</span> parameter connects calls to the same <span class="code-soft">MemorySaver</span> slot — within a session, HomeBot remembers previous calculations and can refer to them in follow-up questions.
+                </p>
+
+                <div class="blg-code-block" data-lang="python">from langchain_core.messages import HumanMessage
+
+from graph import RealEstateGraph
+from nodes import _extract_text
+
+
+class HomeBotRunner:
+    def __init__(self):
+        self.real_estate_graph = RealEstateGraph()
+        self.app               = self.real_estate_graph.get_compiled_graph()
+
+    def save_figure(self):
+        self.real_estate_graph.save_figure()
+
+    def _config(self, thread_id: str) -> dict:
+        return {"configurable": {"thread_id": thread_id}}
+
+    def chat(self, message: str, thread_id: str) -> str:
+        """Send a message and return HomeBot's final answer for this thread."""
+        result = self.app.invoke(
+            {"messages": [HumanMessage(content=message)]},
+            config=self._config(thread_id),
+        )
+        ai_messages = [m for m in result["messages"] if m.type == "ai" and not m.tool_calls]
+        if not ai_messages:
+            return "I'm sorry, I couldn't generate a response. Please try again."
+        return _extract_text(ai_messages[-1].content)</div>
+
+                <p class="blg-paragraph">
+                  The filter <span class="code-soft">m.type == "ai" and not m.tool_calls</span> skips intermediate <span class="code-soft">AIMessage</span>s that contain tool requests — those are reasoning steps, not the final answer. Only the last <span class="code-soft">AIMessage</span> with text content and no pending tool calls is returned to the user.
+                </p>
+
+                <div class="blg-code-block" data-lang="bash">cd advanced-4-react-agent-tool-calling && python homebot_runner.py</div>
+
+                <p class="blg-paragraph">Expected console output:</p>
+                <div class="blg-code-block" data-lang="bash">============================================================
+   LangGraph Advanced — AI Real Estate Advisor Demo
+============================================================
+
+  Saving graph architecture...
+  Graph saved → /path/to/figure/graph.mmd
+  Graph saved → /path/to/figure/graph.png
+
+────────────────────────────────────────────────────────────
+  Demo 1: Mortgage payment calculation
+────────────────────────────────────────────────────────────
+
+🙋  User: What would my monthly mortgage payment be for a $450,000 home
+         with 20% down at 6.5% interest for 30 years?
+
+🤖  HomeBot:
+With a $360,000 loan (20% down on $450,000) at 6.5% over 30 years,
+your monthly payment would be $2,275.18. Over the full term you'll pay
+$819,064 in total — $459,064 of which is interest...
+
+────────────────────────────────────────────────────────────
+  Demo 2: Home affordability check
+────────────────────────────────────────────────────────────
+
+🙋  User: I earn $95,000 per year and have $800 in monthly debt payments.
+         How much house can I afford with 10% down at 7% for 30 years?
+
+🤖  HomeBot:
+Based on the 28/36 rule, the maximum recommended home price is $376,000.
+Your 10% down payment would be $37,600, and your maximum monthly mortgage
+payment is $2,218. The back-end debt ratio (your $800 in existing debts
+plus the mortgage) is the binding constraint here...
+
+────────────────────────────────────────────────────────────
+  Demo 3: Rental property ROI
+────────────────────────────────────────────────────────────
+
+🙋  User: I'm considering a rental property at $320,000. I expect $2,200/month
+         in rent and $800/month in total expenses. What is my ROI?
+
+🤖  HomeBot:
+At $2,200/month rent and $800/month expenses, your net annual income is
+$16,800. The gross yield is 8.25% and the net ROI is 5.25% on the
+$320,000 purchase price. Monthly cash flow is $1,400...
+
+────────────────────────────────────────────────────────────
+  Demo 4: Buy vs rent comparison
+────────────────────────────────────────────────────────────
+
+🙋  User: Should I buy a $380,000 house or keep renting at $2,100/month?
+         15% down, 6.8% rate, 30-year term, 3% annual appreciation.
+
+🤖  HomeBot:
+Over 30 years, buying appears more cost-effective. The net cost of buying
+(down payment + interest − appreciation gain) is approximately $271,000,
+versus $756,000 in total rent. Appreciation of 3% per year grows the home
+to $922,000, generating $542,000 in equity gain that offsets the interest...
+
+============================================================</div>
+
+                <hr class="blg-hr">
+              </div>
+              <!-- Section 9: Gradio Web UI -->
+              <div class="blg-section">
+                <a id="section-9" class="blg-anchor"></a>
+                <div class="blg-main-header"><h2>🌐 9. Gradio Web UI</h2></div>
+
+                <p class="blg-paragraph">
+                  The Gradio app uses <span class="code-soft">gr.Blocks</span> with a <span class="code-soft">gr.State</span> for the thread ID — the same pattern as Part 2. A "New Session" button generates a fresh UUID, clearing the <span class="code-soft">MemorySaver</span> context for the next conversation.
+                </p>
+
+                <div class="blg-code-block" data-lang="python">import uuid
+
+import gradio as gr
+
+from homebot_runner import HomeBotRunner
+
+
+class HomeBotApp:
+    def __init__(self):
+        self.runner = HomeBotRunner()
+
+    def respond(self, message: str, _history: list, thread_id: str):
+        if not message.strip():
+            yield ""
+            return
+        yield self.runner.chat(message, thread_id)
+
+    def launch(self):
+        with gr.Blocks(title="🏠 AI Real Estate Advisor — HomeBot") as demo:
+            thread_state = gr.State(value=str(uuid.uuid4()))
+
+            chat = gr.ChatInterface(
+                fn=self.respond,
+                title="🏠 AI Real Estate Advisor — HomeBot",
+                description=(
+                    "Ask HomeBot anything about buying, renting, or investing in property. "
+                    "HomeBot uses precise financial tools for mortgage payments, "
+                    "affordability checks, property tax, rental ROI, and buy-vs-rent analysis."
+                ),
+                additional_inputs=[thread_state],
+            )
+
+            gr.ClearButton(
+                [chat.chatbot, chat.textbox],
+                value="🔄 New Session",
+                variant="primary",
+            ).click(
+                fn=lambda: str(uuid.uuid4()),
+                outputs=[thread_state],
+            )
+
+        demo.launch(css=".gradio-container { max-width: 860px !important; margin: auto; }")
+
+
+if __name__ == "__main__":
+    HomeBotApp().launch()</div>
+
+                <div class="blg-code-block" data-lang="bash">cd advanced-4-react-agent-tool-calling && python app.py</div>
+
+                <p class="blg-paragraph">
+                  The web UI starts at <span class="code-soft">http://127.0.0.1:7860</span>. Within a session (same thread ID), HomeBot remembers previous calculations. Ask "What's the monthly payment on a $400k house with 20% down at 6.5%?", then follow up with "And what would property tax be at 1.2%?" — HomeBot will reference the earlier context naturally.
+                </p>
+
+                <div class="blg-img-container">
+                  <img src="../img/blog_17/web_ui.webp" alt="HomeBot Gradio web UI" class="blg-img">
+                  <p class="blg-img-caption">HomeBot web UI — asking about mortgage payments triggers the calculate_mortgage_payment tool and returns exact figures.</p>
+                </div>
+
+                <blockquote class="blg-callout-tip">
+                  <strong>Extending HomeBot:</strong> Adding a new tool is three steps: create a new <span class="code-soft">BaseTool</span> subclass in <span class="code-soft">tools/</span>, add its description to <span class="code-soft">prompts/</span>, and add an instance to the <span class="code-soft">TOOLS</span> list in <span class="code-soft">tools/__init__.py</span>. The graph, agent node, and Gradio app require zero changes — they all import <span class="code-soft">TOOLS</span> and adapt automatically.
+                </blockquote>
+
+                <a id="what-to-try" class="blg-anchor"></a>
+                <div class="blg-sub-header">
+                  <span class="blg-sub-badge">9.1</span>
+                  <h3>💡 What to Try</h3>
+                </div>
+                <p class="blg-paragraph">
+                  Each query below exercises a different tool. Try them in order — or chain them in the same session to see HomeBot carry context across follow-up questions:
+                </p>
+                <div class="blg-query-list">
+                  <div class="blg-query-card">
+                    <div class="blg-query-q">
+                      <span class="blg-query-badge bq-query">Mortgage payment</span>
+                      "What's the monthly payment on a $450,000 home with 15% down at 6.8% over 30 years?"
+                    </div>
+                    <div class="blg-query-a">
+                      Triggers <span class="code-soft">calculate_mortgage_payment</span>. HomeBot returns the exact monthly figure and total interest paid over the loan term.
+                    </div>
+                  </div>
+                  <div class="blg-query-card">
+                    <div class="blg-query-q">
+                      <span class="blg-query-badge bq-query">Affordability check</span>
+                      "Can I afford a $550,000 house on an $85,000 salary with $1,200/month in existing debts?"
+                    </div>
+                    <div class="blg-query-a">
+                      Triggers <span class="code-soft">calculate_home_affordability</span>. HomeBot applies the 28/36 rule and tells you your maximum purchase price and whether $550k is within range.
+                    </div>
+                  </div>
+                  <div class="blg-query-card">
+                    <div class="blg-query-q">
+                      <span class="blg-query-badge bq-query">Property tax</span>
+                      "What would annual and monthly property tax be on a $380,000 home at a 1.2% rate?"
+                    </div>
+                    <div class="blg-query-a">
+                      Triggers <span class="code-soft">calculate_property_tax</span>. Returns the annual tax bill and monthly equivalent to factor into your budget.
+                    </div>
+                  </div>
+                  <div class="blg-query-card">
+                    <div class="blg-query-q">
+                      <span class="blg-query-badge bq-query">Rental ROI</span>
+                      "I'm buying a $320,000 rental property, charging $2,400/month rent with $600/month in expenses. What's the ROI?"
+                    </div>
+                    <div class="blg-query-a">
+                      Triggers <span class="code-soft">calculate_rental_roi</span>. HomeBot returns gross yield, net ROI, and annual cash flow.
+                    </div>
+                  </div>
+                  <div class="blg-query-card">
+                    <div class="blg-query-q">
+                      <span class="blg-query-badge bq-query">Buy vs rent</span>
+                      "Should I buy a $420,000 home or keep renting at $2,100/month? I have 20% to put down at 7%."
+                    </div>
+                    <div class="blg-query-a">
+                      Triggers <span class="code-soft">calculate_buy_vs_rent</span>. Compares total 5-year costs for both scenarios and gives a clear recommendation.
+                    </div>
+                  </div>
+                  <div class="blg-query-card">
+                    <div class="blg-query-q">
+                      <span class="blg-query-badge bq-query">Multi-tool</span>
+                      "I earn $110,000/year with $800/month in debts. Can I afford a $480,000 house? If so, what's the monthly payment with 20% down at 6.5%?"
+                    </div>
+                    <div class="blg-query-a">
+                      Triggers <span class="code-soft">calculate_home_affordability</span> first, then <span class="code-soft">calculate_mortgage_payment</span>. Watch the agent reason across two tool calls before synthesising a final answer.
+                    </div>
+                  </div>
+                </div>
+
+                <hr class="blg-hr">
+              </div>
+              <!-- Section 10: Conclusion -->
+              <div class="blg-section">
+                <a id="conclusion" class="blg-anchor"></a>
+                <div class="blg-main-header"><h2>✅ 10. Conclusion</h2></div>
+
+                <p class="blg-paragraph">
+                  In this post you built <strong>HomeBot</strong> — an AI Real Estate Advisor that wires a manually constructed ReAct loop around five precise financial tools. Unlike the <span class="code-soft">create_react_agent</span> shortcut from Basics Part 5, every component here is explicit: the agent node binds tools to the LLM, <span class="code-soft">ToolNode</span> executes function calls, and <span class="code-soft">tools_condition</span> decides whether to loop back or stop. You can read the graph wiring and immediately understand every path the agent can take.
+                </p>
+
+                <p class="blg-paragraph">
+                  The five financial tools cover the core questions a homebuyer asks — monthly payment, affordability ceiling, property tax, rental return, and buy-vs-rent trade-off. Because each tool is a self-contained <span class="code-soft">BaseTool</span> subclass with a Pydantic schema and a file-loaded description, adding a sixth tool means creating one new file. The graph, agent node, and Gradio UI adapt automatically through the shared <span class="code-soft">TOOLS</span> list.
+                </p>
+
+                <p class="blg-paragraph">Five key takeaways from this post:</p>
+                <ul class="blg-ul">
+                  <li class="blg-li-check"><strong>Manual ReAct vs prebuilt shortcut:</strong> building the loop yourself makes every routing decision visible. Use <span class="code-soft">create_react_agent</span> when speed matters; build manually when you need full control or custom state.</li>
+                  <li class="blg-li-check"><strong>BaseTool subclassing is the production pattern:</strong> one class per file, Pydantic schema, description from <span class="code-soft">prompts/</span>. Each tool is independently testable and prompt-tunable without touching the agent.</li>
+                  <li class="blg-li-check"><strong>Tools need two registrations:</strong> <span class="code-soft">bind_tools(TOOLS)</span> tells the LLM which tools exist; <span class="code-soft">ToolNode(TOOLS)</span> tells the graph which Python objects to call. Both reference the same list — <span class="code-soft">from tools import TOOLS</span> keeps them in sync automatically.</li>
+                  <li class="blg-li-check"><strong>MemorySaver enables multi-turn tool reasoning:</strong> within a session, HomeBot remembers previous calculations and can refer to them in follow-up questions without re-running the tools.</li>
+                  <li class="blg-li-check"><strong>Tool descriptions are part of the prompt:</strong> the LLM reads each tool's <span class="code-soft">description</span> to decide which tool to call. Clear, specific descriptions in <span class="code-soft">prompts/</span> directly improve tool selection accuracy.</li>
+                </ul>
+
+                <blockquote class="blg-callout-purple">
+                  🔗 <strong>LangGraph Advanced series:</strong> Part 1 covered bounded conversation memory. Part 2 built a multi-agent supervisor architecture. Part 3 implemented a RAG pipeline with conditional routing. This post (Part 4) built a manual ReAct agent with production-grade tool calling. <strong>Part 5</strong> takes tool calling further — connecting a LangGraph agent to external tools via the <span class="highlight-blue">Model Context Protocol (MCP)</span>.
+                </blockquote>
+
+                <hr class="blg-hr">
+              </div>
+
+              <!-- Trailing: Tech Stacks + Download + References -->
+              <div class="blg-trailing-section">
+
+                <!-- Tech Stacks -->
+                <div class="blg-main-header"><h2>🛠️ Tech Stacks Used</h2></div>
+                <div class="blg-tech-grid">
+                  <div class="blg-tech-card">
+                    <img src="../img/technical_stack/python.svg" alt="Python">
+                    <span>Python 3.12</span>
+                  </div>
+                  <div class="blg-tech-card">
+                    <img src="../img/technical_stack/langgraph.svg" alt="LangGraph">
+                    <span>LangGraph</span>
+                  </div>
+                  <div class="blg-tech-card">
+                    <img src="../img/technical_stack/langchain.svg" alt="LangChain">
+                    <span>LangChain</span>
+                  </div>
+                  <div class="blg-tech-card">
+                    <img src="../img/technical_stack/gemini.svg" alt="Google Gemini">
+                    <span>Google Gemini</span>
+                  </div>
+                  <div class="blg-tech-card">
+                    <img src="../img/technical_stack/agent.png" alt="Agent">
+                    <span>ReAct Agent</span>
+                  </div>
+                  <div class="blg-tech-card">
+                    <img src="../img/technical_stack/gradio.svg" alt="Gradio">
+                    <span>Gradio</span>
+                  </div>
+                </div>
+
+                <!-- Download -->
+                <div class="blg-download-card">
+                  <div class="blg-download-icon">
+                    <img src="../img/others/download.svg" alt="Download">
+                  </div>
+                  <div class="blg-download-content">
+                    <h3>Source Code</h3>
+                    <p>Full project — HomeBot source code, all 5 financial tools, prompt files, and Gradio web UI.</p>
+                    <a href="https://github.com/shafiqul-islam-sumon/langgraph/tree/main/advanced-4-react-agent-tool-calling" target="_blank" rel="noopener noreferrer" class="blg-download-btn">View on GitHub</a>
+                  </div>
+                </div>
+
+                <!-- References -->
+                <div class="blg-main-header"><h2>📚 References</h2></div>
+                <ul class="blg-ul">
+                  <li class="blg-li"><a href="https://langchain-ai.github.io/langgraph/" target="_blank" rel="noopener noreferrer">LangGraph Documentation</a></li>
+                  <li class="blg-li"><a href="https://python.langchain.com/docs/concepts/tools/" target="_blank" rel="noopener noreferrer">LangChain — Tools Concepts</a></li>
+                  <li class="blg-li"><a href="https://python.langchain.com/docs/how_to/custom_tools/#subclassing-the-basetool-class" target="_blank" rel="noopener noreferrer">LangChain — Custom Tools: BaseTool subclassing</a></li>
+                  <li class="blg-li"><a href="https://arxiv.org/abs/2210.03629" target="_blank" rel="noopener noreferrer">ReAct: Synergizing Reasoning and Acting in Language Models — Yao et al., 2022</a></li>
+                  <li class="blg-li"><a href="https://langchain-ai.github.io/langgraph/reference/prebuilt/" target="_blank" rel="noopener noreferrer">LangGraph Prebuilt — ToolNode &amp; tools_condition</a></li>
+                  <li class="blg-li"><a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio — Get a Gemini API Key</a></li>
+                </ul>
+
+              </div>
+
+            </div><!-- end #blogContainer -->
+          </div><!-- end .blog-detail-main -->
+        </div><!-- end .blog-detail-layout -->
+
+        <!-- Related posts -->
+        <div class="related-posts-section">
+          <div class="blog-title-bar">
+            <img src="../img/others/blog.png" alt="blog post" style="width: 24px; height: auto;">
+            <h2>Related Blog Posts</h2>
+          </div>
+          <div class="related-posts-wrapper">
+            <div class="related-posts-swiper-area">
+              <div class="swiper" id="postContainer">
+                <div class="swiper-wrapper"></div>
+              </div>
+              <div class="swiper-button-prev"></div>
+              <div class="swiper-button-next"></div>
+            </div>
+            <div class="blg-slide-counter">
+              <div class="slide-progress-bar">
+                <div class="slide-progress-fill" id="slideProgressFill"></div>
+              </div>
+              <div class="slide-counter-label">
+                <span id="currentSlide">1</span> / <span id="totalSlides">1</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+    <div id="site-footer"></div>
+  </div>
+
+  <script src="../js/bootstrap.bundle.min.js"></script>
+  <script src="../js/components.js"></script>
+  <script src="../js/site.js"></script>
+  <script src="../js/swiper-bundle.min.js"></script>
+  <script src="../js/prism.js" data-manual></script>
+  <script src="../js/code-highlight.js"></script>
+  <script src="../js/detail.js"></script>
+  <script src="../js/mermaid.min.js"></script>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+</body>
+</html>

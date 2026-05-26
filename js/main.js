@@ -1,6 +1,6 @@
 let currentPostIndex = 0;
 let categoryCounts = {};
-const initialPostsToShow = 6; // Shown on first load
+const initialPostsToShow = 60; // Shown on first load
 const postsPerLoad = 3;       // Shown on each click
 let posts = []; // Holds all posts
 let displayedPosts = []; // Holds the filtered posts for display
@@ -313,7 +313,9 @@ function getCategoryIcons() {
         "OpenAI": "./img/technical_stack/openai.svg",
         "Gemini": "./img/technical_stack/gemini.svg",
         "Llama": "./img/technical_stack/llama.png",
-        "Recommendation": "./img/technical_stack/recommendation.png"
+        "Recommendation": "./img/technical_stack/recommendation.png",
+        "MCP": "./img/technical_stack/mcp.svg",
+        "TTS": "./img/technical_stack/tts.png"
     };
 }
 

@@ -714,7 +714,7 @@ class QANodes:
 										</li>
 									</ul>
 
-									<div class="blg-callout-note">
+									<blockquote class="blg-callout-note">
 										📌 <strong>Why <code>-> dict</code> and not <code>-> QAState</code>?</strong><br />
 										<span class="code-soft">QAState</span> has two fields: <span class="code-soft">question</span> and <span class="code-soft">answer</span>.
 										But <span class="code-soft">answer_node</span> only returns <span class="code-soft">{"answer": content}</span> — one field, not both.
@@ -722,7 +722,7 @@ class QANodes:
 										LangGraph node functions return a <strong>partial state update</strong> — only the keys that changed.
 										LangGraph merges that partial dict back into the full state internally.
 										<span class="code-soft">-> dict</span> is the accurate annotation here.
-									</div>
+									</blockquote>
 
 									<hr class="blg-hr" />
 								</div>
@@ -991,11 +991,11 @@ result = self.app.invoke({"question": question})  # calls CompiledStateGraph.inv
 										</li>
 									</ul>
 
-									<div class="blg-callout-purple">
+									<blockquote class="blg-callout-purple">
 										💡 <strong>Key insight:</strong> <span class="code-soft">graph.add_node("answer", self.nodes.answer_node)</span> is what connects the string name <span class="code-soft">"answer"</span> to the actual Python function.
 										When the engine follows the edge <span class="code-soft">START → "answer"</span>, it resolves the string <span class="code-soft">"answer"</span> to <span class="code-soft">answer_node</span> through this registry and calls it.
 										The edges work with names, not function references — so the same string must be used consistently in <span class="code-soft">add_node()</span> and <span class="code-soft">add_edge()</span>.
-									</div>
+									</blockquote>
 
 									<div class="blg-table">
 										<table>
@@ -1185,19 +1185,16 @@ from previous steps or pass results to the next step.
 									</div>
 
 									<div class="blg-img-container">
-										<div class="blg-mermaid-container">
-											<pre class="mermaid">
-%%{init: {"flowchart": {"curve": "linear"}}}%%
-graph TD
-    S([__start__]):::first
-    A(answer)
-    E([__end__]):::last
-    S --> A
-    A --> E
-    classDef default fill:#f2f0ff,line-height:1.2
-    classDef first fill-opacity:0
-    classDef last fill:#bfb6fc
-											</pre>
+										<div class="blg-mermaid-wrap">
+											<div class="mermaid" style="min-width:460px;font-size:16px;">
+flowchart TD
+    S([__start__]) --> A([answer])
+    A --> E([__end__])
+
+    style S fill:#e8f5e9,stroke:#43a047,color:#1b5e20
+    style E fill:#fce4ec,stroke:#e53935,color:#b71c1c
+    style A fill:#e3f2fd,stroke:#1e88e5,color:#0d47a1
+											</div>
 										</div>
 										<p class="blg-img-caption">Graph architecture of the Q&amp;A bot — <code>__start__</code> feeds into the <code>answer</code> node, which connects to <code>__end__</code>.</p>
 									</div>
@@ -1268,9 +1265,9 @@ python app.py</div>
 										<p class="blg-img-caption">LangGraph Chatbot running in the browser via Gradio.</p>
 									</div>
 
-									<div class="blg-callout-tip">
+									<blockquote class="blg-callout-tip">
 										✅ <strong>app.py vs qa_runner.py:</strong> Both run the same LangGraph graph. <span class="code-soft">qa_runner.py</span> is a quick console runner for testing. <span class="code-soft">app.py</span> is the web interface for interactive use. The graph, state, and nodes are shared — only the entry point differs.
-									</div>
+									</blockquote>
 
 									<hr class="blg-hr" />
 								</div>
@@ -1298,13 +1295,21 @@ python app.py</div>
 										Multi-step pipelines, branching workflows, and multi-agent systems all reduce to the same three concepts wired together differently.
 									</p>
 
-									<div class="blg-callout-tip">
-										<strong>Up next — Basics Part 2:</strong> The next post goes deeper into
-										<strong>State</strong> — specifically <code>Annotated</code> fields and custom reducers.
-										Reducers control what happens when two nodes both write to the same state key:
-										whether the new value replaces the old one, gets appended to a list, or gets merged through any custom logic you define.
-										That mechanism becomes essential the moment a graph has more than one node touching the same field.
-									</div>
+									<p class="blg-paragraph">
+										This same three-part skeleton scales to production systems without structural change. Add more nodes for retrieval, reranking, or tool calls and you get a RAG pipeline. Add a routing edge based on intent classification and you get a customer support router. Add a checkpointer and the graph gains persistent memory across sessions. None of those extensions require rethinking state, nodes, or edges — they just wire more of them together.
+									</p>
+
+									<ul class="blg-ul">
+										<li class="blg-li-check"><strong>State is a <span class="code-soft">TypedDict</span>:</strong> every field the graph reads or writes must be declared upfront — nodes get the full state and return only the keys they changed.</li>
+										<li class="blg-li-check"><strong>Nodes are plain Python functions:</strong> they take state as the only argument, do any computation, and return a partial dict — no special base class or decorator required.</li>
+										<li class="blg-li-check"><strong>Edges define execution order:</strong> <span class="code-soft">add_edge(A, B)</span> means B runs after A — and every graph needs exactly one <span class="code-soft">START</span> and at least one <span class="code-soft">END</span> edge.</li>
+										<li class="blg-li-check"><strong>Compile before running:</strong> <span class="code-soft">graph.compile()</span> validates the wiring and returns a <span class="code-soft">CompiledGraph</span> — the object you actually call with <span class="code-soft">invoke()</span>.</li>
+										<li class="blg-li-check"><strong>OOP keeps it organized:</strong> separating state, nodes, and graph into their own classes makes the codebase readable and testable as complexity grows.</li>
+									</ul>
+
+									<blockquote class="blg-callout-purple">
+										🔗 <strong>LangGraph Basics series:</strong> This post (Part 1) introduced <span class="highlight-blue">StateGraph, Nodes &amp; Edges</span>. Part 2 goes deeper into <span class="highlight-teal">State — Annotated Fields &amp; Custom Reducers</span>, which control what happens when multiple nodes write to the same state key. Parts 3–6 cover conditional routing, memory, tools, and subgraphs.
+									</blockquote>
 
 									<hr class="blg-hr" />
 								</div>

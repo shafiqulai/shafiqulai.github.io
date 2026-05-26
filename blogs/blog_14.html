@@ -1,0 +1,1064 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-6SEFZQJHM1"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() { dataLayer.push(arguments); }
+			gtag("js", new Date());
+			gtag("config", "G-6SEFZQJHM1", { cookie_domain: "shafiqulai.github.io" });
+		</script>
+		<meta charset="utf-8" />
+		<title>LangGraph Advanced: Part 1 — Conversational Chatbot with Memory</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="description" content="Long conversations exhaust an LLM's context window — simply persisting every message is not enough. This post covers the canonical LangGraph solution: a messages + summary state, a summarisation node, and conditional routing. A Personal Recipe Assistant is built with SqliteSaver and a Gradio streaming UI." />
+		<meta name="author" content="MD SHAFIQUL ISLAM" />
+		<link rel="canonical" href="https://shafiqulai.github.io/blogs/blog_14.html" />
+		<link rel="icon" href="../img/others/favicon.ico" type="image/x-icon" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+		<link rel="stylesheet" href="../css/swiper-bundle.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/style.css" />
+		<link rel="stylesheet" type="text/css" href="../css/prism.css" />
+	</head>
+	<body>
+		<div id="reading-progress"></div>
+		<div id="wrapper">
+			<div id="site-header"></div>
+			<section id="content">
+				<div class="container">
+					<div class="blog-detail-layout">
+
+						<aside class="toc-sidebar" id="tocSidebar">
+							<div class="toc-sidebar-header">
+								<p class="toc-sidebar-title">Contents</p>
+							</div>
+							<ul class="toc-sidebar-list">
+								<li><a href="#intro">1. Why Production Chatbots Need More Than Basic Memory</a></li>
+								<li class="toc-sidebar-sub"><a href="#unbounded-problem">1.1 The Unbounded History Problem</a></li>
+								<li class="toc-sidebar-sub"><a href="#trim-vs-summarize">1.2 Trim vs Summarise</a></li>
+								<li class="toc-sidebar-sub"><a href="#scenario-intro">1.3 Our Scenario: Personal Recipe Assistant</a></li>
+								<li><a href="#installation-setup">2. Installation &amp; Setup</a></li>
+								<li class="toc-sidebar-sub"><a href="#configuring-llm">2.1 Configuring the LLM</a></li>
+								<li><a href="#state-design">3. State Design for Production Chatbots</a></li>
+								<li class="toc-sidebar-sub"><a href="#summary-field">3.1 Adding a summary Field</a></li>
+								<li class="toc-sidebar-sub"><a href="#messages-plus-summary">3.2 How messages + summary Work Together</a></li>
+								<li><a href="#summarization-pattern">4. The Summarisation Pattern</a></li>
+								<li class="toc-sidebar-sub"><a href="#summarize-node">4.1 The Summarisation Node</a></li>
+								<li class="toc-sidebar-sub"><a href="#when-to-summarize">4.2 When to Summarise: Conditional Routing</a></li>
+								<li class="toc-sidebar-sub"><a href="#end-to-end-flow">4.3 End-to-End Flow</a></li>
+								<li><a href="#complete-example">5. Complete Example: Personal Recipe Assistant</a></li>
+								<li class="toc-sidebar-sub"><a href="#arch-overview">5.1 Architecture Overview</a></li>
+								<li class="toc-sidebar-sub"><a href="#project-structure">5.2 Project Structure</a></li>
+								<li class="toc-sidebar-sub"><a href="#state-file">5.3 State (state.py)</a></li>
+								<li class="toc-sidebar-sub"><a href="#nodes-file">5.4 Nodes (nodes.py)</a></li>
+								<li class="toc-sidebar-sub"><a href="#graph-file">5.5 Graph Assembly (graph.py)</a></li>
+								<li class="toc-sidebar-sub"><a href="#runner-output">5.6 Runner &amp; Console Output (recipe_runner.py)</a></li>
+								<li class="toc-sidebar-sub"><a href="#mermaid-diagram">5.7 Graph Diagram</a></li>
+								<li><a href="#web-ui">6. Web Interface</a></li>
+								<li class="toc-sidebar-sub"><a href="#what-to-try">6.1 What to Try</a></li>
+								<li><a href="#conclusion">7. Conclusion</a></li>
+							</ul>
+						</aside>
+
+						<div class="blog-detail-main">
+							<div id="blogContainer">
+
+								<div class="container blg-title-container">
+									<h2 class="blg-title">LangGraph Advanced: Part 1 — Conversational Chatbot with Memory</h2>
+								</div>
+
+								<div class="author_section">
+									<img id="author_img" src="" alt="Author Photo" class="author_img">
+									<div class="author_details">
+										<span id="author_name" class="author_name"></span>
+										<span id="published_date" class="published_date"></span>
+									</div>
+								</div>
+
+								<div class="blg-img-container">
+									<img src="../img/blog_14/thumbnail.webp" alt="LangGraph Advanced: Part 1 — Conversational Chatbot with Memory" class="blg-thumbnail" />
+								</div>
+
+								<!-- INLINE TOC -->
+								<div class="blg-toc-container">
+									<h2>📚 Table of Contents</h2>
+									<ol class="blg-toc-ol">
+										<li class="blg-toc-li"><a href="#intro">1. Why Production Chatbots Need More Than Basic Memory</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#unbounded-problem">1.1 The Unbounded History Problem</a></li>
+											<li class="blg-toc-li"><a href="#trim-vs-summarize">1.2 Trim vs Summarise</a></li>
+											<li class="blg-toc-li"><a href="#scenario-intro">1.3 Our Scenario: Personal Recipe Assistant</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#installation-setup">2. Installation &amp; Setup</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#configuring-llm">2.1 Configuring the LLM</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#state-design">3. State Design for Production Chatbots</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#summary-field">3.1 Adding a summary Field</a></li>
+											<li class="blg-toc-li"><a href="#messages-plus-summary">3.2 How messages + summary Work Together</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#summarization-pattern">4. The Summarisation Pattern</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#summarize-node">4.1 The Summarisation Node</a></li>
+											<li class="blg-toc-li"><a href="#when-to-summarize">4.2 When to Summarise: Conditional Routing</a></li>
+											<li class="blg-toc-li"><a href="#end-to-end-flow">4.3 End-to-End Flow</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#complete-example">5. Complete Example: Personal Recipe Assistant</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#arch-overview">5.1 Architecture Overview</a></li>
+											<li class="blg-toc-li"><a href="#project-structure">5.2 Project Structure</a></li>
+											<li class="blg-toc-li"><a href="#state-file">5.3 State (state.py)</a></li>
+											<li class="blg-toc-li"><a href="#nodes-file">5.4 Nodes (nodes.py)</a></li>
+											<li class="blg-toc-li"><a href="#graph-file">5.5 Graph Assembly (graph.py)</a></li>
+											<li class="blg-toc-li"><a href="#runner-output">5.6 Runner &amp; Console Output (recipe_runner.py)</a></li>
+											<li class="blg-toc-li"><a href="#mermaid-diagram">5.7 Graph Diagram</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#web-ui">6. Web Interface</a></li>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#what-to-try">6.1 What to Try</a></li>
+										</ul>
+										<li class="blg-toc-li"><a href="#conclusion">7. Conclusion</a></li>
+									</ol>
+								</div>
+
+								<!-- SECTION 1 -->
+								<div class="blg-section">
+									<div class="blg-anchor" id="intro"></div>
+									<div class="blg-main-header"><h2>1. Why Production Chatbots Need More Than Basic Memory</h2></div>
+
+									<p class="blg-paragraph">
+										LangGraph's checkpointers (covered in <strong>Basics Part 4</strong>) solve persistence — every message is stored in a SQLite database and restored for the next turn. That solves the <em>between-session</em> memory problem. But there is a second, harder problem hiding inside long conversations: the <strong>context window</strong>.
+									</p>
+									<p class="blg-paragraph">
+										Every LLM has a maximum number of tokens it can process in a single call. Pass in too many tokens and the call fails, the response gets truncated, or the cost skyrockets. For short demos this never matters. For a real chatbot that users return to day after day, it becomes the dominant engineering challenge.
+									</p>
+
+									<div class="blg-anchor" id="unbounded-problem"></div>
+									<div class="blg-sub-header"><span class="blg-sub-badge">1.1</span><h3>The Unbounded History Problem</h3></div>
+
+									<p class="blg-paragraph">
+										Each time a user sends a message, LangGraph restores the full message list from the checkpointer and passes it — plus the new message — to the LLM. After 20 turns that list contains 40 messages. After 100 turns it contains 200 messages. The token count grows without bound.
+									</p>
+
+									<blockquote class="blg-callout-warning">
+										<p><strong>The hidden cost of naïve persistence</strong></p>
+										<p>A naïve chatbot that stores every message costs 10× more per call after 100 turns than after 10 turns — and eventually hits a hard error when the context limit is exceeded. The state must be actively managed, not just accumulated.</p>
+									</blockquote>
+
+									<p class="blg-paragraph">
+										This is not a LangGraph-specific limitation — it applies to any stateful LLM application. LangGraph just gives you the right hooks to solve it cleanly.
+									</p>
+
+									<div class="blg-anchor" id="trim-vs-summarize"></div>
+									<div class="blg-sub-header"><span class="blg-sub-badge">1.2</span><h3>Trim vs Summarise</h3></div>
+
+									<p class="blg-paragraph">There are two mainstream strategies for controlling message history:</p>
+
+									<div class="blg-table">
+										<table>
+											<thead><tr><th>Strategy</th><th>How it works</th><th>What is lost</th><th>Best for</th></tr></thead>
+											<tbody>
+												<tr>
+													<td><strong>Trim</strong></td>
+													<td>Delete the oldest N messages once the list exceeds a threshold</td>
+													<td>All detail in deleted messages — gone forever</td>
+													<td>Customer-support bots where old turns are truly irrelevant</td>
+												</tr>
+												<tr>
+													<td><strong>Summarise</strong></td>
+													<td>Ask the LLM to compress old messages into a short paragraph, then delete them</td>
+													<td>Verbatim wording — but key facts are preserved in the summary</td>
+													<td>Assistants that need to remember facts across many sessions (preferences, history)</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+
+									<p class="blg-paragraph">
+										For a recipe assistant that remembers dietary restrictions and favourite cuisines, trimming would quietly discard facts the user mentioned two days ago. Summarisation compresses the conversation while keeping those facts alive in the <span class="code-soft">summary</span> field. That is the pattern this post teaches.
+									</p>
+
+									<div class="blg-anchor" id="scenario-intro"></div>
+									<div class="blg-sub-header"><span class="blg-sub-badge">1.3</span><h3>Our Scenario: Personal Recipe Assistant</h3></div>
+
+									<p class="blg-paragraph">
+										Throughout this post we build <strong>Chef Aria</strong> — a Personal Recipe Assistant that remembers your dietary preferences, favourite cuisines, and past recipe discussions across many sessions. A user might tell Chef Aria on Monday that they are vegetarian and allergic to nuts. On Thursday, Aria should still know this — even if the original Monday message has long since been compressed into the summary.
+									</p>
+
+									<blockquote class="blg-callout-info">
+										<p><strong>Why this scenario needs summarisation</strong></p>
+										<p>Dietary preferences and cooking history are valuable long-term context. A trim strategy would silently delete them. Summarisation keeps the facts alive while preventing the token count from growing indefinitely — exactly what a production recipe assistant needs.</p>
+									</blockquote>
+
+									<p class="blg-paragraph">
+										The app uses <strong>SqliteSaver</strong> for cross-session persistence and a <strong>Gradio</strong> streaming UI so responses appear token by token. By the end of this post you will have a fully working chatbot you can run locally and reuse as a template for any long-running assistant.
+									</p>
+								</div><!-- end blg-section: intro -->
+
+								<!-- SECTION 2 -->
+								<div class="blg-section">
+									<div class="blg-anchor" id="installation-setup"></div>
+									<div class="blg-main-header"><h2>2. Installation &amp; Setup</h2></div>
+
+									<p class="blg-paragraph">Install the required packages in a virtual environment:</p>
+
+									<div class="blg-code-block" data-lang="bash">pip install langgraph langchain-google-genai langchain-core gradio python-dotenv</div>
+
+									<p class="blg-paragraph">
+										Create a <span class="code-soft">.env</span> file in the project root with your Gemini API key and optional configuration overrides:
+									</p>
+
+									<div class="blg-code-block" data-lang="properties">GEMINI_API_KEY=your_key_here
+GEMINI_MODEL_NAME=gemini-3-flash-preview
+GEMINI_TEMPERATURE=0.7
+SUMMARY_THRESHOLD=6</div>
+
+									<p class="blg-paragraph">
+										<span class="code-soft">SUMMARY_THRESHOLD=6</span> means the summarisation node fires after 6 messages are in state. You can raise this to allow longer free-running conversation before compressing.
+									</p>
+
+									<div class="blg-anchor" id="configuring-llm"></div>
+									<div class="blg-sub-header"><span class="blg-sub-badge">2.1</span><h3>Configuring the LLM</h3></div>
+
+									<p class="blg-paragraph">All runtime settings live in a single <span class="code-soft">Config</span> class so they are easy to tune without hunting through multiple files:</p>
+
+									<div class="blg-code-block" data-lang="python">import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+class Config:
+    MODEL_NAME        = os.getenv("GEMINI_MODEL_NAME", "gemini-3-flash-preview")
+    TEMPERATURE       = float(os.getenv("GEMINI_TEMPERATURE", 0.7))
+    MAX_RETRIES       = int(os.getenv("GEMINI_MAX_RETRIES", 2))
+    SUMMARY_THRESHOLD = int(os.getenv("SUMMARY_THRESHOLD", 6))
+    DB_PATH           = os.path.join(os.path.dirname(__file__), "recipe_chat.db")</div>
+
+									<p class="blg-paragraph">
+										<span class="code-soft">DB_PATH</span> uses <span class="code-soft">os.path.dirname(__file__)</span> so the SQLite file is always created next to <span class="code-soft">config.py</span>, regardless of which directory you run the app from. The LLM wrapper reads these values:
+									</p>
+
+									<div class="blg-code-block" data-lang="python">from langchain_google_genai import ChatGoogleGenerativeAI
+from config import Config
+
+class GeminiLLM:
+    def get_llm(self) -> ChatGoogleGenerativeAI:
+        return ChatGoogleGenerativeAI(
+            model=Config.MODEL_NAME,
+            temperature=Config.TEMPERATURE,
+            max_retries=Config.MAX_RETRIES,
+        )</div>
+
+								</div><!-- end blg-section: installation-setup -->
+
+								<!-- SECTION 3 -->
+								<div class="blg-section">
+									<div class="blg-anchor" id="state-design"></div>
+									<div class="blg-main-header"><h2>3. State Design for Production Chatbots</h2></div>
+
+									<p class="blg-paragraph">
+										In <strong>Basics Part 2</strong> you learned that LangGraph state is a <span class="code-soft">TypedDict</span> and that fields with an <span class="code-soft">Annotated</span> reducer accumulate values instead of overwriting them. The production chatbot state builds directly on that foundation — it just adds one new field: <span class="code-soft">summary</span>.
+									</p>
+
+									<div class="blg-anchor" id="summary-field"></div>
+									<div class="blg-sub-header"><span class="blg-sub-badge">3.1</span><h3>Adding a <span class="code-soft">summary</span> Field</h3></div>
+
+									<p class="blg-paragraph">
+										The full state for the recipe assistant is deliberately minimal — just two fields:
+									</p>
+
+									<div class="blg-code-block" data-lang="python">from typing import Annotated
+from langchain_core.messages import BaseMessage
+from langgraph.graph.message import add_messages
+from typing_extensions import TypedDict
+
+class RecipeState(TypedDict):
+    messages: Annotated[list[BaseMessage], add_messages]
+    summary:  str</div>
+
+									<ul class="blg-ul">
+										<li class="blg-li"><span class="code-soft">messages</span> — the <span class="code-soft">add_messages</span> reducer appends new messages instead of overwriting the list. It also handles <span class="code-soft">RemoveMessage</span> instructions: when the summarise node returns a list containing <span class="code-soft">RemoveMessage(id=...)</span> objects, the reducer deletes those messages by ID.</li>
+										<li class="blg-li"><span class="code-soft">summary</span> — a plain Python <span class="code-soft">str</span> with no special reducer (last-write-wins). The summarise node writes a new value here each time it runs. Starts as an empty string.</li>
+									</ul>
+
+									<p class="blg-paragraph">
+										We define <span class="code-soft">RecipeState</span> as our own <span class="code-soft">TypedDict</span> rather than using LangGraph's <span class="code-soft">MessagesState</span> shortcut because we need the additional <span class="code-soft">summary</span> field — <span class="code-soft">MessagesState</span> only provides <span class="code-soft">messages</span>.
+									</p>
+
+									<div class="blg-anchor" id="messages-plus-summary"></div>
+									<div class="blg-sub-header"><span class="blg-sub-badge">3.2</span><h3>How <span class="code-soft">messages</span> + <span class="code-soft">summary</span> Work Together</h3></div>
+
+									<p class="blg-paragraph">
+										At any given moment the state holds two complementary pieces of context:
+									</p>
+
+									<blockquote class="blg-callout-info">
+										<p><strong>The dual-context model</strong></p>
+										<p><span class="code-soft">summary</span> carries the compressed history of everything that happened <em>before</em> the summarisation threshold was reached. <span class="code-soft">messages</span> carries the recent turns in full detail. The chat node prepends the summary as an extra system message so the LLM sees both — it "remembers" the past without paying the token cost of storing every message verbatim.</p>
+									</blockquote>
+
+									<p class="blg-paragraph">
+										Concretely, the chat node's prompt construction looks like this:
+									</p>
+
+									<div class="blg-code-block" data-lang="python">system_content = self.chat_prompt          # Chef Aria persona
+if summary:
+    system_content += f"\n\nPrevious conversation summary:\n{summary}"
+
+messages = [SystemMessage(content=system_content)] + list(state["messages"])
+response = self.llm.invoke(messages)</div>
+
+									<p class="blg-paragraph">
+										The LLM receives: <strong>persona + summary + recent messages</strong>. The token budget is bounded because <span class="code-soft">messages</span> is periodically compressed and the summary is short (&lt;150 words by default).
+									</p>
+								</div><!-- end blg-section: state-design -->
+
+								<!-- SECTION 4 -->
+								<div class="blg-section">
+									<div class="blg-anchor" id="summarization-pattern"></div>
+									<div class="blg-main-header"><h2>4. The Summarisation Pattern</h2></div>
+
+									<p class="blg-paragraph">
+										The summarisation pattern has three interlocking pieces: a <strong>summarise node</strong> that uses the LLM to compress old messages, a <strong>router function</strong> that decides when to trigger it, and a <strong>conditional edge</strong> that wires the two together. This section walks through each piece before the complete example assembles them.
+									</p>
+
+									<div class="blg-anchor" id="summarize-node"></div>
+									<div class="blg-sub-header"><span class="blg-sub-badge">4.1</span><h3>The Summarisation Node</h3></div>
+
+									<p class="blg-paragraph">
+										The summarise node does three things in sequence:
+									</p>
+									<ol class="blg-ul">
+										<li class="blg-li">Selects the <em>old</em> messages — everything except the two most recent turns.</li>
+										<li class="blg-li">Asks the LLM to compress them into a short paragraph (extending any existing summary).</li>
+										<li class="blg-li">Returns <span class="code-soft">RemoveMessage</span> objects for each old message so the <span class="code-soft">add_messages</span> reducer deletes them from state.</li>
+									</ol>
+
+									<div class="blg-code-block" data-lang="python">def summarize_node(self, state: RecipeState) -> dict:
+    existing_summary = state.get("summary", "")
+    old_messages     = state["messages"][:-2]   # keep the last 2 messages intact
+
+    lines = []
+    for m in old_messages:
+        role = "User" if m.type == "human" else "Assistant"
+        lines.append(f"{role}: {_extract_text(m.content)}")
+
+    prompt = self.summarize_prompt.format(
+        existing_summary=existing_summary,
+        conversation="\n".join(lines),
+    )
+    response    = self.llm.invoke([HumanMessage(content=prompt)])
+    new_summary = _extract_text(response.content)
+
+    # Tell add_messages to delete the old messages by ID.
+    delete_ops  = [RemoveMessage(id=m.id) for m in old_messages]
+    return {"summary": new_summary, "messages": delete_ops}</div>
+
+									<blockquote class="blg-callout-tip">
+										<p><strong>Why keep the last 2 messages?</strong></p>
+										<p>The most recent user question and the assistant's answer are the active context. Summarising them before the user sees a reply would lose the immediate conversational thread. Keeping them in <span class="code-soft">messages</span> ensures the next turn has fresh context; everything older lives in the summary.</p>
+									</blockquote>
+
+									<p class="blg-paragraph">
+										The summarise prompt (loaded from <span class="code-soft">prompts/summarize.txt</span>) uses two placeholders. If an existing summary is present it is extended rather than replaced, so the compression is incremental:
+									</p>
+
+									<div class="blg-code-block" data-lang="markdown">You are summarising a cooking conversation for long-term memory.
+
+{existing_summary}
+
+New conversation turns to incorporate:
+{conversation}
+
+Write a concise summary (≤150 words) that preserves all dietary restrictions,
+food preferences, recipes discussed, and cooking tips mentioned.
+Return only the summary text — no headings or preamble.</div>
+
+									<div class="blg-anchor" id="when-to-summarize"></div>
+									<div class="blg-sub-header"><span class="blg-sub-badge">4.2</span><h3>When to Summarise: Conditional Routing</h3></div>
+
+									<p class="blg-paragraph">
+										After the chat node responds, a router function inspects the message count. If it exceeds <span class="code-soft">Config.SUMMARY_THRESHOLD</span> (default 6), execution routes to <span class="code-soft">summarize</span>; otherwise the graph ends immediately.
+									</p>
+
+									<div class="blg-code-block" data-lang="python">def should_summarize(state: RecipeState) -> str:
+    if len(state["messages"]) > Config.SUMMARY_THRESHOLD:
+        return "summarize"
+    return "end"</div>
+
+									<p class="blg-paragraph">
+										This function is registered as a conditional edge out of the chat node. The explicit mapping dict ensures both branches appear as labelled edges in the generated graph diagram:
+									</p>
+
+									<div class="blg-code-block" data-lang="python">graph.add_conditional_edges(
+    "chat",
+    should_summarize,
+    {
+        "summarize": "summarize",
+        "end":       END,
+    },
+)
+graph.add_edge("summarize", END)</div>
+
+									<p class="blg-paragraph">
+										After <span class="code-soft">summarize</span> runs, the graph always ends — the summarised state is checkpointed automatically. The next user message starts a new graph execution with a clean message list (just the last 2 messages) and the accumulated summary.
+									</p>
+
+									<div class="blg-anchor" id="end-to-end-flow"></div>
+									<div class="blg-sub-header"><span class="blg-sub-badge">4.3</span><h3>End-to-End Flow</h3></div>
+
+									<p class="blg-paragraph">Here is the full lifecycle of a single user message inside this graph:</p>
+
+									<blockquote class="blg-callout-note">
+										<p><strong>Turn-by-turn lifecycle</strong></p>
+										<ol style="margin: 0.5rem 0 0 1.2rem; padding: 0;">
+											<li style="margin-bottom: 0.35rem;"><strong>Restore</strong> — checkpointer loads <span class="code-soft">RecipeState</span> for the thread_id (messages + summary).</li>
+											<li style="margin-bottom: 0.35rem;"><strong>chat node</strong> — prepends summary as system context, calls the LLM, appends the AI reply to <span class="code-soft">messages</span>.</li>
+											<li style="margin-bottom: 0.35rem;"><strong>should_summarize</strong> — counts messages; routes to <span class="code-soft">summarize</span> if &gt; threshold, else END.</li>
+											<li style="margin-bottom: 0.35rem;"><strong>summarize node</strong> (if triggered) — compresses old messages, writes new summary, deletes old messages via <span class="code-soft">RemoveMessage</span>.</li>
+											<li><strong>Checkpoint</strong> — updated state is persisted. Next turn starts here.</li>
+										</ol>
+									</blockquote>
+
+								</div><!-- end blg-section: summarization-pattern -->
+
+								<!-- SECTION 5 -->
+								<div class="blg-section">
+									<div class="blg-anchor" id="complete-example"></div>
+									<div class="blg-main-header"><h2>5. Complete Example: Personal Recipe Assistant</h2></div>
+
+									<p class="blg-paragraph">
+										The following sections walk through every file of the project — from state to graph to runner — and then show the console output you will see when you run the demo.
+									</p>
+
+									<div class="blg-anchor" id="arch-overview"></div>
+									<div class="blg-sub-header"><span class="blg-sub-badge">5.1</span><h3>Architecture Overview</h3></div>
+
+									<p class="blg-paragraph">The recipe assistant graph has exactly two nodes and two possible exit paths:</p>
+
+									<div class="blg-feature-grid">
+										<div class="blg-feature-card card-blue">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">💬</span>
+												<h4>chat node</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Receives the full state (summary + recent messages), calls Chef Aria via Gemini, and appends the AI reply to <span class="code-soft">messages</span>.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-teal">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">📝</span>
+												<h4>summarize node</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Triggered conditionally. Compresses old messages into a ≤150-word summary and deletes the originals with <span class="code-soft">RemoveMessage</span>.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-green">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">🔀</span>
+												<h4>should_summarize</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Router function. Checks message count after each chat turn — routes to <span class="code-soft">summarize</span> if &gt; <span class="code-soft">SUMMARY_THRESHOLD</span>, else <span class="code-soft">END</span>.</p>
+											</div>
+										</div>
+										<div class="blg-feature-card card-purple">
+											<div class="blg-feature-card-header">
+												<span class="blg-feature-card-icon">💾</span>
+												<h4>SqliteSaver</h4>
+											</div>
+											<div class="blg-feature-card-body">
+												<p>Persists <span class="code-soft">RecipeState</span> to disk. Each <span class="code-soft">thread_id</span> keeps an isolated conversation history that survives process restarts.</p>
+											</div>
+										</div>
+									</div>
+
+									<div class="blg-anchor" id="project-structure"></div>
+									<div class="blg-sub-header"><span class="blg-sub-badge">5.2</span><h3>Project Structure</h3></div>
+
+									<div class="blg-code-block blg-tree" data-lang="bash"><span class="tree-root">advanced-1-conversational-chatbot/</span>
+<span class="tree-branch">├── </span><span class="tree-file">config.py</span>          <span class="tree-comment"># Model name, temperature, threshold, DB path</span>
+<span class="tree-branch">├── </span><span class="tree-file">llm.py</span>             <span class="tree-comment"># GeminiLLM wrapper — reads Config</span>
+<span class="tree-branch">├── </span><span class="tree-file">state.py</span>           <span class="tree-comment"># RecipeState (messages + summary)</span>
+<span class="tree-branch">├── </span><span class="tree-file">nodes.py</span>           <span class="tree-comment"># RecipeNodes — chat_node, summarize_node</span>
+<span class="tree-branch">├── </span><span class="tree-file">graph.py</span>           <span class="tree-comment"># RecipeGraph — builds graph, SqliteSaver, save_figure()</span>
+<span class="tree-branch">├── </span><span class="tree-file">recipe_runner.py</span>   <span class="tree-comment"># RecipeRunner — chat(), stream_chat(), demo __main__</span>
+<span class="tree-branch">├── </span><span class="tree-file">app.py</span>             <span class="tree-comment"># Gradio ChatInterface with streaming + New Session button</span>
+<span class="tree-branch">├── </span><span class="tree-folder">prompts/</span>
+<span class="tree-branch">│   ├── </span><span class="tree-file">chat.txt</span>       <span class="tree-comment"># Chef Aria system persona</span>
+<span class="tree-branch">│   └── </span><span class="tree-file">summarize.txt</span>  <span class="tree-comment"># Summarisation prompt with {existing_summary} + {conversation}</span>
+<span class="tree-branch">└── </span><span class="tree-folder">figure/</span>            <span class="tree-comment"># Auto-created: graph.mmd + graph.png</span></div>
+
+									<div class="blg-anchor" id="state-file"></div>
+									<div class="blg-sub-header"><span class="blg-sub-badge">5.3</span><h3>State (<span class="code-soft">state.py</span>)</h3></div>
+
+									<div class="blg-code-block" data-lang="python">from typing import Annotated
+from langchain_core.messages import BaseMessage
+from langgraph.graph.message import add_messages
+from typing_extensions import TypedDict
+
+class RecipeState(TypedDict):
+    messages: Annotated[list[BaseMessage], add_messages]
+    summary:  str</div>
+
+									<p class="blg-paragraph">
+										Two fields, two jobs: <span class="code-soft">messages</span> accumulates and supports deletion; <span class="code-soft">summary</span> is overwritten each time the summarise node runs.
+									</p>
+
+									<div class="blg-anchor" id="nodes-file"></div>
+									<div class="blg-sub-header"><span class="blg-sub-badge">5.4</span><h3>Nodes (<span class="code-soft">nodes.py</span>)</h3></div>
+
+									<p class="blg-paragraph">Both nodes live in a <span class="code-soft">RecipeNodes</span> class. The constructor loads the LLM and both prompts from <span class="code-soft">prompts/</span>:</p>
+
+									<div class="blg-code-block" data-lang="python">import os
+from langchain_core.messages import HumanMessage, RemoveMessage, SystemMessage
+from llm import GeminiLLM
+from state import RecipeState
+
+_PROMPTS_DIR = os.path.join(os.path.dirname(__file__), "prompts")
+
+def _load_prompt(filename: str) -> str:
+    with open(os.path.join(_PROMPTS_DIR, filename), "r") as f:
+        return f.read().strip()
+
+def _extract_text(content) -> str:
+    """Normalise langchain-google-genai 4.x content (list or str) to plain str."""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        return "".join(
+            b.get("text", "")
+            for b in content
+            if isinstance(b, dict) and b.get("type") == "text"
+        )
+    return str(content)
+
+class RecipeNodes:
+    def __init__(self):
+        self.llm              = GeminiLLM().get_llm()
+        self.chat_prompt      = _load_prompt("chat.txt")
+        self.summarize_prompt = _load_prompt("summarize.txt")</div>
+
+									<p class="blg-paragraph"><strong>chat_node</strong> — builds the prompt from persona + optional summary + recent messages:</p>
+
+									<div class="blg-code-block" data-lang="python">    def chat_node(self, state: RecipeState) -> dict:
+        summary = state.get("summary", "")
+
+        system_content = self.chat_prompt
+        if summary:
+            system_content += f"\n\nPrevious conversation summary:\n{summary}"
+
+        messages = [SystemMessage(content=system_content)] + list(state["messages"])
+        response = self.llm.invoke(messages)
+        return {"messages": [response]}</div>
+
+									<p class="blg-paragraph"><strong>summarize_node</strong> — compresses old messages and schedules their deletion:</p>
+
+									<div class="blg-code-block" data-lang="python">    def summarize_node(self, state: RecipeState) -> dict:
+        existing_summary = state.get("summary", "")
+        old_messages     = state["messages"][:-2]
+
+        lines = []
+        for m in old_messages:
+            role = "User" if m.type == "human" else "Assistant"
+            lines.append(f"{role}: {_extract_text(m.content)}")
+
+        prompt = self.summarize_prompt.format(
+            existing_summary=existing_summary,
+            conversation="\n".join(lines),
+        )
+        response    = self.llm.invoke([HumanMessage(content=prompt)])
+        new_summary = _extract_text(response.content)
+
+        delete_ops  = [RemoveMessage(id=m.id) for m in old_messages]
+        return {"summary": new_summary, "messages": delete_ops}</div>
+
+								</div><!-- end blg-section: complete-example part 1 -->
+
+								<!-- SECTION 5 CONTINUED -->
+								<div class="blg-section">
+
+									<div class="blg-anchor" id="graph-file"></div>
+									<div class="blg-sub-header"><span class="blg-sub-badge">5.5</span><h3>Graph Assembly (<span class="code-soft">graph.py</span>)</h3></div>
+
+									<p class="blg-paragraph">The router function and graph wiring are concise — the interesting work happens inside the nodes:</p>
+
+									<div class="blg-code-block" data-lang="python">import os, sqlite3
+from langgraph.checkpoint.sqlite import SqliteSaver
+from langgraph.graph import END, START, StateGraph
+from config import Config
+from nodes import RecipeNodes
+from state import RecipeState
+
+FIGURE_DIR = os.path.join(os.path.dirname(__file__), "figure")
+
+def should_summarize(state: RecipeState) -> str:
+    if len(state["messages"]) > Config.SUMMARY_THRESHOLD:
+        return "summarize"
+    return "end"
+
+class RecipeGraph:
+    def __init__(self):
+        self.nodes          = RecipeNodes()
+        self.compiled_graph = self._build()
+
+    def _build(self):
+        graph = StateGraph(RecipeState)
+        graph.add_node("chat",      self.nodes.chat_node)
+        graph.add_node("summarize", self.nodes.summarize_node)
+        graph.add_edge(START, "chat")
+        graph.add_conditional_edges(
+            "chat",
+            should_summarize,
+            {
+                "summarize": "summarize",
+                "end":       END,
+            },
+        )
+        graph.add_edge("summarize", END)
+        conn         = sqlite3.connect(Config.DB_PATH, check_same_thread=False)
+        checkpointer = SqliteSaver(conn)
+        return graph.compile(checkpointer=checkpointer)
+
+    def save_figure(self):
+        os.makedirs(FIGURE_DIR, exist_ok=True)
+        mmd_path = os.path.join(FIGURE_DIR, "graph.mmd")
+        with open(mmd_path, "w") as f:
+            f.write(self.compiled_graph.get_graph().draw_mermaid())
+        png_path = os.path.join(FIGURE_DIR, "graph.png")
+        with open(png_path, "wb") as f:
+            f.write(self.compiled_graph.get_graph().draw_mermaid_png())
+        print(f"  Graph saved → {mmd_path}")
+        print(f"  Graph saved → {png_path}")
+
+    def get_compiled_graph(self):
+        return self.compiled_graph</div>
+
+									<p class="blg-paragraph">
+										<span class="code-soft">sqlite3.connect(..., check_same_thread=False)</span> is necessary because the Gradio streaming server runs the graph on a background thread while the main thread manages the UI.
+									</p>
+
+									<div class="blg-anchor" id="runner-output"></div>
+									<div class="blg-sub-header"><span class="blg-sub-badge">5.6</span><h3>Runner &amp; Console Output (<span class="code-soft">recipe_runner.py</span>)</h3></div>
+
+									<p class="blg-paragraph"><span class="code-soft">RecipeRunner</span> wraps the compiled graph and exposes three methods used by both the CLI demo and the Gradio app:</p>
+
+									<div class="blg-code-block" data-lang="python">from langchain_core.messages import HumanMessage
+from graph import RecipeGraph
+from nodes import _extract_text
+
+class RecipeRunner:
+    def __init__(self):
+        self.recipe_graph = RecipeGraph()
+        self.app          = self.recipe_graph.get_compiled_graph()
+
+    def save_figure(self):
+        self.recipe_graph.save_figure()
+
+    def _config(self, thread_id: str) -> dict:
+        return {"configurable": {"thread_id": thread_id}}
+
+    def chat(self, message: str, thread_id: str) -> str:
+        result = self.app.invoke(
+            {"messages": [HumanMessage(content=message)]},
+            config=self._config(thread_id),
+        )
+        return _extract_text(result["messages"][-1].content)
+
+    def stream_chat(self, message: str, thread_id: str):
+        for chunk, _ in self.app.stream(
+            {"messages": [HumanMessage(content=message)]},
+            config=self._config(thread_id),
+            stream_mode="messages",
+        ):
+            if not hasattr(chunk, "content"):
+                continue
+            content = chunk.content
+            if isinstance(content, str) and content:
+                yield content
+            elif isinstance(content, list):
+                for block in content:
+                    if isinstance(block, dict) and block.get("type") == "text":
+                        text = block.get("text", "")
+                        if text:
+                            yield text
+
+    def get_history(self, thread_id: str) -> list:
+        state = self.app.get_state(self._config(thread_id))
+        return state.values.get("messages", [])
+
+    def get_summary(self, thread_id: str) -> str:
+        state = self.app.get_state(self._config(thread_id))
+        return state.values.get("summary", "")</div>
+
+									<p class="blg-paragraph">The <span class="code-soft">__main__</span> block runs three demos: multi-turn summarisation, thread isolation, and cross-session persistence. Here is the expected console output:</p>
+
+									<div class="blg-code-block" data-lang="bash">============================================================
+   LangGraph Advanced — Personal Recipe Assistant Demo
+============================================================
+
+  Saving graph architecture...
+  Graph saved → .../figure/graph.mmd
+  Graph saved → .../figure/graph.png
+
+────────────────────────────────────────────────────────────
+  Demo 1: Priya's cooking session (summarisation demo)
+────────────────────────────────────────────────────────────
+
+🙋  Priya (turn 1): Hi! I'm vegetarian and allergic to nuts. What's a quick dinner idea?
+
+👩‍🍳  Chef Aria: Hi! Since you're vegetarian and allergic to nuts, a quick and delicious dinner...
+
+🙋  Priya (turn 2): I have pasta, tomatoes, garlic, and spinach at home. Any recipe?
+
+👩‍🍳  Chef Aria: Perfect! With pasta, tomatoes, garlic, and spinach you can make a simple...
+
+🙋  Priya (turn 3): How long should I cook the pasta for al dente?
+
+👩‍🍳  Chef Aria: For al dente pasta, cook it for 1-2 minutes less than the package...
+
+🙋  Priya (turn 4): Can I add parmesan cheese and a squeeze of lemon to that pasta?
+
+👩‍🍳  Chef Aria: Absolutely! Parmesan and lemon are wonderful additions...
+
+📝  [Summarisation triggered — summary: 148 chars]
+    Preview: Priya is vegetarian and allergic to nuts. She made a tomato-garlic-spinach pasta...
+
+📊  State after 4 turns:
+  Messages in state : 2 (older ones replaced by summary)
+  Summary stored    : yes
+
+────────────────────────────────────────────────────────────
+  Demo 2: Marco's separate session (thread isolation)
+────────────────────────────────────────────────────────────
+
+🙋  Marco: I want to make a classic Italian carbonara. Any tips?
+
+👩‍🍳  Chef Aria: Classic carbonara is all about technique! Here are the key tips...
+
+  ✅ Marco's session has no knowledge of Priya's vegetarian preferences.
+
+────────────────────────────────────────────────────────────
+  Demo 3: Priya's follow-up (SqliteSaver persistence)
+────────────────────────────────────────────────────────────
+
+🙋  Priya: I'm back! Can you suggest a weekend meal plan based on what we discussed?
+
+👩‍🍳  Chef Aria: Welcome back! Based on your vegetarian diet and nut allergy...
+
+  ✅ Chef Aria remembers Priya's preferences from the summary.
+
+============================================================</div>
+
+									<div class="blg-anchor" id="mermaid-diagram"></div>
+									<div class="blg-sub-header"><span class="blg-sub-badge">5.7</span><h3>Graph Diagram</h3></div>
+
+									<p class="blg-paragraph">The compiled graph has a clean two-node structure. <span class="code-soft">save_figure()</span> produces this Mermaid diagram:</p>
+
+									<div class="blg-mermaid-wrap">
+										<div class="mermaid" style="min-width:460px;font-size:16px;">
+flowchart TD
+    S([__start__]) --> chat(chat)
+    chat -.-> |"summarize"| summarize(summarize)
+    chat -.-> |"end"| E([__end__])
+    summarize --> E
+
+    style S        fill:#e8f5e9,stroke:#43a047,color:#1b5e20
+    style E        fill:#fce4ec,stroke:#e53935,color:#b71c1c
+    style chat     fill:#e3f2fd,stroke:#1e88e5,color:#0d47a1
+    style summarize fill:#fff3e0,stroke:#fb8c00,color:#e65100
+										</div>
+									</div>
+
+									<blockquote class="blg-callout-tip">
+										<p><strong>Reading the diagram</strong></p>
+										<p>Solid arrows are unconditional edges. Dashed arrows are conditional edges — the router label shows which return value triggers each path. After <span class="code-soft">chat</span>, the graph either ends immediately (under the threshold) or passes through <span class="code-soft">summarize</span> first.</p>
+									</blockquote>
+
+								</div><!-- end blg-section: complete-example part 2 -->
+
+								<!-- SECTION 6 -->
+								<div class="blg-section">
+									<div class="blg-anchor" id="web-ui"></div>
+									<div class="blg-main-header"><h2>6. Web Interface</h2></div>
+
+									<p class="blg-paragraph">
+										The Gradio UI wraps <span class="code-soft">RecipeRunner</span> in a streaming chat interface. Each user message yields tokens one by one so the reply appears progressively — the same streaming pattern from Basics Part 4. A <strong>New Session</strong> button generates a fresh <span class="code-soft">thread_id</span> so the user can start a brand-new conversation without clearing the database.
+									</p>
+
+									<div class="blg-code-block" data-lang="python">import uuid
+import gradio as gr
+from recipe_runner import RecipeRunner
+
+class RecipeApp:
+    def __init__(self):
+        self.runner = RecipeRunner()
+
+    def respond(self, message: str, _history: list, thread_id: str):
+        if not message.strip():
+            yield ""
+            return
+        accumulated = ""
+        for token in self.runner.stream_chat(message, thread_id):
+            accumulated += token
+            yield accumulated
+
+    def launch(self):
+        with gr.Blocks(title="👩‍🍳 Personal Recipe Assistant") as demo:
+            thread_state = gr.State(value=str(uuid.uuid4()))
+
+            chat = gr.ChatInterface(
+                fn=self.respond,
+                title="👩‍🍳 Personal Recipe Assistant",
+                description=(
+                    "Ask Chef Aria for recipes, cooking tips, and meal plans. "
+                    "Your conversation is saved — come back any time and she'll "
+                    "remember your preferences."
+                ),
+                additional_inputs=[thread_state],
+            )
+
+            gr.ClearButton(
+                [chat.chatbot, chat.textbox],
+                value="🔄 New Session",
+                variant="primary",
+            ).click(
+                fn=lambda: str(uuid.uuid4()),
+                outputs=[thread_state],
+            )
+
+        demo.launch()
+
+if __name__ == "__main__":
+    RecipeApp().launch()</div>
+
+									<p class="blg-paragraph">Key design decisions in the app:</p>
+
+									<ul class="blg-ul">
+										<li class="blg-li"><strong>gr.State for thread_id</strong> — each browser tab gets its own UUID on load, so two users opening the app simultaneously get isolated conversations automatically.</li>
+										<li class="blg-li"><strong>Streaming via yield</strong> — <span class="code-soft">respond()</span> accumulates tokens and yields the growing string each time, satisfying Gradio's streaming contract for <span class="code-soft">ChatInterface</span>.</li>
+										<li class="blg-li"><strong>New Session button</strong> — replaces the thread_id in <span class="code-soft">gr.State</span> with a new UUID. The old conversation stays in the database but the UI starts fresh.</li>
+										<li class="blg-li"><strong>No theme= argument</strong> — passing <span class="code-soft">theme=</span> to <span class="code-soft">ChatInterface</span> raises a <span class="code-soft">TypeError</span>; styling should be handled via <span class="code-soft">gr.Blocks</span> wrapping.</li>
+									</ul>
+
+									<p class="blg-paragraph">Run the web app with:</p>
+
+									<div class="blg-code-block" data-lang="bash">cd langgraph/advanced-1-conversational-chatbot
+python app.py</div>
+
+									<p class="blg-paragraph">
+										Open the Gradio URL printed in the terminal (default <span class="code-soft">http://127.0.0.1:7860</span>). Ask Chef Aria several questions, then close the browser, reopen it, and continue the conversation — Aria will remember your preferences from the summary stored in <span class="code-soft">recipe_chat.db</span>.
+									</p>
+
+									<div class="blg-img-container">
+										<img src="../img/blog_14/web_ui.webp" alt="Personal Recipe Assistant Gradio streaming UI" class="blg-img" />
+										<p class="blg-img-caption">Fig. 1 — Chef Aria streaming a recipe suggestion. The New Session button (top right) starts a fresh thread without erasing the database.</p>
+									</div>
+
+									<div class="blg-anchor" id="what-to-try"></div>
+									<div class="blg-sub-header"><span class="blg-sub-badge">6.1</span><h3>What to Try</h3></div>
+
+									<p class="blg-paragraph">Use the following sequence to see every feature in action — summarisation, cross-turn memory, thread isolation, and cross-session persistence:</p>
+
+									<div class="blg-query-list">
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Turn 1</span>
+												I'm vegetarian and I'm allergic to nuts. Keep that in mind.
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">Observe</span>
+												Chef Aria acknowledges your preferences. Every recipe from this point will be vegetarian and nut-free — without you repeating it.
+											</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Turn 2</span>
+												Suggest a quick dinner I can make in 30 minutes.
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">Observe</span>
+												The suggestion respects both constraints from turn 1 — memory is already working across turns.
+											</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Turn 3</span>
+												Can you give me the full recipe with quantities for that?
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">Observe</span>
+												Chef Aria knows which dish she just suggested and expands it — no need to repeat the dish name.
+											</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">Turns 4 – 8</span>
+												Keep asking about variations, ingredient substitutions, and cooking tips.
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">Observe</span>
+												Once the message count exceeds <span class="code-soft">SUMMARY_THRESHOLD</span>, the summarise node fires silently. Old messages are compressed — but Chef Aria still remembers your dietary restrictions from turn 1.
+											</div>
+										</div>
+										<div class="blg-query-card">
+											<div class="blg-query-q">
+												<span class="blg-query-badge bq-query">New Session</span>
+												Click New Session, then ask: "What dietary restrictions do you know about me?"
+											</div>
+											<div class="blg-query-a">
+												<span class="blg-query-badge bq-output">Observe</span>
+												Chef Aria has no memory — a fresh <span class="code-soft">thread_id</span> starts completely clean, proving thread isolation works.
+											</div>
+										</div>
+									</div>
+
+								</div><!-- end blg-section: web-ui -->
+
+								<!-- SECTION 7 -->
+								<div class="blg-section">
+									<div class="blg-anchor" id="conclusion"></div>
+									<div class="blg-main-header"><h2>✅ 7. Conclusion</h2></div>
+
+									<p class="blg-paragraph">
+										You have built a production-grade conversational chatbot that handles the two hardest problems in long-running assistants: <strong>cross-session persistence</strong> (via SqliteSaver) and <strong>bounded token usage</strong> (via the messages + summary pattern). The design is deliberately minimal — two nodes, one conditional edge, and two state fields — yet it scales to real workloads where users return day after day with growing conversation histories.
+									</p>
+
+									<p class="blg-paragraph">
+										The pattern is completely general. To adapt it for a different domain, replace <span class="code-soft">prompts/chat.txt</span> with a new persona, update <span class="code-soft">prompts/summarize.txt</span> to capture the right kind of facts, and rename the classes. The graph structure, state design, and streaming plumbing stay exactly the same.
+									</p>
+
+									<ul>
+										<li class="blg-li-check">A <span class="code-soft">summary</span> field in <span class="code-soft">RecipeState</span> carries compressed history across summarisation cycles without the token cost of storing full messages verbatim.</li>
+										<li class="blg-li-check">The <span class="code-soft">summarize_node</span> incrementally compresses old messages using the LLM and deletes originals with <span class="code-soft">RemoveMessage</span> — keeping only the last 2 messages in full.</li>
+										<li class="blg-li-check">The <span class="code-soft">should_summarize</span> conditional edge fires only when the message count exceeds the threshold — normal turns pay zero extra cost.</li>
+										<li class="blg-li-check">SqliteSaver persists <span class="code-soft">RecipeState</span> across process restarts; each <span class="code-soft">thread_id</span> is a completely isolated conversation.</li>
+										<li class="blg-li-check">Token-by-token streaming via <span class="code-soft">stream_chat()</span> and a Gradio <span class="code-soft">gr.Blocks</span> UI delivers a responsive, production-ready chat experience.</li>
+									</ul>
+
+									<blockquote class="blg-callout-purple">
+										<p><strong>LangGraph Advanced Series — Part 1 of 5</strong></p>
+										<p>This post is <strong>Part 1</strong> of the LangGraph Advanced series. The remaining four parts build on the bounded-memory foundation established here:</p>
+										<ul style="margin: 0.4rem 0 0 1.2rem; padding: 0;">
+											<li style="margin-bottom: 0.3rem;"><strong>Part 2</strong> — Multi-Agent Architectures: coordinating specialised LangGraph graphs</li>
+											<li style="margin-bottom: 0.3rem;"><strong>Part 3</strong> — Tool Use &amp; ReAct Agents: binding and calling real-world tools</li>
+											<li style="margin-bottom: 0.3rem;"><strong>Part 4</strong> — Human-in-the-Loop: interrupt/resume patterns for approval workflows</li>
+											<li><strong>Part 5</strong> — Subgraphs &amp; Parallel Execution: nesting graphs and running branches concurrently</li>
+										</ul>
+									</blockquote>
+
+								</div><!-- end blg-section: conclusion -->
+
+								<!-- TRAILING -->
+								<div class="blg-trailing-section">
+									<div class="blg-trailing-header">
+										<img src="../img/technical_stack/stack.png" alt="Technical Stacks">
+										<h2>Technical Stacks</h2>
+									</div>
+									<div class="blg-tech-grid">
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/python.svg" alt="Python"> Python
+										</div>
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/langgraph.svg" alt="LangGraph"> LangGraph
+										</div>
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/langchain.svg" alt="LangChain"> LangChain
+										</div>
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/gemini.svg" alt="Gemini"> Gemini
+										</div>
+										<div class="blg-tech-card">
+											<img src="../img/technical_stack/gradio.svg" alt="Gradio"> Gradio
+										</div>
+									</div>
+								</div>
+
+								<div class="blg-download-card">
+									<img src="../img/others/download.svg" alt="Download">
+									<div class="blg-download-info">
+										<h3>Download Source Code</h3>
+										<p>Personal Recipe Assistant — LangGraph Advanced Part 1</p>
+									</div>
+									<a href="https://github.com/shafiqul-islam-sumon/langgraph/tree/main/advanced-1-conversational-chatbot" class="blg-download-btn" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+								</div>
+
+								<div class="blg-trailing-section">
+									<div class="blg-trailing-header">
+										<span style="font-size: 22px; line-height: 1;">📚</span>
+										<h2>References</h2>
+									</div>
+									<ul class="blg-ul">
+										<li class="blg-li">
+											<img src="../img/technical_stack/github.svg" alt="GitHub" width="18" style="vertical-align: middle; margin-right: 6px;">
+											<strong>GitHub Repository:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://github.com/shafiqul-islam-sumon/langgraph">shafiqul-islam-sumon/langgraph</a>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/langgraph.svg" alt="LangGraph" width="18" style="vertical-align: middle; margin-right: 6px;">
+											<strong>LangGraph Docs — How to add summary of the conversation history:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://langchain-ai.github.io/langgraph/how-tos/memory/add-summary-conversation-history/">langchain-ai.github.io/langgraph/how-tos/memory</a>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/langgraph.svg" alt="LangGraph" width="18" style="vertical-align: middle; margin-right: 6px;">
+											<strong>LangGraph Docs — Persistence &amp; Checkpointers:</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://langchain-ai.github.io/langgraph/concepts/persistence/">langchain-ai.github.io/langgraph/concepts/persistence</a>
+										</li>
+										<li class="blg-li">
+											<img src="../img/technical_stack/gemini.svg" alt="Gemini" width="18" style="vertical-align: middle; margin-right: 6px;">
+											<strong>Google AI Studio (Gemini API key):</strong>
+											<a class="blg-link" target="_blank" rel="noopener noreferrer" href="https://aistudio.google.com/app/apikey">aistudio.google.com</a>
+										</li>
+									</ul>
+								</div>
+
+							</div><!-- end #blogContainer -->
+						</div><!-- end .blog-detail-main -->
+					</div><!-- end .blog-detail-layout -->
+
+					<div class="related-posts-section">
+						<div class="blog-title-bar">
+							<img src="../img/others/blog.png" alt="blog post" style="width: 24px; height: auto;">
+							<h2>Related Blog Posts</h2>
+						</div>
+						<div class="related-posts-wrapper">
+							<div class="related-posts-swiper-area">
+								<div class="swiper" id="postContainer">
+									<div class="swiper-wrapper"></div>
+								</div>
+								<div class="swiper-button-prev"></div>
+								<div class="swiper-button-next"></div>
+							</div>
+							<div class="blg-slide-counter">
+								<div class="slide-progress-bar">
+									<div class="slide-progress-fill" id="slideProgressFill"></div>
+								</div>
+								<div class="slide-counter-label">
+									<span id="currentSlide">1</span> / <span id="totalSlides">1</span>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div><!-- end .container -->
+			</section>
+			<div id="site-footer"></div>
+		</div><!-- end #wrapper -->
+
+		<script src="../js/bootstrap.bundle.min.js"></script>
+		<script src="../js/components.js"></script>
+		<script src="../js/site.js"></script>
+		<script src="../js/swiper-bundle.min.js"></script>
+		<script src="../js/prism.js" data-manual></script>
+		<script src="../js/code-highlight.js"></script>
+		<script src="../js/detail.js"></script>
+		<script src="../js/mermaid.min.js"></script>
+		<script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+	</body>
+</html>

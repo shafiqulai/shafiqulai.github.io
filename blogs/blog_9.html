@@ -771,12 +771,18 @@ Points collected:
 									</p>
 
 									<div class="blg-img-container">
-										<div class="blg-mermaid-container">
-											<pre class="mermaid">%%{init: {'flowchart': {'curve': 'linear'}}}%%
-graph TD
-    __start__([__start__]) --> expand
-    expand([expand]) --> refine
-    refine([refine]) --> __end__([__end__])</pre>
+										<div class="blg-mermaid-wrap">
+											<div class="mermaid" style="min-width:460px;font-size:16px;">
+flowchart TD
+    S([__start__]) --> expand([expand])
+    expand --> refine([refine])
+    refine --> E([__end__])
+
+    style S      fill:#e8f5e9,stroke:#43a047,color:#1b5e20
+    style E      fill:#fce4ec,stroke:#e53935,color:#b71c1c
+    style expand fill:#e3f2fd,stroke:#1e88e5,color:#0d47a1
+    style refine fill:#fff3e0,stroke:#fb8c00,color:#e65100
+											</div>
 										</div>
 										<p class="blg-img-caption">Topic Expander graph — two nodes in a linear sequence, both writing to the same <code>points</code> field</p>
 									</div>
@@ -847,16 +853,20 @@ if __name__ == "__main__":
 									</p>
 
 									<p class="blg-paragraph">
+										The reducer pattern scales naturally beyond a two-node list accumulator. Use <span class="code-soft">add_messages</span> and you get conversation history that multiple nodes can extend without clobbering each other. Use a custom reducer with deduplication logic and parallel branches can write to the same field concurrently — LangGraph merges them without conflicts. Any graph where more than one node touches the same state field benefits from an explicit reducer rather than hoping the last writer wins.
+									</p>
+
+									<p class="blg-paragraph">
 										Here's a quick summary of what we covered:
 									</p>
 
 									<ul class="blg-ul">
-										<li class="blg-li">LangGraph's default merge rule is <strong>last-write-wins</strong> — the node's returned value replaces the field's current value.</li>
-										<li class="blg-li"><strong>Annotated fields</strong> attach a reducer function to a type hint, telling LangGraph to merge rather than replace.</li>
-										<li class="blg-li"><strong>operator.add</strong> concatenates lists (or strings, or numbers). Most commonly used for accumulating items across nodes.</li>
-										<li class="blg-li"><strong>add_messages</strong> merges LangChain message objects with deduplication by ID — the right choice for chat history.</li>
-										<li class="blg-li"><strong>Custom reducers</strong> are plain Python functions: <span class="code-soft">(current, new) → merged</span>. Any logic you need.</li>
-										<li class="blg-li"><strong>MessagesState</strong> is a pre-built state class that ships with LangGraph — use it (or extend it) for message-based graphs.</li>
+										<li class="blg-li-check">LangGraph's default merge rule is <strong>last-write-wins</strong> — the node's returned value replaces the field's current value.</li>
+										<li class="blg-li-check"><strong>Annotated fields</strong> attach a reducer function to a type hint, telling LangGraph to merge rather than replace.</li>
+										<li class="blg-li-check"><strong>operator.add</strong> concatenates lists (or strings, or numbers). Most commonly used for accumulating items across nodes.</li>
+										<li class="blg-li-check"><strong>add_messages</strong> merges LangChain message objects with deduplication by ID — the right choice for chat history.</li>
+										<li class="blg-li-check"><strong>Custom reducers</strong> are plain Python functions: <span class="code-soft">(current, new) → merged</span>. Any logic you need.</li>
+										<li class="blg-li-check"><strong>MessagesState</strong> is a pre-built state class that ships with LangGraph — use it (or extend it) for message-based graphs.</li>
 									</ul>
 
 									<blockquote class="blg-callout-purple">
