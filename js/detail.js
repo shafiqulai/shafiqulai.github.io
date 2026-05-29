@@ -260,6 +260,28 @@ function initScrollSpy() {
     update();
 }
 
+function initLightbox() {
+    document.querySelectorAll('.blg-lightbox-trigger, .blg-img').forEach(img => {
+        img.addEventListener('click', () => {
+            const overlay = document.createElement('div');
+            overlay.className = 'blg-lightbox-overlay';
+
+            const full = document.createElement('img');
+            full.src = img.dataset.full || img.src;
+            full.alt = img.alt || '';
+            overlay.appendChild(full);
+
+            const close = () => overlay.remove();
+            overlay.addEventListener('click', close);
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Escape') close();
+            }, { once: true });
+
+            document.body.appendChild(overlay);
+        });
+    });
+}
+
 window.onload = function () {
     // Extract post ID from URL path, e.g., blog_6.html
     const path = window.location.pathname;
@@ -273,4 +295,6 @@ window.onload = function () {
     } else {
         console.error("❌ Could not extract blog ID from URL.");
     }
+
+    initLightbox();
 };

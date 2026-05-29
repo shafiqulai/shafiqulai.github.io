@@ -90,6 +90,22 @@ shafiqulai.github.io/
 - Blocks with `<span>` tags are skipped (manual highlighting preserved)
 - `self`/`cls` registered as Python keywords via `Prism.languages.insertBefore`
 
+## Image Lightbox Rule
+
+**All blog content images automatically open full-scale in a lightbox overlay when clicked** — no extra HTML needed.
+
+`detail.js` runs `initLightbox()` on every page load, attaching the zoom handler to:
+- `.blg-thumbnail` — the post thumbnail at the top of every blog page
+- `.blg-img` — all content images (screenshots, diagrams, web UI previews)
+
+**What this means for new posts:**
+- Always use `class="blg-thumbnail"` on the thumbnail `<img>` — lightbox applied automatically.
+- Always use `class="blg-img"` inside `.blg-img-container` for content images — lightbox applied automatically.
+- Never add inline `onclick` handlers or custom JS for zoom behaviour.
+- Zoom-in cursor is applied via CSS (`.blg-thumbnail, .blg-img { cursor: zoom-in }`).
+
+Clicking the overlay or pressing Escape closes the lightbox.
+
 ## Image Format Rule
 
 **Always use `.webp` format for all images in new blog posts** — thumbnails, content images, and web UI screenshots.
@@ -105,6 +121,16 @@ shafiqulai.github.io/
 - Run `mkdir img/blog_N` (replace `N` with the blog number) as the very first step.
 - Place all images for that post — `thumbnail.webp`, content images, web UI screenshots — inside that folder.
 - Never reference an image in blog HTML before the folder exists.
+
+## Title Tag Rule
+
+**The `<title>` tag in every blog post must exactly match the `title` field in `data/posts.json`** — character for character, including capitalisation, punctuation, and special characters.
+
+- In HTML, encode `&` as `&amp;` in `<title>` (e.g. `Nodes &amp; Edges`).
+- The `.blg-title` text inside the page body may differ in styling — `<title>` must match `posts.json`, not `.blg-title`.
+- Before publishing: open `data/posts.json`, find the entry, copy the `title` value, paste into `<title>`.
+
+**Why:** Google Search Console indexes `<title>` as the page headline. A mismatch creates inconsistency across search results, social shares, and browser tabs.
 
 ## Canonical Tag Rule
 

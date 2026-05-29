@@ -321,7 +321,7 @@ Alignment rule: all comments start at column = `max(pipe_len + name_len) + 6`.
 - [ ] Related posts shell present at bottom of `#blogContainer`
 
 ### Technical
-- [ ] `<title>` tag matches `.blg-title` text
+- [ ] `<title>` tag exactly matches the `title` field in `data/posts.json` (encode `&` as `&amp;`)
 - [ ] All `.blg-code-block` have `data-lang` attribute
 - [ ] All `.blg-tree` comments column-aligned with spaces
 - [ ] All TOC `href="#id"` match corresponding `.blg-anchor` `id=` values
