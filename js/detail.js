@@ -261,7 +261,7 @@ function initScrollSpy() {
 }
 
 function initLightbox() {
-    document.querySelectorAll('.blg-lightbox-trigger, .blg-img').forEach(img => {
+    document.querySelectorAll('.blg-lightbox-trigger, .blg-img, .blg-thumbnail').forEach(img => {
         img.addEventListener('click', () => {
             const overlay = document.createElement('div');
             overlay.className = 'blg-lightbox-overlay';

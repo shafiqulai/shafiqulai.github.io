@@ -315,6 +315,7 @@ function getCategoryIcons() {
         "Llama": "./img/technical_stack/llama.png",
         "Recommendation": "./img/technical_stack/recommendation.png",
         "MCP": "./img/technical_stack/mcp.svg",
+        "System Design": "./img/technical_stack/system_design.png",
         "TTS": "./img/technical_stack/tts.png"
     };
 }

@@ -1,0 +1,2443 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<!-- Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-6SEFZQJHM1"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag() { dataLayer.push(arguments); }
+		gtag("js", new Date());
+		gtag("config", "G-6SEFZQJHM1", { cookie_domain: "shafiqulai.github.io" });
+	</script>
+	<meta charset="utf-8" />
+	<title>Networking Basics for System Design: A Complete Beginner's Guide</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="A beginner-friendly guide to five networking fundamentals for system design — Client &amp; Server, IP Address &amp; DNS, HTTP/HTTPS, TCP vs UDP, and Latency &amp; Throughput — with real-world analogies, step-by-step examples, diagrams, and cloud service mappings." />
+	<meta name="author" content="MD SHAFIQUL ISLAM" />
+	<link rel="canonical" href="https://shafiqulai.github.io/blogs/blog_20.html" />
+	<link rel="icon" href="../img/others/favicon.ico" type="image/x-icon" />
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+	<link rel="stylesheet" href="../css/bootstrap.min.css" />
+	<link rel="stylesheet" href="../css/swiper-bundle.min.css" />
+	<link rel="stylesheet" href="../css/style.css" />
+	<link rel="stylesheet" href="../css/prism.css" />
+</head>
+<body>
+	<div id="reading-progress"></div>
+	<div id="wrapper">
+		<div id="site-header"></div>
+		<section id="content">
+			<div class="container">
+				<div class="blog-detail-layout">
+
+					<aside class="toc-sidebar" id="tocSidebar">
+						<div class="toc-sidebar-header">
+							<p class="toc-sidebar-title">Contents</p>
+						</div>
+						<ul class="toc-sidebar-list">
+							<li><a href="#client-server">1. Client &amp; Server</a></li>
+							<li class="toc-sidebar-sub"><a href="#cs-intro">1.1 Introduction</a></li>
+							<li class="toc-sidebar-sub"><a href="#cs-why">1.2 Why It Matters</a></li>
+							<li class="toc-sidebar-sub"><a href="#cs-analogy">1.3 Real-world Analogy</a></li>
+							<li class="toc-sidebar-sub"><a href="#cs-terms">1.4 Key Terms</a></li>
+							<li class="toc-sidebar-sub"><a href="#cs-how">1.5 How It Works</a></li>
+							<li class="toc-sidebar-sub"><a href="#cs-types">1.6 Types &amp; Variations</a></li>
+							<li class="toc-sidebar-sub"><a href="#cs-diagram">1.7 Diagram</a></li>
+							<li class="toc-sidebar-sub"><a href="#cs-when">1.8 When to Use</a></li>
+							<li class="toc-sidebar-sub"><a href="#cs-example">1.9 Real-world Example</a></li>
+							<li class="toc-sidebar-sub"><a href="#cs-tradeoffs">1.10 Trade-offs</a></li>
+							<li class="toc-sidebar-sub"><a href="#cs-mistakes">1.11 Common Mistakes</a></li>
+							<li class="toc-sidebar-sub"><a href="#cs-summary">1.12 Summary</a></li>
+							<li class="toc-sidebar-sub"><a href="#cs-challenge">1.13 Design Challenge</a></li>
+							<li class="toc-sidebar-sub"><a href="#cs-cloud">1.14 Cloud Services</a></li>
+							<li><a href="#ip-dns">2. IP Address &amp; DNS</a></li>
+							<li class="toc-sidebar-sub"><a href="#ip-intro">2.1 Introduction</a></li>
+							<li class="toc-sidebar-sub"><a href="#ip-why">2.2 Why It Matters</a></li>
+							<li class="toc-sidebar-sub"><a href="#ip-analogy">2.3 Real-world Analogy</a></li>
+							<li class="toc-sidebar-sub"><a href="#ip-terms">2.4 Key Terms</a></li>
+							<li class="toc-sidebar-sub"><a href="#ip-how">2.5 How It Works</a></li>
+							<li class="toc-sidebar-sub"><a href="#ip-types">2.6 Types &amp; Variations</a></li>
+							<li class="toc-sidebar-sub"><a href="#ip-diagram">2.7 Diagram</a></li>
+							<li class="toc-sidebar-sub"><a href="#ip-when">2.8 When to Use</a></li>
+							<li class="toc-sidebar-sub"><a href="#ip-example">2.9 Real-world Example</a></li>
+							<li class="toc-sidebar-sub"><a href="#ip-tradeoffs">2.10 Trade-offs</a></li>
+							<li class="toc-sidebar-sub"><a href="#ip-mistakes">2.11 Common Mistakes</a></li>
+							<li class="toc-sidebar-sub"><a href="#ip-summary">2.12 Summary</a></li>
+							<li class="toc-sidebar-sub"><a href="#ip-challenge">2.13 Design Challenge</a></li>
+							<li class="toc-sidebar-sub"><a href="#ip-cloud">2.14 Cloud Services</a></li>
+							<li><a href="#http-https">3. HTTP / HTTPS</a></li>
+					<li class="toc-sidebar-sub"><a href="#http-intro">3.1 Introduction</a></li>
+					<li class="toc-sidebar-sub"><a href="#http-why">3.2 Why It Matters</a></li>
+					<li class="toc-sidebar-sub"><a href="#http-analogy">3.3 Real-world Analogy</a></li>
+					<li class="toc-sidebar-sub"><a href="#http-terms">3.4 Key Terms</a></li>
+					<li class="toc-sidebar-sub"><a href="#http-how">3.5 How It Works</a></li>
+					<li class="toc-sidebar-sub"><a href="#http-types">3.6 Types &amp; Variations</a></li>
+					<li class="toc-sidebar-sub"><a href="#http-diagram">3.7 Diagram</a></li>
+					<li class="toc-sidebar-sub"><a href="#http-when">3.8 When to Use</a></li>
+					<li class="toc-sidebar-sub"><a href="#http-example">3.9 Real-world Example</a></li>
+					<li class="toc-sidebar-sub"><a href="#http-tradeoffs">3.10 Trade-offs</a></li>
+					<li class="toc-sidebar-sub"><a href="#http-mistakes">3.11 Common Mistakes</a></li>
+					<li class="toc-sidebar-sub"><a href="#http-summary">3.12 Summary</a></li>
+					<li class="toc-sidebar-sub"><a href="#http-challenge">3.13 Design Challenge</a></li>
+					<li class="toc-sidebar-sub"><a href="#http-cloud">3.14 Cloud Services</a></li>
+							<li><a href="#tcp-udp">4. TCP vs UDP</a></li>
+					<li class="toc-sidebar-sub"><a href="#tcp-intro">4.1 Introduction</a></li>
+					<li class="toc-sidebar-sub"><a href="#tcp-why">4.2 Why It Matters</a></li>
+					<li class="toc-sidebar-sub"><a href="#tcp-analogy">4.3 Real-world Analogy</a></li>
+					<li class="toc-sidebar-sub"><a href="#tcp-terms">4.4 Key Terms</a></li>
+					<li class="toc-sidebar-sub"><a href="#tcp-how">4.5 How It Works</a></li>
+					<li class="toc-sidebar-sub"><a href="#tcp-types">4.6 Types &amp; Variations</a></li>
+					<li class="toc-sidebar-sub"><a href="#tcp-diagram">4.7 Diagram</a></li>
+					<li class="toc-sidebar-sub"><a href="#tcp-when">4.8 When to Use</a></li>
+					<li class="toc-sidebar-sub"><a href="#tcp-example">4.9 Real-world Example</a></li>
+					<li class="toc-sidebar-sub"><a href="#tcp-tradeoffs">4.10 Trade-offs</a></li>
+					<li class="toc-sidebar-sub"><a href="#tcp-mistakes">4.11 Common Mistakes</a></li>
+					<li class="toc-sidebar-sub"><a href="#tcp-summary">4.12 Summary</a></li>
+					<li class="toc-sidebar-sub"><a href="#tcp-challenge">4.13 Design Challenge</a></li>
+					<li class="toc-sidebar-sub"><a href="#tcp-cloud">4.14 Cloud Services</a></li>
+							<li><a href="#latency-throughput">5. Latency &amp; Throughput</a></li>
+					<li class="toc-sidebar-sub"><a href="#lt-intro">5.1 Introduction</a></li>
+					<li class="toc-sidebar-sub"><a href="#lt-why">5.2 Why It Matters</a></li>
+					<li class="toc-sidebar-sub"><a href="#lt-analogy">5.3 Real-world Analogy</a></li>
+					<li class="toc-sidebar-sub"><a href="#lt-terms">5.4 Key Terms</a></li>
+					<li class="toc-sidebar-sub"><a href="#lt-how">5.5 How It Works</a></li>
+					<li class="toc-sidebar-sub"><a href="#lt-types">5.6 Types &amp; Variations</a></li>
+					<li class="toc-sidebar-sub"><a href="#lt-diagram">5.7 Diagram</a></li>
+					<li class="toc-sidebar-sub"><a href="#lt-when">5.8 When to Use</a></li>
+					<li class="toc-sidebar-sub"><a href="#lt-example">5.9 Real-world Examples</a></li>
+					<li class="toc-sidebar-sub"><a href="#lt-tradeoffs">5.10 Trade-offs</a></li>
+					<li class="toc-sidebar-sub"><a href="#lt-mistakes">5.11 Common Mistakes</a></li>
+					<li class="toc-sidebar-sub"><a href="#lt-summary">5.12 Summary</a></li>
+					<li class="toc-sidebar-sub"><a href="#lt-challenge">5.13 Design Challenge</a></li>
+					<li class="toc-sidebar-sub"><a href="#lt-cloud">5.14 Cloud Services</a></li>
+						</ul>
+					</aside>
+
+					<div class="blog-detail-main">
+						<div id="blogContainer">
+
+							<div class="container blg-title-container">
+								<h2 class="blg-title">Networking Basics for System Design: A Complete Beginner's Guide</h2>
+							</div>
+
+							<div class="author_section">
+								<img id="author_img" src="" alt="Author Photo" class="author_img">
+								<div class="author_details">
+									<span id="author_name" class="author_name"></span>
+									<span id="published_date" class="published_date"></span>
+								</div>
+							</div>
+
+							<div class="blg-img-container">
+								<img src="../img/blog_20/thumbnail.webp" alt="Networking Basics for System Design: A Complete Beginner's Guide" class="blg-thumbnail" />
+							</div>
+
+							<div class="blg-toc-container">
+								<h2>📚 Table of Contents</h2>
+								<ol class="blg-toc-ol">
+									<li class="blg-toc-li"><a href="#client-server">Client &amp; Server</a>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#cs-intro">1.1 Introduction</a></li>
+											<li class="blg-toc-li"><a href="#cs-why">1.2 Why It Matters</a></li>
+											<li class="blg-toc-li"><a href="#cs-analogy">1.3 Real-world Analogy</a></li>
+											<li class="blg-toc-li"><a href="#cs-terms">1.4 Key Terms</a></li>
+											<li class="blg-toc-li"><a href="#cs-how">1.5 How It Works</a></li>
+											<li class="blg-toc-li"><a href="#cs-types">1.6 Types &amp; Variations</a></li>
+											<li class="blg-toc-li"><a href="#cs-diagram">1.7 Diagram</a></li>
+											<li class="blg-toc-li"><a href="#cs-when">1.8 When to Use</a></li>
+											<li class="blg-toc-li"><a href="#cs-example">1.9 Real-world Example</a></li>
+											<li class="blg-toc-li"><a href="#cs-tradeoffs">1.10 Trade-offs</a></li>
+											<li class="blg-toc-li"><a href="#cs-mistakes">1.11 Common Mistakes</a></li>
+											<li class="blg-toc-li"><a href="#cs-summary">1.12 Summary</a></li>
+											<li class="blg-toc-li"><a href="#cs-challenge">1.13 Design Challenge</a></li>
+											<li class="blg-toc-li"><a href="#cs-cloud">1.14 Cloud Services</a></li>
+										</ul>
+									</li>
+									<li class="blg-toc-li"><a href="#ip-dns">IP Address &amp; DNS</a>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#ip-intro">2.1 Introduction</a></li>
+											<li class="blg-toc-li"><a href="#ip-why">2.2 Why It Matters</a></li>
+											<li class="blg-toc-li"><a href="#ip-analogy">2.3 Real-world Analogy</a></li>
+											<li class="blg-toc-li"><a href="#ip-terms">2.4 Key Terms</a></li>
+											<li class="blg-toc-li"><a href="#ip-how">2.5 How It Works</a></li>
+											<li class="blg-toc-li"><a href="#ip-types">2.6 Types &amp; Variations</a></li>
+											<li class="blg-toc-li"><a href="#ip-diagram">2.7 Diagram</a></li>
+											<li class="blg-toc-li"><a href="#ip-when">2.8 When to Use</a></li>
+											<li class="blg-toc-li"><a href="#ip-example">2.9 Real-world Example</a></li>
+											<li class="blg-toc-li"><a href="#ip-tradeoffs">2.10 Trade-offs</a></li>
+											<li class="blg-toc-li"><a href="#ip-mistakes">2.11 Common Mistakes</a></li>
+											<li class="blg-toc-li"><a href="#ip-summary">2.12 Summary</a></li>
+											<li class="blg-toc-li"><a href="#ip-challenge">2.13 Design Challenge</a></li>
+											<li class="blg-toc-li"><a href="#ip-cloud">2.14 Cloud Services</a></li>
+										</ul>
+									</li>
+									<li class="blg-toc-li"><a href="#http-https">HTTP / HTTPS</a>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#http-intro">3.1 Introduction</a></li>
+											<li class="blg-toc-li"><a href="#http-why">3.2 Why It Matters</a></li>
+											<li class="blg-toc-li"><a href="#http-analogy">3.3 Real-world Analogy</a></li>
+											<li class="blg-toc-li"><a href="#http-terms">3.4 Key Terms</a></li>
+											<li class="blg-toc-li"><a href="#http-how">3.5 How It Works</a></li>
+											<li class="blg-toc-li"><a href="#http-types">3.6 Types &amp; Variations</a></li>
+											<li class="blg-toc-li"><a href="#http-diagram">3.7 Diagram</a></li>
+											<li class="blg-toc-li"><a href="#http-when">3.8 When to Use</a></li>
+											<li class="blg-toc-li"><a href="#http-example">3.9 Real-world Example</a></li>
+											<li class="blg-toc-li"><a href="#http-tradeoffs">3.10 Trade-offs</a></li>
+											<li class="blg-toc-li"><a href="#http-mistakes">3.11 Common Mistakes</a></li>
+											<li class="blg-toc-li"><a href="#http-summary">3.12 Summary</a></li>
+											<li class="blg-toc-li"><a href="#http-challenge">3.13 Design Challenge</a></li>
+											<li class="blg-toc-li"><a href="#http-cloud">3.14 Cloud Services</a></li>
+										</ul>
+									</li>
+									<li class="blg-toc-li"><a href="#tcp-udp">TCP vs UDP</a>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#tcp-intro">4.1 Introduction</a></li>
+											<li class="blg-toc-li"><a href="#tcp-why">4.2 Why It Matters</a></li>
+											<li class="blg-toc-li"><a href="#tcp-analogy">4.3 Real-world Analogy</a></li>
+											<li class="blg-toc-li"><a href="#tcp-terms">4.4 Key Terms</a></li>
+											<li class="blg-toc-li"><a href="#tcp-how">4.5 How It Works</a></li>
+											<li class="blg-toc-li"><a href="#tcp-types">4.6 Types &amp; Variations</a></li>
+											<li class="blg-toc-li"><a href="#tcp-diagram">4.7 Diagram</a></li>
+											<li class="blg-toc-li"><a href="#tcp-when">4.8 When to Use</a></li>
+											<li class="blg-toc-li"><a href="#tcp-example">4.9 Real-world Example</a></li>
+											<li class="blg-toc-li"><a href="#tcp-tradeoffs">4.10 Trade-offs</a></li>
+											<li class="blg-toc-li"><a href="#tcp-mistakes">4.11 Common Mistakes</a></li>
+											<li class="blg-toc-li"><a href="#tcp-summary">4.12 Summary</a></li>
+											<li class="blg-toc-li"><a href="#tcp-challenge">4.13 Design Challenge</a></li>
+											<li class="blg-toc-li"><a href="#tcp-cloud">4.14 Cloud Services</a></li>
+										</ul>
+									</li>
+									<li class="blg-toc-li"><a href="#latency-throughput">Latency &amp; Throughput</a>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#lt-intro">5.1 Introduction</a></li>
+											<li class="blg-toc-li"><a href="#lt-why">5.2 Why It Matters</a></li>
+											<li class="blg-toc-li"><a href="#lt-analogy">5.3 Real-world Analogy</a></li>
+											<li class="blg-toc-li"><a href="#lt-terms">5.4 Key Terms</a></li>
+											<li class="blg-toc-li"><a href="#lt-how">5.5 How It Works</a></li>
+											<li class="blg-toc-li"><a href="#lt-types">5.6 Types &amp; Variations</a></li>
+											<li class="blg-toc-li"><a href="#lt-diagram">5.7 Diagram</a></li>
+											<li class="blg-toc-li"><a href="#lt-when">5.8 When to Use</a></li>
+											<li class="blg-toc-li"><a href="#lt-example">5.9 Real-world Examples</a></li>
+											<li class="blg-toc-li"><a href="#lt-tradeoffs">5.10 Trade-offs</a></li>
+											<li class="blg-toc-li"><a href="#lt-mistakes">5.11 Common Mistakes</a></li>
+											<li class="blg-toc-li"><a href="#lt-summary">5.12 Summary</a></li>
+											<li class="blg-toc-li"><a href="#lt-challenge">5.13 Design Challenge</a></li>
+											<li class="blg-toc-li"><a href="#lt-cloud">5.14 Cloud Services</a></li>
+										</ul>
+									</li>
+								</ol>
+							</div>
+
+							<div class="blg-section">
+								<p class="blg-paragraph">
+									Every internet application starts with a simple question: how do two programs talk to each other? This post covers five essential networking topics every system designer must know. You will start with <strong>Client &amp; Server</strong> — the foundation of every web and mobile application. Then you will learn how machines find and reach each other through <strong>IP Address &amp; DNS</strong> — the addressing and naming system of the internet. From there you will explore <strong>HTTP / HTTPS</strong>, the communication protocol that clients and servers use to exchange data, followed by <strong>TCP vs UDP</strong>, the two transport protocols that trade reliability against speed. Finally, you will understand <strong>Latency &amp; Throughput</strong> — the two performance metrics that determine how fast and how much your system can handle. Each topic is explained with real-world analogies, step-by-step examples, and clear diagrams — starting from zero.
+								</p>
+							</div>
+
+							<div class="blg-section">
+								<a id="client-server" class="blg-anchor"></a>
+								<div class="blg-main-header"><h2>🌐 1. Client &amp; Server</h2></div>
+								<p class="blg-paragraph">
+									The client-server model is where every system design journey begins. Before you can understand load balancers, databases, CDNs, or APIs, you need to understand this one idea: a client asks, a server answers. In this section, we will build that understanding from the ground up — with analogies, step-by-step examples, and clear diagrams — so that every concept that follows makes intuitive sense.
+								</p>
+
+								<div class="blg-img-container">
+									<img src="../img/blog_20/client_server.webp" alt="Client and Server — how clients send requests and servers send responses" class="blg-img" />
+								</div>
+
+								<!-- ── Section 1: Introduction ── -->
+								<a id="cs-intro" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.1</span> 🎯 Introduction</h3>
+								</div>
+								<p class="blg-paragraph">
+									Imagine you type <code class="code-soft">netflix.com</code> into your browser. Within milliseconds, your browser has contacted Netflix's servers, authenticated your account, fetched a personalised list of movies, and started streaming a video — all without you doing anything beyond pressing Enter. That entire sequence is the <strong>client-server model</strong> in action.
+								</p>
+								<p class="blg-paragraph">
+									Your browser is the <strong>client</strong> — the program that asks for something. Netflix's backend systems are the <strong>servers</strong> — the programs that listen for requests and send back replies. Every time you open a website, send a WhatsApp message, order on Amazon, or call an Uber, this exact exchange is happening behind the scenes.
+								</p>
+
+								<!-- ── Section 2: Why It Matters ── -->
+								<a id="cs-why" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.2</span> 💡 Why It Matters</h3>
+								</div>
+								<p class="blg-paragraph">
+									Every single system design problem starts with the same question: <strong>how does the user's device communicate with the backend?</strong> Whether you are designing Instagram (2 billion users), Uber (150 million users), or a simple URL shortener, the answer always begins with the client-server model. Everything else — load balancers, databases, caches, CDNs — exists to make this basic exchange faster, more reliable, and capable of handling millions of users at once.
+								</p>
+								<ul class="blg-ul">
+									<li class="blg-li">Without understanding clients and servers, you cannot reason about <strong>how requests reach your system</strong>.</li>
+									<li class="blg-li">Load balancers only make sense when you understand that <strong>many clients send requests to multiple servers</strong>.</li>
+									<li class="blg-li">CDNs only make sense when you understand that <strong>static files are served from servers closer to the client</strong>.</li>
+									<li class="blg-li">Microservices only make sense when you understand that <strong>a server can itself be a client to another server</strong>.</li>
+								</ul>
+								<blockquote class="blg-callout-info">
+									<strong>Foundation first:</strong> In system design, strong answers always start with the simple request-response path and then evolve. Never jump straight to "Kafka, Redis, sharding, microservices" — always start with "a client sends a request to a server."
+								</blockquote>
+
+								<!-- ── Section 3: Real-world Analogy ── -->
+								<a id="cs-analogy" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.3</span> 🏠 Real-world Analogy</h3>
+								</div>
+								<p class="blg-paragraph">
+									Think of a <strong>restaurant</strong>. You walk in, sit at a table, and look at the menu. When you are ready, you call the waiter over and place your order. The waiter goes to the kitchen, the kitchen prepares your food, and the waiter brings it back to your table.
+								</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead>
+											<tr><th>Restaurant World</th><th>Software World</th><th>Role</th></tr>
+										</thead>
+										<tbody>
+											<tr><td>👤 Customer</td><td>💻 Client (browser / app)</td><td>Asks for something</td></tr>
+											<tr><td>🧑‍💼 Waiter</td><td>🌐 API / Server interface</td><td>Receives the request, coordinates work</td></tr>
+											<tr><td>👨‍🍳 Kitchen</td><td>⚙️ Application server</td><td>Runs the actual business logic</td></tr>
+											<tr><td>🗄️ Storage room</td><td>🗃️ Database / storage</td><td>Keeps data, files, and records</td></tr>
+											<tr><td>🍽️ Meal served</td><td>📦 HTTP Response</td><td>The result sent back to the client</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<p class="blg-paragraph">
+									Notice a key point: <strong>you never go to the kitchen yourself</strong>. You send a request through the waiter, and the waiter brings back the result. This is exactly how a client and server communicate — the client never directly touches the database or business logic; it only talks to the server.
+								</p>
+								<!-- ── Section 4: Key Terms ── -->
+								<a id="cs-terms" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.4</span> 📖 Key Terms</h3>
+								</div>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead>
+											<tr><th>Term</th><th>Simple Definition</th><th>Quick Example</th></tr>
+										</thead>
+										<tbody>
+											<tr><td><strong>Client</strong></td><td>A program or device that initiates a request</td><td>Your browser, your mobile app, a CLI tool</td></tr>
+											<tr><td><strong>Server</strong></td><td>A program that listens for requests and sends responses</td><td>Amazon's backend, YouTube's API service</td></tr>
+											<tr><td><strong>Request</strong></td><td>The message the client sends to ask for data or an action</td><td>"Get me the homepage" / "Log me in"</td></tr>
+											<tr><td><strong>Response</strong></td><td>The server's reply — either the requested data or an error</td><td>HTML page, JSON data, 404 Not Found</td></tr>
+											<tr><td><strong>Protocol</strong></td><td>An agreed-upon set of rules for how two programs communicate</td><td>HTTP, HTTPS, TCP, WebSocket</td></tr>
+											<tr><td><strong>Port</strong></td><td>A number that identifies a specific service running on a server</td><td>Port 80 = HTTP, Port 443 = HTTPS, Port 5432 = PostgreSQL</td></tr>
+											<tr><td><strong>IP Address</strong></td><td>The unique address of a device or server on a network</td><td>142.250.80.14 (a Google server)</td></tr>
+											<tr><td><strong>Network</strong></td><td>The infrastructure connecting clients to servers</td><td>The internet, a company's private network</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-tip">
+									<strong>Remember:</strong> A server is a program, not a physical machine. Your laptop can run a server. One physical machine can run dozens of server programs at the same time on different ports.
+								</blockquote>
+
+								<!-- ── Section 5: How It Works ── -->
+								<a id="cs-how" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.5</span> 🔢 How It Works</h3>
+								</div>
+								<p class="blg-paragraph">
+									Let us walk through exactly what happens when you type <code class="code-soft">amazon.com</code> in your browser and press Enter. This is the most important request path to understand in system design.
+								</p>
+								<div class="blg-table">
+									<table>
+										<thead>
+											<tr><th>Step</th><th>What Happens</th></tr>
+										</thead>
+										<tbody>
+											<tr><td>① Type URL</td><td>Your browser (the client) is ready to make a request. It needs to find where Amazon's server lives on the internet.</td></tr>
+											<tr><td>② DNS Lookup</td><td>Browser asks the DNS system: "What is the IP address of amazon.com?" DNS responds with something like <code class="code-soft">205.251.242.103</code>. (DNS is covered fully in Section 3.)</td></tr>
+											<tr><td>③ Connect</td><td>Browser opens a connection to that IP address on port <code class="code-soft">443</code> (HTTPS).</td></tr>
+											<tr><td>④ Send Request</td><td>Browser sends an HTTP GET request: <code class="code-soft">GET / HTTP/1.1 Host: amazon.com</code></td></tr>
+											<tr><td>⑤ Server Processes</td><td>Amazon's server receives the request, runs business logic, and queries the database for product listings and your session data.</td></tr>
+											<tr><td>⑥ Send Response</td><td>The server builds an HTTP response containing the HTML for the Amazon homepage and sends it back through the internet.</td></tr>
+											<tr><td>⑦ Browser Renders</td><td>Your browser receives the HTML and displays the Amazon page. Done — typically in under 500 ms.</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-note">
+									<strong>Key insight:</strong> The entire exchange above — from Step 1 to Step 7 — typically happens in <strong>under 500 milliseconds</strong>. For large-scale systems like Amazon, this same process happens for millions of users simultaneously, which is why concepts like load balancers, caches, and CDNs become necessary.
+								</blockquote>
+								<!-- ── Section 6: Types & Variations ── -->
+								<a id="cs-types" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.6</span> 🔀 Types &amp; Variations</h3>
+								</div>
+								<p class="blg-paragraph">
+									"Client" and "server" are roles, not fixed things. The same program can be a server to some callers and a client to others. Here are the most common types you will encounter in system design.
+								</p>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge badge-blue">Types of Clients</span></h3>
+								</div>
+								<div class="blg-feature-grid grid-3">
+									<div class="blg-feature-card card-blue">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">🌐</span>
+											<h4>Web Browser</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>Chrome, Firefox, Safari — renders HTML/CSS/JS from web servers. The most common client type.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-teal">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">📱</span>
+											<h4>Mobile App</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>Instagram, WhatsApp, Uber — calls APIs on backend servers over HTTPS to fetch and send data.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-purple">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">🖥️</span>
+											<h4>Desktop App</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>Slack, Spotify, VS Code — connects to cloud servers in the background for data, sync, and updates.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-orange">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">🤖</span>
+											<h4>IoT Device</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>Smart thermostat, security camera — sends sensor readings and receives commands from cloud servers.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-green">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">⚙️</span>
+											<h4>Server as Client</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>In microservices, every service calls other services. A Payment Service is a client when calling the Fraud Detection Service.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-blue">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">💻</span>
+											<h4>CLI Tool</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p><code class="code-soft">curl</code>, <code class="code-soft">wget</code> — makes HTTP requests directly from the command line. Used by developers and automation scripts.</p>
+										</div>
+									</div>
+								</div>
+
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge badge-green">Types of Servers</span></h3>
+								</div>
+								<div class="blg-feature-grid grid-3">
+									<div class="blg-feature-card card-blue">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">🌐</span>
+											<h4>Web Server</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>Nginx, Apache — serves static files: HTML, CSS, JavaScript, images. Fast and simple.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-teal">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">⚙️</span>
+											<h4>Application Server</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>Node.js, Django, Spring Boot — runs business logic: login, payments, recommendations, order processing.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-purple">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">🗄️</span>
+											<h4>Database Server</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>PostgreSQL, MySQL, MongoDB — stores and retrieves structured application data persistently.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-orange">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">⚡</span>
+											<h4>Cache Server</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>Redis, Memcached — stores frequently accessed data in memory so the database doesn't need to be queried every time.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-green">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">📦</span>
+											<h4>File / Object Storage</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>Amazon S3, Google Cloud Storage — stores large files: images, videos, backups, documents at massive scale.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-blue">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">⚖️</span>
+											<h4>Load Balancer</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>AWS ELB, Nginx — distributes incoming client requests across multiple servers to prevent any one from being overwhelmed.</p>
+										</div>
+									</div>
+								</div>
+								<blockquote class="blg-callout-info">
+									<strong>The "server as client" pattern:</strong> In modern microservices architectures, almost every service acts as both a server (to the services that call it) and a client (to the services it calls). For example, Instagram's Feed Service is a server to the mobile app, but it's a client to the User Service, Media Service, and Recommendation Service.
+								</blockquote>
+
+								<!-- ── Section 7: Illustrated Diagram ── -->
+								<a id="cs-diagram" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.7</span> 🎨 Illustrated Diagram</h3>
+								</div>
+								<p class="blg-paragraph">
+									The diagram below shows the core client-server request-response cycle — a client sends a request, the server processes it and queries the database, and the response travels back. This is the fundamental pattern behind every internet application.
+								</p>
+								<div class="blg-mermaid-wrap">
+									<div class="mermaid" style="min-width:680px;font-size:16px;">
+%%{init: {"theme": "base", "themeVariables": {"lineColor": "#64748b", "edgeLabelBackground": "#fff"}}}%%
+flowchart LR
+    C["💻 Client\n(Browser / App)"]
+    S["⚙️ Server\n(Business Logic)"]
+    DB["🗄️ Database\n(Data Storage)"]
+
+    C -->|"① HTTP Request"| S
+    S -->|"② Query"| DB
+    DB -->|"③ Data"| S
+    S -->|"④ HTTP Response"| C
+
+    style C fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    style S fill:#d1fae5,stroke:#059669,color:#064e3b
+    style DB fill:#fff3e0,stroke:#d97706,color:#92400e
+									</div>
+								</div>
+								<p class="blg-paragraph">
+									<strong>Reading the diagram:</strong> The client sends an HTTP Request ① to the server. The server queries ② the database for the data it needs, the database returns ③ the result, and the server sends an HTTP Response ④ back to the client. Every internet interaction follows this four-step cycle.
+								</p>
+								<!-- ── Section 8: When to Use ── -->
+								<a id="cs-when" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.8</span> ✅ When to Use</h3>
+								</div>
+								<p class="blg-paragraph">
+									The client-server model is the default choice for virtually every internet application. You should use it whenever you have a centralized resource to share, business logic to protect, or data that needs to be consistent across users.
+								</p>
+								<div class="blg-table blg-table-half">
+									<table>
+										<thead><tr><th>Use client-server when…</th><th>Avoid (consider P2P) when…</th></tr></thead>
+										<tbody>
+											<tr><td>You have shared data that many users need to access</td><td>You need true decentralisation with no central authority (e.g. blockchain)</td></tr>
+											<tr><td>You want centralised access control and authentication</td><td>Users need to share files directly with each other (BitTorrent-style)</td></tr>
+											<tr><td>You need to update business logic without touching clients</td><td>You want to eliminate the server cost entirely</td></tr>
+											<tr><td>You need to scale the backend independently of clients</td><td>Low-latency real-time communication between two specific peers</td></tr>
+											<tr><td>You want to monitor, log, and secure all traffic centrally</td><td>You require censorship resistance by design</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-tip">
+									<strong>Rule of thumb:</strong> If you are designing any application for users — social media, e-commerce, banking, streaming, messaging — use client-server. If you are designing a decentralised protocol or file-sharing network, consider Peer-to-Peer. In practice, 99% of system design problems use client-server.
+								</blockquote>
+
+								<!-- ── Section 9: Real-world Example ── -->
+								<a id="cs-example" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.9</span> 🏗️ Real-world Example — Instagram</h3>
+								</div>
+								<p class="blg-paragraph">
+									When you open Instagram on your phone and scroll through your feed, here is what happens behind the scenes:
+								</p>
+								<div class="blg-table">
+									<table>
+										<thead>
+											<tr><th>Step</th><th>Actor</th><th>What Happens</th></tr>
+										</thead>
+										<tbody>
+											<tr><td>①</td><td>📱 <strong>Your Phone</strong> (Client)</td><td>Sends <code class="code-soft">GET /feed?user_id=123&amp;page=1</code> to Instagram</td></tr>
+											<tr><td>②</td><td>⚖️ <strong>Load Balancer</strong></td><td>Receives the request and routes it to one of many available API servers</td></tr>
+											<tr><td>③</td><td>⚙️ <strong>API Server</strong></td><td>Checks who you follow, runs the ranking algorithm, decides which posts to show</td></tr>
+											<tr><td>④</td><td>⚡ <strong>Cache Server</strong></td><td>Checked first — if your feed was recently built, it's returned instantly from memory</td></tr>
+											<tr><td>⑤</td><td>🗄️ <strong>Database Server</strong></td><td>Returns post metadata (captions, like counts, timestamps) — images are stored separately</td></tr>
+											<tr><td>⑥</td><td>⚙️ <strong>API Server</strong></td><td>Builds a JSON response with post data and image URLs, sends it back to your phone</td></tr>
+											<tr><td>⑦</td><td>📱 <strong>Your Phone</strong> (Client)</td><td>Receives JSON, makes separate requests to CDN servers to download the actual images</td></tr>
+											<tr><td>⑧</td><td>🌍 <strong>CDN Server</strong></td><td>Delivers image files from the edge location nearest to you — fast, low latency</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-info">
+									<strong>Notice:</strong> Your phone (one client) communicated with five different server types — Load Balancer, API Server, Cache Server, Database Server, and CDN Server — all within a single feed load. This is how real large-scale systems work: many specialised servers working together to serve one client request.
+								</blockquote>
+								<blockquote class="blg-callout-tip">
+									<strong>New terms above?</strong> Load Balancer, Cache Server, and CDN will each get their own dedicated post in Phase 2 of this series. For now, just notice that a single client request touches multiple server types — that is the key insight from this example.
+								</blockquote>
+								<!-- ── Section 10: Trade-offs ── -->
+								<a id="cs-tradeoffs" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.10</span> ⚖️ Trade-offs</h3>
+								</div>
+								<div class="blg-table blg-table-half">
+									<table>
+										<thead><tr><th>✅ Advantages</th><th>❌ Disadvantages</th></tr></thead>
+										<tbody>
+											<tr><td><strong>Centralised control</strong> — update the server and all clients get the update instantly, no app store releases needed</td><td><strong>Single point of failure</strong> — if the server goes down, no client can work; requires redundancy and high-availability design</td></tr>
+											<tr><td><strong>Security</strong> — sensitive business logic, API keys, and data stay on the server; clients never see internals</td><td><strong>Server cost</strong> — running servers 24/7 at scale is expensive; requires infrastructure investment</td></tr>
+											<tr><td><strong>Scalability</strong> — add more servers to handle more clients without changing client code</td><td><strong>Network dependency</strong> — clients need a working internet connection; offline mode requires extra engineering</td></tr>
+											<tr><td><strong>Consistency</strong> — all clients read from the same data source, so everyone sees the same information</td><td><strong>Latency</strong> — every action requires a network round-trip to the server; cannot be fully instant</td></tr>
+											<tr><td><strong>Maintainability</strong> — bugs are fixed in one place (server), not in millions of client devices</td><td><strong>Bottleneck risk</strong> — a poorly designed server becomes a bottleneck under high traffic</td></tr>
+										</tbody>
+									</table>
+								</div>
+
+								<!-- ── Section 11: Common Mistakes ── -->
+								<a id="cs-mistakes" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.11</span> 🚫 Common Mistakes</h3>
+								</div>
+								<div class="blg-table">
+									<table>
+										<thead>
+											<tr><th>#</th><th>❌ Common Mistake</th><th>✅ The Reality</th></tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>1</td>
+												<td><strong>Server = physical machine</strong></td>
+												<td>A server is a program, not a box. You can run a web server on your laptop right now. One physical machine can run dozens of server programs simultaneously on different ports.</td>
+											</tr>
+											<tr>
+												<td>2</td>
+												<td><strong>A server can never be a client</strong></td>
+												<td>In microservices, services constantly switch roles. The Payment Service is a server to the frontend but a client to the Fraud Detection Service. Roles are relative, not fixed identities.</td>
+											</tr>
+											<tr>
+												<td>3</td>
+												<td><strong>Web server = application server</strong></td>
+												<td>A web server (Nginx, Apache) serves static files. An application server (Node.js, Django) runs business logic. Most production systems have both doing different jobs.</td>
+											</tr>
+											<tr>
+												<td>4</td>
+												<td><strong>One server handles all requests</strong></td>
+												<td>Large systems like Instagram run on thousands of servers across multiple data centres. Designing for a single server is the most common beginner mistake in system design.</td>
+											</tr>
+											<tr>
+												<td>5</td>
+												<td><strong>The client sees the server's internals</strong></td>
+												<td>Clients only know the server's address and protocol. All internal logic — databases, services, business rules — is hidden. This is called encapsulation and is a security best practice.</td>
+											</tr>
+											<tr>
+												<td>6</td>
+												<td><strong>Start with complex architecture</strong></td>
+												<td>Always start with the simple path: Client → Server → Database. Add load balancers, caches, and CDNs only when a specific problem justifies the complexity.</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+								<!-- ── Section 12: Summary ── -->
+								<a id="cs-summary" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.12</span> 📝 Summary</h3>
+								</div>
+								<ul class="blg-ul">
+									<li class="blg-li blg-li-check"><strong>Client initiates, Server responds</strong> — the client always makes the first move; the server waits and reacts.</li>
+									<li class="blg-li blg-li-check"><strong>A server is a program</strong>, not a physical machine — it can run on any hardware, including your laptop.</li>
+									<li class="blg-li blg-li-check"><strong>A server can be a client</strong> — in microservices, services call each other; roles are relative, not fixed.</li>
+									<li class="blg-li blg-li-check"><strong>Multiple server types work together</strong> — a single user request typically touches several specialised servers: application server, database, and more.</li>
+									<li class="blg-li blg-li-check"><strong>Always start simple</strong> — Client → Server → Database is the baseline; add complexity only when justified by scale or requirements.</li>
+								</ul>
+
+								<!-- ── Section 13: Design Challenge ── -->
+								<a id="cs-challenge" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.13</span> 🏋️ Design Challenge</h3>
+								</div>
+								<blockquote class="blg-callout-purple">
+									<strong>🍕 Challenge: Design a food delivery app</strong><br><br>
+									You are designing a system like Uber Eats or DoorDash. Think through the following:
+									<ul class="blg-ul" style="margin-top:10px;">
+										<li class="blg-li">What are the different <strong>types of clients</strong> in your system? (Hint: there is more than one kind of user.)</li>
+										<li class="blg-li">What are the different <strong>types of servers</strong> you would need? List at least four.</li>
+										<li class="blg-li">Draw a simple diagram showing how a customer places an order — trace the request from the customer's phone to the restaurant and back.</li>
+										<li class="blg-li">What happens if your main application server goes down while someone is placing an order?</li>
+									</ul>
+								</blockquote>
+
+								<details class="blg-answer-reveal">
+									<summary>👁️ Show Answer</summary>
+									<div class="blg-answer-reveal-body">
+										<p class="blg-paragraph"><strong>Types of Clients (3 distinct roles):</strong></p>
+										<ul class="blg-ul">
+											<li class="blg-li">📱 <strong>Customer app</strong> (iOS/Android) — places orders, tracks delivery in real time</li>
+											<li class="blg-li">🍔 <strong>Restaurant dashboard</strong> (tablet/web app) — receives new orders, marks them as ready</li>
+											<li class="blg-li">🚗 <strong>Driver app</strong> (mobile) — receives delivery assignments, navigates to pickup and drop-off</li>
+										</ul>
+										<p class="blg-paragraph"><strong>Types of Servers needed:</strong></p>
+										<ul class="blg-ul">
+											<li class="blg-li">⚙️ <strong>API Server</strong> — the main application server; handles all requests from all three client types</li>
+											<li class="blg-li">💳 <strong>Payment Server</strong> — processes card charges securely when an order is placed</li>
+											<li class="blg-li">🔔 <strong>Notification Server</strong> — sends real-time alerts to the restaurant and driver apps</li>
+											<li class="blg-li">🗄️ <strong>Database Server</strong> — stores users, restaurants, menus, orders, and delivery status</li>
+										</ul>
+										<p class="blg-paragraph"><strong>Request flow when a customer places an order:</strong></p>
+										<ol class="blg-ul">
+											<li class="blg-li">Customer app (client) → sends <code class="code-soft">POST /orders</code> request to the API Server</li>
+											<li class="blg-li">API Server validates the order and writes it to the Database Server</li>
+											<li class="blg-li">API Server calls the Payment Server to charge the customer's card</li>
+											<li class="blg-li">API Server tells the Notification Server to alert the restaurant</li>
+											<li class="blg-li">Notification Server pushes the order to the Restaurant app (client)</li>
+											<li class="blg-li">Restaurant accepts → API Server updates order status in the Database</li>
+											<li class="blg-li">API Server responds to the customer app: order confirmed ✅</li>
+										</ol>
+										<p class="blg-paragraph"><strong>If the application server goes down:</strong><br>
+										Orders cannot be placed — customers see an error. The fix is to run multiple application servers so if one fails, others continue handling requests. We will cover exactly how this works when we study <strong>Load Balancers</strong> in Phase 2.</p>
+									</div>
+								</details>
+
+								<!-- ── Section 14: Cloud Service Mapping ── -->
+								<a id="cs-cloud" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.14</span> ☁️ Cloud Service Mapping</h3>
+								</div>
+								<p class="blg-paragraph">
+									In the cloud, a "server" is any service that receives and processes requests. The three main ways to run server code on any cloud platform are:
+								</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>How to Run a Server</th><th>AWS (Primary)</th><th>GCP</th><th>Azure</th></tr></thead>
+										<tbody>
+											<tr><td><strong>Virtual machine</strong> — full control over the server environment</td><td>Amazon EC2</td><td>Compute Engine</td><td>Azure VMs</td></tr>
+											<tr><td><strong>Managed app hosting</strong> — deploy your code, cloud manages the server</td><td>Elastic Beanstalk / App Runner</td><td>App Engine / Cloud Run</td><td>Azure App Service</td></tr>
+											<tr><td><strong>Serverless</strong> — a function that acts as a server, runs only when called</td><td>AWS Lambda</td><td>Cloud Functions</td><td>Azure Functions</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-info">
+									<strong>Simplest AWS picture:</strong> A browser (client) sends a request → EC2 instance or Lambda function (server) receives and processes it → sends a response back. That is the client-server model running in the cloud.
+								</blockquote>
+								<hr class="blg-hr">
+							</div>
+
+							<div class="blg-section">
+								<a id="ip-dns" class="blg-anchor"></a>
+								<div class="blg-main-header"><h2>🌍 2. IP Address &amp; DNS</h2></div>
+								<p class="blg-paragraph">
+									Every device on the internet has a unique numeric address — an IP address — just like every house has a street address. But humans don't think in numbers. We use friendly names like youtube.com. DNS is the system that bridges this gap, translating the names we type into the addresses machines actually use. In this section you will learn what IP addresses are, how public and private addresses differ, how DNS resolves names step by step, and why both concepts are foundational to every system design decision you will make.
+								</p>
+
+								<div class="blg-img-container">
+									<img src="../img/blog_20/ip_dns.webp" alt="IP Address and DNS — how domain names are translated to IP addresses" class="blg-img" />
+								</div>
+
+								<!-- ── Section 2.1: Introduction ── -->
+								<a id="ip-intro" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.1</span> 🎯 Introduction</h3>
+								</div>
+								<p class="blg-paragraph">
+									Imagine you type <code class="code-soft">youtube.com</code> into your browser. You know the name — but your computer does not know where YouTube's servers are physically located on the internet. It needs a numeric address. An <strong>IP address</strong> is that numeric address: a unique identifier assigned to every device connected to a network, from your laptop to YouTube's servers.
+								</p>
+								<p class="blg-paragraph">
+									But here is the challenge: IP addresses look like <code class="code-soft">142.250.80.14</code>. No human is going to memorise that. So the internet uses a naming system called <strong>DNS — Domain Name System</strong> — that automatically translates <code class="code-soft">youtube.com</code> into <code class="code-soft">142.250.80.14</code> every time you press Enter. Without IP addresses, devices cannot communicate. Without DNS, humans cannot use the internet practically.
+								</p>
+
+								<!-- ── Section 2.2: Why It Matters ── -->
+								<a id="ip-why" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.2</span> 💡 Why It Matters</h3>
+								</div>
+								<p class="blg-paragraph">
+									IP addresses and DNS are not optional infrastructure — they are the foundation on which every internet system runs. Cloudflare's public DNS resolver (1.1.1.1) alone handles over <strong>1 trillion DNS queries per month</strong>. Google's DNS (8.8.8.8) processes billions of queries daily. Every website visit, API call, and app request begins with a DNS lookup.
+								</p>
+								<ul class="blg-ul">
+									<li class="blg-li">In system design, DNS is how traffic is routed to the right servers — load balancers, CDN edge nodes, and multi-region endpoints all use DNS.</li>
+									<li class="blg-li">When you add a new server or replace a failed one, you update a DNS record — not every client application.</li>
+									<li class="blg-li">Private vs public IP addressing determines what parts of your system are reachable from the internet — a critical security decision.</li>
+									<li class="blg-li">DNS TTL directly controls how quickly your system can recover from failures and how smoothly you can migrate servers.</li>
+								</ul>
+								<blockquote class="blg-callout-info">
+									<strong>Key insight:</strong> DNS is where system design meets the internet. Every load balancer, CDN, and API gateway in this series is ultimately reached through a DNS record. Understanding DNS now means every future topic will make more sense.
+								</blockquote>
+
+								<!-- ── Section 2.3: Real-world Analogy ── -->
+								<a id="ip-analogy" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.3</span> 🏠 Real-world Analogy</h3>
+								</div>
+								<p class="blg-paragraph">
+									Think of a city's postal system. Every building has a <strong>street address</strong> (the IP address) — a precise numeric location that delivery services use to physically find it. But people don't walk around saying "I'm going to 221B Baker Street" — they say "I'm going to Sherlock Holmes' house." The <strong>phonebook or directory</strong> is what translates that name into the actual address.
+								</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Real World</th><th>Internet / Software</th><th>Role</th></tr></thead>
+										<tbody>
+											<tr><td>🏠 Street address (221B Baker St)</td><td>IP address (142.250.80.14)</td><td>The actual numeric location machines use to connect</td></tr>
+											<tr><td>🏷️ Person or place name (Sherlock's house)</td><td>Domain name (youtube.com)</td><td>The human-friendly name people remember and type</td></tr>
+											<tr><td>📖 Phonebook / directory</td><td>DNS (Domain Name System)</td><td>Translates names into addresses automatically</td></tr>
+											<tr><td>📬 Speed-dial / recent calls list</td><td>DNS cache (browser/OS/resolver)</td><td>Stores recently looked-up addresses for quick re-use</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<p class="blg-paragraph">
+									Just as you would look up a name in a phonebook to find the phone number, your browser looks up a domain name in DNS to find the IP address — every single time, unless the answer is already cached.
+								</p>
+								<!-- ── Section 2.4: Key Terms ── -->
+								<a id="ip-terms" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.4</span> 📖 Key Terms</h3>
+								</div>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Term</th><th>Simple Definition</th><th>Quick Example</th></tr></thead>
+										<tbody>
+											<tr><td><strong>IP Address</strong></td><td>A unique numeric address identifying any device on a network</td><td>142.250.80.14 (a YouTube server)</td></tr>
+											<tr><td><strong>IPv4</strong></td><td>4-part dotted format, supports ~4.3 billion addresses</td><td>8.8.8.8 (Google DNS), 192.168.1.1 (home router)</td></tr>
+											<tr><td><strong>IPv6</strong></td><td>128-bit hex format, virtually unlimited addresses</td><td>2001:db8::7334</td></tr>
+											<tr><td><strong>Public IP</strong></td><td>Reachable from the internet — your server's external address</td><td>Load balancer, CDN, API gateway endpoint</td></tr>
+											<tr><td><strong>Private IP</strong></td><td>Internal-only, not routable on the internet</td><td>10.0.0.5 (database inside a VPC)</td></tr>
+											<tr><td><strong>Domain Name</strong></td><td>Human-readable name for a server or service</td><td>youtube.com, api.stripe.com</td></tr>
+											<tr><td><strong>DNS</strong></td><td>Domain Name System — the internet's distributed phonebook</td><td>Translates youtube.com → 142.250.80.14</td></tr>
+											<tr><td><strong>DNS Resolver</strong></td><td>The component that performs the full DNS lookup on a client's behalf</td><td>8.8.8.8 (Google), 1.1.1.1 (Cloudflare)</td></tr>
+											<tr><td><strong>DNS Record</strong></td><td>A specific entry in the DNS system mapping a name to a value</td><td>A record, CNAME record, MX record</td></tr>
+											<tr><td><strong>TTL</strong></td><td>Time To Live — how long a DNS answer can be cached before it must be re-fetched</td><td>TTL = 300 means cache for 5 minutes</td></tr>
+											<tr><td><strong>Authoritative DNS</strong></td><td>The final DNS server that has the definitive answer for a domain</td><td>YouTube's own nameservers have youtube.com records</td></tr>
+										</tbody>
+									</table>
+								</div>
+
+								<!-- ── Section 2.5: How It Works ── -->
+								<a id="ip-how" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.5</span> 🔢 How It Works</h3>
+								</div>
+								<p class="blg-paragraph">
+									Here is the exact sequence of events when you type <code class="code-soft">youtube.com</code> in your browser and press Enter. This process completes in milliseconds, but involves up to 9 steps behind the scenes.
+								</p>
+								<div class="blg-table">
+									<table>
+										<thead><tr><th>Step</th><th>What Happens</th></tr></thead>
+										<tbody>
+											<tr><td>① Browser cache</td><td>Browser checks if it already has a cached answer for youtube.com. If yes, use it immediately — no DNS query needed.</td></tr>
+											<tr><td>② OS cache</td><td>If not in browser cache, the operating system checks its own DNS cache. If found, return it.</td></tr>
+											<tr><td>③ Ask DNS Resolver</td><td>If no cached answer, the OS asks the configured DNS Resolver (e.g. 8.8.8.8 or your ISP's resolver).</td></tr>
+											<tr><td>④ Resolver → Root DNS</td><td>Resolver asks a Root DNS server: "Who manages .com domains?" Root returns the address of the .com TLD servers.</td></tr>
+											<tr><td>⑤ Resolver → TLD DNS</td><td>Resolver asks the .com TLD server: "Who manages youtube.com?" TLD returns the address of YouTube's authoritative nameservers.</td></tr>
+											<tr><td>⑥ Resolver → Authoritative DNS</td><td>Resolver asks YouTube's own authoritative DNS: "What is the IP address of youtube.com?" Authoritative returns: 142.250.80.14 (TTL: 300s).</td></tr>
+											<tr><td>⑦ Resolver caches + responds</td><td>Resolver caches the answer for 300 seconds, then returns the IP address to your browser.</td></tr>
+											<tr><td>⑧ Browser connects</td><td>Browser now knows the IP address and opens a TCP connection to 142.250.80.14 on port 443 (HTTPS).</td></tr>
+											<tr><td>⑨ YouTube responds</td><td>YouTube's server receives the request and sends back the homepage HTML. You see YouTube.</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-note">
+									<strong>Fast path:</strong> Steps ④–⑥ are skipped whenever a cached answer exists — which is most of the time for popular domains. Caching is what makes DNS fast enough to be invisible to users.
+								</blockquote>
+								<!-- ── Section 2.6: Types & Variations ── -->
+								<a id="ip-types" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.6</span> 🔀 Types &amp; Variations</h3>
+								</div>
+
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge badge-blue">Types of IP Addresses</span></h3>
+								</div>
+								<div class="blg-feature-grid grid-3">
+									<div class="blg-feature-card card-blue">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">4️⃣</span>
+											<h4>IPv4</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>4 numbers separated by dots, each 0–255. Example: <code class="code-soft">8.8.8.8</code>. Supports ~4.3 billion addresses — largely exhausted. Still the most widely used format today.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-teal">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">6️⃣</span>
+											<h4>IPv6</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>128-bit hex format. Example: <code class="code-soft">2001:db8::7334</code>. Supports 340 undecillion addresses — effectively unlimited. Growing adoption for new infrastructure.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-purple">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">🌐</span>
+											<h4>Public IP</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>Assigned by your internet provider, visible on the internet. Every internet-facing entry point (load balancer, CDN, API gateway) needs one. Example: <code class="code-soft">203.0.113.5</code>.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-orange">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">🔒</span>
+											<h4>Private IP</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>Not routable on the internet. Used for internal services — databases, caches, backend APIs. Common ranges: <code class="code-soft">10.x.x.x</code>, <code class="code-soft">192.168.x.x</code>, <code class="code-soft">172.16.x.x</code>.</p>
+										</div>
+									</div>
+								</div>
+
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge badge-green">DNS Record Types</span></h3>
+								</div>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Record</th><th>What It Does</th><th>Example</th></tr></thead>
+										<tbody>
+											<tr><td><strong>A</strong></td><td>Maps a domain name to an IPv4 address</td><td>youtube.com → 142.250.80.14</td></tr>
+											<tr><td><strong>AAAA</strong></td><td>Maps a domain name to an IPv6 address</td><td>youtube.com → IPv6 address</td></tr>
+											<tr><td><strong>CNAME</strong></td><td>Maps a domain name to another domain name (alias)</td><td>www.example.com → example.com</td></tr>
+											<tr><td><strong>MX</strong></td><td>Specifies the mail server for a domain</td><td>@example.com → mail.example.com</td></tr>
+											<tr><td><strong>TXT</strong></td><td>Stores text for verification or security policies</td><td>SPF, DKIM, domain ownership proof</td></tr>
+											<tr><td><strong>NS</strong></td><td>Specifies the authoritative nameservers for a domain</td><td>Delegates DNS management to a provider</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<!-- ── Section 2.7: Illustrated Diagram ── -->
+								<a id="ip-diagram" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.7</span> 🎨 Illustrated Diagram</h3>
+								</div>
+								<p class="blg-paragraph">
+									The diagram below shows the full DNS resolution journey — from your browser typing a domain name to connecting to the actual server.
+								</p>
+								<div class="blg-mermaid-wrap">
+									<div class="mermaid" style="min-width:680px;font-size:16px;">
+%%{init: {"theme": "base", "themeVariables": {"lineColor": "#64748b", "edgeLabelBackground": "#fff"}}}%%
+flowchart TD
+    C["💻 Browser\n(types youtube.com)"]
+    Res["🔍 DNS Resolver\n(e.g. 8.8.8.8)"]
+    Root["🌐 Root DNS\n(knows .com, .org, .net)"]
+    TLD["📋 .com TLD DNS\n(knows youtube.com nameservers)"]
+    Auth["📌 Authoritative DNS\n(YouTube's own nameservers)"]
+    S["🖥️ YouTube Server\n(142.250.80.14)"]
+
+    C -->|"① Query: youtube.com?"| Res
+    Res -->|"② Where is .com?"| Root
+    Root -->|"③ Ask .com TLD servers"| Res
+    Res -->|"④ Where is youtube.com?"| TLD
+    TLD -->|"⑤ Ask YouTube nameservers"| Res
+    Res -->|"⑥ IP of youtube.com?"| Auth
+    Auth -->|"⑦ 142.250.80.14 (TTL 300s)"| Res
+    Res -->|"⑧ Here's the IP"| C
+    C -->|"⑨ Connect!"| S
+
+    style C   fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    style Res fill:#fff3e0,stroke:#d97706,color:#92400e
+    style Root fill:#f3e5f5,stroke:#8e24aa,color:#4a148c
+    style TLD  fill:#f3e5f5,stroke:#8e24aa,color:#4a148c
+    style Auth fill:#f3e5f5,stroke:#8e24aa,color:#4a148c
+    style S    fill:#d1fae5,stroke:#059669,color:#064e3b
+									</div>
+								</div>
+								<p class="blg-paragraph">
+									<strong>Reading the diagram:</strong> Your browser ① asks the DNS Resolver for youtube.com. The Resolver doesn't know the answer, so it asks ② Root DNS, which points it to the .com TLD servers ③④. The TLD points it to YouTube's own nameservers ⑤, which return ⑥ the final IP address with a TTL of 300 seconds ⑦. The Resolver caches the answer and returns it ⑧. Your browser then connects directly to YouTube's server ⑨.
+								</p>
+								<!-- ── Section 2.8: When to Use ── -->
+								<a id="ip-when" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.8</span> ✅ When to Use</h3>
+								</div>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Scenario</th><th>Use This</th><th>Why</th></tr></thead>
+										<tbody>
+											<tr><td>Internet-facing entry points (load balancer, CDN, API gateway)</td><td>Public IP</td><td>External clients need to reach this endpoint over the internet</td></tr>
+											<tr><td>Internal services (database, cache, backend API)</td><td>Private IP</td><td>These services should never be directly reachable from the internet — security best practice</td></tr>
+											<tr><td>Stable services that rarely change</td><td>High TTL (3600s+)</td><td>Reduces DNS query volume and improves response speed for users</td></tr>
+											<tr><td>Before a planned server migration or failover setup</td><td>Low TTL (60–300s)</td><td>Changes propagate quickly — users switch to the new IP within minutes instead of hours</td></tr>
+											<tr><td>New infrastructure (greenfield projects)</td><td>IPv6 (with IPv4 fallback)</td><td>Future-proof; IPv4 addresses are exhausted and increasingly expensive</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-tip">
+									<strong>Golden rule:</strong> In production systems, only your load balancers, CDNs, and API gateways have public IPs. Everything behind them — databases, caches, internal services — uses private IPs and is never exposed to the internet.
+								</blockquote>
+
+								<!-- ── Section 2.9: Real-world Example ── -->
+								<a id="ip-example" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.9</span> 🏗️ Real-world Example — How Instagram Routes Global Traffic</h3>
+								</div>
+								<p class="blg-paragraph">
+									When you open the Instagram app from Tokyo, here is exactly how DNS and IP addressing route your request to the nearest server:
+								</p>
+								<div class="blg-table">
+									<table>
+										<thead><tr><th>Step</th><th>Actor</th><th>What Happens</th></tr></thead>
+										<tbody>
+											<tr><td>①</td><td>📱 Instagram App (Client)</td><td>Sends a DNS query: "What is the IP address of <code class="code-soft">api.instagram.com</code>?"</td></tr>
+											<tr><td>②</td><td>🔍 DNS Resolver</td><td>Asks Instagram's authoritative DNS; sends the user's geographic location as a hint</td></tr>
+											<tr><td>③</td><td>📌 Instagram Authoritative DNS</td><td>Returns the IP of Instagram's nearest CDN/edge server — a Tokyo edge location, not a US server</td></tr>
+											<tr><td>④</td><td>📱 Instagram App</td><td>Connects to the Tokyo edge IP (public IP). This edge server is internet-facing.</td></tr>
+											<tr><td>⑤</td><td>🌍 Tokyo Edge Server</td><td>Forwards the request to Instagram's backend using internal private IPs (10.x.x.x) — the backend is never exposed publicly</td></tr>
+											<tr><td>⑥</td><td>⚙️ Instagram Backend</td><td>Fetches feed data from databases (private IPs), builds a JSON response, returns it through the edge server back to your phone</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-tip">
+									<strong>New term above?</strong> Step ③ uses GeoDNS — DNS that returns different IPs based on where the user is located, routing them to the nearest data center. This will be covered in full when we reach <strong>Data Centers &amp; Multi-Region</strong> in Phase 2.
+								</blockquote>
+								<!-- ── Section 2.10: Trade-offs ── -->
+								<a id="ip-tradeoffs" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.10</span> ⚖️ Trade-offs</h3>
+								</div>
+								<div class="blg-table blg-table-half">
+									<table>
+										<thead><tr><th>✅ Advantages</th><th>❌ Disadvantages</th></tr></thead>
+										<tbody>
+											<tr><td><strong>IPv4:</strong> universally supported, simple 4-part notation, compatible with all existing tools</td><td><strong>IPv4:</strong> address space exhausted — ~4.3 billion total, prices rising, NAT workarounds add complexity</td></tr>
+											<tr><td><strong>IPv6:</strong> virtually unlimited addresses, built-in security features, future-proof</td><td><strong>IPv6:</strong> slower ecosystem adoption, some older systems and tools don't fully support it</td></tr>
+											<tr><td><strong>Public IP:</strong> directly reachable from anywhere — easy for clients to connect</td><td><strong>Public IP:</strong> exposed to the internet — requires firewalls, DDoS protection, and regular security hardening</td></tr>
+											<tr><td><strong>Private IP:</strong> hidden from internet — secure by default, no direct exposure</td><td><strong>Private IP:</strong> not directly reachable externally — requires NAT, VPN, or a gateway for external access</td></tr>
+											<tr><td><strong>High TTL:</strong> fewer DNS queries, faster responses for users, lower DNS server load</td><td><strong>High TTL:</strong> DNS changes propagate slowly — a problem during migrations, incidents, or failovers</td></tr>
+											<tr><td><strong>Low TTL:</strong> DNS changes take effect quickly — good for dynamic systems and fast failover</td><td><strong>Low TTL:</strong> more DNS queries per minute — increases load on DNS infrastructure</td></tr>
+										</tbody>
+									</table>
+								</div>
+
+								<!-- ── Section 2.11: Common Mistakes ── -->
+								<a id="ip-mistakes" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.11</span> 🚫 Common Mistakes</h3>
+								</div>
+								<div class="blg-table">
+									<table>
+										<thead><tr><th>#</th><th>❌ Common Mistake</th><th>✅ The Reality</th></tr></thead>
+										<tbody>
+											<tr><td>1</td><td><strong>DNS sends the website content</strong></td><td>DNS only resolves names to IP addresses. It does not send any data, HTML, or API responses — that is the server's job, after DNS has finished.</td></tr>
+											<tr><td>2</td><td><strong>Changing a DNS record is instant</strong></td><td>DNS changes can take minutes to hours to propagate globally depending on TTL. Old answers remain cached until their TTL expires.</td></tr>
+											<tr><td>3</td><td><strong>One domain = one IP address</strong></td><td>Production systems often have one domain pointing to dozens or hundreds of IPs — CDN edge nodes, load balancer cluster IPs, regional endpoints.</td></tr>
+											<tr><td>4</td><td><strong>Private IP = secure IP</strong></td><td>Private IPs are just not internet-routable — they still need firewall rules, encryption, and access controls. "Private" does not mean "automatically secure."</td></tr>
+											<tr><td>5</td><td><strong>192.168.x.x is a server's real IP</strong></td><td>This is a private IP range used for internal networks. Internet-facing servers have public IPs. When you see 192.168.x.x it means you're looking at an internal address.</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<!-- ── Section 2.12: Summary ── -->
+								<a id="ip-summary" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.12</span> 📝 Summary</h3>
+								</div>
+								<ul class="blg-ul">
+									<li class="blg-li blg-li-check"><strong>IP address</strong> is the unique numeric identifier of any device on a network — machines use it to reach each other.</li>
+									<li class="blg-li blg-li-check"><strong>IPv4</strong> (4.3B addresses, largely exhausted) vs <strong>IPv6</strong> (virtually unlimited) — new infrastructure should prefer IPv6.</li>
+									<li class="blg-li blg-li-check"><strong>Public IPs</strong> face the internet; <strong>private IPs</strong> are for internal communication and should never be exposed directly.</li>
+									<li class="blg-li blg-li-check"><strong>DNS</strong> translates human-readable domain names into IP addresses through a 4-level hierarchy: Resolver → Root → TLD → Authoritative.</li>
+									<li class="blg-li blg-li-check"><strong>TTL</strong> controls how long DNS answers are cached — low TTL for fast changes, high TTL for fewer queries.</li>
+									<li class="blg-li blg-li-check"><strong>DNS records</strong> (A, CNAME, MX, TXT, NS) each serve a specific purpose — A records map domains to IPs, CNAME creates aliases, MX handles email.</li>
+								</ul>
+
+								<!-- ── Section 2.13: Design Challenge ── -->
+								<a id="ip-challenge" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.13</span> 🏋️ Design Challenge</h3>
+								</div>
+								<blockquote class="blg-callout-purple">
+									<strong>🌍 Challenge: Design a global web application</strong><br><br>
+									Your company is launching a web application with servers in 3 regions: US East, Europe (Frankfurt), and Asia Pacific (Tokyo). Answer the following:
+									<ul class="blg-ul" style="margin-top:10px;">
+										<li class="blg-li">European users should connect to Frankfurt servers, Asian users to Tokyo servers. How do you configure DNS to achieve this?</li>
+										<li class="blg-li">Your TTL is set to 86400 seconds (24 hours). Your primary server fails. How long before users fail over to the backup? What should you have done differently?</li>
+										<li class="blg-li">Your backend databases must never be reachable from the internet. How do you configure IP addressing to enforce this?</li>
+									</ul>
+								</blockquote>
+
+								<details class="blg-answer-reveal">
+									<summary>👁️ Show Answer</summary>
+									<div class="blg-answer-reveal-body">
+										<p class="blg-paragraph"><strong>1. Route users to nearest region:</strong><br>
+										Use DNS-based geographic routing. Configure your DNS provider to return different IPs based on the user's location — Frankfurt's load balancer IP for European users, Tokyo's IP for Asian users. AWS Route 53 offers latency-based and geolocation routing policies for exactly this.</p>
+
+										<p class="blg-paragraph"><strong>2. The TTL problem:</strong><br>
+										With TTL = 86400 seconds, clients cache the old IP for up to 24 hours after your DNS record changes. During a server failure, those clients can't reach the new server until their cache expires — meaning up to 24 hours of downtime for some users.<br><br>
+										Fix: Always lower TTL to 60–300 seconds before a planned migration. For emergency failover, use DNS health checks (e.g. Route 53 Health Checks) that automatically update DNS records when a server fails — but these only propagate quickly if TTL is low.</p>
+
+										<p class="blg-paragraph"><strong>3. Protect your databases:</strong><br>
+										Give all backend databases private IPs only (e.g. 10.0.0.5). Place them in a private subnet inside a VPC with no internet gateway attached. Only your application servers — which have both a public IP and a private IP — can communicate with the databases on their private IP addresses. The databases are invisible to the internet.</p>
+									</div>
+								</details>
+
+								<!-- ── Section 2.14: Cloud Service Mapping ── -->
+								<a id="ip-cloud" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.14</span> ☁️ Cloud Service Mapping</h3>
+								</div>
+								<p class="blg-paragraph">
+									DNS management and IP routing are provided as managed services on every major cloud platform:
+								</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Concept</th><th>AWS (Primary)</th><th>GCP</th><th>Azure</th></tr></thead>
+										<tbody>
+											<tr><td><strong>DNS hosting &amp; record management</strong></td><td>Amazon Route 53</td><td>Cloud DNS</td><td>Azure DNS</td></tr>
+											<tr><td><strong>GeoDNS &amp; latency-based routing</strong></td><td>Route 53 routing policies (latency, geolocation, failover)</td><td>Cloud DNS + Traffic Director</td><td>Azure Traffic Manager</td></tr>
+											<tr><td><strong>Health checks &amp; DNS failover</strong></td><td>Route 53 Health Checks</td><td>Cloud Monitoring + uptime checks</td><td>Azure Traffic Manager health probes</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-info">
+									<strong>AWS-first picture:</strong> <code class="code-soft">youtube.com</code> is managed in Route 53. Route 53 returns different IPs based on the user's region (latency-based routing). Each region's load balancer has a public IP; backend servers use private IPs inside a VPC.
+								</blockquote>
+								<hr class="blg-hr">
+							</div>
+
+							<div class="blg-section">
+								<a id="http-https" class="blg-anchor"></a>
+								<div class="blg-main-header"><h2>🌐 3. HTTP / HTTPS</h2></div>
+								<p class="blg-paragraph">
+									You now know that DNS translates youtube.com into an IP address — but what happens next? Once your browser has the server's address, it needs a common language to ask for data and receive responses. That language is <strong>HTTP</strong>. When that communication is encrypted, it becomes <strong>HTTPS</strong>. In this section you will learn how HTTP requests and responses are structured, the five HTTP methods every engineer must know, what status codes mean, why HTTP is stateless, and why HTTPS is non-negotiable in production systems.
+								</p>
+
+								<div class="blg-img-container">
+									<img src="../img/blog_20/http_https.webp" alt="HTTP and HTTPS — the protocol for client-server communication" class="blg-img" />
+								</div>
+
+								<!-- Section 3.1 -->
+								<a id="http-intro" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">3.1</span> 🎯 Introduction</h3></div>
+								<p class="blg-paragraph">
+									Imagine you search for "laptop" on Amazon. Your browser sends a precisely structured message: <code class="code-soft">GET /search?q=laptop HTTP/1.1</code>. That is an <strong>HTTP request</strong>. Amazon's server processes it and sends back an <strong>HTTP response</strong> with product data. Every web page you visit, every API call your app makes, every file you download — all of it travels as HTTP or HTTPS.
+								</p>
+								<p class="blg-paragraph">
+									<strong>HTTP</strong> (HyperText Transfer Protocol) defines how clients and servers communicate — what a request looks like, what a response contains, and what each side can expect. <strong>HTTPS</strong> is HTTP with TLS encryption so no one can intercept or read the data in transit.
+								</p>
+
+								<!-- Section 3.2 -->
+								<a id="http-why" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">3.2</span> 💡 Why It Matters</h3></div>
+								<p class="blg-paragraph">
+									When system designers draw an arrow between a client and a server — that arrow IS HTTP/HTTPS. Every REST API, web application, mobile app, and most microservice-to-microservice calls use HTTP as the communication protocol.
+								</p>
+								<ul class="blg-ul">
+									<li class="blg-li">HTTP methods (GET, POST, PUT, PATCH, DELETE) are how you design clean, predictable APIs that developers can understand instantly.</li>
+									<li class="blg-li">Status codes (200, 404, 500) are how clients know whether a request succeeded or failed — without them, every error looks the same.</li>
+									<li class="blg-li">HTTP is <strong>stateless</strong> — every request must carry its own authentication. This single property shapes how you design sessions and scalability in every distributed system.</li>
+									<li class="blg-li">HTTPS is non-negotiable in production: passwords, payment details, tokens, and personal data must always be encrypted in transit.</li>
+								</ul>
+								<blockquote class="blg-callout-info">
+									<strong>In system design:</strong> Always say "clients communicate over <strong>HTTPS</strong>" — never draw an arrow without knowing that arrow means an HTTP/HTTPS call. This shows you understand both the protocol and the security requirement.
+								</blockquote>
+
+								<!-- Section 3.3 -->
+								<a id="http-analogy" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">3.3</span> 🏠 Real-world Analogy</h3></div>
+								<p class="blg-paragraph">
+									Think of HTTP like placing a <strong>phone order at a restaurant</strong>. There is a structured format both sides agree on: you say what you want (request), the restaurant confirms and gives you the result (response). Both sides follow the same script — that script is the protocol.
+								</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Phone Order World</th><th>HTTP World</th><th>Role</th></tr></thead>
+										<tbody>
+											<tr><td>📞 Calling the restaurant</td><td>Opening an HTTP connection</td><td>Initiating the conversation</td></tr>
+											<tr><td>🗣️ "I'd like a pizza, deliver to 5 Main St"</td><td>HTTP Request (POST /orders)</td><td>The client's structured ask</td></tr>
+											<tr><td>📋 "Confirmed, #ORD123, 30 minutes"</td><td>HTTP Response (201 Created + JSON)</td><td>The server's structured reply</td></tr>
+											<tr><td>📦 The pizza itself</td><td>Response body (JSON data)</td><td>The actual content returned</td></tr>
+											<tr><td>🔐 Calling on an encrypted private line</td><td>HTTPS (HTTP over TLS)</td><td>Securing the conversation from eavesdroppers</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<!-- Section 3.4 -->
+								<a id="http-terms" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">3.4</span> 📖 Key Terms</h3></div>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Term</th><th>Simple Definition</th><th>Quick Example</th></tr></thead>
+										<tbody>
+											<tr><td><strong>HTTP</strong></td><td>Protocol defining how clients and servers communicate</td><td>All web requests use HTTP or HTTPS</td></tr>
+											<tr><td><strong>HTTPS</strong></td><td>HTTP over TLS — encrypted, secure HTTP</td><td>https://amazon.com — the padlock in your browser</td></tr>
+											<tr><td><strong>Request</strong></td><td>Message from client → server asking for data or an action</td><td>GET /products — give me the product list</td></tr>
+											<tr><td><strong>Response</strong></td><td>Server's reply — contains status, headers, and body</td><td>200 OK + JSON product data</td></tr>
+											<tr><td><strong>HTTP Method</strong></td><td>The type of action the client wants to perform</td><td>GET (read), POST (create), DELETE (remove)</td></tr>
+											<tr><td><strong>Status Code</strong></td><td>A 3-digit number indicating success or failure</td><td>200 = OK, 404 = Not Found, 500 = Server Error</td></tr>
+											<tr><td><strong>Header</strong></td><td>Extra metadata attached to a request or response</td><td>Authorization: Bearer token, Content-Type: application/json</td></tr>
+											<tr><td><strong>Body / Payload</strong></td><td>The actual data content of a request or response</td><td>JSON object with login credentials or product list</td></tr>
+											<tr><td><strong>Stateless</strong></td><td>Server does not remember previous requests — every request is independent</td><td>Every API call must include an auth token</td></tr>
+											<tr><td><strong>TLS</strong></td><td>Transport Layer Security — the encryption layer that makes HTTPS secure</td><td>The padlock icon; encrypts all data in transit</td></tr>
+											<tr><td><strong>REST API</strong></td><td>API design style using HTTP methods and URLs to represent resources</td><td>GET /users/123 — fetch user 123</td></tr>
+											<tr><td><strong>Port 80 / 443</strong></td><td>Default ports: HTTP uses 80, HTTPS uses 443</td><td>Servers listen on these ports for incoming requests</td></tr>
+										</tbody>
+									</table>
+								</div>
+
+								<!-- Section 3.5 -->
+								<a id="http-how" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">3.5</span> 🔢 How It Works</h3></div>
+								<p class="blg-paragraph">An HTTP exchange has two halves: a <strong>request</strong> (client → server) and a <strong>response</strong> (server → client). Each has a defined, structured format that every client and server in the world understands.</p>
+
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge badge-blue">HTTP Request Structure</span></h3></div>
+								<p class="blg-paragraph">Every HTTP request has three parts: a <strong>request line</strong> (method + URL + HTTP version), <strong>headers</strong> (metadata), and an optional <strong>body</strong> (data for POST/PUT/PATCH). Here is a real search request to Amazon:</p>
+								<div class="blg-code-block" data-lang="bash">GET /search?q=laptop HTTP/1.1
+Host: amazon.com
+Authorization: Bearer eyJhbGci...
+Accept: application/json
+User-Agent: Mozilla/5.0 (Chrome/120)</div>
+								<p class="blg-paragraph">In plain English: "Hey Amazon (<code class="code-soft">Host</code>), please give me (<code class="code-soft">GET</code>) the search results for 'laptop' (<code class="code-soft">/search?q=laptop</code>). Here is my login token (<code class="code-soft">Authorization</code>). I want the response as JSON (<code class="code-soft">Accept</code>)."</p>
+
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge badge-green">HTTP Response Structure</span></h3></div>
+								<p class="blg-paragraph">The server replies with a <strong>status line</strong> (version + status code + text), <strong>headers</strong>, and a <strong>body</strong> containing the actual data returned.</p>
+								<div class="blg-code-block" data-lang="bash">HTTP/1.1 200 OK
+Content-Type: application/json
+Cache-Control: max-age=60
+
+{
+  "products": [
+    {"name": "Laptop Pro", "price": 999},
+    {"name": "Laptop Air", "price": 799}
+  ]
+}</div>
+								<p class="blg-paragraph">In plain English: "Request successful (<code class="code-soft">200 OK</code>). Here is the data as JSON (<code class="code-soft">Content-Type</code>). You can cache this for 60 seconds (<code class="code-soft">Cache-Control</code>)."</p>
+								<blockquote class="blg-callout-note">
+									<strong>Key insight:</strong> The request line tells the server WHAT to do. The headers add context (who you are, what format you accept). The body carries data (only in POST/PUT/PATCH). The response status code tells you the outcome before you even read the body.
+								</blockquote>
+
+								<!-- Section 3.6 -->
+								<a id="http-types" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">3.6</span> 🔀 Types &amp; Variations</h3></div>
+								<p class="blg-paragraph">HTTP has several key building blocks: <strong>methods</strong> (action to perform), <strong>status codes</strong> (what happened), <strong>headers</strong> (metadata), <strong>body/payload</strong> (data), the critical <strong>stateless</strong> property, and the <strong>HTTPS/TLS</strong> security layer. Each is explained below.</p>
+
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge badge-blue">A. HTTP Methods — The Five Actions</span></h3></div>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Method</th><th>Meaning</th><th>Has Body?</th><th>Changes Server Data?</th></tr></thead>
+										<tbody>
+											<tr><td>📖 <strong>GET</strong></td><td>Read / fetch data</td><td>No</td><td>No — safe to repeat</td></tr>
+											<tr><td>➕ <strong>POST</strong></td><td>Create new data</td><td>Yes</td><td>Yes — creates something new</td></tr>
+											<tr><td>🔄 <strong>PUT</strong></td><td>Replace entire resource</td><td>Yes</td><td>Yes — replaces completely</td></tr>
+											<tr><td>✏️ <strong>PATCH</strong></td><td>Update part of a resource</td><td>Yes</td><td>Yes — partial update only</td></tr>
+											<tr><td>🗑️ <strong>DELETE</strong></td><td>Remove a resource</td><td>No</td><td>Yes — deletes permanently</td></tr>
+										</tbody>
+									</table>
+								</div>
+
+								<p class="blg-paragraph"><strong>GET — Read data.</strong> Fetches data without changing anything on the server. Safe to repeat — refreshing a page just sends the same GET request again.</p>
+								<div class="blg-code-block" data-lang="bash">GET /products/123 HTTP/1.1
+Host: amazon.com</div>
+								<div class="blg-table">
+									<table>
+										<thead><tr><th>Action</th><th>GET Request</th></tr></thead>
+										<tbody>
+											<tr><td>View YouTube video details</td><td><code class="code-soft">GET /videos/abc123</code></td></tr>
+											<tr><td>Load Instagram profile</td><td><code class="code-soft">GET /users/james</code></td></tr>
+											<tr><td>Search products</td><td><code class="code-soft">GET /search?q=laptop</code></td></tr>
+											<tr><td>Read post comments</td><td><code class="code-soft">GET /posts/10/comments</code></td></tr>
+										</tbody>
+									</table>
+								</div>
+
+								<p class="blg-paragraph"><strong>POST — Create new data.</strong> Sends data in the body to create something new. Repeating a POST order request creates two separate orders — not idempotent like GET.</p>
+								<div class="blg-code-block" data-lang="bash">POST /orders HTTP/1.1
+Content-Type: application/json
+
+{
+  "items": ["laptop_123"],
+  "address": "5 Main St, Tokyo"
+}</div>
+								<div class="blg-table">
+									<table>
+										<thead><tr><th>Action</th><th>POST Request</th></tr></thead>
+										<tbody>
+											<tr><td>Create account</td><td><code class="code-soft">POST /users</code></td></tr>
+											<tr><td>Login</td><td><code class="code-soft">POST /login</code></td></tr>
+											<tr><td>Place order</td><td><code class="code-soft">POST /orders</code></td></tr>
+											<tr><td>Post comment</td><td><code class="code-soft">POST /posts/10/comments</code></td></tr>
+										</tbody>
+									</table>
+								</div>
+
+								<p class="blg-paragraph"><strong>PUT — Replace entire resource.</strong> Replaces the full resource with a new version. You must send ALL fields — any field not included is removed.</p>
+								<div class="blg-code-block" data-lang="bash">PUT /users/123 HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "james Fernando",
+  "email": "james.new@example.com",
+  "city": "Osaka"
+}</div>
+
+								<p class="blg-paragraph"><strong>PATCH — Update part of a resource.</strong> Updates only the fields you send. More efficient than PUT when you only need to change one or two fields.</p>
+								<div class="blg-code-block" data-lang="bash">PATCH /users/123 HTTP/1.1
+Content-Type: application/json
+
+{
+  "city": "Osaka"
+}</div>
+								<blockquote class="blg-callout-tip">
+									<strong>PUT vs PATCH:</strong> PUT = replace the whole object (must send everything). PATCH = change only what you specify (send only changed fields). In practice, PATCH is used far more often because it is safer and more efficient.
+								</blockquote>
+
+								<p class="blg-paragraph"><strong>DELETE — Remove a resource.</strong> Permanently removes the identified resource.</p>
+								<div class="blg-code-block" data-lang="bash">DELETE /comments/987 HTTP/1.1
+Authorization: Bearer eyJhbGci...</div>
+								<div class="blg-table">
+									<table>
+										<thead><tr><th>Action</th><th>DELETE Request</th></tr></thead>
+										<tbody>
+											<tr><td>Delete comment</td><td><code class="code-soft">DELETE /comments/987</code></td></tr>
+											<tr><td>Cancel order</td><td><code class="code-soft">DELETE /orders/ORD123</code></td></tr>
+											<tr><td>Remove saved address</td><td><code class="code-soft">DELETE /addresses/5</code></td></tr>
+										</tbody>
+									</table>
+								</div>
+
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge badge-teal">B. HTTP Status Codes — What Happened?</span></h3></div>
+								<p class="blg-paragraph">Status codes are three-digit numbers in every HTTP response. They tell the client immediately — before reading the body — whether the request succeeded or failed. Memorise these eight codes: they cover 90% of what you will encounter in real systems.</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Code</th><th>Meaning</th><th>Typical Cause</th><th>Example</th></tr></thead>
+										<tbody>
+											<tr><td><strong>200 OK</strong></td><td>Request succeeded</td><td>Successful GET, PUT, PATCH</td><td><code class="code-soft">GET /products/123</code> → product found</td></tr>
+											<tr><td><strong>201 Created</strong></td><td>New resource created</td><td>Successful POST</td><td><code class="code-soft">POST /orders</code> → order placed</td></tr>
+											<tr><td><strong>400 Bad Request</strong></td><td>Client sent invalid data</td><td>Missing field, wrong format</td><td>Email format wrong, required field empty</td></tr>
+											<tr><td><strong>401 Unauthorized</strong></td><td>Not authenticated</td><td>No token, expired token</td><td><code class="code-soft">GET /my-orders</code> without login → 401</td></tr>
+											<tr><td><strong>403 Forbidden</strong></td><td>Authenticated but not allowed</td><td>Valid login, wrong permission</td><td>Normal user tries <code class="code-soft">DELETE /admin/users/55</code></td></tr>
+											<tr><td><strong>404 Not Found</strong></td><td>Resource does not exist</td><td>Wrong ID, deleted resource</td><td><code class="code-soft">GET /products/999999</code> → not found</td></tr>
+											<tr><td><strong>429 Too Many Requests</strong></td><td>Rate limit exceeded</td><td>Too many calls in short time</td><td>Repeated login attempts blocked</td></tr>
+											<tr><td><strong>500 Internal Server Error</strong></td><td>Server crashed</td><td>Unhandled exception, bug</td><td><code class="code-soft">GET /orders</code> → server database crashed</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-tip">
+									<strong>401 vs 403:</strong> 401 = "I don't know who you are — login first." 403 = "I know who you are, but you're not allowed to do this." A request with no token → 401. A normal user trying an admin action → 403.
+								</blockquote>
+
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge badge-purple">C. HTTP Headers — Metadata on Every Request</span></h3></div>
+								<p class="blg-paragraph">Headers are key-value pairs that carry metadata. Think of them like labels on a package — the package contains the main item (the body), but the labels tell the receiver what type of item it is, who sent it, and how it should be handled.</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Header</th><th>Meaning</th><th>Example</th></tr></thead>
+										<tbody>
+											<tr><td><code class="code-soft">Host</code></td><td>The domain the client is requesting</td><td><code class="code-soft">amazon.com</code></td></tr>
+											<tr><td><code class="code-soft">Authorization</code></td><td>Login token, Bearer token, or API key</td><td><code class="code-soft">Bearer eyJhbGci...</code></td></tr>
+											<tr><td><code class="code-soft">Content-Type</code></td><td>Format of the request body being sent</td><td><code class="code-soft">application/json</code></td></tr>
+											<tr><td><code class="code-soft">Accept</code></td><td>Format the client wants in the response</td><td><code class="code-soft">application/json</code></td></tr>
+											<tr><td><code class="code-soft">Cache-Control</code></td><td>Caching instructions</td><td><code class="code-soft">max-age=60</code> (cache 60s)</td></tr>
+											<tr><td><code class="code-soft">User-Agent</code></td><td>Browser or client app info</td><td><code class="code-soft">Mozilla/5.0 (Chrome/120)</code></td></tr>
+											<tr><td><code class="code-soft">Cookie</code></td><td>Session or tracking info sent by browser</td><td><code class="code-soft">session_id=abc123</code></td></tr>
+										</tbody>
+									</table>
+								</div>
+								<p class="blg-paragraph">Here is what a real POST request with authentication headers looks like:</p>
+								<div class="blg-code-block" data-lang="bash">POST /orders HTTP/1.1
+Authorization: Bearer eyJhbGci...
+Content-Type: application/json
+Accept: application/json
+
+{
+  "items": ["laptop_123"],
+  "address": "5 Main St, Tokyo"
+}</div>
+
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge badge-orange">D. HTTP Body / Payload</span></h3></div>
+								<p class="blg-paragraph">The body is the actual data content. <strong>GET and DELETE requests usually have no body</strong> — the URL carries all the information. <strong>POST, PUT, and PATCH carry data in the body</strong> — this is how you send new or updated data to the server.</p>
+								<p class="blg-paragraph">In modern APIs, the body is almost always <strong>JSON</strong> because it is readable by both humans and machines. Example login request body:</p>
+								<div class="blg-code-block" data-lang="json">{
+  "email": "james@example.com",
+  "password": "mypassword"
+}</div>
+								<p class="blg-paragraph">And the server's response body (after placing an order):</p>
+								<div class="blg-code-block" data-lang="json">{
+  "order_id": "ORD-20260530-123",
+  "status": "confirmed",
+  "estimated_delivery": "30 minutes",
+  "total": 4500
+}</div>
+
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge badge-green">E. HTTP Is Stateless — Critical for Scalability</span></h3></div>
+								<p class="blg-paragraph">This single property shapes every scalability decision you will make: <strong>HTTP is stateless</strong>. The server does not automatically remember anything about a previous request. Every request is treated as completely independent.</p>
+								<blockquote class="blg-callout-info">
+									<strong>Real-world analogy:</strong> Imagine calling a customer support center. Every time you call, a different agent answers. That agent has no memory of your previous calls — you must re-identify yourself every time: "Hi, my name is james, customer ID 12345, calling about order ORD-123." HTTP works exactly the same — every request must carry enough information for the server to understand who you are and what you are allowed to do.
+								</blockquote>
+								<p class="blg-paragraph">Because the server remembers nothing, the client includes an <strong>authentication token, cookie, or session ID</strong> in every request header:</p>
+								<div class="blg-code-block" data-lang="bash">GET /my-orders HTTP/1.1
+Authorization: Bearer eyJhbGci...    ← identity proof on EVERY request</div>
+								<p class="blg-paragraph"><strong>Why statelessness is great for scalability:</strong></p>
+								<ul class="blg-ul">
+									<li class="blg-li">Any server in a cluster can handle any request — the request contains all the information the server needs</li>
+									<li class="blg-li">Load balancers can route requests to any available server — no "sticky sessions" needed</li>
+									<li class="blg-li">If a server crashes, another server picks up the next request with no data loss</li>
+									<li class="blg-li">Auto-scaling works cleanly — new servers are immediately ready to handle requests</li>
+								</ul>
+
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge badge-red">F. HTTP vs HTTPS — Why Encryption Matters</span></h3></div>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Feature</th><th>HTTP</th><th>HTTPS</th></tr></thead>
+										<tbody>
+											<tr><td>Security</td><td>❌ Plaintext — anyone can intercept and read</td><td>✅ TLS encrypted — unreadable in transit</td></tr>
+											<tr><td>Default port</td><td>80</td><td>443</td></tr>
+											<tr><td>URL prefix</td><td><code class="code-soft">http://</code></td><td><code class="code-soft">https://</code></td></tr>
+											<tr><td>Safe for passwords, payments, tokens</td><td>❌ Never</td><td>✅ Yes</td></tr>
+											<tr><td>Browser padlock shown</td><td>No (warning shown instead)</td><td>Yes</td></tr>
+											<tr><td>Production use</td><td>Only internal services in private networks</td><td>Always for external-facing APIs and websites</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-warning">
+									<strong>Without HTTPS:</strong> Anyone between the client and server — on the same Wi-Fi, at the ISP, or a malicious middle actor — can read everything: passwords, tokens, credit card numbers, personal messages. This is called a man-in-the-middle attack. HTTPS makes all of this data completely unreadable to anyone who intercepts it.
+								</blockquote>
+
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge badge-blue">G. TLS / SSL — How HTTPS Encrypts</span></h3></div>
+								<p class="blg-paragraph">TLS (Transport Layer Security) is the security layer under HTTPS. You may hear "SSL" — that is the older name; modern systems use TLS. TLS provides three guarantees for every HTTPS connection:</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>TLS Guarantee</th><th>What It Means</th><th>Analogy</th></tr></thead>
+										<tbody>
+											<tr><td>🔐 <strong>Encryption</strong></td><td>Data is scrambled — only client and server can read it</td><td>Sending a locked box — only the receiver has the key</td></tr>
+											<tr><td>✅ <strong>Authentication</strong></td><td>Browser verifies the server is who it claims to be (via TLS certificate)</td><td>Checking the ID of the person before handing over the package</td></tr>
+											<tr><td>🛡️ <strong>Integrity</strong></td><td>Data cannot be silently modified in transit</td><td>Tamper-evident seal — any modification is detected</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<p class="blg-paragraph"><strong>The TLS handshake</strong> (happens automatically in milliseconds before the first HTTP request):</p>
+								<div class="blg-table">
+									<table>
+										<thead><tr><th>Step</th><th>What Happens</th></tr></thead>
+										<tbody>
+											<tr><td>①</td><td>Browser connects to server on port 443 and says "I want a secure connection"</td></tr>
+											<tr><td>②</td><td>Server sends its <strong>TLS certificate</strong> (issued by a trusted Certificate Authority like Let's Encrypt or DigiCert)</td></tr>
+											<tr><td>③</td><td>Browser verifies the certificate — checks it is valid, not expired, and issued by a trusted authority</td></tr>
+											<tr><td>④</td><td>Browser and server agree on shared <strong>encryption keys</strong> using public-key cryptography (no key is ever sent over the network)</td></tr>
+											<tr><td>⑤</td><td>Secure encrypted channel established — all HTTP data from here is encrypted</td></tr>
+											<tr><td>⑥</td><td>Normal HTTP request-response begins, now running inside the encrypted tunnel</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-info">
+									<strong>In production:</strong> TLS is usually terminated at the <strong>load balancer or CDN layer</strong> — not at the backend server. The load balancer handles TLS encryption/decryption, and backend servers receive unencrypted HTTP on the internal private network (protected by private IPs and firewall rules). This is called TLS termination.
+								</blockquote>
+
+																<!-- Section 3.7 -->
+								<a id="http-diagram" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">3.7</span> 🎨 Illustrated Diagram</h3></div>
+								<p class="blg-paragraph">The diagram below shows the difference between HTTP and HTTPS, and the structure of the request-response cycle.</p>
+								<div class="blg-mermaid-wrap">
+									<div class="mermaid" style="min-width:680px;font-size:16px;">
+%%{init: {"theme": "base", "themeVariables": {"lineColor": "#64748b", "edgeLabelBackground": "#fff"}}}%%
+flowchart TD
+    subgraph HTTP["❌ HTTP — Port 80 (Unencrypted)"]
+    direction LR
+        C1["💻 Client"] -->|"⚠️ Plaintext — anyone can intercept"| S1["🖥️ Server"]
+        S1 -->|"⚠️ Plaintext response — data exposed"| C1
+    end
+
+    subgraph HTTPS["✅ HTTPS — Port 443 (TLS Encrypted)"]
+    direction LR
+        C2["💻 Client"] -->|"🔐 Encrypted request — only server reads it"| S2["🖥️ Server"]
+        S2 -->|"🔐 Encrypted response — only client reads it"| C2
+    end
+
+    style HTTP fill:#fef2f2,stroke:#ef4444,color:#991b1b
+    style HTTPS fill:#f0fdf4,stroke:#22c55e,color:#14532d
+    style C1 fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    style S1 fill:#fee2e2,stroke:#ef4444,color:#991b1b
+    style C2 fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    style S2 fill:#d1fae5,stroke:#059669,color:#064e3b
+									</div>
+								</div>
+								<p class="blg-paragraph"><strong>Reading the diagram:</strong> HTTP sends data as plaintext — anyone who intercepts the traffic between client and server can read passwords, tokens, and personal data. HTTPS wraps the same HTTP communication in TLS encryption — the data is unreadable to anyone except the intended client and server.</p>
+								<!-- Section 3.8 -->
+								<a id="http-when" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">3.8</span> ✅ When to Use</h3></div>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Scenario</th><th>Use This</th><th>Why</th></tr></thead>
+										<tbody>
+											<tr><td>Any production application (login, payments, personal data, APIs)</td><td>HTTPS always</td><td>Sensitive data must never travel unencrypted over the internet</td></tr>
+											<tr><td>Fetching data — no state change on the server</td><td>GET</td><td>Read-only, safe to retry, can be cached</td></tr>
+											<tr><td>Creating a new resource (order, account, post)</td><td>POST</td><td>Sends data in the body; creates something new on the server</td></tr>
+											<tr><td>Updating a small part of a resource (change city, update photo)</td><td>PATCH</td><td>More efficient than PUT — only sends changed fields</td></tr>
+											<tr><td>Replacing a full resource with a completely new version</td><td>PUT</td><td>Sends the entire object; replaces everything</td></tr>
+											<tr><td>Removing a resource permanently</td><td>DELETE</td><td>Removes the identified resource from the server</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-tip">
+									<strong>Golden rule:</strong> Use HTTP (not HTTPS) only for local development or internal service-to-service calls inside a private VPC. Every external-facing endpoint — login, API, CDN, admin panel — must use HTTPS.
+								</blockquote>
+
+								<!-- Section 3.9 -->
+								<a id="http-example" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">3.9</span> 🏗️ Real-world Example — Placing an Order on Uber Eats</h3></div>
+								<p class="blg-paragraph">When you place a food order on Uber Eats, here are the HTTP calls happening behind the scenes:</p>
+								<div class="blg-table">
+									<table>
+										<thead><tr><th>Step</th><th>HTTP Call</th><th>What Happens</th></tr></thead>
+										<tbody>
+											<tr><td>①</td><td><code class="code-soft">GET /restaurants?city=tokyo</code></td><td>App fetches nearby restaurants — server returns list as JSON. <strong>Response: 200 OK</strong></td></tr>
+											<tr><td>②</td><td><code class="code-soft">GET /restaurants/123/menu</code></td><td>User taps a restaurant — app fetches its menu. <strong>Response: 200 OK</strong></td></tr>
+											<tr><td>③</td><td><code class="code-soft">POST /orders</code> + body: {items, address, payment}</td><td>User confirms order — app creates a new order. <strong>Response: 201 Created</strong></td></tr>
+											<tr><td>④</td><td><code class="code-soft">GET /orders/ORD123/status</code></td><td>App polls order status — returns "accepted", "preparing", "on the way". <strong>Response: 200 OK</strong></td></tr>
+											<tr><td>⑤</td><td><code class="code-soft">PATCH /orders/ORD123/address</code></td><td>User changes delivery address before driver picks up. <strong>Response: 200 OK</strong></td></tr>
+											<tr><td>⑥</td><td><code class="code-soft">DELETE /orders/ORD123</code></td><td>User cancels order. <strong>Response: 200 OK or 204 No Content</strong></td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-info">
+									<strong>Notice:</strong> All five HTTP methods appear in a single user session. Each call has the right method for the action — GET for reading, POST for creating, PATCH for partial update, DELETE for removal. This is clean REST API design.
+								</blockquote>
+								<!-- Section 3.10 -->
+								<a id="http-tradeoffs" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">3.10</span> ⚖️ Trade-offs</h3></div>
+								<div class="blg-table blg-table-half">
+									<table>
+										<thead><tr><th>✅ Advantages</th><th>❌ Disadvantages</th></tr></thead>
+										<tbody>
+											<tr><td><strong>Stateless design</strong> — any server can handle any request; scales horizontally with load balancers</td><td><strong>Stateless overhead</strong> — every request must carry auth tokens/cookies, adding bytes to every call</td></tr>
+											<tr><td><strong>HTTPS security</strong> — data is encrypted; users and browsers trust HTTPS sites</td><td><strong>TLS handshake latency</strong> — adds one round trip on first connection (mitigated by TLS 1.3 and keep-alive)</td></tr>
+											<tr><td><strong>Widely supported</strong> — HTTP/HTTPS works across every platform, language, and device</td><td><strong>Not ideal for real-time</strong> — HTTP is request-response; not suited for live bidirectional streams (WebSockets are better)</td></tr>
+											<tr><td><strong>Simple caching</strong> — GET responses can be cached by CDNs, browsers, and proxies</td><td><strong>Text-based overhead</strong> — HTTP headers add significant bytes per request (HTTP/2 headers compression helps)</td></tr>
+										</tbody>
+									</table>
+								</div>
+
+								<!-- Section 3.11 -->
+								<a id="http-mistakes" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">3.11</span> 🚫 Common Mistakes</h3></div>
+								<div class="blg-table">
+									<table>
+										<thead><tr><th>#</th><th>❌ Common Mistake</th><th>✅ The Reality</th></tr></thead>
+										<tbody>
+											<tr><td>1</td><td><strong>Using POST for everything</strong></td><td>Use the right method: GET to read, POST to create, PUT/PATCH to update, DELETE to remove. Wrong methods make your API unpredictable and break client expectations.</td></tr>
+											<tr><td>2</td><td><strong>Returning 200 for all responses including errors</strong></td><td>Return the correct status code — 400 for bad input, 401 for unauthenticated, 404 for not found, 500 for server error. Returning 200 for everything forces clients to parse every response body to detect errors.</td></tr>
+											<tr><td>3</td><td><strong>HTTP and HTTPS are completely different protocols</strong></td><td>HTTPS is HTTP over TLS — it is the same protocol with an encryption layer added. The request/response structure, methods, and status codes are identical.</td></tr>
+											<tr><td>4</td><td><strong>Forgetting HTTP is stateless</strong></td><td>The server does not remember you between requests. Always include authentication (Bearer token, cookie, session ID) in every request that requires it.</td></tr>
+											<tr><td>5</td><td><strong>Using HTTP in production</strong></td><td>Always use HTTPS for any public-facing endpoint. HTTP exposes passwords, tokens, and personal data to anyone on the network — unacceptable in production.</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<!-- Section 3.12 -->
+								<a id="http-summary" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">3.12</span> 📝 Summary</h3></div>
+								<ul class="blg-ul">
+									<li class="blg-li blg-li-check"><strong>HTTP</strong> is the protocol defining how clients and servers communicate — every web request is an HTTP request-response pair.</li>
+									<li class="blg-li blg-li-check"><strong>HTTPS</strong> = HTTP + TLS encryption — always use HTTPS in production for any data that matters.</li>
+									<li class="blg-li blg-li-check"><strong>5 methods</strong>: GET (read) · POST (create) · PUT (replace) · PATCH (partial update) · DELETE (remove). Use the right one for each action.</li>
+									<li class="blg-li blg-li-check"><strong>Status codes</strong>: 2xx success · 3xx redirect · 4xx client error · 5xx server error. Return meaningful codes — never 200 for everything.</li>
+									<li class="blg-li blg-li-check"><strong>HTTP is stateless</strong> — every request is independent. Authentication tokens or cookies must be included with every request that needs them.</li>
+									<li class="blg-li blg-li-check"><strong>REST APIs</strong> are built on HTTP — resources are URLs, actions are methods, results are status codes.</li>
+								</ul>
+
+								<!-- Section 3.13 -->
+								<a id="http-challenge" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">3.13</span> 🏋️ Design Challenge</h3></div>
+								<blockquote class="blg-callout-purple">
+									<strong>🍕 Challenge: Design a food delivery app REST API</strong><br><br>
+									For each of the following actions, choose the correct HTTP method, design the endpoint URL, and state the expected success status code:
+									<ul class="blg-ul" style="margin-top:10px;">
+										<li class="blg-li">Browse available restaurants near the user</li>
+										<li class="blg-li">Place a new food order</li>
+										<li class="blg-li">Change the delivery address on an existing order</li>
+										<li class="blg-li">Cancel an order before it is picked up</li>
+										<li class="blg-li">A user tries to cancel an order that doesn't exist — what status code should the server return?</li>
+									</ul>
+								</blockquote>
+								<details class="blg-answer-reveal">
+									<summary>👁️ Show Answer</summary>
+									<div class="blg-answer-reveal-body">
+										<div class="blg-table blg-table-balanced">
+											<table>
+												<thead><tr><th>Action</th><th>Method</th><th>Endpoint</th><th>Success Code</th></tr></thead>
+												<tbody>
+													<tr><td>Browse restaurants</td><td>GET</td><td>/restaurants?city=tokyo</td><td>200 OK</td></tr>
+													<tr><td>Place new order</td><td>POST</td><td>/orders</td><td>201 Created</td></tr>
+													<tr><td>Change delivery address</td><td>PATCH</td><td>/orders/{id}/address</td><td>200 OK</td></tr>
+													<tr><td>Cancel order</td><td>DELETE</td><td>/orders/{id}</td><td>200 OK or 204 No Content</td></tr>
+													<tr><td>Cancel non-existent order</td><td>DELETE</td><td>/orders/{id}</td><td>404 Not Found</td></tr>
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</details>
+
+								<!-- Section 3.14 -->
+								<a id="http-cloud" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">3.14</span> ☁️ Cloud Service Mapping</h3></div>
+								<p class="blg-paragraph">In cloud production systems, HTTP/HTTPS traffic flows through these managed services:</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Concept</th><th>AWS (Primary)</th><th>GCP</th><th>Azure</th></tr></thead>
+										<tbody>
+											<tr><td><strong>TLS certificates</strong></td><td>AWS Certificate Manager (ACM) — free, auto-renews</td><td>Certificate Manager</td><td>Azure Key Vault / App Service Certificates</td></tr>
+											<tr><td><strong>HTTP/HTTPS traffic routing</strong></td><td>Application Load Balancer (ALB)</td><td>Cloud Load Balancing (HTTP(S))</td><td>Azure Application Gateway</td></tr>
+											<tr><td><strong>CDN with HTTPS</strong></td><td>Amazon CloudFront</td><td>Cloud CDN</td><td>Azure Front Door / Azure CDN</td></tr>
+											<tr><td><strong>HTTPS API entry point</strong></td><td>Amazon API Gateway</td><td>API Gateway / Apigee</td><td>Azure API Management</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-info">
+									<strong>AWS flow:</strong> Client → Route 53 (DNS) → CloudFront (CDN + HTTPS) → Application Load Balancer → EC2/Lambda (backend). ACM automatically provides and renews the TLS certificate for CloudFront and ALB — no manual certificate management needed.
+								</blockquote>
+								<hr class="blg-hr">
+							</div>
+
+							<div class="blg-section">
+								<a id="tcp-udp" class="blg-anchor"></a>
+								<div class="blg-main-header"><h2>⚡ 4. TCP vs UDP</h2></div>
+								<p class="blg-paragraph">
+									You now know that HTTP/HTTPS is the language clients and servers use to communicate. But how does that data actually travel across the internet? That is the job of the <strong>transport layer</strong>, and there are two main protocols to choose from: <strong>TCP</strong> (reliable, ordered, slower) and <strong>UDP</strong> (fast, lightweight, no guarantees). Every system design decision involving real-time communication — video calls, online gaming, live location tracking — ultimately comes down to choosing between these two.
+								</p>
+
+								<div class="blg-img-container">
+									<img src="../img/blog_20/tcp_udp.webp" alt="TCP vs UDP — reliable vs fast transport protocols" class="blg-img" />
+								</div>
+
+								<!-- 4.1 -->
+								<a id="tcp-intro" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">4.1</span> 🎯 Introduction</h3></div>
+								<p class="blg-paragraph">
+									Imagine you are on a Zoom call. At the same moment, your browser downloads your bank statement. Both use the internet, but they behave very differently: the Zoom video stream keeps going even if a few frames are lost — your call stays smooth. But your bank statement absolutely cannot have a single byte missing or corrupted — every number must be exact.
+								</p>
+								<p class="blg-paragraph">
+									This difference comes down to TCP vs UDP. <strong>TCP (Transmission Control Protocol)</strong> is the careful, reliable choice — it guarantees every byte arrives in order. <strong>UDP (User Datagram Protocol)</strong> is the fast, lightweight choice — it sends data as quickly as possible without waiting for confirmations.
+								</p>
+								<p class="blg-paragraph">
+									Understanding where TCP and UDP sit in the network stack is essential:
+								</p>
+								<div class="blg-code-block" data-lang="bash">HTTP/HTTPS  → What message format is used?
+TCP / UDP   → How that message is transported?
+IP          → Where the packet should go?
+Network     → The physical cables and wireless signals</div>
+
+								<!-- 4.2 -->
+								<a id="tcp-why" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">4.2</span> 💡 Why It Matters</h3></div>
+								<p class="blg-paragraph">
+									Every system you design has components that communicate over a network. The choice of TCP vs UDP directly affects reliability, latency, and user experience. Getting this wrong can mean lost payments, broken file downloads, or laggy video calls.
+								</p>
+								<ul class="blg-ul">
+									<li class="blg-li">HTTP/HTTPS (every web page and REST API) runs on <strong>TCP</strong> — reliable delivery is non-negotiable for web content.</li>
+									<li class="blg-li">DNS lookups commonly use <strong>UDP</strong> — queries are tiny and speed matters more than retrying.</li>
+									<li class="blg-li">Zoom, Google Meet, and Discord voice use <strong>UDP-based protocols</strong> — a lost video frame is better ignored than waited for.</li>
+									<li class="blg-li">WhatsApp text messages use <strong>TCP</strong> — but WhatsApp voice/video calls switch to UDP-based transport.</li>
+									<li class="blg-li">Modern <strong>HTTP/3 uses QUIC over UDP</strong> — an attempt to get TCP-like reliability with UDP-like speed.</li>
+								</ul>
+								<blockquote class="blg-callout-info">
+									<strong>Core decision:</strong> Use TCP when correctness matters more than speed. Use UDP when speed matters more than perfect delivery.
+								</blockquote>
+
+								<!-- 4.3 -->
+								<a id="tcp-analogy" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">4.3</span> 🏠 Real-world Analogy</h3></div>
+								<p class="blg-paragraph">
+									<strong>TCP</strong> is like sending an important contract via registered mail with tracking and signature confirmation. The courier confirms delivery, tracks every step, resends if something goes missing, and ensures pages arrive in the right order. Slower — but nothing is lost.
+								</p>
+								<p class="blg-paragraph">
+									<strong>UDP</strong> is like a sports commentator shouting live updates. They keep talking regardless of whether every word reaches every listener — some words may be lost to background noise, but the commentary stays current and keeps moving forward.
+								</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Analogy</th><th>TCP</th><th>UDP</th></tr></thead>
+										<tbody>
+											<tr><td>📬 Registered mail with tracking</td><td>✅ TCP — confirmed delivery</td><td>—</td></tr>
+											<tr><td>📣 Sports commentary shouted live</td><td>—</td><td>✅ UDP — keeps moving, no confirmation</td></tr>
+											<tr><td>Queue at a counter (ordered)</td><td>✅ TCP — serves in strict order</td><td>—</td></tr>
+											<tr><td>Leaflets dropped from a plane</td><td>—</td><td>✅ UDP — fast, no confirmation who received</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<!-- 4.4 -->
+								<a id="tcp-terms" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">4.4</span> 📖 Key Terms</h3></div>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Term</th><th>Simple Definition</th><th>Quick Example</th></tr></thead>
+										<tbody>
+											<tr><td><strong>TCP</strong></td><td>Reliable, ordered transport — guarantees every byte arrives correctly</td><td>HTTP, file downloads, payments</td></tr>
+											<tr><td><strong>UDP</strong></td><td>Fast, lightweight transport — sends quickly, no delivery guarantee</td><td>Video calls, DNS queries, online gaming</td></tr>
+											<tr><td><strong>Packet</strong></td><td>A small chunk of data sent across the network</td><td>A single 1500-byte unit of your download</td></tr>
+											<tr><td><strong>3-Way Handshake</strong></td><td>TCP's connection setup process — SYN → SYN-ACK → ACK</td><td>Like "Hello → Hello back → OK, let's talk"</td></tr>
+											<tr><td><strong>SYN / ACK</strong></td><td>SYN = "I want to connect". ACK = "I received your message"</td><td>TCP's connection handshake signals</td></tr>
+											<tr><td><strong>Retransmission</strong></td><td>TCP resending a packet that was lost in transit</td><td>Lost packet 3 → TCP requests and resends it</td></tr>
+											<tr><td><strong>Ordered Delivery</strong></td><td>Data arrives in the same sequence it was sent</td><td>Packets 1, 2, 3 arrive as 1, 2, 3 (not 3, 1, 2)</td></tr>
+											<tr><td><strong>Head-of-Line Blocking</strong></td><td>One lost packet blocks all later packets from being delivered</td><td>Packet 2 lost → packets 3, 4, 5 wait on hold</td></tr>
+											<tr><td><strong>Connection-oriented</strong></td><td>A connection is established before data is sent (TCP)</td><td>TCP 3-way handshake before HTTP request</td></tr>
+											<tr><td><strong>Connectionless</strong></td><td>Data is sent without establishing a connection first (UDP)</td><td>DNS query sent immediately, no handshake</td></tr>
+											<tr><td><strong>QUIC</strong></td><td>Modern protocol over UDP that adds reliability features — used by HTTP/3</td><td>HTTP/3 → QUIC → UDP → IP</td></tr>
+										</tbody>
+									</table>
+								</div>
+
+								<!-- 4.5 -->
+								<a id="tcp-how" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">4.5</span> 🔢 How It Works</h3></div>
+
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge badge-blue">TCP — Reliable, Step by Step</span></h3></div>
+								<p class="blg-paragraph"><strong>Step 1: The 3-Way Handshake</strong> — Before any data is sent, TCP establishes a connection:</p>
+								<div class="blg-code-block" data-lang="bash">Client → Server : SYN       "I want to connect. Are you ready?"
+Server → Client : SYN-ACK   "Yes, I'm ready. Are you ready?"
+Client → Server : ACK       "Yes. Let's communicate."</div>
+								<p class="blg-paragraph">Only after all three steps does data transfer begin. This adds one round-trip of latency before any content is sent.</p>
+
+								<p class="blg-paragraph"><strong>Step 2: Ordered Delivery</strong> — TCP numbers every packet. Even if they arrive out of order, TCP reorders them before handing data to the application:</p>
+								<div class="blg-code-block" data-lang="bash">Network delivers:  Packet 1, Packet 3, Packet 2
+TCP reassembles:   Packet 1, Packet 2, Packet 3  ← always correct order</div>
+
+								<p class="blg-paragraph"><strong>Step 3: Retransmission</strong> — If a packet is lost, TCP detects it and requests a resend. The application waits until the complete data arrives:</p>
+								<div class="blg-code-block" data-lang="bash">Packet 1 → received ✓
+Packet 2 → LOST ✗
+Packet 3 → received but WAITS (head-of-line blocking)
+Packet 2 → resent ✓
+Packet 3 → now delivered (in order)</div>
+
+								<blockquote class="blg-callout-tip">
+									<strong>Head-of-Line Blocking:</strong> Because TCP delivers data IN ORDER, one missing packet blocks all later packets from being delivered — even if they've already arrived. Like a queue where one person drops something and nobody behind them can move forward until it's picked up.
+								</blockquote>
+
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge badge-orange">UDP — Fast, Step by Step</span></h3></div>
+								<p class="blg-paragraph"><strong>No handshake</strong> — UDP just sends packets immediately. No connection setup, no waiting:</p>
+								<div class="blg-code-block" data-lang="bash">Client → Server : Packet 1  (sent immediately)
+Client → Server : Packet 2  (sent immediately)
+Client → Server : Packet 3  (sent immediately)
+                             ← no acknowledgement, no confirmation</div>
+								<p class="blg-paragraph"><strong>No ordering, no retransmission</strong> — if a packet is lost, UDP ignores it and keeps going. The application receives whatever arrives, in whatever order:</p>
+								<div class="blg-code-block" data-lang="bash">Sent:     Frame 1, Frame 2, Frame 3, Frame 4, Frame 5
+Received: Frame 1, Frame 3, Frame 4, Frame 5  ← Frame 2 lost, ignored
+App sees: Shows Frame 1, 3, 4, 5 — tiny glitch, call continues</div>
+
+								<!-- 4.6 -->
+								<a id="tcp-types" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">4.6</span> 🔀 Types &amp; Variations</h3></div>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Feature</th><th>TCP</th><th>UDP</th></tr></thead>
+										<tbody>
+											<tr><td>Connection setup</td><td>✅ 3-way handshake required</td><td>❌ No handshake — just send</td></tr>
+											<tr><td>Delivery guarantee</td><td>✅ Every packet confirmed</td><td>❌ No guarantee — may drop</td></tr>
+											<tr><td>Ordering</td><td>✅ Always in sequence</td><td>❌ May arrive out of order</td></tr>
+											<tr><td>Retransmission</td><td>✅ Lost packets are resent</td><td>❌ Lost packets are ignored</td></tr>
+											<tr><td>Speed</td><td>🐢 Slower (overhead of guarantees)</td><td>🚀 Faster (minimal overhead)</td></tr>
+											<tr><td>Overhead</td><td>Higher — header + acks + flow control</td><td>Lower — minimal 8-byte header</td></tr>
+											<tr><td>Best for</td><td>Payments, APIs, file downloads, login</td><td>Video calls, gaming, DNS, live streaming</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<p class="blg-paragraph"><strong>Where each protocol sits in real stacks:</strong></p>
+								<div class="blg-code-block" data-lang="bash">HTTP/1.1 and HTTP/2  →  TCP  (most web traffic)
+HTTPS                →  TLS + TCP
+DNS queries          →  UDP  (fast small lookups)
+Video calls (Zoom)   →  RTP/SRTP over UDP
+HTTP/3               →  QUIC over UDP (modern, reliability built in)</div>
+								<blockquote class="blg-callout-info">
+									<strong>HTTP/3 &amp; QUIC:</strong> HTTP/3 runs on QUIC which is built on top of UDP. QUIC adds reliability features similar to TCP (ordering, retransmission) but solves TCP's head-of-line blocking problem. For most system design discussions, remember: classic HTTP = TCP, HTTP/3 = QUIC/UDP.
+								</blockquote>
+
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge badge-orange">Can This Use Case Tolerate Packet Loss?</span></h3></div>
+								<p class="blg-paragraph">One of the most useful ways to decide between TCP and UDP is to ask: <strong>"If a packet is lost, can the application continue correctly — or does it break?"</strong></p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Use Case</th><th>Can Tolerate Packet Loss?</th><th>Protocol Choice</th><th>Why</th></tr></thead>
+										<tbody>
+											<tr><td>💳 Payment transaction</td><td>❌ No</td><td>TCP</td><td>A missing byte could mean the wrong amount is charged</td></tr>
+											<tr><td>🔑 Login request</td><td>❌ No</td><td>TCP</td><td>Dropped credentials = authentication failure or security hole</td></tr>
+											<tr><td>📁 File download</td><td>❌ No</td><td>TCP</td><td>A missing packet = corrupted file that cannot be opened</td></tr>
+											<tr><td>📧 Send email</td><td>❌ No</td><td>TCP</td><td>Email must arrive complete and in order</td></tr>
+											<tr><td>🎬 Live video frame</td><td>✅ Sometimes yes</td><td>UDP</td><td>One dropped frame = tiny glitch; call continues normally</td></tr>
+											<tr><td>🎮 Game position update</td><td>✅ Often yes</td><td>UDP</td><td>Old position is stale anyway — next update arrives in milliseconds</td></tr>
+											<tr><td>🎙️ Voice call audio sample</td><td>✅ Sometimes yes</td><td>UDP</td><td>A tiny gap in audio is less disruptive than a delayed call</td></tr>
+											<tr><td>🌐 DNS query</td><td>✅ Yes</td><td>UDP</td><td>If lost, the resolver simply retries — the query is tiny</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-tip">
+									<strong>Two questions to decide:</strong><br>
+									① Do I need reliable, ordered delivery? → Yes → TCP<br>
+									② Can I tolerate some packet loss in exchange for lower latency? → Yes → UDP
+								</blockquote>
+								<!-- 4.7 -->
+								<a id="tcp-diagram" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">4.7</span> 🎨 Illustrated Diagram</h3></div>
+								<p class="blg-paragraph">The diagram below compares the TCP and UDP flows side by side — showing the handshake, ordered delivery, and retransmission of TCP versus the fire-and-forget simplicity of UDP.</p>
+								<div class="blg-mermaid-wrap">
+									<div class="mermaid" style="min-width:680px;font-size:16px;">
+%%{init: {"theme": "base", "themeVariables": {"lineColor": "#64748b", "edgeLabelBackground": "#fff"}}}%%
+flowchart TD
+    subgraph TCP["✅ TCP — Reliable &amp; Ordered"]
+    direction LR
+        T1["💻 Client"] -->|"① SYN"| T2["🖥️ Server"]
+        T2 -->|"② SYN-ACK"| T1
+        T1 -->|"③ ACK + Data"| T2
+        T2 -->|"④ ACK (confirmed)"| T1
+        T1 -->|"⑤ Resend if lost"| T2
+    end
+
+    subgraph UDP["⚡ UDP — Fast &amp; Lightweight"]
+    direction LR
+        U1["💻 Client"] -->|"Packet 1 (no confirm)"| U2["🖥️ Server"]
+        U1 -->|"Packet 2 (no confirm)"| U2
+        U1 -->|"Packet 3 → LOST"| U2
+        U1 -->|"Packet 4 (continues anyway)"| U2
+    end
+
+    style TCP fill:#eff6ff,stroke:#2563eb,color:#1e40af
+    style UDP fill:#fff7ed,stroke:#d97706,color:#92400e
+    style T1 fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    style T2 fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    style U1 fill:#fed7aa,stroke:#fb923c,color:#7c2d12
+    style U2 fill:#fed7aa,stroke:#fb923c,color:#7c2d12
+									</div>
+								</div>
+								<p class="blg-paragraph"><strong>Reading the diagram:</strong> TCP (blue) requires a 3-step handshake before any data, confirms every packet, and resends losses. UDP (orange) just fires packets one after another with no confirmation — faster, but Packet 3 being lost is simply ignored.</p>
+
+								<!-- 4.8 -->
+								<a id="tcp-when" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">4.8</span> ✅ When to Use</h3></div>
+								<p class="blg-paragraph">Ask two questions: Do I need every byte to arrive correctly? and Can I tolerate losing some data if it means lower latency?</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Use Case</th><th>Protocol</th><th>Reason</th></tr></thead>
+										<tbody>
+											<tr><td>Login, user authentication</td><td>TCP</td><td>Credentials must arrive correctly — no silent loss</td></tr>
+											<tr><td>Payment, order placement</td><td>TCP</td><td>Correctness and order are critical — a missing byte = wrong amount</td></tr>
+											<tr><td>File upload / download</td><td>TCP</td><td>File must arrive complete and uncorrupted</td></tr>
+											<tr><td>REST APIs, web pages</td><td>TCP</td><td>HTTP/HTTPS runs on TCP by design</td></tr>
+											<tr><td>Database queries</td><td>TCP</td><td>Every SQL query and response must be exact</td></tr>
+											<tr><td>DNS lookups</td><td>UDP</td><td>Small, fast queries — retrying is trivial if needed</td></tr>
+											<tr><td>Live video / voice calls</td><td>UDP</td><td>Old frames are useless — keep sending new ones</td></tr>
+											<tr><td>Online gaming (position updates)</td><td>UDP</td><td>Old positions are stale — latest update is what matters</td></tr>
+											<tr><td>Live sports score updates</td><td>UDP</td><td>A missed score update is fine — next one arrives in ms</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-tip">
+									<strong>Rule of thumb:</strong> If missing data would cause a bug, security issue, or incorrect result → TCP. If missing data just causes a tiny visual glitch or the data is immediately superseded anyway → UDP.
+								</blockquote>
+
+								<!-- 4.9 -->
+								<a id="tcp-example" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">4.9</span> 🏗️ Real-world Examples</h3></div>
+								<p class="blg-paragraph">The same application often uses BOTH TCP and UDP for different features. Here are four concrete examples showing exactly which protocol is chosen and why.</p>
+
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge badge-blue">Example 1: Online Payment</span></h3></div>
+								<p class="blg-paragraph">For online payment, <strong>correctness is more important than speed</strong>. A payment request contains critical data:</p>
+								<div class="blg-code-block" data-lang="bash">POST /payments HTTP/1.1
+{
+  "amount": 10000,
+  "currency": "JPY",
+  "merchant": "Merchant ABC",
+  "card": "****1234"
+}</div>
+								<p class="blg-paragraph">You do not want this data to be lost, duplicated, corrupted, or delivered out of order. A missing packet could mean the wrong amount is charged or the transaction is never recorded. A tiny delay is perfectly acceptable. An incorrect payment is not.</p>
+								<blockquote class="blg-callout-info"><strong>Payment always uses TCP (HTTPS):</strong> correctness &gt; speed. Every byte must arrive in order.</blockquote>
+
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge badge-teal">Example 2: Video Streaming vs Live Video Call</span></h3></div>
+								<p class="blg-paragraph">This is the most important distinction to understand — and one that trips up beginners. <strong>Not all video is the same.</strong></p>
+								<div class="blg-table">
+									<table>
+										<thead><tr><th></th><th>Normal Video Streaming (YouTube/Netflix)</th><th>Live Video Call (Zoom/Google Meet)</th></tr></thead>
+										<tbody>
+											<tr><td><strong>Protocol</strong></td><td>TCP (HTTP-based streaming)</td><td>UDP-based (RTP/SRTP)</td></tr>
+											<tr><td><strong>Reason</strong></td><td>Video is buffered — if a chunk is delayed slightly, the player waits briefly and the video plays correctly</td><td>If an old audio/video packet arrives late, it is useless — the conversation has already moved on</td></tr>
+											<tr><td><strong>Priority</strong></td><td>Correctness — every chunk must arrive for the video to play</td><td>Low latency — keep the call flowing even if a frame is lost</td></tr>
+											<tr><td><strong>Loss tolerance</strong></td><td>No — buffer handles delays, TCP resends losses</td><td>Yes — one lost frame = tiny glitch, call continues</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-tip"><strong>Key takeaway:</strong> YouTube uses TCP because buffering tolerates short delays. Zoom uses UDP because a 200ms delay waiting to retransmit an old video frame makes the conversation choppy and unusable.</blockquote>
+
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge badge-purple">Example 3: Online Gaming</span></h3></div>
+								<p class="blg-paragraph">In an online game, your character's position changes many times per second. The server must know where every player is at every moment:</p>
+								<div class="blg-code-block" data-lang="bash">Position update at 10:00:01.001 → x:100, y:200
+Position update at 10:00:01.020 → x:102, y:201
+Position update at 10:00:01.040 → x:104, y:203</div>
+								<p class="blg-paragraph">If the position update from 10:00:01.020 is lost, it is <strong>pointless to wait for it</strong> — by the time it is retransmitted, the position at 10:00:01.040 is already more accurate. Waiting for the old packet (TCP behaviour) would cause lag and make the game feel sluggish. Instead, games use UDP: if a position update is lost, just use the next one that arrives.</p>
+								<blockquote class="blg-callout-info"><strong>Online gaming uses UDP</strong> because old state (old position) is immediately superseded. Low latency and smooth experience matter far more than perfect delivery of every packet.</blockquote>
+
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge badge-green">Example 4: Chat App (WhatsApp)</span></h3></div>
+								<p class="blg-paragraph">A single chat app uses <strong>different protocols for different features</strong> — a perfect illustration of how real systems mix TCP and UDP:</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>WhatsApp Feature</th><th>Protocol</th><th>Why</th></tr></thead>
+										<tbody>
+											<tr><td>🔑 Login &amp; registration</td><td>TCP (HTTPS)</td><td>Credentials must arrive correctly — authentication cannot fail silently</td></tr>
+											<tr><td>💬 Send text message</td><td>TCP (WebSocket / HTTPS)</td><td>Messages must NOT be silently dropped — user thinks it was sent when it wasn't</td></tr>
+											<tr><td>🖼️ Upload photo / video file</td><td>TCP (HTTPS)</td><td>File must arrive complete and uncorrupted — a missing packet = corrupted image</td></tr>
+											<tr><td>🎙️ Voice call audio</td><td>UDP-based (RTP)</td><td>Old audio packets are useless — keep the call flowing without waiting for retransmission</td></tr>
+											<tr><td>📹 Video call stream</td><td>UDP-based (RTP/SRTP)</td><td>Lost frames = tiny glitch; retransmitting 200ms-old video = choppy call</td></tr>
+											<tr><td>🔔 Push notification</td><td>Platform-specific (APNs/FCM over TCP)</td><td>Notifications must be reliably delivered — no silent drops</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-info">
+									<strong>Key insight:</strong> WhatsApp uses TCP for everything that must not be lost (text, files, login) and UDP-based protocols for everything where latency matters more than perfection (voice, video). One app — both protocols — different features.
+								</blockquote>
+
+																<!-- 4.10 -->
+								<a id="tcp-tradeoffs" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">4.10</span> ⚖️ Trade-offs</h3></div>
+								<div class="blg-table blg-table-half">
+									<table>
+										<thead><tr><th>✅ TCP Advantages</th><th>❌ TCP Disadvantages</th></tr></thead>
+										<tbody>
+											<tr><td>Guaranteed delivery — nothing is silently lost</td><td>Handshake adds latency before first byte</td></tr>
+											<tr><td>Ordered delivery — application always gets data in sequence</td><td>Head-of-line blocking — one lost packet stalls everything</td></tr>
+											<tr><td>Error detection and retransmission built in</td><td>Higher overhead — more bytes per packet (headers, ACKs)</td></tr>
+											<tr><td>Flow and congestion control — won't flood the network</td><td>Not suitable when oldest packet is worthless (live video)</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<div class="blg-table blg-table-half">
+									<table>
+										<thead><tr><th>✅ UDP Advantages</th><th>❌ UDP Disadvantages</th></tr></thead>
+										<tbody>
+											<tr><td>Very low latency — no handshake, no waiting</td><td>No delivery guarantee — packets can be lost silently</td></tr>
+											<tr><td>Minimal overhead — tiny 8-byte header</td><td>No ordering — application must handle reordering itself</td></tr>
+											<tr><td>Works well for broadcast/multicast</td><td>No retransmission — application must implement reliability if needed</td></tr>
+											<tr><td>Connectionless — scales easily for many small requests</td><td>Harder to build reliable features on top without significant effort</td></tr>
+										</tbody>
+									</table>
+								</div>
+
+								<!-- 4.11 -->
+								<a id="tcp-mistakes" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">4.11</span> 🚫 Common Mistakes</h3></div>
+								<div class="blg-table">
+									<table>
+										<thead><tr><th>#</th><th>❌ Common Mistake</th><th>✅ The Reality</th></tr></thead>
+										<tbody>
+											<tr><td>1</td><td><strong>UDP is always better because it is faster</strong></td><td>UDP is only better when losing data is acceptable. For payments, file transfers, or login — UDP would break the application silently.</td></tr>
+											<tr><td>2</td><td><strong>TCP is always better because it is reliable</strong></td><td>TCP's reliability creates overhead and latency. For a live video call, waiting to retransmit a 100ms-old video frame makes the call choppy — UDP is the right choice.</td></tr>
+											<tr><td>3</td><td><strong>Forgetting that HTTP/HTTPS uses TCP</strong></td><td>Every REST API call, web page load, and HTTPS request runs on TCP. When you draw a client-server arrow for an API, that arrow implies TCP.</td></tr>
+											<tr><td>4</td><td><strong>Thinking UDP means the application is unreliable</strong></td><td>Applications CAN build reliability on top of UDP. QUIC does exactly this — reliable features implemented in the application layer, running over UDP to avoid TCP's head-of-line blocking.</td></tr>
+											<tr><td>5</td><td><strong>Forgetting that DNS uses UDP</strong></td><td>DNS queries are typically sent over UDP because they are small and fast. If a query is lost, the resolver just asks again. This is a common system design fact to know.</td></tr>
+										</tbody>
+									</table>
+								</div>
+
+								<!-- 4.12 -->
+								<a id="tcp-summary" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">4.12</span> 📝 Summary</h3></div>
+								<ul class="blg-ul">
+									<li class="blg-li blg-li-check"><strong>TCP</strong> = reliable, ordered, connection-oriented. Use for payments, APIs, file transfers, login — anything where missing data = broken functionality.</li>
+									<li class="blg-li blg-li-check"><strong>UDP</strong> = fast, lightweight, connectionless. Use for live video/audio, online gaming, DNS — anything where speed matters and old data is worthless.</li>
+									<li class="blg-li blg-li-check"><strong>TCP 3-way handshake</strong> (SYN → SYN-ACK → ACK) establishes a connection before data is sent, adding one round-trip of latency.</li>
+									<li class="blg-li blg-li-check"><strong>Head-of-line blocking</strong> is TCP's key limitation — one lost packet stalls all later packets until it is retransmitted.</li>
+									<li class="blg-li blg-li-check"><strong>HTTP/HTTPS runs on TCP</strong>. DNS uses UDP. HTTP/3 uses QUIC over UDP — reliability with less head-of-line blocking.</li>
+									<li class="blg-li blg-li-check">One system can use <strong>both TCP and UDP</strong> for different features — WhatsApp uses TCP for text, UDP-based for voice/video.</li>
+								</ul>
+
+								<!-- 4.13 -->
+								<a id="tcp-challenge" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">4.13</span> 🏋️ Design Challenge</h3></div>
+								<blockquote class="blg-callout-purple">
+									<strong>🚗 Challenge: Design the Uber App — Choose TCP or UDP for each feature</strong><br><br>
+									For each feature below, choose TCP or UDP and explain why:
+									<ul class="blg-ul" style="margin-top:10px;">
+										<li class="blg-li">User login and signup</li>
+										<li class="blg-li">Booking a ride (request + confirmation)</li>
+										<li class="blg-li">Processing payment at the end of a ride</li>
+										<li class="blg-li">Live driver location updates (shown on the map every second)</li>
+										<li class="blg-li">In-app chat between rider and driver</li>
+									</ul>
+								</blockquote>
+								<details class="blg-answer-reveal">
+									<summary>👁️ Show Answer</summary>
+									<div class="blg-answer-reveal-body">
+										<div class="blg-table blg-table-balanced">
+											<table>
+												<thead><tr><th>Feature</th><th>Protocol</th><th>Why</th></tr></thead>
+												<tbody>
+													<tr><td>User login &amp; signup</td><td>TCP (HTTPS)</td><td>Credentials and tokens must arrive correctly and securely</td></tr>
+													<tr><td>Booking a ride</td><td>TCP (HTTPS)</td><td>Booking data must not be lost — a dropped packet could mean no driver is dispatched</td></tr>
+													<tr><td>Payment processing</td><td>TCP (HTTPS)</td><td>A single missing byte in a payment request could mean wrong amount charged</td></tr>
+													<tr><td>Live driver location (every second)</td><td>UDP or WebSocket/TCP</td><td>A missed location update from 1 second ago is useless — next update arrives in 1s. UDP gives lower latency. (Some systems use WebSocket over TCP for simplicity, accepting slight latency)</td></tr>
+													<tr><td>In-app chat</td><td>TCP (WebSocket)</td><td>Text messages must not be silently dropped — user would think message was sent when it wasn't</td></tr>
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</details>
+
+								<!-- 4.14 -->
+								<a id="tcp-cloud" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">4.14</span> ☁️ Cloud Service Mapping</h3></div>
+								<p class="blg-paragraph">TCP and UDP are protocols, not cloud services — but cloud load balancers and gateways handle them differently. Here are the cloud services relevant to TCP vs UDP routing:</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Traffic Type</th><th>AWS (Primary)</th><th>GCP</th><th>Azure</th></tr></thead>
+										<tbody>
+											<tr><td><strong>HTTP/HTTPS (TCP)</strong></td><td>Application Load Balancer (ALB)</td><td>Cloud Load Balancing (HTTP(S))</td><td>Azure Application Gateway</td></tr>
+											<tr><td><strong>High-performance TCP / UDP</strong></td><td>Network Load Balancer (NLB)</td><td>Network Load Balancing</td><td>Azure Load Balancer</td></tr>
+											<tr><td><strong>DNS (UDP)</strong></td><td>Amazon Route 53</td><td>Cloud DNS</td><td>Azure DNS</td></tr>
+											<tr><td><strong>WebSocket (TCP-based)</strong></td><td>ALB + API Gateway WebSocket</td><td>Cloud Load Balancing</td><td>Azure API Management</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-info">
+									<strong>AWS mental model:</strong> Web/API traffic (HTTP/HTTPS over TCP) → Application Load Balancer. Real-time or raw TCP/UDP (gaming, VoIP, custom protocols) → Network Load Balancer. DNS queries (UDP) → Route 53.
+								</blockquote>
+								<hr class="blg-hr">
+							</div>
+
+							<div class="blg-section">
+								<a id="latency-throughput" class="blg-anchor"></a>
+								<div class="blg-main-header"><h2>🚀 5. Latency &amp; Throughput</h2></div>
+								<p class="blg-paragraph">
+									You have now learned how data is found (DNS), how it is communicated (HTTP/HTTPS), and how it is transported (TCP/UDP). The final question in this networking foundation is: <strong>how fast does the system respond, and how much work can it handle at once?</strong> These are the two most important performance metrics in system design — <strong>latency</strong> (speed for one user) and <strong>throughput</strong> (capacity for many users). Every performance decision you make as an engineer comes down to these two concepts.
+								</p>
+
+								<div class="blg-img-container">
+									<img src="../img/blog_20/latency_throughput.webp" alt="Latency and Throughput — speed for one user vs capacity for many users" class="blg-img" />
+								</div>
+
+								<!-- 5.1 -->
+								<a id="lt-intro" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">5.1</span> 🎯 Introduction</h3></div>
+								<p class="blg-paragraph">
+									Imagine you are designing a system like Amazon. A user types "laptop" in the search box and presses Enter. Two critically important questions arise immediately:
+								</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Question</th><th>Concept</th><th>What You Measure</th></tr></thead>
+										<tbody>
+											<tr><td>How quickly do the search results appear for this user?</td><td><strong>Latency</strong></td><td>Milliseconds per request</td></tr>
+											<tr><td>How many users can search at the same time?</td><td><strong>Throughput</strong></td><td>Requests per second (RPS)</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<p class="blg-paragraph">
+									<strong>Latency</strong> is the time it takes for a single request to travel from the client to the server and come back with a response — the user's waiting time. If this takes 200 ms, that is the latency. <strong>Throughput</strong> is how much work the system can handle per unit of time — how many requests per second it can process. A system can have good latency for individual users but still fail during peak traffic if throughput is too low.
+								</p>
+
+								<!-- 5.2 -->
+								<a id="lt-why" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">5.2</span> 💡 Why It Matters</h3></div>
+								<p class="blg-paragraph">
+									Latency and throughput are not just academic concepts — they directly affect users and business outcomes. Studies show that a <strong>100ms increase in latency reduces Amazon sales by 1%</strong> and a <strong>1-second delay causes a 7% drop in conversions</strong>. Google found that 53% of mobile users abandon a page that takes longer than 3 seconds to load.
+								</p>
+								<ul class="blg-ul">
+									<li class="blg-li"><strong>Latency</strong> determines whether your app feels responsive or sluggish — it is what the user directly experiences.</li>
+									<li class="blg-li"><strong>Throughput</strong> determines whether your system survives peak traffic — a sale event, a viral post, or a breaking news moment.</li>
+									<li class="blg-li"><strong>p99 latency</strong> matters more than average — if 1% of requests to Amazon are slow and Amazon serves 10 million requests/day, that is 100,000 slow experiences daily.</li>
+									<li class="blg-li">Every system design decision — caching, CDN, database indexing, load balancing — ultimately improves latency, throughput, or both.</li>
+								</ul>
+								<blockquote class="blg-callout-info">
+									<strong>Remember:</strong> Latency = speed for one user. Throughput = capacity for many users. A system can be fast for individual requests but still collapse under heavy load — or handle massive traffic but feel sluggish for each user.
+								</blockquote>
+
+								<!-- 5.3 -->
+								<a id="lt-analogy" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">5.3</span> 🏠 Real-world Analogy</h3></div>
+								<p class="blg-paragraph">Think of a <strong>highway between Tokyo and Osaka</strong>:</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Highway World</th><th>System Design World</th><th>Meaning</th></tr></thead>
+										<tbody>
+											<tr><td>🚗 Time for ONE car to drive Tokyo → Osaka</td><td>Latency</td><td>How long one request takes to complete</td></tr>
+											<tr><td>🚗🚗🚗 How many cars can pass per hour</td><td>Throughput (RPS)</td><td>How many requests the system handles per second</td></tr>
+											<tr><td>🛣️ Adding more lanes to the highway</td><td>Horizontal scaling</td><td>More servers = more throughput</td></tr>
+											<tr><td>🚦 Traffic jam (all cars slow down)</td><td>Server overload</td><td>Too many requests → latency spikes for everyone</td></tr>
+											<tr><td>🏎️ Faster speed limit (same lanes)</td><td>Code optimization</td><td>Same number of servers but each is faster</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<p class="blg-paragraph">A highway may let thousands of cars through per hour (high throughput) — but if there is a traffic jam, each car still takes longer to reach its destination (high latency). Similarly, your system can handle many requests per second while some individual requests are slow. These two dimensions are independent but related.</p>
+								<!-- 5.4 -->
+								<a id="lt-terms" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">5.4</span> 📖 Key Terms</h3></div>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Term</th><th>Simple Definition</th><th>Quick Example</th></tr></thead>
+										<tbody>
+											<tr><td><strong>Latency</strong></td><td>Time for one request to complete — the user's waiting time</td><td>Google search returns in 200ms → latency = 200ms</td></tr>
+											<tr><td><strong>Throughput</strong></td><td>Amount of work the system handles per unit of time</td><td>Server handles 10,000 requests/second</td></tr>
+											<tr><td><strong>RPS</strong></td><td>Requests Per Second — throughput for web/API systems</td><td>"Our API handles 5,000 RPS"</td></tr>
+											<tr><td><strong>QPS</strong></td><td>Queries Per Second — throughput for database systems</td><td>"MySQL handles 10,000 QPS"</td></tr>
+											<tr><td><strong>TPS</strong></td><td>Transactions Per Second — throughput for payment/DB transactions</td><td>"Payment system processes 500 TPS"</td></tr>
+											<tr><td><strong>p50 latency</strong></td><td>50% of requests complete faster than this value</td><td>p50 = 100ms → half of users wait less than 100ms</td></tr>
+											<tr><td><strong>p95 latency</strong></td><td>95% of requests complete faster than this value</td><td>p95 = 500ms → 95% of users wait less than 500ms</td></tr>
+											<tr><td><strong>p99 latency</strong></td><td>99% of requests complete faster than this value</td><td>p99 = 2s → worst 1% of users wait up to 2 seconds</td></tr>
+											<tr><td><strong>Bottleneck</strong></td><td>The slowest or most limited component that constrains system performance</td><td>Slow database query → entire request is slow</td></tr>
+											<tr><td><strong>Cache hit</strong></td><td>Data was found in cache — fast response, no DB query needed</td><td>Product page served from Redis in 5ms</td></tr>
+											<tr><td><strong>Cache miss</strong></td><td>Data not in cache — must query database — slower</td><td>First request for a product goes to DB (100ms)</td></tr>
+											<tr><td><strong>Async processing</strong></td><td>Work done outside the user's request path — user doesn't wait</td><td>Send confirmation email after order, not during</td></tr>
+										</tbody>
+									</table>
+								</div>
+
+								<!-- 5.5 -->
+								<a id="lt-how" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">5.5</span> 🔢 How It Works</h3></div>
+
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge badge-blue">Measuring Latency</span></h3></div>
+								<p class="blg-paragraph">Latency is measured from the moment the client sends a request to the moment it receives a complete response:</p>
+								<div class="blg-code-block" data-lang="bash">User clicks "Search" for "laptop"
+  ↓ [~10ms]  Network travel client → server
+  ↓ [~150ms] Server processes: validate, query DB, build response
+  ↓ [~10ms]  Network travel server → client
+  ↓ [~30ms]  Browser renders results
+Total latency ≈ 200ms  ← what the user actually waits</div>
+								<p class="blg-paragraph">Each component adds to the total latency. A slow database query, a distant server, or a large response all increase the time the user waits.</p>
+
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge badge-teal">Average vs Percentile Latency — Why Average is Misleading</span></h3></div>
+								<p class="blg-paragraph">This is one of the most important concepts in production systems — and one that beginners consistently get wrong.</p>
+								<p class="blg-paragraph">Suppose your system has an <strong>average latency of 100ms</strong>. That sounds good. But what if some users experience 5 seconds? Average latency hides these slow users. This is why production systems use <strong>percentile latency</strong>:</p>
+								<div class="blg-code-block" data-lang="bash">p50 latency = 100ms   → 50% of users get a response in under 100ms
+p95 latency = 500ms   → 95% of users get a response in under 500ms
+p99 latency = 2000ms  → 99% of users get a response in under 2 seconds
+                          (1% of users — the "tail" — may wait 2+ seconds)</div>
+								<blockquote class="blg-callout-warning">
+									<strong>Why p99 matters:</strong> If your system serves 10 million requests per day and p99 = 2 seconds, that means <strong>100,000 users per day</strong> are experiencing 2-second wait times. Average latency of 100ms looks great on the dashboard — but 100,000 users are having a bad experience. Always monitor p95 and p99, not just average.
+								</blockquote>
+
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge badge-green">Measuring Throughput</span></h3></div>
+								<p class="blg-paragraph">Throughput is measured as the number of operations completed per unit of time:</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Unit</th><th>Meaning</th><th>Typical Context</th></tr></thead>
+										<tbody>
+											<tr><td><strong>RPS</strong> (Requests/sec)</td><td>How many API requests per second</td><td>Web servers, load balancers</td></tr>
+											<tr><td><strong>QPS</strong> (Queries/sec)</td><td>How many database queries per second</td><td>MySQL, PostgreSQL, Redis</td></tr>
+											<tr><td><strong>TPS</strong> (Transactions/sec)</td><td>How many transactions per second</td><td>Payment systems, banking</td></tr>
+											<tr><td><strong>Messages/sec</strong></td><td>How many messages processed per second</td><td>Kafka, SQS, message queues</td></tr>
+											<tr><td><strong>MB/s or GB/s</strong></td><td>How much data transferred per second</td><td>Video streaming, file transfer</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<!-- 5.6 -->
+								<a id="lt-types" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">5.6</span> 🔀 Types &amp; Variations</h3></div>
+
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge badge-red">A. Common Causes of High Latency</span></h3></div>
+								<p class="blg-paragraph">Understanding why latency is high is the first step to fixing it. These are the six most common causes:</p>
+
+								<p class="blg-paragraph"><strong>1. Network Distance</strong> — If a user in Japan makes a request to a server in the US, the data travels thousands of kilometres. Each kilometre adds latency. Speed of light in fibre optics is about 200,000 km/s — a round trip Japan→US→Japan adds ~150ms just for travel.</p>
+								<div class="blg-code-block" data-lang="bash">Japan user → US server  → ~150ms round-trip travel time alone
+Japan user → Tokyo server → ~5ms round-trip travel time</div>
+								<p class="blg-paragraph"><strong>Fix:</strong> Deploy regional servers, use CDN edge nodes, use DNS-based geographic routing.</p>
+
+								<p class="blg-paragraph"><strong>2. Slow Database Queries</strong> — A backend can respond in milliseconds, but if the database takes 2 seconds to run a query, that 2 seconds is the bottleneck.</p>
+								<div class="blg-code-block" data-lang="bash">-- Bad: scanning 10 million rows with no index
+SELECT * FROM products WHERE name = 'laptop'   → 3 seconds
+-- Good: with an index on 'name'
+SELECT * FROM products WHERE name = 'laptop'   → 2 ms</div>
+								<p class="blg-paragraph"><strong>Fix:</strong> Add indexes, optimize queries, use caching, use read replicas, use search engines (Elasticsearch) for complex searches.</p>
+
+								<p class="blg-paragraph"><strong>3. Too Many Service Calls (Microservices)</strong> — In microservices, one user request may trigger a chain of calls to many internal services. Each call adds latency.</p>
+								<div class="blg-code-block" data-lang="bash">API Server → User Service   (20ms)
+           → Product Service (30ms)
+           → Inventory       (25ms)
+           → Pricing Service (20ms)
+           → Recommendation  (40ms)
+Sequential total → 135ms extra latency from service calls alone</div>
+								<p class="blg-paragraph"><strong>Fix:</strong> Reduce unnecessary calls, run independent calls in parallel, cache frequently needed data, avoid chatty communication patterns.</p>
+
+								<p class="blg-paragraph"><strong>4. Server Overload</strong> — If a server receives more requests than it can handle, requests queue up. Users at the back of the queue wait longer.</p>
+								<div class="blg-code-block" data-lang="bash">Server capacity: 1,000 RPS
+Incoming traffic: 5,000 RPS
+→ Requests queue → latency spikes from 100ms to 5+ seconds</div>
+								<p class="blg-paragraph"><strong>Fix:</strong> Add more servers (horizontal scaling), load balancing, auto-scaling, queue-based processing for heavy tasks.</p>
+
+								<p class="blg-paragraph"><strong>5. Large Response Size</strong> — Returning too much data takes longer to send over the network.</p>
+								<div class="blg-code-block" data-lang="bash">Bad:  Return all 10,000 products in one response → huge JSON → slow
+Better: Return 20 products per page + pagination → small response → fast</div>
+								<p class="blg-paragraph"><strong>Fix:</strong> Pagination, compression (gzip/Brotli), CDN for static content, return only required fields, efficient data formats.</p>
+
+								<p class="blg-paragraph"><strong>6. Cold Starts (Serverless)</strong> — In serverless systems (AWS Lambda), if a function hasn't run recently, the cloud provider must spin up a new instance. This startup delay — a "cold start" — can add hundreds of milliseconds.</p>
+								<div class="blg-code-block" data-lang="bash">Warm Lambda: request → function runs → 20ms response
+Cold Lambda: request → spin up container (400ms) → function runs → 420ms response</div>
+								<p class="blg-paragraph"><strong>Fix:</strong> Keep critical functions warm, use provisioned concurrency, use always-running services for latency-sensitive paths.</p>
+
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge badge-blue">B. How to Reduce Latency</span></h3></div>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Technique</th><th>How It Reduces Latency</th><th>Example</th></tr></thead>
+										<tbody>
+											<tr><td>⚡ <strong>Caching</strong></td><td>Serve frequently accessed data from memory instead of re-querying the database</td><td>Product details from Redis in 1ms vs 100ms from DB</td></tr>
+											<tr><td>🌍 <strong>CDN</strong></td><td>Serve static content from edge servers near the user</td><td>Japan user gets images from Tokyo CDN, not US origin</td></tr>
+											<tr><td>🗺️ <strong>Regional deployment</strong></td><td>Place servers in the same region as users</td><td>Tokyo users hit Tokyo servers, not Virginia</td></tr>
+											<tr><td>🗄️ <strong>Database optimization</strong></td><td>Indexes, read replicas, query optimization</td><td>Index on product name: 3 seconds → 2ms</td></tr>
+											<tr><td>⚙️ <strong>Async processing</strong></td><td>Move non-critical work out of the request path</td><td>Send email in background; user doesn't wait for it</td></tr>
+											<tr><td>🔀 <strong>Parallel service calls</strong></td><td>Call independent services simultaneously instead of sequentially</td><td>Call User + Product + Inventory in parallel: 40ms vs 135ms</td></tr>
+											<tr><td>📦 <strong>Compression</strong></td><td>Reduce response size so it transfers faster</td><td>10KB JSON compressed to 2KB with gzip → 5× faster transfer</td></tr>
+										</tbody>
+									</table>
+								</div>
+
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge badge-green">C. How to Improve Throughput</span></h3></div>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Technique</th><th>How It Improves Throughput</th><th>Example</th></tr></thead>
+										<tbody>
+											<tr><td>📈 <strong>Horizontal scaling</strong></td><td>Add more servers — each handles its share of traffic</td><td>1 server = 1,000 RPS → 10 servers = 10,000 RPS</td></tr>
+											<tr><td>⚖️ <strong>Load balancing</strong></td><td>Distribute requests across all servers so none is overloaded</td><td>ALB spreads 50,000 RPS across 50 servers</td></tr>
+											<tr><td>⚡ <strong>Caching</strong></td><td>Serve from cache = backend handles fewer requests = more capacity</td><td>Homepage cached → DB receives 10% of original queries</td></tr>
+											<tr><td>🗄️ <strong>Database scaling</strong></td><td>Read replicas, sharding, NoSQL for high-scale patterns</td><td>5 read replicas → 5× read throughput</td></tr>
+											<tr><td>📨 <strong>Queue-based architecture</strong></td><td>Buffer traffic spikes — workers consume at their own pace</td><td>Black Friday orders → SQS queue → workers process steadily</td></tr>
+											<tr><td>🔧 <strong>Reduce per-request work</strong></td><td>Precompute, cache results, move heavy tasks to background</td><td>Pre-generate recommendations → serve from cache instantly</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<!-- 5.7 -->
+								<a id="lt-diagram" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">5.7</span> 🎨 Illustrated Diagram</h3></div>
+								<p class="blg-paragraph">The diagram below shows latency (time for one request end-to-end) and throughput (multiple requests handled per second) as distinct but related dimensions.</p>
+								<div class="blg-mermaid-wrap">
+									<div class="mermaid" style="min-width:860px;font-size:16px;">
+%%{init: {"theme": "base", "themeVariables": {"lineColor": "#64748b", "edgeLabelBackground": "#fff"}}}%%
+flowchart TD
+    subgraph LAT["⏱️ Latency — Time for ONE Request"]
+    direction LR
+        C1["👤 User clicks"] -->|"10ms network"| S1["⚙️ Server"]
+        S1 -->|"150ms DB query + processing"| DB1["🗄️ Database"]
+        DB1 -->|"result"| S1
+        S1 -->|"10ms network"| R1["✅ User sees result
+Total = ~170ms"]
+    end
+
+    subgraph THR["📊 Throughput — Many Requests Per Second"]
+    direction LR
+        U1["👤 User 1"] --> LB["⚖️ Load Balancer
+(10,000 RPS)"]
+        U2["👤 User 2"] --> LB
+        U3["👤 User 3"] --> LB
+        U4["👤 ...1000s more..."] --> LB
+        LB --> SV1["⚙️ Server 1"]
+        LB --> SV2["⚙️ Server 2"]
+        LB --> SV3["⚙️ Server 3"]
+    end
+
+    style LAT fill:#eff6ff,stroke:#2563eb,color:#1e40af
+    style THR fill:#f0fdf4,stroke:#059669,color:#064e3b
+    style C1  fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    style S1  fill:#d1fae5,stroke:#059669,color:#064e3b
+    style DB1 fill:#fff3e0,stroke:#d97706,color:#92400e
+    style R1  fill:#d1fae5,stroke:#059669,color:#064e3b
+    style LB  fill:#fff3e0,stroke:#d97706,color:#92400e
+    style SV1 fill:#d1fae5,stroke:#059669,color:#064e3b
+    style SV2 fill:#d1fae5,stroke:#059669,color:#064e3b
+    style SV3 fill:#d1fae5,stroke:#059669,color:#064e3b
+									</div>
+								</div>
+								<p class="blg-paragraph"><strong>Reading the diagram:</strong> Latency (blue) is the journey of ONE request through the network, server, and database — every hop adds time. Throughput (green) is many users hitting a load balancer that distributes work across multiple servers — adding more servers increases capacity.</p>
+
+								<!-- 5.8 -->
+								<a id="lt-when" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">5.8</span> ✅ When to Use</h3></div>
+								<p class="blg-paragraph">Different system features have different performance priorities. Always ask: does this feature need a fast response for one user, or does it need to handle many users simultaneously, or both?</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Feature / Scenario</th><th>Priority</th><th>Why</th></tr></thead>
+										<tbody>
+											<tr><td>Payment confirmation</td><td>Latency + correctness</td><td>User expects quick confirmation; correctness matters more than raw speed</td></tr>
+											<tr><td>Video start (YouTube)</td><td>Latency</td><td>Buffering time directly affects user satisfaction — every second of delay hurts</td></tr>
+											<tr><td>Amazon search results</td><td>Both</td><td>User wants fast results; and millions search simultaneously during sales events</td></tr>
+											<tr><td>Send confirmation email</td><td>Throughput (async)</td><td>Can be done in the background — user doesn't wait for it; but system must handle millions per day</td></tr>
+											<tr><td>Live driver location (Uber)</td><td>Both</td><td>Low latency for smooth map updates; high throughput for millions of location events/second</td></tr>
+											<tr><td>Video encoding (YouTube upload)</td><td>Throughput</td><td>Encoding can take minutes — no user waiting; but system must encode thousands of videos/hour</td></tr>
+											<tr><td>WhatsApp message delivery</td><td>Latency</td><td>User expects near-instant delivery — a 5-second delay feels broken</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-tip">
+									<strong>Key rule:</strong> Real-time user-facing features need low <strong>latency</strong>. Background and batch operations need high <strong>throughput</strong>. Features serving many users simultaneously need both.
+								</blockquote>
+
+								<!-- 5.9 -->
+								<a id="lt-example" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">5.9</span> 🏗️ Real-world Examples</h3></div>
+
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge badge-blue">YouTube</span></h3></div>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Feature</th><th>Performance Priority</th><th>How YouTube Addresses It</th></tr></thead>
+										<tbody>
+											<tr><td>Video starts playing quickly</td><td>Latency</td><td>CDN delivers video chunks from edge nodes near the user</td></tr>
+											<tr><td>Search returns results fast</td><td>Latency</td><td>Search index cached; results served from pre-built indexes</td></tr>
+											<tr><td>Millions of concurrent streams</td><td>Throughput</td><td>Distributed CDN edge servers worldwide; adaptive bitrate streaming</td></tr>
+											<tr><td>Video encoding after upload</td><td>Throughput (async)</td><td>Encoding queue processes thousands of uploads per hour in background</td></tr>
+											<tr><td>Recommendations load quickly</td><td>Latency</td><td>Pre-computed recommendations cached per user</td></tr>
+										</tbody>
+									</table>
+								</div>
+
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge badge-teal">Amazon</span></h3></div>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Feature</th><th>Performance Priority</th><th>How Amazon Addresses It</th></tr></thead>
+										<tbody>
+											<tr><td>Search "laptop" returns results</td><td>Both</td><td>ElasticSearch index + caching; millions searching simultaneously during sales</td></tr>
+											<tr><td>Product page loads</td><td>Latency</td><td>Product data cached in ElastiCache; images served from CloudFront CDN</td></tr>
+											<tr><td>Checkout during Prime Day</td><td>Throughput</td><td>Auto-scaling, queue-based order processing, multiple database replicas</td></tr>
+											<tr><td>Payment processing</td><td>Latency + correctness</td><td>User expects quick confirmation; TCP/HTTPS, reliable services, retries</td></tr>
+										</tbody>
+									</table>
+								</div>
+
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge badge-purple">Uber</span></h3></div>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Feature</th><th>Performance Priority</th><th>How Uber Addresses It</th></tr></thead>
+										<tbody>
+											<tr><td>Show nearby drivers on map</td><td>Latency</td><td>Driver locations cached in-memory; geospatial indexes for fast radius queries</td></tr>
+											<tr><td>Driver location updates (every second)</td><td>Both</td><td>Stream processing pipeline; millions of location events per second</td></tr>
+											<tr><td>Match rider with driver</td><td>Latency</td><td>Real-time matching algorithm with cached driver availability</td></tr>
+											<tr><td>Surge pricing calculation</td><td>Throughput</td><td>Aggregates supply/demand from thousands of events per second in real time</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-info">
+									<strong>Notice the pattern:</strong> Every large system has latency-critical features (things users wait for) and throughput-critical features (things that happen at massive scale). Knowing which is which is how you make the right architectural decisions.
+								</blockquote>
+								<!-- 5.10 -->
+								<a id="lt-tradeoffs" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">5.10</span> ⚖️ Trade-offs</h3></div>
+								<p class="blg-paragraph">Improving latency and throughput can sometimes conflict. Understanding these trade-offs is essential for making the right system design decision.</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Technique</th><th>Effect on Latency</th><th>Effect on Throughput</th><th>When to Accept the Trade-off</th></tr></thead>
+										<tbody>
+											<tr><td><strong>Batching</strong> — wait to collect 1,000 messages then process together</td><td>❌ Increases — first message waits for the batch to fill</td><td>✅ Improves — processing in bulk is more efficient</td><td>Background jobs, analytics, email digests — not for real-time user requests</td></tr>
+											<tr><td><strong>Compression</strong> — gzip/Brotli encoding of responses</td><td>✅ Often reduces — less data to transfer</td><td>⚠️ Mixed — saves network bandwidth but adds CPU overhead; throughput may drop if CPU is overloaded</td><td>Large API responses, static assets; skip for tiny responses or CPU-bound systems</td></tr>
+											<tr><td><strong>Strong consistency</strong> — every write confirmed by multiple regions before responding</td><td>❌ Increases — must wait for all confirmations across regions</td><td>❌ Reduces — system spends more time per transaction</td><td>Financial transactions, critical data — accept higher latency for correctness guarantees</td></tr>
+											<tr><td><strong>Caching</strong></td><td>✅ Reduces — serve from memory, avoid DB round-trip</td><td>✅ Improves — DB gets fewer requests, can handle more traffic</td><td>Read-heavy workloads with mostly stable data; avoid for data that changes very frequently</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-tip">
+									<strong>Golden rule:</strong> Identify the bottleneck first. Adding more app servers when the database is the bottleneck does not help. Profile before optimizing — measure which component contributes most to latency, then fix that specific component.
+								</blockquote>
+
+								<!-- 5.11 -->
+								<a id="lt-mistakes" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">5.11</span> 🚫 Common Mistakes</h3></div>
+								<div class="blg-table">
+									<table>
+										<thead><tr><th>#</th><th>❌ Common Mistake</th><th>✅ The Reality</th></tr></thead>
+										<tbody>
+											<tr><td>1</td><td><strong>Confusing latency with throughput</strong> — "System is slow because it handles many requests"</td><td>They are independent. A system can handle 100,000 RPS but still have slow individual responses. Always distinguish: "Is one request slow?" (latency) vs "Is the system overwhelmed?" (throughput)</td></tr>
+											<tr><td>2</td><td><strong>Only monitoring average latency</strong> — "Average is 100ms, we are fine"</td><td>Average hides tail latency. If p99 = 5 seconds and you serve 1M requests/day, that is 10,000 users getting 5-second responses daily. Always monitor p95 and p99.</td></tr>
+											<tr><td>3</td><td><strong>Adding more app servers without checking the bottleneck</strong></td><td>If the database is the bottleneck, more app servers do nothing — they all still wait for the same slow DB. Identify the bottleneck first, then fix it.</td></tr>
+											<tr><td>4</td><td><strong>Ignoring geography</strong> — deploying everything in one region</td><td>A user in Japan connecting to a US server adds ~150ms of latency from network distance alone. Use CDN, regional deployment, and latency-based DNS routing.</td></tr>
+											<tr><td>5</td><td><strong>Making every task synchronous</strong> — user waits for email, analytics, invoice generation</td><td>Non-critical tasks should be async. User places order → confirm immediately → send email, update analytics, generate invoice in the background. Sync everything = slow user experience.</td></tr>
+										</tbody>
+									</table>
+								</div>
+
+								<!-- 5.12 -->
+								<a id="lt-summary" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">5.12</span> 📝 Summary</h3></div>
+								<ul class="blg-ul">
+									<li class="blg-li blg-li-check"><strong>Latency</strong> = time for one request to complete. <strong>Throughput</strong> = how many requests the system handles per second. They are different dimensions.</li>
+									<li class="blg-li blg-li-check"><strong>Always measure percentile latency</strong> (p50, p95, p99), not just average. p99 can reveal thousands of users having a bad experience that averages hide.</li>
+									<li class="blg-li blg-li-check"><strong>Main causes of high latency:</strong> network distance, slow DB queries, too many service calls, server overload, large responses, cold starts.</li>
+									<li class="blg-li blg-li-check"><strong>Reduce latency with:</strong> caching, CDN, regional servers, DB indexing, async processing, parallel service calls, compression.</li>
+									<li class="blg-li blg-li-check"><strong>Improve throughput with:</strong> horizontal scaling, load balancing, caching, DB scaling (replicas/sharding), message queues, reducing per-request work.</li>
+									<li class="blg-li blg-li-check">Caching improves <strong>both</strong> latency and throughput — it is one of the most powerful tools in system design.</li>
+								</ul>
+
+								<!-- 5.13 -->
+								<a id="lt-challenge" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">5.13</span> 🏋️ Design Challenge</h3></div>
+								<blockquote class="blg-callout-purple">
+									<strong>🍕 Challenge: Food Delivery App Performance</strong><br><br>
+									For each feature below, decide whether <strong>Latency</strong>, <strong>Throughput</strong>, or <strong>Both</strong> are the primary concern. Then suggest one technique to improve that dimension:
+									<ul class="blg-ul" style="margin-top:10px;">
+										<li class="blg-li">User searches nearby restaurants</li>
+										<li class="blg-li">User places an order</li>
+										<li class="blg-li">System sends order confirmation email</li>
+										<li class="blg-li">Driver location updates every second</li>
+										<li class="blg-li">Payment processing</li>
+									</ul>
+								</blockquote>
+								<details class="blg-answer-reveal">
+									<summary>👁️ Show Answer</summary>
+									<div class="blg-answer-reveal-body">
+										<div class="blg-table blg-table-balanced">
+											<table>
+												<thead><tr><th>Feature</th><th>Priority</th><th>Improvement Technique</th></tr></thead>
+												<tbody>
+													<tr><td>Search nearby restaurants</td><td>Both</td><td>Cache restaurant lists by area; use geospatial indexes for fast radius queries; auto-scale for dinner rush</td></tr>
+													<tr><td>Place an order</td><td>Both</td><td>Confirm order quickly (respond in &lt;500ms); use message queue to process order async; auto-scale during peak hours</td></tr>
+													<tr><td>Confirmation email</td><td>Throughput (async)</td><td>Move to background queue — user doesn&apos;t wait; process millions of emails per hour asynchronously via SQS + Lambda</td></tr>
+													<tr><td>Driver location updates</td><td>Both</td><td>Stream processing (Kafka/Kinesis); cache latest driver position in Redis; update map every 1-2 seconds for smooth UX</td></tr>
+													<tr><td>Payment processing</td><td>Latency + correctness</td><td>Use dedicated payment service with SLA; correctness &gt; speed — user waits 1-2s for confirmed payment over risking data errors</td></tr>
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</details>
+
+								<!-- 5.14 -->
+								<a id="lt-cloud" class="blg-anchor"></a>
+								<div class="blg-sub-header"><h3><span class="blg-sub-badge">5.14</span> ☁️ Cloud Service Mapping</h3></div>
+								<p class="blg-paragraph">Every major cloud platform has services specifically designed to reduce latency and increase throughput:</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Need</th><th>AWS (Primary)</th><th>GCP</th><th>Azure</th></tr></thead>
+										<tbody>
+											<tr><td><strong>Reduce global latency (CDN)</strong></td><td>Amazon CloudFront</td><td>Cloud CDN</td><td>Azure Front Door / Azure CDN</td></tr>
+											<tr><td><strong>Route users to nearest region</strong></td><td>Route 53 latency-based routing</td><td>Cloud DNS + Traffic Director</td><td>Azure Traffic Manager</td></tr>
+											<tr><td><strong>Cache application data</strong></td><td>Amazon ElastiCache (Redis/Memcached)</td><td>Memorystore</td><td>Azure Cache for Redis</td></tr>
+											<tr><td><strong>Scale web/API servers</strong></td><td>EC2 Auto Scaling / ECS / App Runner</td><td>Cloud Run / GKE autoscaling</td><td>Azure Container Apps / AKS</td></tr>
+											<tr><td><strong>Distribute traffic (throughput)</strong></td><td>Application Load Balancer</td><td>Cloud Load Balancing</td><td>Azure Application Gateway</td></tr>
+											<tr><td><strong>Scale database reads</strong></td><td>RDS / Aurora Read Replicas</td><td>Cloud SQL Read Replicas / AlloyDB</td><td>Azure SQL Geo-Replication</td></tr>
+											<tr><td><strong>Absorb traffic spikes (queue)</strong></td><td>Amazon SQS / Kinesis</td><td>Pub/Sub</td><td>Azure Service Bus / Event Hubs</td></tr>
+											<tr><td><strong>Monitor latency &amp; throughput</strong></td><td>CloudWatch + X-Ray (distributed tracing)</td><td>Cloud Monitoring / Cloud Trace</td><td>Azure Monitor / Application Insights</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-info">
+									<strong>AWS mental model for performance:</strong> Reduce latency → CloudFront (global) + ElastiCache (data) + Route 53 latency routing (regional). Increase throughput → Auto Scaling + Load Balancer + SQS (absorb spikes) + Read Replicas (database). Monitor both → CloudWatch metrics + X-Ray traces.
+								</blockquote>
+								<hr class="blg-hr">
+							</div>
+
+							<div class="blg-trailing-section">
+								<div class="blg-section">
+									<div class="blg-main-header"><h2>📚 References</h2></div>
+									<ul class="blg-ul">
+										<li class="blg-li"><strong>Computer Networking: A Top-Down Approach</strong> — Kurose &amp; Ross — The standard university textbook covering client-server, DNS, HTTP, TCP/UDP, and all networking fundamentals in this post.</li>
+										<li class="blg-li"><strong>System Design Interview (Vol. 1)</strong> — Alex Xu — Practical system design explanations with networking as the foundation for every concept.</li>
+										<li class="blg-li"><strong>Cloudflare Learning Center</strong> — Beginner-friendly explanations of DNS, IP addressing, HTTP, TCP/UDP, and CDN — highly recommended for visual learners.</li>
+										<li class="blg-li"><strong>MDN Web Docs — HTTP</strong> — Comprehensive reference for HTTP/HTTPS methods, status codes, headers, and the request-response cycle.</li>
+										<li class="blg-li"><strong>High Scalability</strong> — Real-world architecture breakdowns showing how companies use DNS, CDNs, and networking at scale.</li>
+									</ul>
+								</div>
+							</div>
+
+						</div><!-- end #blogContainer -->
+					</div><!-- end .blog-detail-main -->
+				</div><!-- end .blog-detail-layout -->
+
+				<div class="related-posts-section">
+					<div class="blog-title-bar">
+						<img src="../img/others/blog.png" alt="blog post" style="width: 24px; height: auto;">
+						<h2>Related Blog Posts</h2>
+					</div>
+					<div class="related-posts-wrapper">
+						<div class="related-posts-swiper-area">
+							<div class="swiper" id="postContainer">
+								<div class="swiper-wrapper"></div>
+							</div>
+							<div class="swiper-button-prev"></div>
+							<div class="swiper-button-next"></div>
+						</div>
+						<div class="blg-slide-counter">
+							<div class="slide-progress-bar">
+								<div class="slide-progress-fill" id="slideProgressFill"></div>
+							</div>
+							<div class="slide-counter-label">
+								<span id="currentSlide">1</span> / <span id="totalSlides">1</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</section>
+		<div id="site-footer"></div>
+	</div>
+
+	<script src="../js/bootstrap.bundle.min.js"></script>
+	<script src="../js/components.js"></script>
+	<script src="../js/site.js"></script>
+	<script src="../js/swiper-bundle.min.js"></script>
+	<script src="../js/prism.js" data-manual></script>
+	<script src="../js/code-highlight.js"></script>
+	<script src="../js/detail.js"></script>
+	<script src="../js/mermaid.min.js"></script>
+	<script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+</body>
+</html>

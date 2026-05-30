@@ -311,7 +311,8 @@ Alignment rule: all comments start at column = `max(pipe_len + name_len) + 6`.
 - [ ] Inline Table of Contents (`.blg-toc-container`) — visible on mobile
 - [ ] Left sidebar TOC (`#tocSidebar`) — sticky on desktop (add for long posts)
 - [ ] All sections and sub-sections written
-- [ ] Content images with captions (if any)
+- [ ] Thumbnail image uses `class="blg-thumbnail"` — zoom lightbox applied automatically (see Image Lightbox Rule in CLAUDE.md)
+- [ ] Content images use `class="blg-img"` inside `.blg-img-container` — zoom lightbox applied automatically (see Image Lightbox Rule in CLAUDE.md)
 - [ ] Directory tree structure (if project-based post)
 - [ ] Code blocks with correct `data-lang` (if any)
 - [ ] Tables (if any)
@@ -322,6 +323,8 @@ Alignment rule: all comments start at column = `max(pipe_len + name_len) + 6`.
 
 ### Technical
 - [ ] `<title>` tag exactly matches the `title` field in `data/posts.json` (encode `&` as `&amp;`)
+- [ ] Thumbnail uses `class="blg-thumbnail"` (NOT `blg-lightbox-trigger` — zoom is auto-applied by `detail.js`)
+- [ ] All content images use `class="blg-img"` (NOT inline `onclick` — zoom is auto-applied by `detail.js`)
 - [ ] All `.blg-code-block` have `data-lang` attribute
 - [ ] All `.blg-tree` comments column-aligned with spaces
 - [ ] All TOC `href="#id"` match corresponding `.blg-anchor` `id=` values

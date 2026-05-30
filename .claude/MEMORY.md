@@ -246,3 +246,23 @@ Stream stalls occur when Claude generates large HTML blocks in one turn. The saf
 2. Edit in each section one at a time — one `Edit` per `<div class="blg-section">` block.
 3. Replace `<!-- TRAILING PLACEHOLDER -->` with Tech Stacks + Download + References last.
 This prevents any single generation from exceeding ~3 KB before a tool call.
+
+## System Design Series (blog_19+)
+
+blog_19 = series overview/roadmap. blog_20 = Phase 1 Post 1 (Networking Basics) — ALL 5 sub-topics complete: Client & Server, IP & DNS, HTTP/HTTPS, TCP vs UDP, Latency & Throughput. Both blog_19 and blog_20 reviewed and all inconsistencies fixed..
+Full writing rules: `.claude/feedback_sysdesign_post.md`
+
+**Key rules at a glance:**
+- Phase 1: ONE post per category; sub-topics are GROUPED CLUSTERS (not thin individual items) — see grouping table in feedback file
+- Each cluster gets the full 14-section treatment; write one cluster at a time, wait for review
+- blog_19 Phase 1 cards: bold grouped format `<strong>Group Name</strong> — description`
+- Section badges: N.M numbering (1.1–1.14 for cluster 1, 2.1–2.14 for cluster 2, etc.)
+- TOC sidebar shows all 14 sub-sections per written cluster
+- Sub-topic image: Option A (after h2 + intro paragraph, before Section 1.1, no caption)
+- When post published: add blg-feature-card-link to matching Phase 1 card in blog_19
+- Section 14 (Cloud Services): only include services directly needed for that specific sub-topic — skip services belonging to other sub-topics
+- No source code, no Python files — conceptual posts only
+- Never use "FAANG interview" language
+
+**Series post count:** 50 total — 11 (Phase 1) + 17 (Phase 2) + 12 (Phase 3) + 10 (Phase 4)
+- TOC rule: sidebar <ul> = manual numbers in text; inline <ol> = NO manual numbers (auto-numbered); System Design inline TOC includes all sub-sections for mobile navigation

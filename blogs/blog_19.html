@@ -1,0 +1,856 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<!-- Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-6SEFZQJHM1"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag() { dataLayer.push(arguments); }
+		gtag("js", new Date());
+		gtag("config", "G-6SEFZQJHM1", { cookie_domain: "shafiqulai.github.io" });
+	</script>
+	<meta charset="utf-8" />
+	<title>System Design Roadmap: From Beginner to Expert</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="A complete beginner-friendly roadmap to master system design. Covers 11 foundation prerequisite categories, 17 core system design concepts, 12 classic system designs, and 10 advanced system designs — from URL shortener to YouTube and Uber." />
+	<meta name="author" content="MD SHAFIQUL ISLAM" />
+	<link rel="canonical" href="https://shafiqulai.github.io/blogs/blog_19.html" />
+	<link rel="icon" href="../img/others/favicon.ico" type="image/x-icon" />
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+	<link rel="stylesheet" href="../css/bootstrap.min.css" />
+	<link rel="stylesheet" href="../css/swiper-bundle.min.css" />
+	<link rel="stylesheet" href="../css/style.css" />
+	<link rel="stylesheet" href="../css/prism.css" />
+</head>
+<body>
+	<div id="reading-progress"></div>
+	<div id="wrapper">
+		<div id="site-header"></div>
+		<section id="content">
+			<div class="container">
+				<div class="blog-detail-layout">
+
+					<aside class="toc-sidebar" id="tocSidebar">
+						<div class="toc-sidebar-header">
+							<p class="toc-sidebar-title">Contents</p>
+						</div>
+						<ul class="toc-sidebar-list">
+							<li><a href="#intro">1. What Is System Design?</a></li>
+							<li><a href="#interview-format">2. The 5-Step Design Framework</a></li>
+							<li><a href="#roadmap">3. The 4-Phase Learning Roadmap</a></li>
+							<li><a href="#phase1">4. Phase 1: Prerequisites</a></li>
+							<li><a href="#phase2">5. Phase 2: Core Concepts</a></li>
+							<li><a href="#phase3">6. Phase 3: Real Systems</a></li>
+							<li><a href="#phase4">7. Phase 4: Advanced Systems</a></li>
+										<li><a href="#conclusion">8. Conclusion</a></li>
+						</ul>
+					</aside>
+
+					<div class="blog-detail-main">
+						<div id="blogContainer">
+
+							<div class="container blg-title-container">
+								<h2 class="blg-title">System Design Roadmap: From Beginner to Expert</h2>
+							</div>
+
+							<div class="author_section">
+								<img id="author_img" src="" alt="Author Photo" class="author_img">
+								<div class="author_details">
+									<span id="author_name" class="author_name"></span>
+									<span id="published_date" class="published_date"></span>
+								</div>
+							</div>
+
+							<div class="blg-img-container">
+								<img src="../img/blog_19/thumbnail.webp" alt="System Design Roadmap: From Beginner to Expert" class="blg-thumbnail" />
+							</div>
+
+							<div class="blg-toc-container">
+								<h2>📚 Table of Contents</h2>
+								<ol class="blg-toc-ol">
+									<li class="blg-toc-li"><a href="#intro">What Is System Design?</a></li>
+									<li class="blg-toc-li"><a href="#interview-format">The 5-Step Design Framework</a></li>
+									<li class="blg-toc-li"><a href="#roadmap">The 4-Phase Learning Roadmap</a></li>
+									<li class="blg-toc-li"><a href="#phase1">Phase 1: Foundation Prerequisites</a></li>
+									<li class="blg-toc-li"><a href="#phase2">Phase 2: Core System Design Concepts</a></li>
+									<li class="blg-toc-li"><a href="#phase3">Phase 3: Real System Design Practice</a></li>
+									<li class="blg-toc-li"><a href="#phase4">Phase 4: Advanced System Design</a></li>
+											<li class="blg-toc-li"><a href="#conclusion">Conclusion</a></li>
+								</ol>
+							</div>
+
+							<div class="blg-section">
+								<a id="intro" class="blg-anchor"></a>
+								<div class="blg-main-header"><h2>🏗️ 1. What Is System Design?</h2></div>
+
+								<p class="blg-paragraph">
+									System design is the process of defining how a large software system is built — its components, how they communicate, how data flows through them, and how the whole thing stays fast and reliable when millions of people use it at the same time. Think of it like being an architect: you don't write every line of code, but you decide where the walls go, how many floors there are, and what happens when the elevator breaks.
+								</p>
+
+								<p class="blg-paragraph">
+									Unlike coding problems that have one correct answer, system design is open-ended. There are many valid approaches, and the goal is to make smart trade-offs based on the requirements in front of you. Should you use SQL or NoSQL? A single server or multiple? A cache or no cache? The right answer always depends on the scale, constraints, and priorities of the system.
+								</p>
+
+								<p class="blg-paragraph">
+									Every product you use daily — from a messaging app to a streaming service to a ride-sharing platform — is the result of careful system design decisions made by engineering teams. Understanding how these systems work, what trade-offs their designers made, and why certain patterns appear again and again gives you a level of technical depth that is valuable whether you're building something new at work, growing as an engineer, or preparing for a technical discussion.
+								</p>
+
+								<blockquote class="blg-callout-info">
+									<strong>Key insight:</strong> System design is not about memorizing answers. It's about learning the building blocks — databases, caches, queues, load balancers — and knowing when and why to use each one. That's exactly what this series teaches, one topic at a time.
+								</blockquote>
+
+								<p class="blg-paragraph">
+									This blog post is your starting point. It lays out the complete roadmap: what you need to learn first (the prerequisites), the core system design concepts to master, and the real-world systems you'll design as practice. Each topic gets its own dedicated post so you can go deep at your own pace.
+								</p>
+								<hr class="blg-hr">
+							</div>
+
+							<div class="blg-section">
+								<a id="interview-format" class="blg-anchor"></a>
+								<div class="blg-main-header"><h2>🎯 2. The 5-Step Design Framework</h2></div>
+
+								<p class="blg-paragraph">
+									Whether you're designing a new feature at work, planning the architecture of a product from scratch, or thinking through a complex technical problem in a discussion, experienced engineers don't jump straight to solutions. They follow a deliberate, structured process that ensures nothing important gets missed — and that every decision can be justified.
+								</p>
+
+								<p class="blg-paragraph">
+									Here's a five-step framework that works for any system design problem, regardless of the context:
+								</p>
+
+								<div class="blg-table">
+									<table>
+										<thead>
+											<tr>
+												<th>Step</th>
+												<th>What You Do</th>
+												<th>Why It Matters</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td><strong>1. Clarify Requirements</strong></td>
+												<td>Ask questions first. What features are in scope? How many users? Read-heavy or write-heavy? Mobile or web?</td>
+												<td>Prevents building the wrong thing. Requirements drive every design decision that follows.</td>
+											</tr>
+											<tr>
+												<td><strong>2. Estimate Scale</strong></td>
+												<td>Put numbers on the problem — daily active users, requests per second, storage, bandwidth. Even rough estimates guide better decisions.</td>
+												<td>The right database for 10,000 users is often the wrong one for 10 million. Scale changes everything.</td>
+											</tr>
+											<tr>
+												<td><strong>3. High-Level Design</strong></td>
+												<td>Sketch the main components: clients, services, databases, caches, queues, CDN. Draw how they connect and how data flows.</td>
+												<td>Creates a shared mental model. Exposes obvious gaps before you spend time on details.</td>
+											</tr>
+											<tr>
+												<td><strong>4. Deep Dive</strong></td>
+												<td>Pick the hardest or most critical part and go deep — sharding strategy, cache invalidation, consistency model, failure handling.</td>
+												<td>Surface-level designs look fine until a real problem forces a deeper choice. Deep thinking reveals real constraints.</td>
+											</tr>
+											<tr>
+												<td><strong>5. Review &amp; Iterate</strong></td>
+												<td>Step back. What are the bottlenecks? What fails first? What would you change given more time or resources?</td>
+												<td>Good engineers know what their design can't do. Knowing the limits is part of the design.</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+
+								<p class="blg-paragraph">
+									This sequence matters. Understanding requirements before designing prevents wasted effort. Estimating scale before choosing a database prevents picking the wrong tool. Deep-diving the hardest part early prevents discovering a fatal flaw too late. These five steps aren't a rigid checklist — they're a thinking habit that becomes second nature with practice.
+								</p>
+
+								<p class="blg-paragraph">
+									The systems we'll design in Phase 3 — a URL shortener, a chat system, a video platform, a ride-sharing app, a news feed, and more — are excellent practice vehicles because they're familiar, operate at real scale, and each one exercises a different set of design patterns that apply far beyond the specific system itself.
+								</p>
+
+								<blockquote class="blg-callout-tip">
+									<strong>Key mindset:</strong> There is no single correct design. Every choice involves a trade-off — faster reads vs. simpler writes, consistency vs. availability, flexibility vs. performance. The goal is to make the best decision for the given constraints and to be able to explain why.
+								</blockquote>
+								<hr class="blg-hr">
+							</div>
+
+							<div class="blg-section">
+								<a id="roadmap" class="blg-anchor"></a>
+								<div class="blg-main-header"><h2>🗺️ 3. The 4-Phase Learning Roadmap</h2></div>
+
+								<p class="blg-paragraph">
+									Mastering system design is not something you do in a weekend. It's a layered skill — you need to understand the fundamentals before the big concepts make sense, and you need to understand the big concepts before you can design real systems confidently. This series is structured into four phases that build on each other.
+								</p>
+
+								<div class="blg-table">
+									<table>
+										<thead>
+											<tr>
+												<th>Phase</th>
+												<th>Focus</th>
+												<th>Topics</th>
+												<th>Goal</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td><strong>Phase 1</strong></td>
+												<td>Foundation Prerequisites</td>
+												<td>11 categories covering networking, APIs, databases, scalability, security, and more</td>
+												<td>Build the vocabulary and mental model you need to understand system design</td>
+											</tr>
+											<tr>
+												<td><strong>Phase 2</strong></td>
+												<td>Core System Design Concepts</td>
+												<td>17 concepts — load balancers, data centers, caching, sharding, message queues, microservices, unique ID generation, and more</td>
+												<td>Learn each building block deeply so you can use it confidently in any design</td>
+											</tr>
+											<tr>
+												<td><strong>Phase 3</strong></td>
+												<td>Real System Design Practice</td>
+												<td>12 system designs — URL shortener, chat, YouTube, web crawler, notification system, search autocomplete, Google Drive, and more</td>
+												<td>Apply Phase 2 concepts by designing 12 real systems end to end, from requirements through deep-dive trade-offs</td>
+											</tr>
+											<tr>
+												<td><strong>Phase 4</strong></td>
+												<td>Advanced System Design</td>
+												<td>10 advanced systems — proximity service, Google Maps, Kafka deep dive, payment system, stock exchange, and more</td>
+												<td>Design expert-level systems that combine multiple Phase 2 patterns; tackle geospatial indexing, event sourcing, exactly-once semantics, and matching engines</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+
+								<p class="blg-paragraph">
+									Think of Phase 1 as learning the language. Phase 2 as learning the grammar. Phase 3 as writing your first essays. You wouldn't try to write in a new language before you know the words — and you wouldn't try to design YouTube before you understand what a CDN or a message queue actually does.
+								</p>
+
+								<div class="blg-mermaid-wrap">
+									<div class="mermaid" style="min-width:640px;">
+%%{init: {"theme": "base", "themeVariables": {"lineColor": "#94a3b8", "edgeLabelBackground": "#fff"}}}%%
+flowchart TD
+    S(["🚀 Start Here"])
+
+    S --> A1
+
+    subgraph SG1["📚  Phase 1 — Foundation Prerequisites · 11 Categories"]
+    direction LR
+        A1["🌐 Networking\nIP · DNS · HTTP\nTCP vs UDP · Latency"]
+        A2["🔌 APIs &amp; Backend\nREST · JSON · Auth\nServers · Stateless vs Stateful"]
+        A3["🗄️ Databases\nSQL · NoSQL · ACID\nIndexes · Schema Design"]
+        A4["📈 Scalability &amp; More\nLoad Balancer · Caching\nCDN · Queues · Security · Observability"]
+    end
+
+    SG1 --> B1
+
+    subgraph SG2["⚙️  Phase 2 — Core System Design Concepts · 17 Concepts"]
+    direction LR
+        B1["📈 Scaling\nLoad Balancer\nVertical vs Horizontal"]
+        B2["🗄️ Storage\nCaching · Indexing\nSharding · Replication"]
+        B3["🔗 Infrastructure\nCDN · Message Queues\nRate Limiting"]
+        B4["🌐 Distributed Systems\nCAP Theorem · Microservices\nAPI Gateway · Estimation"]
+    end
+
+    SG2 --> C1
+
+    subgraph SG3["🏗️  Phase 3 — Real System Design Practice · 12 Systems"]
+    direction LR
+        C1["🔗 URL Shortener\nHashing · Redirection\nKey Generation"]
+        C2["💬 Chat &amp; News Feed\nWebSockets · Fan-out\nTimeline Generation"]
+        C3["📺 YouTube · 🚗 Uber\nCDN · Geo-indexing\nVideo Encoding"]
+        C4["🐦 Twitter/X · 📷 Instagram\nSocial Graph · Media Storage\nEnd-to-End Design"]
+    end
+
+    SG3 --> D1
+
+    subgraph SG4["🚀  Phase 4 — Advanced System Design · 10 Systems"]
+    direction LR
+        D1["📍 Proximity + Maps\nGeohash · Routing\nTile Serving"]
+        D2["💳 Payment + Exchange\nDouble-entry · Matching\nEngine · Idempotency"]
+        D3["📊 Metrics + Ad Clicks\nTime-series DB · Lambda\nArchitecture"]
+        D4["🗂️ Storage + MQ Deep\nErasure Coding\nDelivery Semantics"]
+    end
+
+    SG4 --> E(["🏆 System Design Expert!"])
+
+    style S  fill:#10b981,stroke:#059669,color:#fff,font-weight:bold
+    style E  fill:#f59e0b,stroke:#d97706,color:#fff,font-weight:bold
+
+    style SG1 fill:#eff6ff,stroke:#2563eb,color:#1e40af
+    style SG2 fill:#fff7ed,stroke:#d97706,color:#92400e
+    style SG3 fill:#f5f3ff,stroke:#7c3aed,color:#4c1d95
+
+    style A1 fill:#dbeafe,stroke:#93c5fd,color:#1e3a8a
+    style A2 fill:#dbeafe,stroke:#93c5fd,color:#1e3a8a
+    style A3 fill:#dbeafe,stroke:#93c5fd,color:#1e3a8a
+    style A4 fill:#dbeafe,stroke:#93c5fd,color:#1e3a8a
+
+    style B1 fill:#fed7aa,stroke:#fb923c,color:#7c2d12
+    style B2 fill:#fed7aa,stroke:#fb923c,color:#7c2d12
+    style B3 fill:#fed7aa,stroke:#fb923c,color:#7c2d12
+    style B4 fill:#fed7aa,stroke:#fb923c,color:#7c2d12
+
+    style C1 fill:#ede9fe,stroke:#a78bfa,color:#3b0764
+    style C2 fill:#ede9fe,stroke:#a78bfa,color:#3b0764
+    style C3 fill:#ede9fe,stroke:#a78bfa,color:#3b0764
+    style C4 fill:#ede9fe,stroke:#a78bfa,color:#3b0764
+
+    style SG4 fill:#ecfdf5,stroke:#059669,color:#064e3b
+
+    style D1 fill:#d1fae5,stroke:#6ee7b7,color:#064e3b
+    style D2 fill:#d1fae5,stroke:#6ee7b7,color:#064e3b
+    style D3 fill:#d1fae5,stroke:#6ee7b7,color:#064e3b
+    style D4 fill:#d1fae5,stroke:#6ee7b7,color:#064e3b
+									</div>
+								</div>
+
+								<blockquote class="blg-callout-info">
+									<strong>How this series works:</strong> Each phase maps to a sequence of blog posts. Every post covers exactly one topic in depth. Follow them in order and you'll build up a solid mental model naturally.
+								</blockquote>
+
+								<div class="blg-sub-header">
+									<h3>📄 What Every Post Includes</h3>
+								</div>
+								<p class="blg-paragraph">Every topic post in this series follows the same structure so you always know what to expect:</p>
+								<div class="blg-table">
+									<table>
+										<thead>
+											<tr><th>#</th><th>Section</th><th>What You'll Find</th></tr>
+										</thead>
+										<tbody>
+											<tr><td>1</td><td>🎯 Introduction</td><td>Simple, jargon-free definition of what the concept is</td></tr>
+											<tr><td>2</td><td>💡 Why It Matters</td><td>Why large-scale systems need this and what breaks without it</td></tr>
+											<tr><td>3</td><td>🏠 Real-world Analogy</td><td>A familiar, everyday comparison that makes the concept click instantly</td></tr>
+											<tr><td>4</td><td>📖 Key Terms</td><td>All important vocabulary defined upfront — TTL, eviction, quorum, partition key, etc.</td></tr>
+											<tr><td>5</td><td>🔢 How It Works</td><td>The full concept broken into digestible steps with a concrete worked example</td></tr>
+											<tr><td>6</td><td>🔀 Types &amp; Variations</td><td>The main flavours of this concept — e.g. cache-aside vs write-through, L4 vs L7 load balancer, SQL vs NoSQL</td></tr>
+											<tr><td>7</td><td>🎨 Illustrated Diagram</td><td>A colorful, labelled architecture or data-flow diagram where helpful</td></tr>
+											<tr><td>8</td><td>✅ When to Use</td><td>The situations that call for this pattern — and when to avoid it</td></tr>
+											<tr><td>9</td><td>🏗️ Real-world Example</td><td>How a known product (YouTube, Uber, WhatsApp, etc.) applies this in production</td></tr>
+											<tr><td>10</td><td>⚖️ Trade-offs</td><td>What you gain and what you sacrifice — with concrete comparisons</td></tr>
+											<tr><td>11</td><td>🚫 Common Mistakes</td><td>The most frequent design errors on this topic and how to avoid them</td></tr>
+											<tr><td>12</td><td>📝 Summary</td><td>A quick-reference recap of all key points from the post</td></tr>
+											<tr><td>13</td><td>🏋️ Design Challenge</td><td>A practical design exercise to apply what you just learned — with a reveal button to show the answer</td></tr>
+											<tr><td>14</td><td>☁️ Cloud Service Mapping</td><td>AWS (primary) + GCP and Azure equivalents for every concept covered</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<hr class="blg-hr">
+							</div>
+
+							<div class="blg-section">
+								<a id="phase1" class="blg-anchor"></a>
+								<div class="blg-main-header"><h2>📚 4. Phase 1: Foundation Prerequisites</h2></div>
+
+								<p class="blg-paragraph">
+									Before you can design large-scale systems, you need a solid foundation. These are the concepts that system design topics are built on top of. If you jump straight to "Design YouTube" without knowing what a database index is or how TCP works, the answers won't make sense. Phase 1 covers 11 categories — each one addressed in its own post with beginner-friendly explanations and real-world examples.
+								</p>
+
+								<div class="blg-feature-grid">
+
+									<div class="blg-feature-card card-blue">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">🌐</span>
+											<h4>1. Networking Basics</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<ul>
+												<li>Client &amp; Server</li>
+												<li>IP Address &amp; DNS</li>
+												<li>HTTP / HTTPS</li>
+												<li>TCP vs UDP</li>
+												<li>Latency &amp; Throughput</li>
+											</ul>
+											<p class="blg-feature-card-link"><a href="./blog_20.html" class="blg-link" target="_blank" rel="noopener noreferrer">📖 Read post →</a></p>
+										</div>
+									</div>
+
+									<div class="blg-feature-card card-teal">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">🔌</span>
+											<h4>2. API Basics</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<ul>
+												<li><strong>What is an API?</strong> — definition, request &amp; response cycle, JSON</li>
+												<li><strong>REST &amp; HTTP</strong> — REST style, HTTP methods, status codes</li>
+												<li><strong>API Authentication</strong> — OAuth, JWT, API keys, token-based auth</li>
+											</ul>
+										</div>
+									</div>
+
+									<div class="blg-feature-card card-purple">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">⚙️</span>
+											<h4>3. Core Backend Concepts</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<ul>
+												<li><strong>Servers</strong> — web server (serves files) vs application server (runs logic)</li>
+												<li><strong>Storage</strong> — databases for structured data, object storage for files &amp; media</li>
+												<li><strong>Background Processing</strong> — background jobs, cron jobs, async workers outside the request path</li>
+												<li><strong>Stateless vs Stateful</strong> — why stateless services scale better and what it means</li>
+											</ul>
+											<p>☁️ AWS: EC2 · S3 · Lambda &nbsp;|&nbsp; GCP: Compute Engine · Cloud Storage · Cloud Functions &nbsp;|&nbsp; Azure: VMs · Blob Storage · Azure Functions</p>
+										</div>
+									</div>
+
+									<div class="blg-feature-card card-orange">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">🗄️</span>
+											<h4>4. Database Basics</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<ul>
+												<li><strong>Core Database Concepts</strong> — primary keys, indexes, queries, transactions, ACID, schema design</li>
+												<li><strong>SQL vs NoSQL</strong> — types, key differences, when to choose each</li>
+											</ul>
+											<p>☁️ AWS: RDS / Aurora (SQL) · DynamoDB (NoSQL) &nbsp;|&nbsp; GCP: Cloud SQL / Firestore &nbsp;|&nbsp; Azure: Azure SQL / Cosmos DB</p>
+										</div>
+									</div>
+
+									<div class="blg-feature-card card-green">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">📈</span>
+											<h4>5. Scalability Basics</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<ul>
+												<li><strong>Scaling Techniques</strong> — vertical scaling, horizontal scaling, auto-scaling, load balancers</li>
+												<li><strong>Scaling Challenges</strong> — bottlenecks, single points of failure</li>
+											</ul>
+											<p>☁️ AWS: Elastic Load Balancing · Auto Scaling &nbsp;|&nbsp; GCP: Cloud Load Balancing · Managed Instance Groups &nbsp;|&nbsp; Azure: Load Balancer · Scale Sets</p>
+										</div>
+									</div>
+
+									<div class="blg-feature-card card-blue">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">⚡</span>
+											<h4>6. Caching &amp; CDN</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<ul>
+												<li>Cache — stores data in memory for fast access (hit, miss, TTL, eviction)</li>
+												<li>Cache invalidation strategies (write-through, cache-aside)</li>
+												<li>Redis as an in-memory cache</li>
+												<li>CDN — delivers static content from edge locations near users</li>
+												<li>Edge servers &amp; origin servers</li>
+											</ul>
+											<p>☁️ Cache — AWS: ElastiCache · GCP: Memorystore · Azure: Cache for Redis &nbsp;|&nbsp; CDN — AWS: CloudFront · GCP: Cloud CDN · Azure: Front Door</p>
+										</div>
+									</div>
+
+									<div class="blg-feature-card card-purple">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">📨</span>
+											<h4>7. Message Queues &amp; Async</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<ul>
+												<li><strong>Queue Fundamentals</strong> — what a queue is, producers, consumers, how messages flow</li>
+												<li><strong>Reliability Patterns</strong> — async processing, retry mechanisms, dead-letter queues</li>
+											</ul>
+											<p>☁️ AWS: SQS · SNS · EventBridge &nbsp;|&nbsp; GCP: Pub/Sub · Eventarc &nbsp;|&nbsp; Azure: Service Bus · Event Grid</p>
+										</div>
+									</div>
+
+									<div class="blg-feature-card card-orange">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">🧮</span>
+											<h4>8. Back-of-the-Envelope Estimation</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<ul>
+												<li>Daily active users (DAU)</li>
+												<li>Requests per second (RPS)</li>
+												<li>Storage estimation</li>
+												<li>Bandwidth estimation</li>
+												<li>Read / write ratio</li>
+												<li>Peak traffic planning</li>
+											</ul>
+											<p>☁️ AWS: Pricing Calculator · GCP: Pricing Calculator · Azure: Pricing Calculator — use these to practise real cost and capacity estimates</p>
+										</div>
+									</div>
+
+									<div class="blg-feature-card card-green">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">🔒</span>
+											<h4>9. Reliability &amp; Availability</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<ul>
+												<li><strong>Concepts &amp; Metrics</strong> — availability vs reliability, SLA, the "nines" (99% to 99.9999%)</li>
+												<li><strong>Design Patterns</strong> — redundancy, data replication, failover strategies, disaster recovery</li>
+											</ul>
+										</div>
+									</div>
+
+									<div class="blg-feature-card card-blue">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">🛡️</span>
+											<h4>10. Security Basics</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<ul>
+												<li><strong>Identity &amp; Access</strong> — authentication, authorization, OAuth 2.0, JWT tokens</li>
+												<li><strong>Data Protection</strong> — encryption in transit &amp; at rest, rate limiting</li>
+											</ul>
+										</div>
+									</div>
+
+									<div class="blg-feature-card card-teal">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">👁️</span>
+											<h4>11. Observability Basics</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<ul>
+												<li><strong>The Three Pillars</strong> — logs, metrics, distributed tracing</li>
+												<li><strong>Alerting &amp; Automation</strong> — alerts, dashboards, CI/CD pipelines</li>
+											</ul>
+											<p>☁️ AWS: CloudWatch &nbsp;|&nbsp; GCP: Cloud Monitoring / Cloud Logging &nbsp;|&nbsp; Azure: Azure Monitor</p>
+										</div>
+									</div>
+
+								</div>
+
+								<blockquote class="blg-callout-note">
+									<strong>Don't skip Phase 1.</strong> These topics might sound basic, but every Phase 2 concept builds directly on them. A solid Phase 1 makes Phase 2 feel obvious instead of overwhelming.
+								</blockquote>
+								<hr class="blg-hr">
+							</div>
+
+							<div class="blg-section">
+								<a id="phase2" class="blg-anchor"></a>
+								<div class="blg-main-header"><h2>⚙️ 5. Phase 2: Core System Design Concepts</h2></div>
+
+								<p class="blg-paragraph">
+									Phase 2 is the heart of the series. These are the 17 foundational concepts that underpin virtually every large-scale system in production today. You'll learn each one from scratch — what it is, why it exists, how it works, the trade-offs it introduces, and how real companies use it. By the end of Phase 2, you'll be able to reason through any of these confidently and apply them in real engineering decisions.
+								</p>
+
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">Group A</span> Scaling &amp; Architecture Fundamentals</h3>
+								</div>
+								<p class="blg-paragraph">The foundation of thinking at scale. Every large system starts here.</p>
+
+								<div class="blg-table">
+									<table>
+										<thead>
+											<tr><th>#</th><th>Topic</th><th>What You'll Learn</th><th>☁️ Cloud Services</th></tr>
+										</thead>
+										<tbody>
+											<tr><td>1</td><td><strong>Scalability Patterns</strong></td><td>What it means for a system to scale; vertical scaling (adding more power) vs horizontal scaling (adding more servers); the limits of each and when to switch</td><td>AWS EC2 (vertical) · Auto Scaling (horizontal) · GCP Compute Engine · Azure VMs + Scale Sets</td></tr>
+											<tr><td>2</td><td><strong>Client-Server Architecture</strong></td><td>The foundational model that almost every internet system is built on</td><td>—</td></tr>
+											
+											<tr><td>3</td><td><strong>Load Balancer</strong></td><td>How traffic is distributed across multiple servers, and which algorithms are used</td><td>AWS Elastic Load Balancing · GCP Cloud Load Balancing · Azure Load Balancer / App Gateway</td></tr>
+											<tr><td>4</td><td><strong>Data Centers &amp; Multi-Region</strong></td><td>How geo-routing directs users to the nearest data center, and how systems stay available when an entire region fails</td><td>AWS Route 53 · Regions · Availability Zones · GCP Cloud DNS · Regions · Azure Traffic Manager · Regions</td></tr>
+										</tbody>
+									</table>
+								</div>
+
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">Group B</span> Data &amp; Storage</h3>
+								</div>
+								<p class="blg-paragraph">Every system stores data. Understanding the theory (CAP Theorem, Consistent Hashing) before the implementation details (Replication, Sharding) makes the design decisions click into place.</p>
+
+								<div class="blg-table">
+									<table>
+										<thead>
+											<tr><th>#</th><th>Topic</th><th>What You'll Learn</th><th>☁️ Cloud Services</th></tr>
+										</thead>
+										<tbody>
+											<tr><td>5</td><td><strong>Caching</strong></td><td>How to store frequently accessed data in memory to cut latency dramatically</td><td>AWS ElastiCache (Redis / Memcached) · GCP Memorystore · Azure Cache for Redis</td></tr>
+											<tr><td>6</td><td><strong>Database Indexing</strong></td><td>Why indexes exist, how B-tree indexes work, and when to use them</td><td>AWS RDS / Aurora · GCP Cloud SQL · Azure SQL Database</td></tr>
+											<tr><td>7</td><td><strong>SQL vs NoSQL</strong></td><td>When to use relational databases and when to use document, key-value, or columnar stores</td><td>AWS RDS/Aurora (SQL) · DynamoDB (NoSQL) · GCP Cloud SQL / Firestore · Azure SQL / Cosmos DB</td></tr>
+											<tr><td>8</td><td><strong>CAP Theorem</strong></td><td>Why distributed systems must choose between consistency and availability when a partition occurs</td><td>— (theoretical foundation; applies when choosing any distributed DB)</td></tr>
+											<tr><td>9</td><td><strong>Consistent Hashing</strong></td><td>How to distribute data evenly across nodes while minimising reshuffling when nodes change</td><td>Used internally by ElastiCache · DynamoDB (AWS) · Bigtable (GCP) · Cosmos DB (Azure)</td></tr>
+											<tr><td>10</td><td><strong>Database Replication &amp; Sharding</strong></td><td>Replication: how data is copied across machines for availability and read performance. Sharding: how to split a database horizontally when one server is not enough</td><td>Replication — AWS RDS Multi-AZ · GCP Cloud SQL HA · Azure SQL Geo-Replication &nbsp;|&nbsp; Sharding — AWS DynamoDB/Aurora · GCP Bigtable · Azure Cosmos DB</td></tr>
+											
+										</tbody>
+									</table>
+								</div>
+
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">Group C</span> Infrastructure &amp; Distributed Patterns</h3>
+								</div>
+								<p class="blg-paragraph">The infrastructure patterns and architectural styles that appear in almost every large-scale production system.</p>
+
+								<div class="blg-table">
+									<table>
+										<thead>
+											<tr><th>#</th><th>Topic</th><th>What You'll Learn</th><th>☁️ Cloud Services</th></tr>
+										</thead>
+										<tbody>
+											<tr><td>11</td><td><strong>CDN</strong></td><td>How content delivery networks serve static assets from locations close to the user</td><td>AWS CloudFront · GCP Cloud CDN · Azure Front Door / CDN</td></tr>
+											<tr><td>12</td><td><strong>Message Queues</strong></td><td>How queues decouple producers from consumers and enable async, resilient workflows</td><td>AWS SQS (queue) · SNS / EventBridge (pub/sub) · GCP Pub/Sub · Azure Service Bus / Event Grid</td></tr>
+											<tr><td>13</td><td><strong>Rate Limiting</strong></td><td>How to protect services from abuse and ensure fair usage across clients</td><td>AWS API Gateway · WAF · GCP Cloud Armor / Apigee · Azure API Management</td></tr>
+																																	<tr><td>14</td><td><strong>Microservices &amp; API Gateway</strong></td><td>Microservices: breaking a system into small, independently deployable services. API Gateway: the single entry point handling routing, authentication, and rate limiting in front of those services</td><td>Services — AWS ECS/EKS/Lambda · GCP Cloud Run/GKE · Azure Container Apps/AKS &nbsp;|&nbsp; Gateway — AWS API Gateway · GCP Apigee · Azure API Management</td></tr>
+											
+										</tbody>
+									</table>
+								</div>
+
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">Group D</span> Estimation</h3>
+								</div>
+								<p class="blg-paragraph">Before designing anything, you need to know the scale you're designing for. This is a skill in itself.</p>
+
+								<div class="blg-table">
+									<table>
+										<thead>
+											<tr><th>#</th><th>Topic</th><th>What You'll Learn</th><th>☁️ Cloud Services</th></tr>
+										</thead>
+										<tbody>
+											<tr><td>15</td><td><strong>System Design Estimation</strong></td><td>Power of two · latency reference numbers · availability nines · estimating DAU, QPS, storage and bandwidth — with a worked Twitter-scale example</td><td>AWS Pricing Calculator · GCP Pricing Calculator · Azure Pricing Calculator</td></tr>
+										</tbody>
+									</table>
+								</div>
+
+
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">Group E</span> Advanced Distributed Internals</h3>
+								</div>
+								<p class="blg-paragraph">These two topics go deeper than the standard concepts — they teach the internals of distributed systems that appear in advanced designs and senior-level discussions.</p>
+
+								<div class="blg-table">
+									<table>
+										<thead>
+											<tr><th>#</th><th>Topic</th><th>What You'll Learn</th><th>☁️ Cloud Services</th></tr>
+										</thead>
+										<tbody>
+											<tr><td>16</td><td><strong>Unique ID Generation at Scale</strong></td><td>Why auto-increment fails in distributed systems; UUID trade-offs; Twitter Snowflake (timestamp + machine ID + sequence); sortable IDs and clock skew handling</td><td>No managed cloud service — implemented at application layer using Redis INCR, Snowflake pattern, or DB sequences</td></tr>
+											<tr><td>17</td><td><strong>Key-value Store Internals</strong></td><td>Quorum reads/writes (N/W/R), vector clocks for conflict resolution, gossip protocol for failure detection, Merkle trees for anti-entropy, LSM trees &amp; SSTables for write-optimised storage</td><td>AWS: DynamoDB · GCP: Bigtable / Firestore · Azure: Cosmos DB</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-tip">
+									<strong>Pro tip:</strong> You don't need to memorise every concept perfectly. You need to understand each one well enough to reason through its trade-offs and decide when to apply it. That depth of understanding — not surface-level recall — is what these posts are designed to give you.
+								</blockquote>
+								<hr class="blg-hr">
+							</div>
+
+							<div class="blg-section">
+								<a id="phase3" class="blg-anchor"></a>
+								<div class="blg-main-header"><h2>🏗️ 6. Phase 3: Real System Design Practice</h2></div>
+
+								<p class="blg-paragraph">
+									Phase 3 covers 12 system designs that each teach a different set of patterns. Each post takes one classic or important system design challenge and walks through a complete solution — requirements clarification, scale estimation, high-level design, component deep dives, and trade-off discussions. Working through real systems is how concepts stop feeling abstract and start feeling intuitive.
+								</p>
+
+								<p class="blg-paragraph">
+									Each system is chosen deliberately. A URL shortener teaches hashing. A chat system introduces WebSockets. A web crawler teaches distributed BFS and bloom filters. A notification system teaches fan-out at scale. A search autocomplete teaches trie data structures. Together, these 12 systems cover a wide range of design patterns that apply far beyond the specific systems themselves.
+								</p>
+
+								<div class="blg-table">
+									<table>
+										<thead>
+											<tr>
+												<th>#</th>
+												<th>System</th>
+												<th>Real-World Reference</th>
+												<th>Key Concepts Practiced</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>1</td>
+												<td><strong>URL Shortener</strong></td>
+												<td>bit.ly, TinyURL</td>
+												<td>Hashing, redirection, analytics, key generation at scale</td>
+											</tr>
+											<tr>
+												<td>2</td>
+												<td><strong>News Feed</strong></td>
+												<td>Facebook, LinkedIn</td>
+												<td>Fan-out on write vs read, ranking algorithms, timeline generation</td>
+											</tr>
+											<tr>
+												<td>3</td>
+												<td><strong>Notification System</strong></td>
+												<td>WhatsApp, Slack, iOS/Android</td>
+												<td>APNs / FCM push, SMS / email delivery pipelines, fan-out service, device token management, deduplication</td>
+											</tr>
+											<tr>
+												<td>4</td>
+												<td><strong>Web Crawler</strong></td>
+												<td>Googlebot, Common Crawl</td>
+												<td>Distributed BFS, URL deduplication via bloom filter, politeness protocols, crawl rate limiting, content parsing at scale</td>
+											</tr>
+											<tr>
+												<td>5</td>
+												<td><strong>Search Autocomplete</strong></td>
+												<td>Google Search, Amazon search</td>
+												<td>Trie data structure, prefix caching, frequency ranking, real-time typeahead, distributed trie sharding</td>
+											</tr>
+											<tr>
+												<td>6</td>
+												<td><strong>Chat System</strong></td>
+												<td>WhatsApp, Slack</td>
+												<td>WebSockets, real-time messaging, message storage, online presence</td>
+											</tr>
+											<tr>
+												<td>7</td>
+												<td><strong>Photo Sharing App</strong></td>
+												<td>Instagram</td>
+												<td>Photo storage, feed generation, notifications, CDN for media</td>
+											</tr>
+											<tr>
+												<td>8</td>
+												<td><strong>Social Network / Twitter</strong></td>
+												<td>Twitter/X</td>
+												<td>Tweet storage, timeline generation, search at scale, fan-out at extreme scale</td>
+											</tr>
+											<tr>
+												<td>9</td>
+												<td><strong>File Storage (Google Drive)</strong></td>
+												<td>Google Drive, Dropbox, OneDrive</td>
+												<td>File chunking, block storage, delta sync, metadata DB + blob store separation, conflict resolution, versioning</td>
+											</tr>
+											<tr>
+												<td>10</td>
+												<td><strong>Video Platform</strong></td>
+												<td>YouTube, Netflix</td>
+												<td>Video encoding, CDN delivery, distributed storage, adaptive bitrate</td>
+											</tr>
+											<tr>
+												<td>11</td>
+												<td><strong>Ride-Sharing App</strong></td>
+												<td>Uber, Lyft</td>
+												<td>Geospatial indexing, real-time location tracking, driver-rider matching</td>
+											</tr>
+											<tr>
+												<td>12</td>
+												<td><strong>End-to-End System Design</strong></td>
+												<td>Full design challenge</td>
+												<td>Complete system design from requirements through deep-dive trade-offs — putting all concepts together</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+
+								<blockquote class="blg-callout-purple">
+									<strong>Why these 12?</strong> These 12 systems are widely used in the real world and collectively cover almost every major pattern in distributed systems design. Each one teaches something the others don't. Master these, and you'll have a solid toolkit before moving to Phase 4.
+								</blockquote>
+								<hr class="blg-hr">
+							</div>
+
+
+							<div class="blg-section">
+								<a id="phase4" class="blg-anchor"></a>
+								<div class="blg-main-header"><h2>🚀 7. Phase 4: Advanced System Design</h2></div>
+
+								<p class="blg-paragraph">
+									Phase 4 covers advanced system designs from ByteByteGo's Volume 2 — systems that require combining multiple core concepts simultaneously and reasoning about subtle trade-offs at extreme scale. Each system here introduces at least one architectural pattern you won't encounter in Phase 3: geospatial indexing, event sourcing, exactly-once semantics, low-latency matching engines, and more.
+								</p>
+
+								<p class="blg-paragraph">
+									Complete Phases 1, 2, and 3 before starting here. The concepts in this phase — delivery semantics, distributed transactions, erasure coding, double-entry bookkeeping — build directly on the foundation you built in Phase 2.
+								</p>
+
+								<div class="blg-table">
+									<table>
+										<thead>
+											<tr><th>#</th><th>System</th><th>Real-World Reference</th><th>Key Advanced Concepts</th></tr>
+										</thead>
+										<tbody>
+											<tr><td>1</td><td><strong>Proximity Service</strong></td><td>Yelp, Google Places</td><td>Geohash, quadtree, radius search, PostGIS vs Redis GEO</td></tr>
+											<tr><td>2</td><td><strong>Nearby Friends</strong></td><td>Facebook Nearby Friends</td><td>WebSocket location updates, Redis GEO, follower fan-out, presence tracking</td></tr>
+											<tr><td>3</td><td><strong>Google Maps</strong></td><td>Google Maps, Waze</td><td>Graph routing (Dijkstra / A*), map tile serving, ETA prediction, traffic data feeds</td></tr>
+											<tr><td>4</td><td><strong>S3-like Object Storage</strong></td><td>Amazon S3, MinIO</td><td>Blob storage internals, multipart upload, erasure coding, object versioning, geo-replication</td></tr>
+											<tr><td>5</td><td><strong>Distributed Message Queue (Deep Dive)</strong></td><td>Apache Kafka, Amazon Kinesis</td><td>Delivery semantics (at-most / at-least / exactly-once), consumer groups, partition rebalancing, log compaction</td></tr>
+											<tr><td>6</td><td><strong>Metrics Monitoring &amp; Alerting</strong></td><td>Prometheus, Datadog, Grafana</td><td>Pull vs push collection, time-series DB, cardinality limits, anomaly detection, alerting pipelines</td></tr>
+											<tr><td>7</td><td><strong>Ad Click Event Aggregation</strong></td><td>Google Ads, Meta Ads</td><td>Lambda / Kappa architecture, MapReduce, watermarking, exactly-once aggregation at massive scale</td></tr>
+											<tr><td>8</td><td><strong>Hotel Reservation System</strong></td><td>Booking.com, Airbnb</td><td>Distributed transactions, idempotency, optimistic / pessimistic locking, overbooking prevention</td></tr>
+											<tr><td>9</td><td><strong>Payment System</strong></td><td>Stripe, PayPal, Visa</td><td>PSP integration, double-entry bookkeeping, exactly-once semantics, idempotency, ledger reconciliation</td></tr>
+											<tr><td>10</td><td><strong>Stock Exchange</strong></td><td>NYSE, NASDAQ, Binance</td><td>Matching engine, order book, market data pub/sub, low-latency sequencing, HFT considerations</td></tr>
+										</tbody>
+									</table>
+								</div>
+
+								<blockquote class="blg-callout-purple">
+									<strong>Phase 4 prerequisites:</strong> These systems demand fluency in Phase 2 concepts — especially consistent hashing, CAP theorem, message queues, and database sharding. Don't rush Phase 4. Each system is a multi-hour deep dive that rewards the preparation you built in earlier phases.
+								</blockquote>
+								<hr class="blg-hr">
+							</div>
+
+							<div class="blg-section">
+								<a id="conclusion" class="blg-anchor"></a>
+								<div class="blg-main-header"><h2>✅ 8. Conclusion</h2></div>
+
+								<p class="blg-paragraph">
+									System design is one of the most learnable skills in software engineering — and one of the highest-leverage ones for growing as an engineer. The gap between someone who says "I'd use a database and a cache" and someone who can explain exactly which database, which caching strategy, why, and what the trade-offs are is the gap between a beginner and a confident, well-rounded engineer. This series is designed to close that gap, one concept at a time.
+								</p>
+
+								<p class="blg-paragraph">
+									The roadmap is straightforward: build your foundation in Phase 1 so you have the vocabulary, master the building blocks in Phase 2 so you have the toolkit, then apply everything in Phase 3 by working through real systems end to end. Each post in this series focuses on exactly one topic — explained simply, connected to real products, and grounded in how these decisions play out in practice.
+								</p>
+
+								<ul class="blg-ul">
+									<li class="blg-li blg-li-check">System design is about reasoning under ambiguity and thinking at scale — not memorising answers.</li>
+									<li class="blg-li blg-li-check">Phase 1 covers 11 prerequisite categories that every system design concept builds on.</li>
+									<li class="blg-li blg-li-check">Phase 2 covers 17 core concepts — the building blocks found in every large-scale production system.</li>
+									<li class="blg-li blg-li-check">Phase 3 applies everything through 12 classic real-world system designs, from URL shorteners to file storage systems.</li>
+									<li class="blg-li blg-li-check">Phase 4 goes deeper with 10 advanced systems — geospatial services, payment systems, stock exchanges, and more.
+										<li class="blg-li blg-li-check">Each topic gets its own dedicated post: beginner-friendly, real-world examples, practical trade-off analysis, and cloud service mappings.</li></li>
+								</ul>
+
+								<hr class="blg-hr">
+							</div>
+
+							<div class="blg-trailing-section">
+
+								<div class="blg-section">
+									<div class="blg-main-header"><h2>📚 References</h2></div>
+									<ul class="blg-ul">
+										<li class="blg-li"><strong>System Design Interview (Vol. 1 &amp; 2)</strong> — Alex Xu — Highly practical, example-driven books covering large-scale system design from the ground up.</li>
+										<li class="blg-li"><strong>Designing Data-Intensive Applications</strong> — Martin Kleppmann — Deep dive into databases, distributed systems, and data engineering.</li>
+										<li class="blg-li"><strong>ByteByteGo</strong> — Alex Xu's blog and newsletter — Visual explanations of real system design problems.</li>
+										<li class="blg-li"><strong>High Scalability</strong> — Real architecture breakdowns from companies like Twitter, Netflix, and Airbnb.</li>
+										<li class="blg-li"><strong>The System Design Primer</strong> (GitHub, donnemartin) — Open-source collection of system design study materials.</li>
+									</ul>
+								</div>
+
+							</div>
+
+						</div><!-- end #blogContainer -->
+					</div><!-- end .blog-detail-main -->
+				</div><!-- end .blog-detail-layout -->
+
+				<div class="related-posts-section">
+					<div class="blog-title-bar">
+						<img src="../img/others/blog.png" alt="blog post" style="width: 24px; height: auto;">
+						<h2>Related Blog Posts</h2>
+					</div>
+					<div class="related-posts-wrapper">
+						<div class="related-posts-swiper-area">
+							<div class="swiper" id="postContainer">
+								<div class="swiper-wrapper"></div>
+							</div>
+							<div class="swiper-button-prev"></div>
+							<div class="swiper-button-next"></div>
+						</div>
+						<div class="blg-slide-counter">
+							<div class="slide-progress-bar">
+								<div class="slide-progress-fill" id="slideProgressFill"></div>
+							</div>
+							<div class="slide-counter-label">
+								<span id="currentSlide">1</span> / <span id="totalSlides">1</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</section>
+		<div id="site-footer"></div>
+	</div>
+
+	<script src="../js/bootstrap.bundle.min.js"></script>
+	<script src="../js/components.js"></script>
+	<script src="../js/site.js"></script>
+	<script src="../js/swiper-bundle.min.js"></script>
+	<script src="../js/prism.js" data-manual></script>
+	<script src="../js/code-highlight.js"></script>
+	<script src="../js/detail.js"></script>
+	<script src="../js/mermaid.min.js"></script>
+	<script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+</body>
+</html>

@@ -3,18 +3,22 @@
         "id": 1,
         "author": "MD SHAFIQUL ISLAM",
         "author_img": "../img/author/shafiqul.png",
-        "category": ["Docker"],
+        "category": [
+            "Docker"
+        ],
         "image": "./img/blog_1/thumbnail.webp",
         "title": "Protect Sensitive Information in Docker: Accessing .env Credentials Without Exposing Them",
         "date": "3 Dec 2024",
-        "description": "Managing sensitive information like API keys and credentials is crucial in modern application development. While Docker simplifies containerization, mishandling .env files can expose secrets and compromise security. This blog will guide you through securely managing .env files in Docker, preventing them from being embedded in images, and dynamically injecting credentials at runtime. By following these steps, you’ll ensure your applications remain secure and production-ready.",
+        "description": "Managing sensitive information like API keys and credentials is crucial in modern application development. While Docker simplifies containerization, mishandling .env files can expose secrets and compromise security. This blog will guide you through securely managing .env files in Docker, preventing them from being embedded in images, and dynamically injecting credentials at runtime. By following these steps, you\u2019ll ensure your applications remain secure and production-ready.",
         "readMoreUrl": "./blogs/blog_1.html"
     },
     {
         "id": 2,
         "author": "MD SHAFIQUL ISLAM",
         "author_img": "../img/author/shafiqul.png",
-        "category": ["Git"],
+        "category": [
+            "Git"
+        ],
         "image": "./img/blog_2/thumbnail.webp",
         "title": "How to Generate an SSH Key and Add It to GitHub for Secure Git Operations",
         "date": "24 Feb 2025",
@@ -25,7 +29,10 @@
         "id": 3,
         "author": "MD SHAFIQUL ISLAM",
         "author_img": "../img/author/shafiqul.png",
-        "category": ["Agent", "OpenAI"],
+        "category": [
+            "Agent",
+            "OpenAI"
+        ],
         "image": "./img/blog_3/thumbnail.webp",
         "title": "Create ReAct AI Agent from Scratch using Python Without any Framework: A Step-by-Step Guide",
         "date": "15 Mar 2025",
@@ -36,7 +43,10 @@
         "id": 4,
         "author": "MD SHAFIQUL ISLAM",
         "author_img": "../img/author/shafiqul.png",
-        "category": ["Hugging Face", "Streamlit"],
+        "category": [
+            "Hugging Face",
+            "Streamlit"
+        ],
         "image": "./img/blog_4/thumbnail.webp",
         "title": "Deploy Streamlit App to Hugging Face Space - A Complete Guide",
         "date": "24 Apr 2025",
@@ -47,7 +57,10 @@
         "id": 5,
         "author": "MD SHAFIQUL ISLAM",
         "author_img": "../img/author/shafiqul.png",
-        "category": ["Hugging Face", "Gradio"],
+        "category": [
+            "Hugging Face",
+            "Gradio"
+        ],
         "image": "./img/blog_5/thumbnail.webp",
         "title": "Deploy Gradio App to Hugging Face Space - Full Step by Step Guide",
         "date": "18 May 2025",
@@ -58,18 +71,30 @@
         "id": 6,
         "author": "MD SHAFIQUL ISLAM",
         "author_img": "../img/author/shafiqul.png",
-        "category": ["RAG", "Agent", "Chatbot", "LangChain", "Qdrant", "Gemini"],
+        "category": [
+            "RAG",
+            "Agent",
+            "Chatbot",
+            "LangChain",
+            "Qdrant",
+            "Gemini"
+        ],
         "image": "./img/blog_6/thumbnail.webp",
         "title": "Build a Smart RAGent Chatbot: Combine RAG and ReAct Agent with Tools in One Powerful App",
         "date": "25 Jun 2025",
-        "description": "In this blog post, you'll learn how to build a powerful AI chatbot that combines Retrieval-Augmented Generation (RAG) with the ReAct agent framework. This system lets users upload documents (PDF, DOCX, CSV, etc.) and ask questions based on the content or even outside it. If the answer isn't found in the document vector database (Qdrant), the chatbot intelligently switches to external tools like web search, Wikipedia, weather, and calculator. The app is powered by Gemini LLM and features a Gradio web interface for seamless interaction. We'll guide you step by step—from setting up the environment to implementing each component and integrating all parts into a unified AI assistant.",
+        "description": "In this blog post, you'll learn how to build a powerful AI chatbot that combines Retrieval-Augmented Generation (RAG) with the ReAct agent framework. This system lets users upload documents (PDF, DOCX, CSV, etc.) and ask questions based on the content or even outside it. If the answer isn't found in the document vector database (Qdrant), the chatbot intelligently switches to external tools like web search, Wikipedia, weather, and calculator. The app is powered by Gemini LLM and features a Gradio web interface for seamless interaction. We'll guide you step by step\u2014from setting up the environment to implementing each component and integrating all parts into a unified AI assistant.",
         "readMoreUrl": "./blogs/blog_6.html"
     },
     {
         "id": 7,
         "author": "MD SHAFIQUL ISLAM",
         "author_img": "../img/author/shafiqul.png",
-        "category": ["RAG", "Recommendation", "ChromaDB", "Llama"],
+        "category": [
+            "RAG",
+            "Recommendation",
+            "ChromaDB",
+            "Llama"
+        ],
         "image": "./img/blog_7/thumbnail.webp",
         "title": "AI-Powered Fashion Recommendation System: Smart Product Discovery Using RAG from Metadata",
         "date": "28 Jul 2025",
@@ -80,121 +105,172 @@
         "id": 8,
         "author": "MD SHAFIQUL ISLAM",
         "author_img": "../img/author/shafiqul.png",
-        "category": ["LangGraph"],
+        "category": [
+            "LangGraph"
+        ],
         "image": "./img/blog_8/thumbnail.webp",
-        "title": "LangGraph Basics: Part 1 — StateGraph, Nodes & Edges",
+        "title": "LangGraph Basics: Part 1 \u2014 StateGraph, Nodes & Edges",
         "date": "04 May 2026",
-        "description": "LangGraph is a Python framework built on top of LangChain for creating stateful, graph-based AI workflows. Unlike linear chains, it models an application as a graph where processing steps are Nodes, connections between them are Edges, and all shared data flows through a central State. These three components — StateGraph, Nodes, and Edges — are the foundation of every LangGraph application, from simple pipelines to complex multi-agent systems. This post covers each concept with clear analogies, focused code examples, and a complete Q&A bot built with Google Gemini.",
+        "description": "LangGraph is a Python framework built on top of LangChain for creating stateful, graph-based AI workflows. Unlike linear chains, it models an application as a graph where processing steps are Nodes, connections between them are Edges, and all shared data flows through a central State. These three components \u2014 StateGraph, Nodes, and Edges \u2014 are the foundation of every LangGraph application, from simple pipelines to complex multi-agent systems. This post covers each concept with clear analogies, focused code examples, and a complete Q&A bot built with Google Gemini.",
         "readMoreUrl": "./blogs/blog_8.html"
     },
     {
         "id": 9,
         "author": "MD SHAFIQUL ISLAM",
         "author_img": "../img/author/shafiqul.png",
-        "category": ["LangGraph"],
+        "category": [
+            "LangGraph"
+        ],
         "image": "./img/blog_9/thumbnail.webp",
-        "title": "LangGraph Basics: Part 2 — State, Annotated Fields & Custom Reducers",
+        "title": "LangGraph Basics: Part 2 \u2014 State, Annotated Fields & Custom Reducers",
         "date": "07 May 2026",
-        "description": "LangGraph routes data between nodes through a shared TypedDict called State. By default, when a node returns a value for an existing key, it replaces whatever was already there — a behaviour called last-write-wins. For fields that should accumulate rather than overwrite, LangGraph supports Annotated type hints paired with reducer functions, including the built-in operator.add and add_messages. This post covers how reducers work, how to write a custom one, and the ready-made MessagesState shortcut, illustrated with a two-node Topic Expander graph built with Google Gemini.",
+        "description": "LangGraph routes data between nodes through a shared TypedDict called State. By default, when a node returns a value for an existing key, it replaces whatever was already there \u2014 a behaviour called last-write-wins. For fields that should accumulate rather than overwrite, LangGraph supports Annotated type hints paired with reducer functions, including the built-in operator.add and add_messages. This post covers how reducers work, how to write a custom one, and the ready-made MessagesState shortcut, illustrated with a two-node Topic Expander graph built with Google Gemini.",
         "readMoreUrl": "./blogs/blog_9.html"
     },
     {
         "id": 10,
         "author": "MD SHAFIQUL ISLAM",
         "author_img": "../img/author/shafiqul.png",
-        "category": ["LangGraph"],
+        "category": [
+            "LangGraph"
+        ],
         "image": "./img/blog_10/thumbnail.webp",
-        "title": "LangGraph Basics: Part 3 — Conditional Edges & Routing Logic",
+        "title": "LangGraph Basics: Part 3 \u2014 Conditional Edges & Routing Logic",
         "date": "08 May 2026",
-        "description": "LangGraph graphs can branch at runtime — that's what conditional edges are for. Instead of always following the same path, a node can hand control to different successors depending on the current state. A router function reads the state and returns a string naming the next node; add_conditional_edges() wires this routing logic into the graph. This post builds a Customer Support Router that classifies incoming messages and routes them to dedicated billing, technical, or general support nodes — each powered by a specialised LLM prompt.",
+        "description": "LangGraph graphs can branch at runtime \u2014 that's what conditional edges are for. Instead of always following the same path, a node can hand control to different successors depending on the current state. A router function reads the state and returns a string naming the next node; add_conditional_edges() wires this routing logic into the graph. This post builds a Customer Support Router that classifies incoming messages and routes them to dedicated billing, technical, or general support nodes \u2014 each powered by a specialised LLM prompt.",
         "readMoreUrl": "./blogs/blog_10.html"
     },
     {
         "id": 11,
         "author": "MD SHAFIQUL ISLAM",
         "author_img": "../img/author/shafiqul.png",
-        "category": ["LangGraph"],
+        "category": [
+            "LangGraph"
+        ],
         "image": "./img/blog_11/thumbnail.webp",
-        "title": "LangGraph Basics: Part 4 — Checkpointers, Memory & Streaming",
+        "title": "LangGraph Basics: Part 4 \u2014 Checkpointers, Memory & Streaming",
         "date": "10 May 2026",
-        "description": "LangGraph graphs forget everything when invoke() returns — checkpointers fix this by persisting state across calls. MemorySaver stores state in memory; SqliteSaver persists it to disk. Thread IDs keep different users' conversations isolated. This post builds a Personal Study Buddy chatbot that remembers every question a student asks across a multi-turn session, demonstrates thread isolation between two students, and shows how to stream LLM responses token by token in a Gradio web UI.",
+        "description": "LangGraph graphs forget everything when invoke() returns \u2014 checkpointers fix this by persisting state across calls. MemorySaver stores state in memory; SqliteSaver persists it to disk. Thread IDs keep different users' conversations isolated. This post builds a Personal Study Buddy chatbot that remembers every question a student asks across a multi-turn session, demonstrates thread isolation between two students, and shows how to stream LLM responses token by token in a Gradio web UI.",
         "readMoreUrl": "./blogs/blog_11.html"
     },
     {
         "id": 12,
         "author": "MD SHAFIQUL ISLAM",
         "author_img": "../img/author/shafiqul.png",
-        "category": ["LangGraph"],
+        "category": [
+            "LangGraph"
+        ],
         "image": "./img/blog_12/thumbnail.webp",
-        "title": "LangGraph Basics: Part 5 — Tools, ToolNode & Prebuilt Components",
+        "title": "LangGraph Basics: Part 5 \u2014 Tools, ToolNode & Prebuilt Components",
         "date": "13 May 2026",
-        "description": "LangGraph agents can call custom Python functions — called tools — to perform tasks an LLM can't do reliably on its own. ToolNode executes those calls automatically, and tools_condition routes the graph based on whether the LLM wants a tool or a final answer. This post covers the @tool decorator, bind_tools(), ToolNode, tools_condition, and the create_react_agent shortcut. A Personal Finance Assistant is built that calculates loan EMIs, projects compound savings, converts currencies, and splits budgets — all powered by tool calling with Google Gemini.",
+        "description": "LangGraph agents can call custom Python functions \u2014 called tools \u2014 to perform tasks an LLM can't do reliably on its own. ToolNode executes those calls automatically, and tools_condition routes the graph based on whether the LLM wants a tool or a final answer. This post covers the @tool decorator, bind_tools(), ToolNode, tools_condition, and the create_react_agent shortcut. A Personal Finance Assistant is built that calculates loan EMIs, projects compound savings, converts currencies, and splits budgets \u2014 all powered by tool calling with Google Gemini.",
         "readMoreUrl": "./blogs/blog_12.html"
     },
     {
         "id": 13,
         "author": "MD SHAFIQUL ISLAM",
         "author_img": "../img/author/shafiqul.png",
-        "category": ["LangGraph"],
+        "category": [
+            "LangGraph"
+        ],
         "image": "./img/blog_13/thumbnail.webp",
-        "title": "LangGraph Basics: Part 6 — Subgraphs & Human-in-the-Loop",
+        "title": "LangGraph Basics: Part 6 \u2014 Subgraphs & Human-in-the-Loop",
         "date": "14 May 2026",
-        "description": "LangGraph graphs can grow complex — subgraphs let you nest a compiled graph inside another as a reusable, modular node with its own private state. Human-in-the-Loop uses interrupt() to pause graph execution mid-run and wait for human input before taking a critical action. This post builds an AI Travel Planner where a PlannerSubGraph handles destination research, itinerary creation, and budget estimation, and the main graph pauses for the traveler to approve or revise the plan before it is confirmed.",
+        "description": "LangGraph graphs can grow complex \u2014 subgraphs let you nest a compiled graph inside another as a reusable, modular node with its own private state. Human-in-the-Loop uses interrupt() to pause graph execution mid-run and wait for human input before taking a critical action. This post builds an AI Travel Planner where a PlannerSubGraph handles destination research, itinerary creation, and budget estimation, and the main graph pauses for the traveler to approve or revise the plan before it is confirmed.",
         "readMoreUrl": "./blogs/blog_13.html"
     },
     {
         "id": 14,
         "author": "MD SHAFIQUL ISLAM",
         "author_img": "../img/author/shafiqul.png",
-        "category": ["LangGraph"],
+        "category": [
+            "LangGraph"
+        ],
         "image": "./img/blog_14/thumbnail.webp",
-        "title": "LangGraph Advanced: Part 1 — Conversational Chatbot with Memory",
+        "title": "LangGraph Advanced: Part 1 \u2014 Conversational Chatbot with Memory",
         "date": "15 May 2026",
-        "description": "Long conversations exhaust an LLM's context window and drive up cost — simply persisting every message is not enough for production chatbots. This post covers the canonical LangGraph solution: a state that holds both the recent message list and a compressed summary field, a summarisation node that uses the LLM itself to compress older turns, and conditional routing that decides when to summarise. A Personal Recipe Assistant is built with SqliteSaver for cross-session persistence and a Gradio streaming UI.",
+        "description": "Long conversations exhaust an LLM's context window and drive up cost \u2014 simply persisting every message is not enough for production chatbots. This post covers the canonical LangGraph solution: a state that holds both the recent message list and a compressed summary field, a summarisation node that uses the LLM itself to compress older turns, and conditional routing that decides when to summarise. A Personal Recipe Assistant is built with SqliteSaver for cross-session persistence and a Gradio streaming UI.",
         "readMoreUrl": "./blogs/blog_14.html"
     },
     {
         "id": 15,
         "author": "MD SHAFIQUL ISLAM",
         "author_img": "../img/author/shafiqul.png",
-        "category": ["LangGraph"],
+        "category": [
+            "LangGraph"
+        ],
         "image": "./img/blog_15/thumbnail.webp",
-        "title": "LangGraph Advanced: Part 2 — Multi-Agent Supervisor Architecture",
+        "title": "LangGraph Advanced: Part 2 \u2014 Multi-Agent Supervisor Architecture",
         "date": "16 May 2026",
-        "description": "A single-agent chatbot handles one domain well — but real-world queries often span nutrition, fitness, and mindfulness at once. This post covers the multi-agent supervisor pattern: a supervisor LLM with structured output reads the conversation and dynamically routes to the right specialist, loops back after each response, and can call multiple agents in sequence for complex queries. An AI Personal Wellness Coach (Coach Alex) is built with three specialist agents coordinated by a supervisor and a Gradio web UI.",
+        "description": "A single-agent chatbot handles one domain well \u2014 but real-world queries often span nutrition, fitness, and mindfulness at once. This post covers the multi-agent supervisor pattern: a supervisor LLM with structured output reads the conversation and dynamically routes to the right specialist, loops back after each response, and can call multiple agents in sequence for complex queries. An AI Personal Wellness Coach (Coach Alex) is built with three specialist agents coordinated by a supervisor and a Gradio web UI.",
         "readMoreUrl": "./blogs/blog_15.html"
     },
     {
         "id": 16,
         "author": "MD SHAFIQUL ISLAM",
         "author_img": "../img/author/shafiqul.png",
-        "category": ["LangGraph", "RAG"],
+        "category": [
+            "LangGraph",
+            "RAG"
+        ],
         "image": "./img/blog_16/thumbnail.webp",
-        "title": "LangGraph Advanced: Part 3 — RAG Pipeline with Conditional Routing",
+        "title": "LangGraph Advanced: Part 3 \u2014 RAG Pipeline with Conditional Routing",
         "date": "17 May 2026",
-        "description": "A single LLM can hallucinate company-specific facts — RAG grounds answers in actual documents. This post builds a full RAG pipeline as a LangGraph graph: a retrieve node fetches policy documents from a Chroma vector store, a grade_documents node uses an LLM with structured output to assess relevance, and a conditional router either generates a grounded answer, rewrites the query for a better retrieval pass, or falls back to general knowledge when retries are exhausted. An AI Company Onboarding Assistant (OnboardBot) is built with a 10-document employee handbook and a Gradio web UI.",
+        "description": "A single LLM can hallucinate company-specific facts \u2014 RAG grounds answers in actual documents. This post builds a full RAG pipeline as a LangGraph graph: a retrieve node fetches policy documents from a Chroma vector store, a grade_documents node uses an LLM with structured output to assess relevance, and a conditional router either generates a grounded answer, rewrites the query for a better retrieval pass, or falls back to general knowledge when retries are exhausted. An AI Company Onboarding Assistant (OnboardBot) is built with a 10-document employee handbook and a Gradio web UI.",
         "readMoreUrl": "./blogs/blog_16.html"
     },
     {
         "id": 17,
         "author": "MD SHAFIQUL ISLAM",
         "author_img": "../img/author/shafiqul.png",
-        "category": ["LangGraph", "Agent"],
+        "category": [
+            "LangGraph",
+            "Agent"
+        ],
         "image": "./img/blog_17/thumbnail.webp",
-        "title": "LangGraph Advanced: Part 4 — ReAct Agent with Tool Calling",
+        "title": "LangGraph Advanced: Part 4 \u2014 ReAct Agent with Tool Calling",
         "date": "18 May 2026",
-        "description": "An LLM alone can't do reliable arithmetic — it needs tools. This post builds a ReAct (Reasoning + Acting) agent from scratch in LangGraph: an agent node backed by Gemini LLM with bound tools, a ToolNode that executes function calls, and tools_condition routing that loops the graph until the LLM produces a final answer. Tools are defined using production-grade BaseTool subclasses with Pydantic schemas and file-loaded descriptions. An AI Real Estate Advisor (HomeBot) is built with five financial tools covering mortgage payments, home affordability, property tax, rental ROI, and buy-vs-rent comparison.",
+        "description": "An LLM alone can't do reliable arithmetic \u2014 it needs tools. This post builds a ReAct (Reasoning + Acting) agent from scratch in LangGraph: an agent node backed by Gemini LLM with bound tools, a ToolNode that executes function calls, and tools_condition routing that loops the graph until the LLM produces a final answer. Tools are defined using production-grade BaseTool subclasses with Pydantic schemas and file-loaded descriptions. An AI Real Estate Advisor (HomeBot) is built with five financial tools covering mortgage payments, home affordability, property tax, rental ROI, and buy-vs-rent comparison.",
         "readMoreUrl": "./blogs/blog_17.html"
     },
     {
         "id": 18,
         "author": "MD SHAFIQUL ISLAM",
         "author_img": "../img/author/shafiqul.png",
-        "category": ["LangGraph", "MCP"],
+        "category": [
+            "LangGraph",
+            "MCP"
+        ],
         "image": "./img/blog_18/thumbnail.webp",
-        "title": "LangGraph Advanced: Part 5 — MCP Integration with LangGraph",
+        "title": "LangGraph Advanced: Part 5 \u2014 MCP Integration with LangGraph",
         "date": "19 May 2026",
-        "description": "The Model Context Protocol (MCP) is an open standard that lets AI agents connect to tools and data sources through a common interface, eliminating the need to write custom wrappers for every service. This post builds NoteBot, an AI Smart Notes Assistant powered by a Python MCP server built with FastMCP and a LangGraph ReAct agent assembled via create_react_agent. The MCP server exposes four tools — list_notes, read_note, search_notes, and create_note — that NoteBot uses to manage a markdown notes collection. The post covers FastMCP server construction, MultiServerMCPClient connection patterns, async MCP integration, and how to keep a persistent MCP connection alive inside a Gradio web UI.",
+        "description": "The Model Context Protocol (MCP) is an open standard that lets AI agents connect to tools and data sources through a common interface, eliminating the need to write custom wrappers for every service. This post builds NoteBot, an AI Smart Notes Assistant powered by a Python MCP server built with FastMCP and a LangGraph ReAct agent assembled via create_react_agent. The MCP server exposes four tools \u2014 list_notes, read_note, search_notes, and create_note \u2014 that NoteBot uses to manage a markdown notes collection. The post covers FastMCP server construction, MultiServerMCPClient connection patterns, async MCP integration, and how to keep a persistent MCP connection alive inside a Gradio web UI.",
         "readMoreUrl": "./blogs/blog_18.html"
+    },
+    {
+        "id": 19,
+        "author": "MD SHAFIQUL ISLAM",
+        "author_img": "../img/author/shafiqul.png",
+        "category": [
+            "System Design"
+        ],
+        "image": "./img/blog_19/thumbnail.webp",
+        "title": "System Design Roadmap: From Beginner to Expert",
+        "date": "28 May 2026",
+        "description": "A complete beginner-to-expert roadmap to master system design. Covers 11 foundation prerequisite categories, 17 core system design concepts, 12 classic system designs (URL shortener to Google Drive), and 10 advanced systems (payment, stock exchange, proximity service, and more). Follow the series phase by phase.",
+        "readMoreUrl": "./blogs/blog_19.html"
+    },
+    {
+        "id": 20,
+        "author": "MD SHAFIQUL ISLAM",
+        "author_img": "../img/author/shafiqul.png",
+        "category": [
+            "System Design"
+        ],
+        "image": "./img/blog_20/thumbnail.webp",
+        "title": "Networking Basics for System Design: A Complete Beginner's Guide",
+        "date": "29 May 2026",
+        "description": "A beginner-friendly guide to five networking fundamentals for system design: Client & Server, IP Address & DNS, HTTP/HTTPS, TCP vs UDP, and Latency & Throughput. Each topic is explained with real-world analogies, step-by-step examples, colourful diagrams, and cloud service mappings. Part of the System Design series, Phase 1.",
+        "readMoreUrl": "./blogs/blog_20.html"
     }
 ]
