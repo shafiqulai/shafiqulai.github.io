@@ -24,14 +24,14 @@
 
 **Clone:**
 
-- `git clone git@github3:shafiqulai/shafiqulai.github.io.git`
+- git clone git@github3:shafiqulai/shafiqulai.github.io.git
 
 **Reset local repo to match remote:**
 
-- `git reset --hard HEAD`
-- `git clean -df`
-- `git pull origin main`
-- `find . -name '.DS_Store' -type f -delete`
+- git reset --hard HEAD
+- git clean -df
+- git pull origin main
+- find . -name '.DS_Store' -type f -delete
 
 ## SEO & Analytics
 
