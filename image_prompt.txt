@@ -1,0 +1,10 @@
+i am writing blogs on different ai topics. i need an image for my blog post. The image should be of 1672x941 px resolution.
+The image should have stylish colorful background. Don't use white or black background. The title should be of gradient color. 
+You can use multi colors, styles to make it stunning and standard. Use your creativity. the text should be clear. 
+Use minimum font size 12. Include important information in the image to illustrate the topic.
+Below i am pasting blog title and context. Please create the image based on title and context.
+
+Title :
+
+Context :
+

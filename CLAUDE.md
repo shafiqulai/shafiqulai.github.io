@@ -2,9 +2,10 @@
 
 Personal engineering blog by **Md Shafiqul Islam** (AI Engineer / LLM Specialist / Python Developer).
 Topics: LLMs, RAG, AI Agents, LangChain, LangGraph, Docker, Hugging Face, OpenAI, Streamlit, Gradio, System Design.
-19 blog posts published (`blog_1.html` through `blog_19.html`), hosted on GitHub Pages.
+21 blog posts published (`blog_1.html` through `blog_21.html`), hosted on GitHub Pages.
 LangGraph Basics series (blog_8–13) complete. LangGraph Advanced series (blog_14–18) complete — all 11 LangGraph posts done.
-System Design series started: blog_19 is the series overview/roadmap. Individual topic posts begin at blog_20.
+System Design series in progress: blog_19 is the series overview/roadmap. Phase 1 topic posts so far: blog_20 (Networking Basics — all 5 sub-topics done), blog_21 (API Basics — all 3 sub-topics done: What is an API? · REST & HTTP · API Authentication). Next: blog_22 (Core Backend Concepts).
+**Title convention:** blog_20 = "Networking Basics for System Design"; blog_21 = "API Basics" (author trimmed both — the original "… : A Complete Beginner's Guide" suffix was removed). Match the exact `title` in `data/posts.json`; don't assume a fixed title pattern.
 
 **Before writing any System Design blog post → read the System Design Post Rule below AND `.claude/new-post-guide.md`.**
 
@@ -52,7 +53,7 @@ System Design series started: blog_19 is the series overview/roadmap. Individual
 shafiqulai.github.io/
 ├── index.html                    # Homepage (blog card grid)
 ├── blogs/
-│   └── blog_1.html … blog_13.html # Blog detail pages (no template file)
+│   └── blog_1.html … blog_21.html # Blog detail pages (no template file)
 ├── data/
 │   └── posts.json                # All blog metadata — source of truth for cards + slider
 ├── img/
@@ -705,7 +706,7 @@ When a new topic post is published, add a `📖 Read post →` link inside the c
 ```html
 <p class="blg-feature-card-link"><a href="./blog_NN.html" class="blg-link">📖 Read post →</a></p>
 ```
-Place it as the last element inside `blg-feature-card-body`, after the `<ul>`. The `.blg-feature-card-link` class right-aligns the link.
+Place it as the last element inside `blg-feature-card-body`, after the `<ul>`. The `.blg-feature-card-link` class pins the link to the **bottom-right** of the card: `.blg-feature-card` is a flex column, `.blg-feature-card-body` is `flex: 1` (fills the card height), and `.blg-feature-card-link` uses `margin-top: auto` + `text-align: right`. This keeps the link flush at the bottom even when sibling cards in the grid row are taller. Do not revert these flex rules to the old `margin-top: 10px`.
 
 ### Visual presentation patterns (use consistently)
 

@@ -268,9 +268,22 @@
             "System Design"
         ],
         "image": "./img/blog_20/thumbnail.webp",
-        "title": "Networking Basics for System Design: A Complete Beginner's Guide",
+        "title": "Networking Basics for System Design",
         "date": "29 May 2026",
         "description": "A beginner-friendly guide to five networking fundamentals for system design: Client & Server, IP Address & DNS, HTTP/HTTPS, TCP vs UDP, and Latency & Throughput. Each topic is explained with real-world analogies, step-by-step examples, colourful diagrams, and cloud service mappings. Part of the System Design series, Phase 1.",
         "readMoreUrl": "./blogs/blog_20.html"
+    },
+    {
+        "id": 21,
+        "author": "MD SHAFIQUL ISLAM",
+        "author_img": "../img/author/shafiqul.png",
+        "category": [
+            "System Design"
+        ],
+        "image": "./img/blog_21/thumbnail.webp",
+        "title": "API Basics",
+        "date": "30 May 2026",
+        "description": "A beginner-friendly guide to three API fundamentals for system design: What is an API (request & response cycle and JSON), REST & HTTP (REST style, HTTP methods, status codes), and API Authentication (API keys, tokens, JWT, and OAuth). Each topic is explained with real-world analogies, step-by-step examples, colourful diagrams, and cloud service mappings. Part of the System Design series, Phase 1.",
+        "readMoreUrl": "./blogs/blog_21.html"
     }
 ]

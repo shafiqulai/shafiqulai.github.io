@@ -1,0 +1,1671 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<!-- Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-6SEFZQJHM1"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag() { dataLayer.push(arguments); }
+		gtag("js", new Date());
+		gtag("config", "G-6SEFZQJHM1", { cookie_domain: "shafiqulai.github.io" });
+	</script>
+	<meta charset="utf-8" />
+	<title>API Basics</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="A beginner-friendly guide to three API fundamentals for system design — What is an API, REST &amp; HTTP, and API Authentication — with real-world analogies, step-by-step examples, diagrams, and cloud service mappings." />
+	<meta name="author" content="MD SHAFIQUL ISLAM" />
+	<link rel="canonical" href="https://shafiqulai.github.io/blogs/blog_21.html" />
+	<link rel="icon" href="../img/others/favicon.ico" type="image/x-icon" />
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+	<link rel="stylesheet" href="../css/bootstrap.min.css" />
+	<link rel="stylesheet" href="../css/swiper-bundle.min.css" />
+	<link rel="stylesheet" href="../css/style.css" />
+	<link rel="stylesheet" href="../css/prism.css" />
+</head>
+<body>
+	<div id="reading-progress"></div>
+	<div id="wrapper">
+		<div id="site-header"></div>
+		<section id="content">
+			<div class="container">
+				<div class="blog-detail-layout">
+
+					<aside class="toc-sidebar" id="tocSidebar">
+						<div class="toc-sidebar-header">
+							<p class="toc-sidebar-title">Contents</p>
+						</div>
+						<ul class="toc-sidebar-list">
+							<li><a href="#what-is-api">1. What Is an API?</a></li>
+							<li class="toc-sidebar-sub"><a href="#api-intro">1.1 Introduction</a></li>
+							<li class="toc-sidebar-sub"><a href="#api-why">1.2 Why It Matters</a></li>
+							<li class="toc-sidebar-sub"><a href="#api-analogy">1.3 Real-world Analogy</a></li>
+							<li class="toc-sidebar-sub"><a href="#api-terms">1.4 Key Terms</a></li>
+							<li class="toc-sidebar-sub"><a href="#api-how">1.5 How It Works</a></li>
+							<li class="toc-sidebar-sub"><a href="#api-types">1.6 Types &amp; Variations</a></li>
+							<li class="toc-sidebar-sub"><a href="#api-diagram">1.7 Diagram</a></li>
+							<li class="toc-sidebar-sub"><a href="#api-when">1.8 When to Use</a></li>
+							<li class="toc-sidebar-sub"><a href="#api-example">1.9 Real-world Example</a></li>
+							<li class="toc-sidebar-sub"><a href="#api-tradeoffs">1.10 Trade-offs</a></li>
+							<li class="toc-sidebar-sub"><a href="#api-mistakes">1.11 Common Mistakes</a></li>
+							<li class="toc-sidebar-sub"><a href="#api-summary">1.12 Summary</a></li>
+							<li class="toc-sidebar-sub"><a href="#api-challenge">1.13 Design Challenge</a></li>
+							<li class="toc-sidebar-sub"><a href="#api-cloud">1.14 Cloud Services</a></li>
+							<li><a href="#rest-http">2. REST &amp; HTTP</a></li>
+							<li class="toc-sidebar-sub"><a href="#rest-intro">2.1 Introduction</a></li>
+							<li class="toc-sidebar-sub"><a href="#rest-why">2.2 Why It Matters</a></li>
+							<li class="toc-sidebar-sub"><a href="#rest-analogy">2.3 Real-world Analogy</a></li>
+							<li class="toc-sidebar-sub"><a href="#rest-terms">2.4 Key Terms</a></li>
+							<li class="toc-sidebar-sub"><a href="#rest-how">2.5 How It Works</a></li>
+							<li class="toc-sidebar-sub"><a href="#rest-types">2.6 Types &amp; Variations</a></li>
+							<li class="toc-sidebar-sub"><a href="#rest-diagram">2.7 Diagram</a></li>
+							<li class="toc-sidebar-sub"><a href="#rest-when">2.8 When to Use</a></li>
+							<li class="toc-sidebar-sub"><a href="#rest-example">2.9 Real-world Example</a></li>
+							<li class="toc-sidebar-sub"><a href="#rest-tradeoffs">2.10 Trade-offs</a></li>
+							<li class="toc-sidebar-sub"><a href="#rest-mistakes">2.11 Common Mistakes</a></li>
+							<li class="toc-sidebar-sub"><a href="#rest-summary">2.12 Summary</a></li>
+							<li class="toc-sidebar-sub"><a href="#rest-challenge">2.13 Design Challenge</a></li>
+							<li class="toc-sidebar-sub"><a href="#rest-cloud">2.14 Cloud Services</a></li>
+							<li><a href="#api-auth">3. API Authentication</a></li>
+							<li class="toc-sidebar-sub"><a href="#auth-intro">3.1 Introduction</a></li>
+							<li class="toc-sidebar-sub"><a href="#auth-why">3.2 Why It Matters</a></li>
+							<li class="toc-sidebar-sub"><a href="#auth-analogy">3.3 Real-world Analogy</a></li>
+							<li class="toc-sidebar-sub"><a href="#auth-terms">3.4 Key Terms</a></li>
+							<li class="toc-sidebar-sub"><a href="#auth-how">3.5 How It Works</a></li>
+							<li class="toc-sidebar-sub"><a href="#auth-types">3.6 Types &amp; Variations</a></li>
+							<li class="toc-sidebar-sub"><a href="#auth-diagram">3.7 Diagram</a></li>
+							<li class="toc-sidebar-sub"><a href="#auth-when">3.8 When to Use</a></li>
+							<li class="toc-sidebar-sub"><a href="#auth-example">3.9 Real-world Example</a></li>
+							<li class="toc-sidebar-sub"><a href="#auth-tradeoffs">3.10 Trade-offs</a></li>
+							<li class="toc-sidebar-sub"><a href="#auth-mistakes">3.11 Common Mistakes</a></li>
+							<li class="toc-sidebar-sub"><a href="#auth-summary">3.12 Summary</a></li>
+							<li class="toc-sidebar-sub"><a href="#auth-challenge">3.13 Design Challenge</a></li>
+							<li class="toc-sidebar-sub"><a href="#auth-cloud">3.14 Cloud Services</a></li>
+						</ul>
+					</aside>
+
+					<div class="blog-detail-main">
+						<div id="blogContainer">
+
+							<div class="container blg-title-container">
+								<h2 class="blg-title">API Basics</h2>
+							</div>
+
+							<div class="author_section">
+								<img id="author_img" src="" alt="Author Photo" class="author_img">
+								<div class="author_details">
+									<span id="author_name" class="author_name"></span>
+									<span id="published_date" class="published_date"></span>
+								</div>
+							</div>
+
+							<div class="blg-img-container">
+								<img src="../img/blog_21/thumbnail.webp" alt="API Basics" class="blg-thumbnail" />
+							</div>
+
+							<div class="blg-toc-container">
+								<h2>📚 Table of Contents</h2>
+								<ol class="blg-toc-ol">
+									<li class="blg-toc-li"><a href="#what-is-api">What Is an API?</a>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#api-intro">1.1 Introduction</a></li>
+											<li class="blg-toc-li"><a href="#api-why">1.2 Why It Matters</a></li>
+											<li class="blg-toc-li"><a href="#api-analogy">1.3 Real-world Analogy</a></li>
+											<li class="blg-toc-li"><a href="#api-terms">1.4 Key Terms</a></li>
+											<li class="blg-toc-li"><a href="#api-how">1.5 How It Works</a></li>
+											<li class="blg-toc-li"><a href="#api-types">1.6 Types &amp; Variations</a></li>
+											<li class="blg-toc-li"><a href="#api-diagram">1.7 Diagram</a></li>
+											<li class="blg-toc-li"><a href="#api-when">1.8 When to Use</a></li>
+											<li class="blg-toc-li"><a href="#api-example">1.9 Real-world Example</a></li>
+											<li class="blg-toc-li"><a href="#api-tradeoffs">1.10 Trade-offs</a></li>
+											<li class="blg-toc-li"><a href="#api-mistakes">1.11 Common Mistakes</a></li>
+											<li class="blg-toc-li"><a href="#api-summary">1.12 Summary</a></li>
+											<li class="blg-toc-li"><a href="#api-challenge">1.13 Design Challenge</a></li>
+											<li class="blg-toc-li"><a href="#api-cloud">1.14 Cloud Services</a></li>
+										</ul>
+									</li>
+									<li class="blg-toc-li"><a href="#rest-http">REST &amp; HTTP</a>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#rest-intro">2.1 Introduction</a></li>
+											<li class="blg-toc-li"><a href="#rest-why">2.2 Why It Matters</a></li>
+											<li class="blg-toc-li"><a href="#rest-analogy">2.3 Real-world Analogy</a></li>
+											<li class="blg-toc-li"><a href="#rest-terms">2.4 Key Terms</a></li>
+											<li class="blg-toc-li"><a href="#rest-how">2.5 How It Works</a></li>
+											<li class="blg-toc-li"><a href="#rest-types">2.6 Types &amp; Variations</a></li>
+											<li class="blg-toc-li"><a href="#rest-diagram">2.7 Diagram</a></li>
+											<li class="blg-toc-li"><a href="#rest-when">2.8 When to Use</a></li>
+											<li class="blg-toc-li"><a href="#rest-example">2.9 Real-world Example</a></li>
+											<li class="blg-toc-li"><a href="#rest-tradeoffs">2.10 Trade-offs</a></li>
+											<li class="blg-toc-li"><a href="#rest-mistakes">2.11 Common Mistakes</a></li>
+											<li class="blg-toc-li"><a href="#rest-summary">2.12 Summary</a></li>
+											<li class="blg-toc-li"><a href="#rest-challenge">2.13 Design Challenge</a></li>
+											<li class="blg-toc-li"><a href="#rest-cloud">2.14 Cloud Services</a></li>
+										</ul>
+									</li>
+									<li class="blg-toc-li"><a href="#api-auth">API Authentication</a>
+										<ul class="blg-toc-ul">
+											<li class="blg-toc-li"><a href="#auth-intro">3.1 Introduction</a></li>
+											<li class="blg-toc-li"><a href="#auth-why">3.2 Why It Matters</a></li>
+											<li class="blg-toc-li"><a href="#auth-analogy">3.3 Real-world Analogy</a></li>
+											<li class="blg-toc-li"><a href="#auth-terms">3.4 Key Terms</a></li>
+											<li class="blg-toc-li"><a href="#auth-how">3.5 How It Works</a></li>
+											<li class="blg-toc-li"><a href="#auth-types">3.6 Types &amp; Variations</a></li>
+											<li class="blg-toc-li"><a href="#auth-diagram">3.7 Diagram</a></li>
+											<li class="blg-toc-li"><a href="#auth-when">3.8 When to Use</a></li>
+											<li class="blg-toc-li"><a href="#auth-example">3.9 Real-world Example</a></li>
+											<li class="blg-toc-li"><a href="#auth-tradeoffs">3.10 Trade-offs</a></li>
+											<li class="blg-toc-li"><a href="#auth-mistakes">3.11 Common Mistakes</a></li>
+											<li class="blg-toc-li"><a href="#auth-summary">3.12 Summary</a></li>
+											<li class="blg-toc-li"><a href="#auth-challenge">3.13 Design Challenge</a></li>
+											<li class="blg-toc-li"><a href="#auth-cloud">3.14 Cloud Services</a></li>
+										</ul>
+									</li>
+								</ol>
+							</div>
+
+							<div class="blg-section">
+								<p class="blg-paragraph">
+									Behind every app on your phone is a quiet conversation happening over the internet — and the language of that conversation is the <strong>API</strong>. This post covers three essential API topics every system designer must know. You will start with <strong>What Is an API?</strong> — the contract that lets two programs talk, the request &amp; response cycle, and the <strong>JSON</strong> format that carries data between them. Next you will learn <strong>REST &amp; HTTP</strong> — the most common API style on the web, built on HTTP methods like GET and POST, resource URLs, and status codes that tell the client what happened. Finally you will explore <strong>API Authentication</strong> — how a server knows who is calling and whether they are allowed, covering API keys, tokens, JWT, and OAuth. Each topic is explained with real-world analogies, step-by-step examples, and clear diagrams — starting from zero.
+								</p>
+							</div>
+
+							<div class="blg-section">
+								<a id="what-is-api" class="blg-anchor"></a>
+								<div class="blg-main-header"><h2>🔌 1. What Is an API?</h2></div>
+								<p class="blg-paragraph">
+									Almost nothing you do online is handled by a single program. Your weather app does not measure the temperature itself — it asks a weather company. Your travel app does not own any airplanes — it asks dozens of airlines for their prices. The mechanism that lets one program ask another for data or an action, in a structured and predictable way, is the <strong>API</strong>. In this section we will build that idea from scratch — what an API is, why every modern system depends on them, and exactly what happens during a single API call.
+								</p>
+
+								<div class="blg-img-container">
+									<img src="../img/blog_21/api.webp" alt="What is an API — how a client app calls a server through a defined interface" class="blg-img" />
+								</div>
+
+								<!-- ── Section 1: Introduction ── -->
+								<a id="api-intro" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.1</span> 🎯 Introduction</h3>
+								</div>
+								<p class="blg-paragraph">
+									Imagine you open a weather app and it shows <strong>22°C and sunny</strong>. Your phone did not measure that temperature. Instead, the app sent a message over the internet to a weather company's server — something like "give me the current weather for Tokyo" — and the server replied with the data. That structured request-and-reply, following rules both sides agreed on in advance, is an <strong>API call</strong>.
+								</p>
+								<p class="blg-paragraph">
+									<strong>API</strong> stands for <strong>Application Programming Interface</strong>. The key word is <strong>interface</strong> — a clearly defined boundary through which two programs talk. The app (the caller) never sees how the weather server works inside; it only needs to know how to <strong>ask</strong> and what shape the <strong>answer</strong> will take. An API is the contract that defines exactly those two things: what you can ask for, and what you will get back.
+								</p>
+								<p class="blg-paragraph">
+									This happens everywhere. When you "Log in with Google," your app calls Google's API. When you pay with PayPal on a shopping site, the site calls PayPal's API. When Uber shows your car on a map, it calls Google Maps' API. APIs are the invisible glue connecting the entire internet.
+								</p>
+
+								<!-- ── Section 2: Why It Matters ── -->
+								<a id="api-why" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.2</span> 💡 Why It Matters</h3>
+								</div>
+								<p class="blg-paragraph">
+									APIs are the backbone of how modern software is built. No company builds everything itself — they connect specialised services together through APIs. The scale is enormous: <strong>Google Maps</strong> handles billions of API calls per day, <strong>Stripe</strong> processes payments for millions of businesses entirely through its API, and <strong>Twitter/X</strong> served over 100 billion API calls per day at its peak. Studies suggest that more than 80% of all internet traffic is API calls between machines, not humans browsing web pages.
+								</p>
+								<ul class="blg-ul">
+									<li class="blg-li">APIs let teams <strong>build independently</strong> — the mobile team and the backend team agree on an API contract, then work in parallel without blocking each other.</li>
+									<li class="blg-li">APIs let companies <strong>reuse instead of rebuild</strong> — why build a payment system when you can call Stripe's API in an afternoon?</li>
+									<li class="blg-li">APIs are how <strong>microservices talk</strong> — in a large system, hundreds of internal services communicate with each other entirely through APIs.</li>
+									<li class="blg-li">APIs create <strong>business ecosystems</strong> — by exposing an API, a company lets thousands of other developers build on top of it (the way Twilio powers SMS for countless apps).</li>
+								</ul>
+								<blockquote class="blg-callout-info">
+									<strong>Why system design cares:</strong> In almost every system design problem, one of the first steps is "define the API." Before you discuss databases or scaling, you decide what requests the system accepts and what it returns. The API is the contract everything else is built around.
+								</blockquote>
+
+								<!-- ── Section 3: Real-world Analogy ── -->
+								<a id="api-analogy" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.3</span> 🏠 Real-world Analogy</h3>
+								</div>
+								<p class="blg-paragraph">
+									Think of a <strong>restaurant menu</strong>. The menu lists exactly what you can order and what you will receive. You don't walk into the kitchen, and you don't need to know how the chef cooks — you just point at an item, and the waiter brings it back. The menu is the <strong>interface</strong> between you (the customer) and the kitchen (the complex system you never see).
+								</p>
+								<p class="blg-paragraph">
+									An API is exactly that menu for software. It lists the available "dishes" (the things you can request), specifies how to order them, and guarantees the shape of what comes back — all without exposing the kitchen.
+								</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead>
+											<tr><th>Restaurant World</th><th>API World</th><th>Role</th></tr>
+										</thead>
+										<tbody>
+											<tr><td>📋 The menu</td><td>📜 API documentation / contract</td><td>Defines what can be ordered and what you get</td></tr>
+											<tr><td>🗣️ Placing an order</td><td>📤 API request</td><td>The client asks for something specific</td></tr>
+											<tr><td>🧑‍💼 Waiter</td><td>🔌 The API endpoint</td><td>Receives the order, passes it to the kitchen</td></tr>
+											<tr><td>👨‍🍳 Kitchen</td><td>⚙️ Server / business logic</td><td>Does the actual work, hidden from the customer</td></tr>
+											<tr><td>🍽️ Food delivered to your table</td><td>📥 API response (often JSON)</td><td>The result, in an agreed format</td></tr>
+											<tr><td>❌ "Sorry, we're out of that"</td><td>⚠️ Error response (e.g. 404)</td><td>A structured way to say the request failed</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<p class="blg-paragraph">
+									The crucial insight: <strong>you only need the menu, not the recipe</strong>. As long as the menu (the API) stays the same, the kitchen can completely change how it cooks — new chefs, new equipment, new suppliers — and you never notice. This is why APIs let backend teams rebuild and scale their systems without breaking the apps that depend on them.
+								</p>
+
+								<!-- ── Section 4: Key Terms ── -->
+								<a id="api-terms" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.4</span> 📖 Key Terms</h3>
+								</div>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead>
+											<tr><th>Term</th><th>Simple Definition</th><th>Quick Example</th></tr>
+										</thead>
+										<tbody>
+											<tr><td><strong>API</strong></td><td>A defined interface that lets one program request data or actions from another</td><td>The Google Maps API, the Stripe API</td></tr>
+											<tr><td><strong>Endpoint</strong></td><td>A specific URL the client calls to access one capability of the API</td><td><code class="code-soft">https://api.weather.com/v1/forecast</code></td></tr>
+											<tr><td><strong>Request</strong></td><td>The message the client sends asking for something</td><td>"Get the forecast for Tokyo"</td></tr>
+											<tr><td><strong>Response</strong></td><td>The server's reply — the data asked for, or an error</td><td>A JSON object with temperature and conditions</td></tr>
+											<tr><td><strong>Payload / Body</strong></td><td>The actual data carried inside a request or response</td><td>The JSON describing a new order</td></tr>
+											<tr><td><strong>JSON</strong></td><td>A lightweight, human-readable text format for structured data</td><td><code class="code-soft">{"temp": 22, "unit": "C"}</code></td></tr>
+											<tr><td><strong>Parameter</strong></td><td>An input that customises a request</td><td><code class="code-soft">?city=Tokyo&amp;units=metric</code></td></tr>
+											<tr><td><strong>Contract</strong></td><td>The agreed rules: what to send and what comes back</td><td>The API documentation</td></tr>
+											<tr><td><strong>Rate limit</strong></td><td>A cap on how many requests a client may make in a time window</td><td>"100 requests per minute"</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-tip">
+									<strong>Remember:</strong> An API is not a specific technology — it is an idea. REST, GraphQL, gRPC, and even a library function call are all APIs. They all share the same essence: a defined way for one piece of software to use another without knowing its internals.
+								</blockquote>
+
+								<!-- ── Section 5: How It Works ── -->
+								<a id="api-how" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.5</span> 🔢 How It Works</h3>
+								</div>
+								<p class="blg-paragraph">
+									Let us trace exactly what happens when your weather app fetches today's forecast for Tokyo. This single round-trip is the heart of every API call.
+								</p>
+								<div class="blg-table">
+									<table>
+										<thead>
+											<tr><th>Step</th><th>What Happens</th></tr>
+										</thead>
+										<tbody>
+											<tr><td>① Build request</td><td>The app constructs a request to the weather API's endpoint, adding parameters: <code class="code-soft">GET /v1/forecast?city=Tokyo&amp;units=metric</code></td></tr>
+											<tr><td>② Add credentials</td><td>The app attaches an API key in a header so the server knows who is calling (covered in Section 3).</td></tr>
+											<tr><td>③ Send over HTTP</td><td>The request travels over the internet to the weather company's server using HTTPS.</td></tr>
+											<tr><td>④ Server processes</td><td>The server validates the key, reads the parameters, looks up Tokyo's forecast in its database, and formats the result.</td></tr>
+											<tr><td>⑤ Return response</td><td>The server sends back a <strong>status code</strong> (<code class="code-soft">200 OK</code>) and a <strong>JSON body</strong> with the data.</td></tr>
+											<tr><td>⑥ Client parses</td><td>The app reads the JSON, pulls out <code class="code-soft">temp</code> and <code class="code-soft">condition</code>, and displays "22°C, Sunny" on screen.</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<p class="blg-paragraph">
+									Here is what the request and the JSON response actually look like on the wire:
+								</p>
+								<div class="blg-code-block" data-lang="bash">GET /v1/forecast?city=Tokyo&amp;units=metric HTTP/1.1
+Host: api.weather.com
+Authorization: Bearer sk_live_a1b2c3d4
+Accept: application/json</div>
+								<div class="blg-code-block" data-lang="json">{
+  "city": "Tokyo",
+  "temp": 22,
+  "unit": "C",
+  "condition": "Sunny",
+  "humidity": 48,
+  "updated_at": "2026-05-30T09:00:00Z"
+}</div>
+								<blockquote class="blg-callout-note">
+									<strong>Key insight:</strong> The app and the weather server may be written in completely different languages, run on different hardware, and be owned by different companies. They cooperate perfectly because they both agree on the <strong>contract</strong>: how to ask (the endpoint and parameters) and what comes back (the JSON shape). That agreement is the entire value of an API.
+								</blockquote>
+
+								<!-- ── Section 6: Types & Variations ── -->
+								<a id="api-types" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.6</span> 🔀 Types &amp; Variations</h3>
+								</div>
+								<p class="blg-paragraph">
+									"API" is a broad idea, so it shows up in several flavours. We can group them two ways: by the <strong>architecture style</strong> they use, and by <strong>who is allowed to call them</strong>.
+								</p>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge badge-blue">A. By Architecture Style</span></h3>
+								</div>
+								<div class="blg-feature-grid grid-3">
+									<div class="blg-feature-card card-blue">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">🌐</span>
+											<h4>REST</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>The most common web API style. Uses HTTP methods and resource URLs, returns JSON. Simple and universal — covered in depth in Section 2.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-teal">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">🔷</span>
+											<h4>GraphQL</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>The client asks for exactly the fields it needs in one query — no more, no less. Used by GitHub and Shopify to avoid over-fetching.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-purple">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">⚡</span>
+											<h4>gRPC</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>A fast, binary protocol built for service-to-service calls inside large systems. Used heavily between microservices at Google.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-orange">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">🧼</span>
+											<h4>SOAP</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>An older, XML-based, very strict style. Still common in banking and enterprise systems where formal contracts matter.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-green">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">🔌</span>
+											<h4>WebSocket</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>Keeps a two-way connection open for real-time data — live chat, stock tickers, multiplayer games — instead of one request per reply.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-blue">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">📚</span>
+											<h4>Library API</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>Not over the network at all — the functions a code library exposes for your program to call directly, like <code class="code-soft">requests.get()</code>.</p>
+										</div>
+									</div>
+								</div>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge badge-green">B. By Access Level</span></h3>
+								</div>
+								<div class="blg-feature-grid grid-3">
+									<div class="blg-feature-card card-teal">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">🌍</span>
+											<h4>Public / Open API</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>Open to any external developer, usually with a key and rate limits. Example: the OpenWeather or Google Maps APIs.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-purple">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">🔒</span>
+											<h4>Private / Internal API</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>Used only inside one company, between its own services. Most microservice traffic uses private APIs never exposed publicly.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-orange">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">🤝</span>
+											<h4>Partner API</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>Shared with specific business partners under an agreement. Example: an airline exposing fares only to approved travel sites like Expedia.</p>
+										</div>
+									</div>
+								</div>
+								<blockquote class="blg-callout-info">
+									<strong>For this post:</strong> When people say "API" on the web, they almost always mean a <strong>REST API returning JSON over HTTP</strong>. That is what Section 2 dives into. The other styles exist for specific needs — GraphQL for flexible queries, gRPC for fast internal calls, WebSocket for real-time streams.
+								</blockquote>
+
+								<!-- ── Section 7: Illustrated Diagram ── -->
+								<a id="api-diagram" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.7</span> 🎨 Illustrated Diagram</h3>
+								</div>
+								<p class="blg-paragraph">
+									The diagram below shows a single API call end to end: the client app sends a request to a specific API endpoint, the server runs its logic and reads the database, and a JSON response travels back. The client never touches the database directly — the API is the only door in.
+								</p>
+								<div class="blg-mermaid-wrap">
+									<div class="mermaid" style="min-width:680px;font-size:16px;">
+%%{init: {"theme": "base", "themeVariables": {"lineColor": "#64748b", "edgeLabelBackground": "#fff"}}}%%
+flowchart LR
+    C["📱 Client App\n(Weather App)"]
+    A["🔌 API Endpoint\n/v1/forecast"]
+    S["⚙️ Server\n(Business Logic)"]
+    DB["🗄️ Database\n(Weather Data)"]
+
+    C -->|"① Request + API key"| A
+    A -->|"② Validated call"| S
+    S -->|"③ Query"| DB
+    DB -->|"④ Rows"| S
+    S -->|"⑤ JSON Response"| C
+
+    style C fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    style A fill:#f5f3ff,stroke:#7c3aed,color:#4c1d95
+    style S fill:#d1fae5,stroke:#059669,color:#064e3b
+    style DB fill:#fff3e0,stroke:#d97706,color:#92400e
+									</div>
+								</div>
+								<p class="blg-paragraph">
+									<strong>Reading the diagram:</strong> The client sends a request with its API key ① to the endpoint, which validates and forwards it ② to the server. The server queries ③ the database and gets rows back ④, then returns a clean JSON response ⑤ to the client. The endpoint is the public "menu"; everything to its right is the hidden kitchen.
+								</p>
+
+								<!-- ── Section 8: When to Use ── -->
+								<a id="api-when" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.8</span> ✅ When to Use</h3>
+								</div>
+								<p class="blg-paragraph">
+									You expose or call an API whenever two pieces of software need to cooperate without being merged into one. That covers almost every real system, but it helps to know when an API is the right tool — and when it is overkill.
+								</p>
+								<div class="blg-table blg-table-half">
+									<table>
+										<thead><tr><th>Use an API when…</th><th>You may not need one when…</th></tr></thead>
+										<tbody>
+											<tr><td>A mobile app or website must talk to a backend server</td><td>Two functions live in the same program and can just call each other directly</td></tr>
+											<tr><td>You want to reuse another company's service (payments, maps, SMS)</td><td>The "integration" is a one-off script run manually once</td></tr>
+											<tr><td>You are splitting a system into microservices that must communicate</td><td>The data never leaves a single tiny script</td></tr>
+											<tr><td>You want external developers to build on top of your platform</td><td>Exposing the capability would create security or cost risk you can't control</td></tr>
+											<tr><td>Different teams need a stable contract to work in parallel</td><td>The contract would change every day — stabilise the design first</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-tip">
+									<strong>Rule of thumb:</strong> If a boundary exists between two systems — different apps, different teams, different companies, or different services — put a well-defined API across it. The API becomes the stable promise that lets both sides change independently.
+								</blockquote>
+
+								<!-- ── Section 9: Real-world Example ── -->
+								<a id="api-example" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.9</span> 🏗️ Real-world Example — Booking a Flight on a Travel Site</h3>
+								</div>
+								<p class="blg-paragraph">
+									Travel sites like Expedia or Skyscanner own no airplanes and run no payment networks. They are, in large part, an orchestra of API calls. Here is what happens when you search for a flight and book it:
+								</p>
+								<div class="blg-table">
+									<table>
+										<thead>
+											<tr><th>Step</th><th>Actor</th><th>What Happens</th></tr>
+										</thead>
+										<tbody>
+											<tr><td>①</td><td>📱 <strong>Your Browser</strong></td><td>Sends <code class="code-soft">GET /search?from=NRT&amp;to=JFK&amp;date=2026-06-15</code> to the travel site's API</td></tr>
+											<tr><td>②</td><td>⚙️ <strong>Travel Site Server</strong></td><td>Fans out calls to many <strong>airline APIs</strong> at once, asking each for fares on that route</td></tr>
+											<tr><td>③</td><td>✈️ <strong>Airline APIs</strong></td><td>Each airline returns JSON with its available flights and prices</td></tr>
+											<tr><td>④</td><td>⚙️ <strong>Travel Site Server</strong></td><td>Merges and sorts all results, sends one combined JSON list back to your browser</td></tr>
+											<tr><td>⑤</td><td>👤 <strong>You</strong></td><td>Pick a flight and click "Pay" — browser sends <code class="code-soft">POST /bookings</code> with your choice</td></tr>
+											<tr><td>⑥</td><td>💳 <strong>Stripe / PayPal API</strong></td><td>The server calls a payment API to charge your card securely</td></tr>
+											<tr><td>⑦</td><td>📧 <strong>Email / SMS API</strong></td><td>After payment succeeds, the server calls a messaging API to send your confirmation</td></tr>
+											<tr><td>⑧</td><td>📱 <strong>Your Browser</strong></td><td>Receives a <code class="code-soft">201 Created</code> response with your booking reference</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-info">
+									<strong>Notice:</strong> A single flight booking triggered API calls to airlines, a payment provider, and a messaging service — none of which the travel site built itself. This is the real power of APIs: complex products are assembled by combining specialised services through their interfaces.
+								</blockquote>
+								<blockquote class="blg-callout-tip">
+									<strong>New terms above?</strong> The HTTP methods (<code class="code-soft">GET</code>, <code class="code-soft">POST</code>) and status codes (<code class="code-soft">201 Created</code>) are explained fully in Section 2. The API keys and tokens that keep these calls secure are covered in Section 3. For now, just notice how many independent APIs cooperate to serve one user action.
+								</blockquote>
+
+								<!-- ── Section 10: Trade-offs ── -->
+								<a id="api-tradeoffs" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.10</span> ⚖️ Trade-offs</h3>
+								</div>
+								<div class="blg-table blg-table-half">
+									<table>
+										<thead><tr><th>✅ Advantages</th><th>❌ Disadvantages</th></tr></thead>
+										<tbody>
+											<tr><td><strong>Decoupling</strong> — the kitchen can change completely as long as the menu stays the same; backends evolve without breaking clients</td><td><strong>Network dependency</strong> — every call is a round-trip that can be slow, fail, or time out</td></tr>
+											<tr><td><strong>Reuse</strong> — call Stripe, Maps, or Twilio instead of building payments, mapping, or SMS yourself</td><td><strong>Versioning pain</strong> — once others depend on your API, changing it can break them; you must version carefully</td></tr>
+											<tr><td><strong>Parallel work</strong> — teams agree on a contract, then build both sides independently</td><td><strong>Security surface</strong> — every public endpoint is a door attackers can probe; needs auth, rate limits, validation</td></tr>
+											<tr><td><strong>Ecosystem</strong> — exposing an API lets outside developers extend your platform</td><td><strong>Hidden cost</strong> — third-party APIs often charge per call and impose rate limits</td></tr>
+											<tr><td><strong>Encapsulation</strong> — internal complexity and data stay hidden behind a clean interface</td><td><strong>Debugging is harder</strong> — a failure may live in another company's service you cannot see into</td></tr>
+										</tbody>
+									</table>
+								</div>
+
+								<!-- ── Section 11: Common Mistakes ── -->
+								<a id="api-mistakes" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.11</span> 🚫 Common Mistakes</h3>
+								</div>
+								<div class="blg-table">
+									<table>
+										<thead>
+											<tr><th>#</th><th>❌ Common Mistake</th><th>✅ The Reality</th></tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>1</td>
+												<td><strong>"API" means a website</strong></td>
+												<td>An API is an interface for <strong>programs</strong>, not people. A website is for humans to read; an API returns structured data (JSON) for other software to use.</td>
+											</tr>
+											<tr>
+												<td>2</td>
+												<td><strong>API = REST</strong></td>
+												<td>REST is just one popular style. GraphQL, gRPC, SOAP, WebSocket, and even a local library function are all APIs. REST is common, not synonymous.</td>
+											</tr>
+											<tr>
+												<td>3</td>
+												<td><strong>The client needs to know how the server works</strong></td>
+												<td>The whole point is that it does not. The client only knows the contract — the endpoint and the data shape. The server's internals stay hidden.</td>
+											</tr>
+											<tr>
+												<td>4</td>
+												<td><strong>Skipping the contract and "just coding"</strong></td>
+												<td>Without an agreed API contract, the frontend and backend drift apart and integration fails. Define the request and response shape first.</td>
+											</tr>
+											<tr>
+												<td>5</td>
+												<td><strong>Returning raw database rows directly</strong></td>
+												<td>A good API returns a clean, stable shape — not your internal table columns. Otherwise every database change breaks every client.</td>
+											</tr>
+											<tr>
+												<td>6</td>
+												<td><strong>Ignoring errors and rate limits</strong></td>
+												<td>Real API calls fail, time out, and get throttled. Robust clients handle error responses and retries — they don't assume every call succeeds.</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+
+								<!-- ── Section 12: Summary ── -->
+								<a id="api-summary" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.12</span> 📝 Summary</h3>
+								</div>
+								<ul class="blg-ul">
+									<li class="blg-li blg-li-check"><strong>An API is a contract</strong> — it defines what one program can ask another for, and what it gets back.</li>
+									<li class="blg-li blg-li-check"><strong>It hides the kitchen</strong> — callers use the interface without knowing the internals, so backends can change freely.</li>
+									<li class="blg-li blg-li-check"><strong>JSON is the common language</strong> — most web APIs exchange data as lightweight, human-readable JSON.</li>
+									<li class="blg-li blg-li-check"><strong>APIs come in styles and access levels</strong> — REST, GraphQL, gRPC, SOAP, WebSocket; and public, private, or partner.</li>
+									<li class="blg-li blg-li-check"><strong>Modern systems are assembled from APIs</strong> — products combine specialised services (payments, maps, messaging) instead of building everything in-house.</li>
+								</ul>
+
+								<!-- ── Section 13: Design Challenge ── -->
+								<a id="api-challenge" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.13</span> 🏋️ Design Challenge</h3>
+								</div>
+								<blockquote class="blg-callout-purple">
+									<strong>🎬 Challenge: Design the API for a movie ticket booking app</strong><br><br>
+									You are designing the API behind an app like BookMyShow or Fandango. Think through the following:
+									<ul class="blg-ul" style="margin-top:10px;">
+										<li class="blg-li">What <strong>endpoints</strong> would you expose? (Hint: think about browsing movies, picking a show, and booking seats.)</li>
+										<li class="blg-li">For each endpoint, what would the <strong>request</strong> carry, and what JSON would the <strong>response</strong> return?</li>
+										<li class="blg-li">Which <strong>third-party APIs</strong> would you call instead of building yourself?</li>
+										<li class="blg-li">What should happen if two users try to book the <strong>same seat</strong> at the same time?</li>
+									</ul>
+								</blockquote>
+
+								<details class="blg-answer-reveal">
+									<summary>👁️ Show Answer</summary>
+									<div class="blg-answer-reveal-body">
+										<p class="blg-paragraph"><strong>Endpoints you might expose:</strong></p>
+										<ul class="blg-ul">
+											<li class="blg-li">🎬 <code class="code-soft">GET /movies</code> — list movies now showing</li>
+											<li class="blg-li">📍 <code class="code-soft">GET /movies/{id}/shows?city=Tokyo</code> — showtimes for a movie</li>
+											<li class="blg-li">💺 <code class="code-soft">GET /shows/{id}/seats</code> — which seats are free</li>
+											<li class="blg-li">🎟️ <code class="code-soft">POST /bookings</code> — reserve seats and pay</li>
+										</ul>
+										<p class="blg-paragraph"><strong>Example contract for booking:</strong> the request body carries the show ID and chosen seats; the response returns a booking reference and status.</p>
+										<div class="blg-code-block" data-lang="json">// POST /bookings  → request body
+{ "show_id": "SHW-991", "seats": ["A4", "A5"], "user_id": "U-128" }
+
+// 201 Created → response body
+{ "booking_id": "BKG-77231", "status": "confirmed", "total": 3000, "currency": "JPY" }</div>
+										<p class="blg-paragraph"><strong>Third-party APIs to call:</strong></p>
+										<ul class="blg-ul">
+											<li class="blg-li">💳 A <strong>payment API</strong> (Stripe/PayPal) to charge the card</li>
+											<li class="blg-li">📧 An <strong>email/SMS API</strong> (SendGrid/Twilio) to deliver the ticket</li>
+											<li class="blg-li">🗺️ A <strong>maps API</strong> to show the cinema location</li>
+										</ul>
+										<p class="blg-paragraph"><strong>Two users, one seat:</strong><br>
+										The seat must be locked the moment one user starts checkout, so the second user's request returns a <code class="code-soft">409 Conflict</code> ("seat no longer available"). This is a concurrency problem solved with short-lived locks or a database transaction — patterns we will revisit in later phases of the series.</p>
+									</div>
+								</details>
+
+								<!-- ── Section 14: Cloud Service Mapping ── -->
+								<a id="api-cloud" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">1.14</span> ☁️ Cloud Service Mapping</h3>
+								</div>
+								<p class="blg-paragraph">
+									In the cloud, you rarely expose your servers directly. Instead, you put a <strong>managed API layer</strong> in front of them that handles routing, validation, and throttling. These are the core services for hosting and managing an API on each platform:
+								</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Need</th><th>AWS (Primary)</th><th>GCP</th><th>Azure</th></tr></thead>
+										<tbody>
+											<tr><td><strong>Host &amp; manage an API</strong> — a front door that receives all API calls</td><td>Amazon API Gateway</td><td>Apigee / API Gateway</td><td>Azure API Management</td></tr>
+											<tr><td><strong>Run the code behind it</strong> — serverless function that responds to calls</td><td>AWS Lambda</td><td>Cloud Functions</td><td>Azure Functions</td></tr>
+											<tr><td><strong>Build a GraphQL API</strong> — managed flexible-query endpoint</td><td>AWS AppSync</td><td>Apigee (with GraphQL)</td><td>Azure API Management</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-info">
+									<strong>Simplest AWS picture:</strong> A client calls <strong>API Gateway</strong> (the public endpoint) → Gateway validates the request and forwards it to a <strong>Lambda</strong> function (your logic) → Lambda returns JSON → Gateway sends it back to the client. That is a complete, scalable API with no servers to manage.
+								</blockquote>
+								<hr class="blg-hr">
+							</div>
+
+							<div class="blg-section">
+								<a id="rest-http" class="blg-anchor"></a>
+								<div class="blg-main-header"><h2>🌐 2. REST &amp; HTTP</h2></div>
+								<p class="blg-paragraph">
+									Now that you know what an API is, the next question is: what rules do most web APIs actually follow? The answer is <strong>REST</strong>, an architectural style that runs on top of the <strong>HTTP</strong> protocol. Together they give the web a simple, uniform vocabulary: address a <strong>resource</strong> with a URL, act on it with an HTTP method like GET or POST, and read the <strong>status code</strong> to learn what happened. In this section you will learn the anatomy of an HTTP request, the methods and status codes that power every REST API, what makes an API truly RESTful, and how REST compares to alternatives like GraphQL, gRPC, and WebSocket — so you can choose the right one in a system design.
+								</p>
+
+								<div class="blg-img-container">
+									<img src="../img/blog_21/rest.webp" alt="REST and HTTP — resources, methods, and status codes over the web" class="blg-img" />
+								</div>
+
+								<!-- ── Section 1: Introduction ── -->
+								<a id="rest-intro" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.1</span> 🎯 Introduction</h3>
+								</div>
+								<p class="blg-paragraph">
+									Imagine you are building an online <strong>bookstore</strong>. You need to list all books, show one book's details, add a new book, update a price, and remove a book that's out of print. That is five different actions on one kind of thing — a "book." REST gives you a clean, predictable way to express all five using nothing but a URL and an HTTP method.
+								</p>
+								<p class="blg-paragraph">
+									<strong>REST</strong> stands for <strong>Representational State Transfer</strong>. It is not a protocol or a library — it is a <strong>style</strong>, a set of conventions for designing APIs. <strong>HTTP</strong> (HyperText Transfer Protocol) is the actual protocol the browser already uses to load every web page, and REST simply reuses it. In a REST API, each "thing" is a <strong>resource</strong> with its own URL (<code class="code-soft">/books/42</code>), and the HTTP method you use (<code class="code-soft">GET</code>, <code class="code-soft">POST</code>, <code class="code-soft">PUT</code>, <code class="code-soft">DELETE</code>) says what you want to do to it.
+								</p>
+								<blockquote class="blg-callout-purple">
+									🔗 <strong>REST vs HTTP:</strong> HTTP is the transport — the rules for sending a request and getting a response. REST is a discipline for <strong>how to use HTTP well</strong>: nouns in the URL, verbs as HTTP methods, meaningful status codes, and no server-side session state. You can use HTTP without being RESTful, but you cannot be RESTful without HTTP.
+								</blockquote>
+
+								<!-- ── Section 2: Why It Matters ── -->
+								<a id="rest-why" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.2</span> 💡 Why It Matters</h3>
+								</div>
+								<p class="blg-paragraph">
+									REST is the lingua franca of the web. The vast majority of public web APIs are REST — including <strong>GitHub</strong>, <strong>Stripe</strong>, <strong>Twitter/X</strong>, and <strong>Shopify</strong>. Surveys of public APIs consistently put REST well above 70% of all of them. When a system design problem says "design the API," the default expectation is a REST API returning JSON over HTTP.
+								</p>
+								<ul class="blg-ul">
+									<li class="blg-li">REST is <strong>uniform</strong> — once you learn GET/POST/PUT/DELETE, every REST API feels familiar; you don't relearn the basics per service.</li>
+									<li class="blg-li">REST is <strong>stateless</strong> — each request carries everything the server needs, so any server can handle any request. That is what lets you put dozens of identical servers behind a load balancer and scale horizontally.</li>
+									<li class="blg-li">REST is <strong>cacheable</strong> — GET responses can be cached by browsers, CDNs, and proxies, cutting load dramatically.</li>
+									<li class="blg-li">REST uses <strong>plain HTTP</strong> — it works with every language, every browser, every tool (<code class="code-soft">curl</code>, Postman) with zero special setup.</li>
+								</ul>
+								<blockquote class="blg-callout-info">
+									<strong>Why system design cares:</strong> Statelessness is the single most important property here. Because a REST server keeps no memory of past requests, you can run many copies of it and route any request to any copy. This is the foundation of horizontal scaling — a theme that returns in almost every later topic in this series.
+								</blockquote>
+
+								<!-- ── Section 3: Real-world Analogy ── -->
+								<a id="rest-analogy" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.3</span> 🏠 Real-world Analogy</h3>
+								</div>
+								<p class="blg-paragraph">
+									Think of a <strong>library front desk</strong>. Every book is a resource with a shelf address. You don't wander the stacks yourself — you make a request at the desk, and you phrase it as an <strong>action on a specific book</strong>: "show me book #42," "add this new book," "update this book's record," "remove this book." The librarian performs the action and hands you a slip telling you how it went — "done," "not found," or "you're not allowed."
+								</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead>
+											<tr><th>Library World</th><th>REST / HTTP World</th><th>Meaning</th></tr>
+										</thead>
+										<tbody>
+											<tr><td>📕 A specific book</td><td>🔗 Resource URL — <code class="code-soft">/books/42</code></td><td>The thing you are acting on</td></tr>
+											<tr><td>👀 "Show me this book"</td><td><code class="code-soft">GET /books/42</code></td><td>Read, without changing anything</td></tr>
+											<tr><td>➕ "Add this new book"</td><td><code class="code-soft">POST /books</code></td><td>Create a new resource</td></tr>
+											<tr><td>✏️ "Update this record"</td><td><code class="code-soft">PUT /books/42</code></td><td>Replace/modify the resource</td></tr>
+											<tr><td>🗑️ "Remove this book"</td><td><code class="code-soft">DELETE /books/42</code></td><td>Delete the resource</td></tr>
+											<tr><td>🧾 The slip: "done / not found / not allowed"</td><td>📊 Status code — 200 / 404 / 403</td><td>How the request went</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<p class="blg-paragraph">
+									Notice the pattern: the <strong>book (noun)</strong> goes in the URL, and the <strong>action (verb)</strong> is the HTTP method. A well-designed REST API never puts verbs in the URL — you never see <code class="code-soft">/getBook</code> or <code class="code-soft">/deleteBook42</code>, because the method already says the verb.
+								</p>
+
+								<!-- ── Section 4: Key Terms ── -->
+								<a id="rest-terms" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.4</span> 📖 Key Terms</h3>
+								</div>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead>
+											<tr><th>Term</th><th>Simple Definition</th><th>Quick Example</th></tr>
+										</thead>
+										<tbody>
+											<tr><td><strong>HTTP</strong></td><td>The protocol browsers and servers use to exchange requests and responses</td><td>Every web page load is HTTP(S)</td></tr>
+											<tr><td><strong>REST</strong></td><td>A style for designing APIs using HTTP methods and resource URLs</td><td>GitHub's API is RESTful</td></tr>
+											<tr><td><strong>Resource</strong></td><td>Any "thing" the API exposes, identified by a URL</td><td><code class="code-soft">/users/7</code>, <code class="code-soft">/orders/55</code></td></tr>
+											<tr><td><strong>HTTP Method</strong></td><td>The verb that says what action to take on a resource</td><td>GET, POST, PUT, PATCH, DELETE</td></tr>
+											<tr><td><strong>Status Code</strong></td><td>A 3-digit number in the response saying how it went</td><td>200 OK, 404 Not Found, 500 Error</td></tr>
+											<tr><td><strong>Header</strong></td><td>Key-value metadata attached to a request or response</td><td><code class="code-soft">Content-Type: application/json</code></td></tr>
+											<tr><td><strong>Body / Payload</strong></td><td>The data sent with a request or returned in a response</td><td>The JSON for a new book</td></tr>
+											<tr><td><strong>Stateless</strong></td><td>The server keeps no memory between requests; each is self-contained</td><td>Every call re-sends its auth token</td></tr>
+											<tr><td><strong>Idempotent</strong></td><td>Doing it once or many times gives the same result</td><td>GET, PUT, DELETE are idempotent; POST is not</td></tr>
+											<tr><td><strong>CRUD</strong></td><td>The four basic data operations: Create, Read, Update, Delete</td><td>Maps to POST, GET, PUT, DELETE</td></tr>
+										</tbody>
+									</table>
+								</div>
+
+								<!-- ── Section 5: How It Works ── -->
+								<a id="rest-how" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.5</span> 🔢 How It Works</h3>
+								</div>
+								<p class="blg-paragraph">
+									A REST call is just a well-structured HTTP request and response. Let us break down the four parts that make it work: the request anatomy, the methods, the status codes, and the rules that keep it stateless.
+								</p>
+
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge badge-blue">A. Anatomy of a Request &amp; Response</span></h3>
+								</div>
+								<p class="blg-paragraph">
+									Every HTTP request has four parts: a <strong>method + path</strong> (the action and the resource), <strong>headers</strong> (metadata like content type and auth), and an optional <strong>body</strong> (data, used by POST/PUT). The response mirrors it: a <strong>status code</strong>, <strong>headers</strong>, and a <strong>body</strong>. Here is a request to add a book to our store:
+								</p>
+								<div class="blg-code-block" data-lang="bash">POST /books HTTP/1.1
+Host: api.bookstore.com
+Content-Type: application/json
+Authorization: Bearer sk_live_a1b2c3d4
+
+{ "title": "Designing Data-Intensive Applications", "price": 3800, "currency": "JPY" }</div>
+								<p class="blg-paragraph">
+									And the server's response — a <code class="code-soft">201 Created</code> status with the newly created resource in the body:
+								</p>
+								<div class="blg-code-block" data-lang="json">{
+  "id": 42,
+  "title": "Designing Data-Intensive Applications",
+  "price": 3800,
+  "currency": "JPY",
+  "created_at": "2026-05-30T09:00:00Z"
+}</div>
+
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge badge-teal">B. HTTP Methods &amp; CRUD</span></h3>
+								</div>
+								<p class="blg-paragraph">
+									Each HTTP method maps to one of the four basic data operations, known as <strong>CRUD</strong>. This mapping is the heart of REST.
+								</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead>
+											<tr><th>Method</th><th>CRUD</th><th>What It Does</th><th>Example</th><th>Safe / Idempotent</th></tr>
+										</thead>
+										<tbody>
+											<tr><td><strong>GET</strong></td><td>Read</td><td>Fetch a resource; never changes data</td><td><code class="code-soft">GET /books/42</code></td><td>✅ Safe &amp; idempotent</td></tr>
+											<tr><td><strong>POST</strong></td><td>Create</td><td>Create a new resource</td><td><code class="code-soft">POST /books</code></td><td>❌ Not idempotent</td></tr>
+											<tr><td><strong>PUT</strong></td><td>Update</td><td>Replace a resource entirely</td><td><code class="code-soft">PUT /books/42</code></td><td>✅ Idempotent</td></tr>
+											<tr><td><strong>PATCH</strong></td><td>Update</td><td>Modify part of a resource</td><td><code class="code-soft">PATCH /books/42</code></td><td>⚠️ Usually not</td></tr>
+											<tr><td><strong>DELETE</strong></td><td>Delete</td><td>Remove a resource</td><td><code class="code-soft">DELETE /books/42</code></td><td>✅ Idempotent</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-note">
+									<strong>Idempotency matters in design:</strong> If a network hiccup makes a client retry a request, an idempotent method (GET, PUT, DELETE) is safe to repeat — the result is the same. POST is not: retrying "create order" could charge a customer twice. This is why payment APIs add an <strong>idempotency key</strong> to make POST safe to retry.
+								</blockquote>
+
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge badge-purple">C. HTTP Status Codes</span></h3>
+								</div>
+								<p class="blg-paragraph">
+									The status code is the first thing a client reads. They come in five families, grouped by the first digit:
+								</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead>
+											<tr><th>Range</th><th>Meaning</th><th>Common Codes</th></tr>
+										</thead>
+										<tbody>
+											<tr><td><strong>2xx</strong> ✅</td><td>Success — the request worked</td><td>200 OK · 201 Created · 204 No Content</td></tr>
+											<tr><td><strong>3xx</strong> ↪️</td><td>Redirection — look elsewhere</td><td>301 Moved Permanently · 304 Not Modified</td></tr>
+											<tr><td><strong>4xx</strong> 🙅</td><td>Client error — the caller did something wrong</td><td>400 Bad Request · 401 Unauthorized · 403 Forbidden · 404 Not Found · 429 Too Many Requests</td></tr>
+											<tr><td><strong>5xx</strong> 💥</td><td>Server error — the server failed</td><td>500 Internal Server Error · 502 Bad Gateway · 503 Service Unavailable</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-tip">
+									<strong>The 4xx vs 5xx rule:</strong> 4xx means "you made a mistake" (fix your request — wrong URL, bad data, missing auth). 5xx means "we made a mistake" (the server broke; retrying later may help). Returning the right family is critical — a server that returns 200 for an error makes every client misbehave.
+								</blockquote>
+
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge badge-green">D. Statelessness &amp; REST Constraints</span></h3>
+								</div>
+								<p class="blg-paragraph">
+									What makes an API truly "RESTful" is a small set of constraints. The most important for system design is <strong>statelessness</strong>: the server stores nothing about the client between requests. Every request must carry its own context — including who the caller is (the auth token). The benefits compound:
+								</p>
+								<ul class="blg-ul">
+									<li class="blg-li"><strong>Stateless</strong> — any server can handle any request, so you scale by simply adding more servers.</li>
+									<li class="blg-li"><strong>Uniform interface</strong> — resources as URLs, actions as methods, consistent everywhere.</li>
+									<li class="blg-li"><strong>Cacheable</strong> — responses say whether they can be cached, letting CDNs and browsers serve them without hitting the server.</li>
+									<li class="blg-li"><strong>Client–server separation</strong> — the frontend and backend evolve independently as long as the contract holds.</li>
+								</ul>
+
+								<!-- ── Section 6: Types & Variations ── -->
+								<a id="rest-types" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.6</span> 🔀 Types &amp; Variations — REST vs Other API Styles</h3>
+								</div>
+								<p class="blg-paragraph">
+									REST is the default, but it is not the only option. In system design you are expected to know the main alternatives and, more importantly, <strong>when each one is the better choice</strong>. You rarely implement these by hand — you justify picking one. Here are the four styles you should recognise:
+								</p>
+								<div class="blg-feature-grid grid-3">
+									<div class="blg-feature-card card-blue">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">🌐</span>
+											<h4>REST</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>Resources + HTTP methods + JSON. Simple, cacheable, universal. The default for public web and mobile APIs. Can over-fetch (returns fixed fields) or need many round-trips.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-teal">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">🔷</span>
+											<h4>GraphQL</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>One endpoint; the client asks for exactly the fields it wants in a single query. Solves over-fetching and under-fetching. Used by GitHub and Shopify for rich, mobile-friendly clients.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-purple">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">⚡</span>
+											<h4>gRPC</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>Binary protocol over HTTP/2 using Protocol Buffers. Very fast and compact. Ideal for <strong>internal service-to-service</strong> calls in microservices, not for browsers.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-orange">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">🔌</span>
+											<h4>WebSocket</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>A persistent, two-way connection for <strong>real-time</strong> data. The server can push without being asked. Used for chat, live feeds, notifications, and multiplayer games.</p>
+										</div>
+									</div>
+								</div>
+								<p class="blg-paragraph">
+									Side by side, the trade-offs become clear:
+								</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead>
+											<tr><th>Style</th><th>Transport</th><th>Data Format</th><th>Communication</th><th>Best For</th></tr>
+										</thead>
+										<tbody>
+											<tr><td><strong>REST</strong></td><td>HTTP/1.1</td><td>JSON (text)</td><td>Request → response</td><td>Public APIs, CRUD, web &amp; mobile</td></tr>
+											<tr><td><strong>GraphQL</strong></td><td>HTTP</td><td>JSON (text)</td><td>Request → response (flexible query)</td><td>Mobile clients, avoiding over-fetch</td></tr>
+											<tr><td><strong>gRPC</strong></td><td>HTTP/2</td><td>Protobuf (binary)</td><td>Request → response + streaming</td><td>Internal microservice calls, low latency</td></tr>
+											<tr><td><strong>WebSocket</strong></td><td>TCP (upgraded from HTTP)</td><td>Any (often JSON)</td><td>Two-way, persistent, real-time</td><td>Chat, live updates, presence, games</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-info">
+									<strong>SOAP, briefly:</strong> You may still meet <strong>SOAP</strong> — an older, strict, XML-based style used in some banking and enterprise systems. For new designs it is rarely chosen, but it is worth recognising the name.
+								</blockquote>
+
+								<!-- ── Section 7: Illustrated Diagram ── -->
+								<a id="rest-diagram" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.7</span> 🎨 Illustrated Diagram</h3>
+								</div>
+								<p class="blg-paragraph">
+									The diagram below shows the same resource — a book — acted on by the four main HTTP methods. One URL pattern, four verbs, four outcomes. This is the uniform interface that makes REST so easy to learn.
+								</p>
+								<div class="blg-mermaid-wrap">
+									<div class="mermaid" style="min-width:680px;font-size:16px;">
+%%{init: {"theme": "base", "themeVariables": {"lineColor": "#64748b", "edgeLabelBackground": "#fff"}}}%%
+flowchart LR
+    C["📱 Client\n(Bookstore App)"]
+    S["⚙️ REST API Server\n/books"]
+    DB["🗄️ Database\n(Books)"]
+
+    C -->|"GET /books/42 → 200 OK"| S
+    C -->|"POST /books → 201 Created"| S
+    C -->|"PUT /books/42 → 200 OK"| S
+    C -->|"DELETE /books/42 → 204 No Content"| S
+    S -->|"CRUD"| DB
+
+    style C fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    style S fill:#d1fae5,stroke:#059669,color:#064e3b
+    style DB fill:#fff3e0,stroke:#d97706,color:#92400e
+									</div>
+								</div>
+								<p class="blg-paragraph">
+									<strong>Reading the diagram:</strong> The client uses one resource path (<code class="code-soft">/books</code> and <code class="code-soft">/books/42</code>) with different methods to read, create, update, and delete. The server translates each into a database operation and replies with the matching status code. Same noun, different verbs — that is REST in one picture.
+								</p>
+
+								<!-- ── Section 8: When to Use ── -->
+								<a id="rest-when" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.8</span> ✅ When to Use</h3>
+								</div>
+								<p class="blg-paragraph">
+									REST is the right default for the large majority of APIs. But knowing when to reach for GraphQL, gRPC, or WebSocket instead is exactly the kind of decision a system design expects you to justify. Use this decision guide:
+								</p>
+								<div class="blg-table blg-table-half">
+									<table>
+										<thead><tr><th>Reach for REST when…</th><th>Reach for an alternative when…</th></tr></thead>
+										<tbody>
+											<tr><td>You are building a public API or a standard CRUD service</td><td>Mobile clients over-fetch or need many round-trips → <strong>GraphQL</strong></td></tr>
+											<tr><td>You want caching, simplicity, and universal tooling</td><td>Two internal microservices need fast, low-latency calls → <strong>gRPC</strong></td></tr>
+											<tr><td>Clients are browsers, mobile apps, or third-party developers</td><td>The client needs live server-pushed updates → <strong>WebSocket</strong></td></tr>
+											<tr><td>Resources map cleanly to nouns (users, orders, books)</td><td>You need bidirectional streaming or real-time presence → <strong>WebSocket</strong></td></tr>
+										</tbody>
+									</table>
+								</div>
+								<p class="blg-paragraph">
+									A quick way to choose, phrased as questions you can ask in a design discussion:
+								</p>
+								<ul class="blg-ul">
+									<li class="blg-li"><strong>Is it a public/CRUD API for varied clients?</strong> → REST.</li>
+									<li class="blg-li"><strong>Do clients need flexible, precise field selection?</strong> → GraphQL.</li>
+									<li class="blg-li"><strong>Is it internal, high-throughput, latency-sensitive service-to-service traffic?</strong> → gRPC.</li>
+									<li class="blg-li"><strong>Does the server need to push data in real time?</strong> → WebSocket (or Server-Sent Events for one-way push).</li>
+								</ul>
+								<blockquote class="blg-callout-tip">
+									<strong>Rule of thumb:</strong> Start with REST. Switch only when a concrete requirement forces it — real-time push (WebSocket), internal speed (gRPC), or client-driven queries (GraphQL). "We use REST for the public API and gRPC between internal services" is a very common, very defensible architecture.
+								</blockquote>
+
+								<!-- ── Section 9: Real-world Example ── -->
+								<a id="rest-example" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.9</span> 🏗️ Real-world Example — The GitHub REST API</h3>
+								</div>
+								<p class="blg-paragraph">
+									GitHub's public REST API is a textbook example of clean design. Every "thing" on GitHub — a repository, an issue, a user — is a resource with a predictable URL, and you act on it with standard HTTP methods. Here is a typical sequence when an app manages issues on a repo:
+								</p>
+								<div class="blg-table">
+									<table>
+										<thead>
+											<tr><th>Step</th><th>Request</th><th>What Happens</th></tr>
+										</thead>
+										<tbody>
+											<tr><td>①</td><td><code class="code-soft">GET /repos/octocat/hello/issues</code></td><td>Lists all open issues — returns <code class="code-soft">200 OK</code> with a JSON array</td></tr>
+											<tr><td>②</td><td><code class="code-soft">GET /repos/octocat/hello/issues/7</code></td><td>Fetches issue #7 in detail — <code class="code-soft">200 OK</code>, or <code class="code-soft">404</code> if it doesn't exist</td></tr>
+											<tr><td>③</td><td><code class="code-soft">POST /repos/octocat/hello/issues</code></td><td>Creates a new issue from the JSON body — returns <code class="code-soft">201 Created</code></td></tr>
+											<tr><td>④</td><td><code class="code-soft">PATCH /repos/octocat/hello/issues/7</code></td><td>Updates issue #7's title or state — <code class="code-soft">200 OK</code></td></tr>
+											<tr><td>⑤</td><td>(no token)</td><td>Any write without a valid token returns <code class="code-soft">401 Unauthorized</code></td></tr>
+											<tr><td>⑥</td><td>(too many calls)</td><td>Exceeding the rate limit returns <code class="code-soft">429 Too Many Requests</code></td></tr>
+										</tbody>
+									</table>
+								</div>
+								<p class="blg-paragraph">
+									Creating an issue looks like this on the wire — note the noun in the URL, the verb as the method, and JSON in both directions:
+								</p>
+								<div class="blg-code-block" data-lang="bash">POST /repos/octocat/hello/issues HTTP/1.1
+Host: api.github.com
+Authorization: Bearer ghp_xxxxxxxx
+Content-Type: application/json
+
+{ "title": "Bug: login button is misaligned", "labels": ["bug", "ui"] }</div>
+								<div class="blg-code-block" data-lang="json">{
+  "number": 7,
+  "title": "Bug: login button is misaligned",
+  "state": "open",
+  "labels": ["bug", "ui"],
+  "url": "https://api.github.com/repos/octocat/hello/issues/7"
+}</div>
+								<blockquote class="blg-callout-info">
+									<strong>Notice the discipline:</strong> nouns in the URL (<code class="code-soft">/issues</code>), verbs as methods (POST to create), correct status codes (201, 401, 429), and JSON bodies. That consistency is exactly why developers can pick up the GitHub API in minutes — and why REST became the web's default.
+								</blockquote>
+
+								<!-- ── Section 10: Trade-offs ── -->
+								<a id="rest-tradeoffs" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.10</span> ⚖️ Trade-offs</h3>
+								</div>
+								<div class="blg-table blg-table-half">
+									<table>
+										<thead><tr><th>✅ Advantages</th><th>❌ Disadvantages</th></tr></thead>
+										<tbody>
+											<tr><td><strong>Simple &amp; universal</strong> — plain HTTP and JSON; works with every language and tool</td><td><strong>Over-fetching</strong> — a fixed endpoint may return more fields than the client needs</td></tr>
+											<tr><td><strong>Stateless → scalable</strong> — any server handles any request; scale by adding servers</td><td><strong>Under-fetching</strong> — getting related data may take several round-trips (the "N+1" problem)</td></tr>
+											<tr><td><strong>Cacheable</strong> — GET responses cache cleanly in browsers, CDNs, and proxies</td><td><strong>No built-in real-time</strong> — push requires WebSocket or polling on top</td></tr>
+											<tr><td><strong>Uniform &amp; predictable</strong> — same method/status conventions across every REST API</td><td><strong>Text overhead</strong> — JSON is larger and slower to parse than binary formats like Protobuf</td></tr>
+											<tr><td><strong>Great tooling</strong> — curl, Postman, browser dev tools all speak HTTP natively</td><td><strong>Loose by convention</strong> — "RESTful" is a style, so poorly designed REST APIs are common</td></tr>
+										</tbody>
+									</table>
+								</div>
+
+								<!-- ── Section 11: Common Mistakes ── -->
+								<a id="rest-mistakes" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.11</span> 🚫 Common Mistakes</h3>
+								</div>
+								<div class="blg-table">
+									<table>
+										<thead>
+											<tr><th>#</th><th>❌ Common Mistake</th><th>✅ The Reality</th></tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>1</td>
+												<td><strong>Putting verbs in the URL</strong></td>
+												<td>Endpoints like <code class="code-soft">/getBook</code> or <code class="code-soft">/createUser</code> break REST. The URL is the noun (<code class="code-soft">/books</code>); the method is the verb (GET, POST).</td>
+											</tr>
+											<tr>
+												<td>2</td>
+												<td><strong>Using GET to change data</strong></td>
+												<td>GET must be safe — it never modifies anything. Crawlers and caches replay GETs freely; using one to delete or update causes chaos.</td>
+											</tr>
+											<tr>
+												<td>3</td>
+												<td><strong>Returning 200 for everything</strong></td>
+												<td>Errors need the right status. Return 404 for not found, 400 for bad input, 401/403 for auth, 500 for server faults — not 200 with an "error" field.</td>
+											</tr>
+											<tr>
+												<td>4</td>
+												<td><strong>Storing session state on the server</strong></td>
+												<td>REST is stateless. Keeping per-client state on one server breaks horizontal scaling. Put state in a token or shared store, not in server memory.</td>
+											</tr>
+											<tr>
+												<td>5</td>
+												<td><strong>Ignoring idempotency on retries</strong></td>
+												<td>Retried POSTs can duplicate orders or charges. Use idempotency keys, or design create operations to be safely repeatable.</td>
+											</tr>
+											<tr>
+												<td>6</td>
+												<td><strong>No versioning</strong></td>
+												<td>Changing a live API breaks every client. Version it (<code class="code-soft">/v1/books</code>) so you can evolve without breaking existing callers.</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+
+								<!-- ── Section 12: Summary ── -->
+								<a id="rest-summary" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.12</span> 📝 Summary</h3>
+								</div>
+								<ul class="blg-ul">
+									<li class="blg-li blg-li-check"><strong>REST is a style, HTTP is the protocol</strong> — nouns in the URL, verbs as methods, JSON in the body.</li>
+									<li class="blg-li blg-li-check"><strong>Methods map to CRUD</strong> — GET reads, POST creates, PUT/PATCH update, DELETE removes.</li>
+									<li class="blg-li blg-li-check"><strong>Status codes tell the story</strong> — 2xx success, 4xx your fault, 5xx server's fault.</li>
+									<li class="blg-li blg-li-check"><strong>Statelessness enables scale</strong> — no server-side session means any server can serve any request.</li>
+									<li class="blg-li blg-li-check"><strong>Know the alternatives</strong> — GraphQL for flexible queries, gRPC for internal speed, WebSocket for real-time push; start with REST and switch only when a requirement demands it.</li>
+								</ul>
+
+								<!-- ── Section 13: Design Challenge ── -->
+								<a id="rest-challenge" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.13</span> 🏋️ Design Challenge</h3>
+								</div>
+								<blockquote class="blg-callout-purple">
+									<strong>✅ Challenge: Design a RESTful API for a to-do app</strong><br><br>
+									You are designing the API behind a simple to-do list app where users create, view, complete, and delete tasks. Think through the following:
+									<ul class="blg-ul" style="margin-top:10px;">
+										<li class="blg-li">What <strong>resource URLs</strong> and <strong>HTTP methods</strong> would you expose for the four actions?</li>
+										<li class="blg-li">Which <strong>status code</strong> should each return on success — and what should happen for a task that doesn't exist?</li>
+										<li class="blg-li">Which of your endpoints are <strong>idempotent</strong>, and why does that matter?</li>
+										<li class="blg-li">If the app later needs a live "shared list" that updates instantly across devices, which API style would you add — and why not just REST?</li>
+									</ul>
+								</blockquote>
+
+								<details class="blg-answer-reveal">
+									<summary>👁️ Show Answer</summary>
+									<div class="blg-answer-reveal-body">
+										<p class="blg-paragraph"><strong>Endpoints (noun in URL, verb as method):</strong></p>
+										<div class="blg-table">
+											<table>
+												<thead><tr><th>Action</th><th>Request</th><th>Success Code</th></tr></thead>
+												<tbody>
+													<tr><td>List tasks</td><td><code class="code-soft">GET /tasks</code></td><td>200 OK</td></tr>
+													<tr><td>Create a task</td><td><code class="code-soft">POST /tasks</code></td><td>201 Created</td></tr>
+													<tr><td>View one task</td><td><code class="code-soft">GET /tasks/9</code></td><td>200 OK (404 if missing)</td></tr>
+													<tr><td>Mark complete</td><td><code class="code-soft">PATCH /tasks/9</code></td><td>200 OK</td></tr>
+													<tr><td>Delete a task</td><td><code class="code-soft">DELETE /tasks/9</code></td><td>204 No Content</td></tr>
+												</tbody>
+											</table>
+										</div>
+										<p class="blg-paragraph"><strong>Idempotency:</strong> GET, PUT, and DELETE are idempotent — calling them repeatedly leaves the system in the same state. That matters because a client can safely retry them after a network failure. POST is not idempotent: a retried "create task" could add the task twice, so you might add an idempotency key.</p>
+										<p class="blg-paragraph"><strong>Live shared list:</strong> Plain REST can't push updates — the client would have to poll <code class="code-soft">GET /tasks</code> repeatedly, which is wasteful and laggy. Add a <strong>WebSocket</strong> connection so the server pushes changes to every device the instant a task changes. REST still handles the create/update/delete; WebSocket handles the real-time broadcast.</p>
+									</div>
+								</details>
+
+								<!-- ── Section 14: Cloud Service Mapping ── -->
+								<a id="rest-cloud" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">2.14</span> ☁️ Cloud Service Mapping</h3>
+								</div>
+								<p class="blg-paragraph">
+									Cloud platforms provide managed gateways that host REST APIs and handle routing, throttling, and (in some cases) WebSocket and gRPC traffic, so you don't run that plumbing yourself:
+								</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Need</th><th>AWS (Primary)</th><th>GCP</th><th>Azure</th></tr></thead>
+										<tbody>
+											<tr><td><strong>Host a REST API</strong> — managed HTTP front door</td><td>API Gateway (REST / HTTP API)</td><td>Apigee / API Gateway</td><td>Azure API Management</td></tr>
+											<tr><td><strong>Real-time / WebSocket</strong> — push connections</td><td>API Gateway (WebSocket API)</td><td>Cloud Run / Firebase</td><td>Azure Web PubSub</td></tr>
+											<tr><td><strong>GraphQL endpoint</strong> — managed flexible queries</td><td>AWS AppSync</td><td>Apigee (with GraphQL)</td><td>Azure API Management</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-info">
+									<strong>Simplest AWS picture:</strong> Expose a <strong>REST API</strong> on API Gateway → it routes each method to a Lambda function or backend service → the function returns JSON with the right status code. For real-time features, switch the same gateway to a <strong>WebSocket API</strong>.
+								</blockquote>
+								<hr class="blg-hr">
+							</div>
+
+							<div class="blg-section">
+								<a id="api-auth" class="blg-anchor"></a>
+								<div class="blg-main-header"><h2>🔐 3. API Authentication</h2></div>
+								<p class="blg-paragraph">
+									An open API is an open door. Once you expose endpoints to the world, the server needs to answer two questions on every single request: <strong>who is calling?</strong> and <strong>are they allowed to do this?</strong> The first is <strong>authentication</strong>, the second is <strong>authorization</strong>, and together they are what keep your data, your users, and your costs safe. In this section you will learn the main ways APIs prove identity — API keys, tokens, JWT, and OAuth — how a stateless token flow actually works, and which method to choose for a given system.
+								</p>
+
+								<div class="blg-img-container">
+									<img src="../img/blog_21/auth.webp" alt="API Authentication — API keys, tokens, JWT, and OAuth proving who is calling" class="blg-img" />
+								</div>
+
+								<!-- ── Section 1: Introduction ── -->
+								<a id="auth-intro" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">3.1</span> 🎯 Introduction</h3>
+								</div>
+								<p class="blg-paragraph">
+									Imagine a photo-printing app asks to access your <strong>Google Photos</strong> so it can print your pictures. You click "Allow" — and it works. But notice what you <strong>never</strong> did: you never gave the app your Google password. Instead, Google handed the app a limited <strong>token</strong> that lets it read your photos and nothing else, which you can revoke at any time. That is API authentication done right, and the mechanism behind it is called <strong>OAuth</strong>.
+								</p>
+								<p class="blg-paragraph">
+									Two related ideas sit at the heart of this topic, and mixing them up is the most common beginner error:
+								</p>
+								<ul class="blg-ul">
+									<li class="blg-li"><strong>Authentication (AuthN) — "Who are you?"</strong> The server verifies your identity, usually by checking a credential like a password, an API key, or a token.</li>
+									<li class="blg-li"><strong>Authorization (AuthZ) — "What are you allowed to do?"</strong> Once identity is known, the server decides which actions and data you may access.</li>
+								</ul>
+								<p class="blg-paragraph">
+									Authentication always comes first — you can't decide what someone is allowed to do until you know who they are. The photo app was <strong>authenticated</strong> (Google knew which app it was) and <strong>authorized</strong> for a narrow scope (read your photos, but not delete them or read your email).
+								</p>
+
+								<!-- ── Section 2: Why It Matters ── -->
+								<a id="auth-why" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">3.2</span> 💡 Why It Matters</h3>
+								</div>
+								<p class="blg-paragraph">
+									Every public endpoint is a target. Industry reports estimate that APIs are now the <strong>most common attack surface</strong> for web applications, with the majority of organisations reporting an API-related security incident. A single unprotected endpoint can leak millions of user records — and a leaked API key can run up enormous bills on a paid service before anyone notices.
+								</p>
+								<ul class="blg-ul">
+									<li class="blg-li"><strong>Data protection</strong> — without authentication, anyone who guesses your URL can read or modify your users' data.</li>
+									<li class="blg-li"><strong>Accountability</strong> — identity lets you log who did what, essential for auditing and abuse investigation.</li>
+									<li class="blg-li"><strong>Rate limiting &amp; billing</strong> — you can only enforce "100 requests per minute" or "charge per call" if you know which client is calling.</li>
+									<li class="blg-li"><strong>Least privilege</strong> — scopes and roles let you give each caller exactly the access it needs and no more, limiting the blast radius of a leak.</li>
+								</ul>
+								<blockquote class="blg-callout-warning">
+									⚠️ <strong>Authentication is never optional in design.</strong> In any system design discussion, as soon as you draw an API, you should be ready to say how it authenticates callers. "All endpoints require a bearer token over HTTPS, validated at the API Gateway" is the kind of sentence that shows you think about security from the start.
+								</blockquote>
+
+								<!-- ── Section 3: Real-world Analogy ── -->
+								<a id="auth-analogy" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">3.3</span> 🏠 Real-world Analogy</h3>
+								</div>
+								<p class="blg-paragraph">
+									Think of checking into a <strong>hotel</strong>. At the front desk you show your <strong>ID</strong> — that is authentication, proving who you are. In return you get a <strong>key card</strong> — a token. The key card opens your room and the gym, but not other guests' rooms or the staff office — that is authorization, defined by what the card is permitted to do. The card <strong>expires at checkout</strong>, and the front desk can <strong>deactivate it instantly</strong> if it's lost.
+								</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead>
+											<tr><th>Hotel World</th><th>API Auth World</th><th>Meaning</th></tr>
+										</thead>
+										<tbody>
+											<tr><td>🪪 Showing your ID at check-in</td><td>🔑 Logging in with credentials</td><td>Authentication — proving identity</td></tr>
+											<tr><td>💳 The key card you receive</td><td>🎟️ Access token (e.g. JWT)</td><td>A short-lived proof you can present later</td></tr>
+											<tr><td>🚪 Card opens your room + gym only</td><td>📋 Scopes / permissions</td><td>Authorization — what you may access</td></tr>
+											<tr><td>⏰ Card stops working at checkout</td><td>⌛ Token expiry</td><td>Access is time-limited by design</td></tr>
+											<tr><td>🚫 Front desk deactivates a lost card</td><td>♻️ Token revocation</td><td>Access can be withdrawn</td></tr>
+											<tr><td>🤝 Showing the card, not your ID, at the gym</td><td>📨 Sending the token on each request</td><td>You don't re-prove identity every time</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<p class="blg-paragraph">
+									The key insight: you show your ID <strong>once</strong>, then carry a key card you present everywhere else. APIs work the same way — you authenticate once to get a token, then attach that token to every later request instead of sending your password again and again.
+								</p>
+
+								<!-- ── Section 4: Key Terms ── -->
+								<a id="auth-terms" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">3.4</span> 📖 Key Terms</h3>
+								</div>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead>
+											<tr><th>Term</th><th>Simple Definition</th><th>Quick Example</th></tr>
+										</thead>
+										<tbody>
+											<tr><td><strong>Authentication</strong></td><td>Verifying who the caller is</td><td>Checking a password or token</td></tr>
+											<tr><td><strong>Authorization</strong></td><td>Deciding what the caller may do</td><td>"Can read photos, cannot delete"</td></tr>
+											<tr><td><strong>Credential</strong></td><td>Any secret used to prove identity</td><td>Password, API key, private key</td></tr>
+											<tr><td><strong>API Key</strong></td><td>A long secret string identifying a calling application</td><td><code class="code-soft">sk_live_a1b2c3d4</code></td></tr>
+											<tr><td><strong>Token</strong></td><td>A temporary credential issued after login, sent on each request</td><td>A bearer token in a header</td></tr>
+											<tr><td><strong>Bearer Token</strong></td><td>A token where "whoever holds it" is granted access</td><td><code class="code-soft">Authorization: Bearer &lt;token&gt;</code></td></tr>
+											<tr><td><strong>JWT</strong></td><td>A self-contained, signed token carrying user data as JSON</td><td><code class="code-soft">eyJhbGci...</code></td></tr>
+											<tr><td><strong>OAuth 2.0</strong></td><td>A standard for granting an app limited access on your behalf — without sharing your password</td><td>"Log in with Google"</td></tr>
+											<tr><td><strong>Scope</strong></td><td>A named permission attached to a token</td><td><code class="code-soft">photos.read</code></td></tr>
+											<tr><td><strong>Refresh Token</strong></td><td>A long-lived token used only to get new short-lived access tokens</td><td>Renews access without re-login</td></tr>
+										</tbody>
+									</table>
+								</div>
+
+								<!-- ── Section 5: How It Works ── -->
+								<a id="auth-how" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">3.5</span> 🔢 How It Works</h3>
+								</div>
+								<p class="blg-paragraph">
+									Modern APIs almost always use <strong>token-based authentication</strong>. Let us break down how it works: the difference between AuthN and AuthZ, the token flow itself, what's inside a JWT, and why HTTPS is non-negotiable.
+								</p>
+
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge badge-blue">A. Authentication vs Authorization</span></h3>
+								</div>
+								<p class="blg-paragraph">
+									These two steps happen on every protected request, in order. Authentication answers "who are you?" by validating the token. Authorization then answers "are you allowed to do this?" by checking the token's scopes or the user's role against the action requested. A valid token with the wrong scope returns <code class="code-soft">403 Forbidden</code>; a missing or invalid token returns <code class="code-soft">401 Unauthorized</code>.
+								</p>
+
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge badge-teal">B. The Token-Based Flow</span></h3>
+								</div>
+								<p class="blg-paragraph">
+									The flow has two phases — log in once, then reuse the token. This keeps the API <strong>stateless</strong>: the server doesn't remember the client between calls; the token itself carries the proof.
+								</p>
+								<div class="blg-table">
+									<table>
+										<thead>
+											<tr><th>Step</th><th>What Happens</th></tr>
+										</thead>
+										<tbody>
+											<tr><td>① Log in</td><td>The client sends credentials once (e.g. <code class="code-soft">POST /login</code> with email + password).</td></tr>
+											<tr><td>② Issue token</td><td>The server verifies them and returns an <strong>access token</strong> (often a JWT) plus a refresh token.</td></tr>
+											<tr><td>③ Store token</td><td>The client keeps the token (in memory or secure storage).</td></tr>
+											<tr><td>④ Send on each call</td><td>Every later request carries the token in the header: <code class="code-soft">Authorization: Bearer &lt;token&gt;</code>.</td></tr>
+											<tr><td>⑤ Validate</td><td>The server checks the token's signature and expiry — no database lookup needed for a JWT — then authorizes the action.</td></tr>
+											<tr><td>⑥ Refresh</td><td>When the access token expires, the client uses the refresh token to get a new one — no re-login.</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<div class="blg-code-block" data-lang="bash"># 1. Log in once → receive a token
+POST /login HTTP/1.1
+Host: api.example.com
+Content-Type: application/json
+
+{ "email": "sam@example.com", "password": "••••••••" }
+
+# 2. Reuse the token on every protected request
+GET /me/orders HTTP/1.1
+Host: api.example.com
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</div>
+
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge badge-purple">C. Anatomy of a JWT</span></h3>
+								</div>
+								<p class="blg-paragraph">
+									A <strong>JWT</strong> (JSON Web Token) is the most common access token format. It is three Base64 parts joined by dots — <code class="code-soft">header.payload.signature</code>. The header says how it's signed, the payload carries claims (who the user is, scopes, expiry), and the signature proves it hasn't been tampered with. Because the signature can be verified with a secret key alone, the server needs no database lookup to trust it — that is what makes JWTs <strong>stateless and fast</strong>.
+								</p>
+								<div class="blg-code-block" data-lang="json">// The decoded PAYLOAD of a JWT (the middle part)
+{
+  "sub": "user_128",
+  "name": "Sam Rivera",
+  "scope": ["orders.read", "orders.write"],
+  "iat": 1748599200,
+  "exp": 1748602800
+}</div>
+								<blockquote class="blg-callout-warning">
+									⚠️ <strong>A JWT payload is encoded, not encrypted.</strong> Anyone holding the token can read its contents — only the <strong>signature</strong> is protected. Never put passwords or secrets in a JWT payload. The signature stops tampering; it does not hide the data.
+								</blockquote>
+
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge badge-green">D. HTTPS Is Mandatory</span></h3>
+								</div>
+								<p class="blg-paragraph">
+									Every authentication method here sends a secret over the network — an API key, a password, or a bearer token. Over plain HTTP, anyone on the path can read it and impersonate the caller. <strong>HTTPS encrypts the entire request</strong>, including headers, so the token can't be stolen in transit. Authentication without HTTPS is no security at all.
+								</p>
+
+								<!-- ── Section 6: Types & Variations ── -->
+								<a id="auth-types" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">3.6</span> 🔀 Types &amp; Variations</h3>
+								</div>
+								<p class="blg-paragraph">
+									There are a handful of authentication methods you'll meet in practice. Each fits a different situation — from simple server-to-server calls to letting a third-party app act on a user's behalf.
+								</p>
+								<div class="blg-feature-grid grid-3">
+									<div class="blg-feature-card card-blue">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">🔑</span>
+											<h4>API Key</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>A single long secret string sent in a header. Simple, identifies an <strong>application</strong> (not a user). Great for server-to-server and public data APIs. Easy to leak if careless.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-teal">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">👤</span>
+											<h4>Basic Auth</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>Username + password Base64-encoded in the header. Simple but sends credentials on every call — only acceptable over HTTPS, and largely superseded by tokens.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-purple">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">🎟️</span>
+											<h4>Bearer Token / JWT</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>A signed, expiring token issued after login, sent as <code class="code-soft">Authorization: Bearer</code>. Stateless and scalable — the dominant choice for modern APIs and microservices.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-orange">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">🤝</span>
+											<h4>OAuth 2.0</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>Delegated access: a user lets one app use another on their behalf <strong>without sharing a password</strong>. Powers "Log in with Google/GitHub." Issues scoped, revocable tokens.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-green">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">🍪</span>
+											<h4>Session Cookie</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>Classic web approach: the server stores a session and the browser sends a cookie. Stateful — simple for single web apps, harder to scale across many servers.</p>
+										</div>
+									</div>
+									<div class="blg-feature-card card-blue">
+										<div class="blg-feature-card-header">
+											<span class="blg-feature-card-icon">📜</span>
+											<h4>Mutual TLS (mTLS)</h4>
+										</div>
+										<div class="blg-feature-card-body">
+											<p>Both client and server present certificates to prove identity. Strong and common for sensitive <strong>internal</strong> service-to-service traffic in zero-trust networks.</p>
+										</div>
+									</div>
+								</div>
+								<blockquote class="blg-callout-purple">
+									🔗 <strong>API key vs token — the key difference:</strong> an API key usually identifies an <strong>application</strong> and is long-lived, while a token (JWT) identifies a <strong>user session</strong>, carries scopes, and expires. OAuth is not a fourth competitor — it's a <strong>framework</strong> that issues tokens; the token it hands out is typically a bearer token/JWT.
+								</blockquote>
+
+								<!-- ── Section 7: Illustrated Diagram ── -->
+								<a id="auth-diagram" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">3.7</span> 🎨 Illustrated Diagram</h3>
+								</div>
+								<p class="blg-paragraph">
+									The diagram below shows the token-based flow end to end: the client logs in once to get a token, then presents that token on every later call to the API, which validates it before responding. The login step and the data step are cleanly separated.
+								</p>
+								<div class="blg-mermaid-wrap">
+									<div class="mermaid" style="min-width:680px;font-size:16px;">
+%%{init: {"theme": "base", "themeVariables": {"lineColor": "#64748b", "edgeLabelBackground": "#fff"}}}%%
+flowchart LR
+    C["📱 Client"]
+    AUTH["🔐 Auth Server\n(verifies login)"]
+    API["⚙️ API Server\n(validates token)"]
+    DB["🗄️ Database"]
+
+    C -->|"① POST /login (credentials)"| AUTH
+    AUTH -->|"② Access token (JWT)"| C
+    C -->|"③ Request + Bearer token"| API
+    API -->|"④ Query (if token valid)"| DB
+    DB -->|"⑤ Data"| API
+    API -->|"⑥ JSON response"| C
+
+    style C fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    style AUTH fill:#f5f3ff,stroke:#7c3aed,color:#4c1d95
+    style API fill:#d1fae5,stroke:#059669,color:#064e3b
+    style DB fill:#fff3e0,stroke:#d97706,color:#92400e
+									</div>
+								</div>
+								<p class="blg-paragraph">
+									<strong>Reading the diagram:</strong> The client authenticates once at the auth server ① and receives a token ②. From then on it attaches that token to every API request ③. The API server validates the token's signature and scopes before touching the database ④⑤ and returns the result ⑥. Notice the API server never sees the password — only the token.
+								</p>
+
+								<!-- ── Section 8: When to Use ── -->
+								<a id="auth-when" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">3.8</span> ✅ When to Use</h3>
+								</div>
+								<p class="blg-paragraph">
+									Picking the right method is a design decision you should be able to justify. The choice comes down to <strong>who is calling</strong> and <strong>on whose behalf</strong>. Use this guide:
+								</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead>
+											<tr><th>Method</th><th>Use it when…</th><th>Avoid it when…</th></tr>
+										</thead>
+										<tbody>
+											<tr><td><strong>API Key</strong></td><td>A server or script calls your API to access public or app-level data</td><td>You need to identify individual end users or fine-grained permissions</td></tr>
+											<tr><td><strong>Bearer Token / JWT</strong></td><td>Users log into your own app and call your API; stateless microservices</td><td>You can't store the token securely on the client</td></tr>
+											<tr><td><strong>OAuth 2.0</strong></td><td>A third-party app needs limited access to a user's data on another service</td><td>It's your own first-party app — full OAuth is overkill, a plain token is enough</td></tr>
+											<tr><td><strong>Session Cookie</strong></td><td>A traditional server-rendered web app with one backend</td><td>You need to scale across many stateless servers or serve non-browser clients</td></tr>
+											<tr><td><strong>Mutual TLS</strong></td><td>Sensitive internal service-to-service calls in a zero-trust network</td><td>Public clients (browsers, mobile apps) — cert management is impractical</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-tip">
+									<strong>Rule of thumb:</strong> For a typical app — "users log in, mobile/web client calls our API" — use <strong>JWT bearer tokens over HTTPS</strong>. The moment a <strong>third party</strong> needs access to a user's data without their password, reach for <strong>OAuth 2.0</strong>. For pure machine-to-machine, an <strong>API key</strong> (or mTLS for sensitive internal traffic) is usually enough.
+								</blockquote>
+
+								<!-- ── Section 9: Real-world Example ── -->
+								<a id="auth-example" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">3.9</span> 🏗️ Real-world Example — "Log in with Google" (OAuth 2.0)</h3>
+								</div>
+								<p class="blg-paragraph">
+									Back to the photo-printing app that wants your Google Photos. Here is the OAuth 2.0 flow that lets it read your photos without ever seeing your Google password:
+								</p>
+								<div class="blg-table">
+									<table>
+										<thead>
+											<tr><th>Step</th><th>Actor</th><th>What Happens</th></tr>
+										</thead>
+										<tbody>
+											<tr><td>①</td><td>📱 <strong>Photo App</strong></td><td>Redirects you to Google, asking for the <code class="code-soft">photos.read</code> scope</td></tr>
+											<tr><td>②</td><td>🔐 <strong>Google</strong></td><td>Asks you to log in (on Google's own page) and shows a consent screen: "Photo App wants to view your photos"</td></tr>
+											<tr><td>③</td><td>👤 <strong>You</strong></td><td>Click <strong>Allow</strong> — your password stays with Google, never the app</td></tr>
+											<tr><td>④</td><td>🔐 <strong>Google</strong></td><td>Sends the app a one-time <strong>authorization code</strong></td></tr>
+											<tr><td>⑤</td><td>📱 <strong>Photo App</strong></td><td>Exchanges that code (plus its own secret) for an <strong>access token</strong> scoped to <code class="code-soft">photos.read</code></td></tr>
+											<tr><td>⑥</td><td>📱 <strong>Photo App</strong></td><td>Calls <code class="code-soft">GET /photos</code> with the token; Google returns your photos — and only photos</td></tr>
+											<tr><td>⑦</td><td>👤 <strong>You (later)</strong></td><td>Can revoke the app's access anytime in Google settings, with no password change</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<p class="blg-paragraph">
+									Contrast that with a simple paid API like a weather or payment service, where no end user is involved — you just authenticate the application itself with an API key:
+								</p>
+								<div class="blg-code-block" data-lang="bash"># Server-to-server call authenticated with an API key
+GET /v1/charges HTTP/1.1
+Host: api.stripe.com
+Authorization: Bearer sk_live_a1b2c3d4e5f6</div>
+								<blockquote class="blg-callout-info">
+									<strong>Why OAuth is brilliant:</strong> three separate problems are solved at once — the app never learns your password, it gets only the narrow scope you approved, and you can revoke it independently. That separation is exactly why "Log in with Google/Apple/GitHub" is everywhere.
+								</blockquote>
+
+								<!-- ── Section 10: Trade-offs ── -->
+								<a id="auth-tradeoffs" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">3.10</span> ⚖️ Trade-offs</h3>
+								</div>
+								<p class="blg-paragraph">
+									Token-based authentication (JWT) is the modern default, so it's worth weighing its strengths against the stateful session approach it largely replaced:
+								</p>
+								<div class="blg-table blg-table-half">
+									<table>
+										<thead><tr><th>✅ Advantages of Token-Based Auth</th><th>❌ Disadvantages / Cautions</th></tr></thead>
+										<tbody>
+											<tr><td><strong>Stateless</strong> — the token is self-contained, so any server can validate it; scales horizontally with no shared session store</td><td><strong>Hard to revoke early</strong> — a valid JWT works until it expires; instant revocation needs a denylist or short lifetimes</td></tr>
+											<tr><td><strong>Cross-domain &amp; mobile friendly</strong> — works cleanly for APIs, mobile apps, and multiple services, unlike cookies</td><td><strong>Token theft = impersonation</strong> — a stolen bearer token is usable by anyone; HTTPS and secure storage are essential</td></tr>
+											<tr><td><strong>Fast validation</strong> — signature check needs no database lookup</td><td><strong>Payload is readable</strong> — encoded, not encrypted; never store secrets in it</td></tr>
+											<tr><td><strong>Fine-grained scopes</strong> — permissions travel inside the token</td><td><strong>Size</strong> — a JWT is larger than a session ID and is sent on every request</td></tr>
+											<tr><td><strong>Decoupled auth</strong> — a dedicated auth server can issue tokens many services trust</td><td><strong>Clock &amp; key management</strong> — expiry checks and signing-key rotation must be handled correctly</td></tr>
+										</tbody>
+									</table>
+								</div>
+
+								<!-- ── Section 11: Common Mistakes ── -->
+								<a id="auth-mistakes" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">3.11</span> 🚫 Common Mistakes</h3>
+								</div>
+								<div class="blg-table">
+									<table>
+										<thead>
+											<tr><th>#</th><th>❌ Common Mistake</th><th>✅ The Reality</th></tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>1</td>
+												<td><strong>Hardcoding API keys in client code or Git</strong></td>
+												<td>Keys in front-end JavaScript or committed to a repo are public. Keep secrets server-side, in environment variables or a secrets manager, and rotate any that leak.</td>
+											</tr>
+											<tr>
+												<td>2</td>
+												<td><strong>Authentication over plain HTTP</strong></td>
+												<td>Any token or key sent over HTTP can be sniffed and reused. Always require HTTPS for every authenticated endpoint.</td>
+											</tr>
+											<tr>
+												<td>3</td>
+												<td><strong>Confusing authentication with authorization</strong></td>
+												<td>Knowing who someone is (AuthN) is not the same as letting them act (AuthZ). A logged-in user must still be checked against scopes/roles for each action.</td>
+											</tr>
+											<tr>
+												<td>4</td>
+												<td><strong>Putting secrets in a JWT payload</strong></td>
+												<td>The payload is only Base64-encoded, not encrypted — anyone can read it. Store identifiers and scopes, never passwords or sensitive data.</td>
+											</tr>
+											<tr>
+												<td>5</td>
+												<td><strong>Tokens that never expire</strong></td>
+												<td>A non-expiring token is a permanent key if stolen. Use short-lived access tokens plus refresh tokens so leaked tokens die quickly.</td>
+											</tr>
+											<tr>
+												<td>6</td>
+												<td><strong>No rate limiting per identity</strong></td>
+												<td>Without per-key/per-user limits, one client can overwhelm your API or rack up costs. Tie rate limits to the authenticated identity.</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+
+								<!-- ── Section 12: Summary ── -->
+								<a id="auth-summary" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">3.12</span> 📝 Summary</h3>
+								</div>
+								<ul class="blg-ul">
+									<li class="blg-li blg-li-check"><strong>AuthN ≠ AuthZ</strong> — authentication proves who you are; authorization decides what you may do.</li>
+									<li class="blg-li blg-li-check"><strong>Token-based auth is the default</strong> — log in once, then send a bearer token (often a JWT) on every request.</li>
+									<li class="blg-li blg-li-check"><strong>A JWT is signed, not secret</strong> — the signature blocks tampering, but the payload is readable; keep secrets out of it.</li>
+									<li class="blg-li blg-li-check"><strong>OAuth grants delegated access</strong> — let a third-party app act for a user with a scoped, revocable token and no password sharing.</li>
+									<li class="blg-li blg-li-check"><strong>HTTPS, expiry, and scopes are non-negotiable</strong> — encrypt the channel, expire tokens, and grant least privilege.</li>
+								</ul>
+
+								<!-- ── Section 13: Design Challenge ── -->
+								<a id="auth-challenge" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">3.13</span> 🏋️ Design Challenge</h3>
+								</div>
+								<blockquote class="blg-callout-purple">
+									<strong>🔐 Challenge: Design authentication for a fitness platform</strong><br><br>
+									You run a fitness platform with a mobile app, a public API for third-party developers, and internal microservices. Think through the following:
+									<ul class="blg-ul" style="margin-top:10px;">
+										<li class="blg-li">How should your own <strong>mobile app</strong> users authenticate to your API?</li>
+										<li class="blg-li">A third-party app wants to read a user's workout history. How do you let it — <strong>without</strong> the user giving it their password?</li>
+										<li class="blg-li">Your internal "billing service" calls your "user service." How should those <strong>internal</strong> calls authenticate?</li>
+										<li class="blg-li">How do you make sure a stolen token can't be used forever?</li>
+									</ul>
+								</blockquote>
+
+								<details class="blg-answer-reveal">
+									<summary>👁️ Show Answer</summary>
+									<div class="blg-answer-reveal-body">
+										<p class="blg-paragraph"><strong>Mobile app users → JWT bearer tokens.</strong> The user logs in once; your auth server issues a short-lived access token (JWT) and a refresh token. The app sends <code class="code-soft">Authorization: Bearer &lt;token&gt;</code> on every call, over HTTPS. Any server can validate the token without a session store.</p>
+										<p class="blg-paragraph"><strong>Third-party access → OAuth 2.0.</strong> The third-party app sends the user to your consent screen requesting a scope like <code class="code-soft">workouts.read</code>. The user approves, and the app receives a scoped, revocable token — never the password. The user can revoke it anytime.</p>
+										<p class="blg-paragraph"><strong>Internal service-to-service → mTLS or short-lived service tokens.</strong> The billing and user services authenticate each other with mutual TLS certificates (or signed service tokens) inside the private network — no human user is involved.</p>
+										<p class="blg-paragraph"><strong>Limiting stolen tokens:</strong> make access tokens <strong>short-lived</strong> (e.g. 15 minutes) and use refresh tokens to renew. For instant kill-switch, keep a small revocation denylist checked at the gateway. Always require HTTPS and store tokens in secure storage, never in plain local storage.</p>
+									</div>
+								</details>
+
+								<!-- ── Section 14: Cloud Service Mapping ── -->
+								<a id="auth-cloud" class="blg-anchor"></a>
+								<div class="blg-sub-header">
+									<h3><span class="blg-sub-badge">3.14</span> ☁️ Cloud Service Mapping</h3>
+								</div>
+								<p class="blg-paragraph">
+									You rarely build authentication from scratch. Cloud platforms offer managed identity services that issue and validate tokens, run OAuth flows, and plug straight into your API gateway:
+								</p>
+								<div class="blg-table blg-table-balanced">
+									<table>
+										<thead><tr><th>Need</th><th>AWS (Primary)</th><th>GCP</th><th>Azure</th></tr></thead>
+										<tbody>
+											<tr><td><strong>User sign-up / login &amp; tokens</strong> — managed user pools with OAuth/JWT</td><td>Amazon Cognito</td><td>Identity Platform / Firebase Auth</td><td>Microsoft Entra ID (Azure AD B2C)</td></tr>
+											<tr><td><strong>Authorize API calls</strong> — validate tokens at the gateway</td><td>API Gateway Authorizers</td><td>Apigee / API Gateway</td><td>API Management policies</td></tr>
+											<tr><td><strong>Service &amp; resource permissions</strong> — control who can do what</td><td>AWS IAM</td><td>Cloud IAM</td><td>Azure RBAC</td></tr>
+											<tr><td><strong>Store secrets &amp; keys</strong> — keep API keys out of code</td><td>AWS Secrets Manager</td><td>Secret Manager</td><td>Azure Key Vault</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<blockquote class="blg-callout-info">
+									<strong>Simplest AWS picture:</strong> Users authenticate through <strong>Cognito</strong>, which issues a JWT → the client sends it to <strong>API Gateway</strong>, where an authorizer validates the token and scopes before the request ever reaches your Lambda or service. API keys and signing secrets live in <strong>Secrets Manager</strong>, never in code.
+								</blockquote>
+								<hr class="blg-hr">
+							</div>
+
+							<div class="blg-trailing-section">
+								<div class="blg-section">
+									<div class="blg-main-header"><h2>📚 References</h2></div>
+									<ul class="blg-ul">
+										<li class="blg-li"><strong>MDN Web Docs — HTTP &amp; Web APIs</strong> — The definitive beginner-to-advanced reference for HTTP methods, status codes, headers, and how web APIs work.</li>
+										<li class="blg-li"><strong>REST API Tutorial (restfulapi.net)</strong> — Clear explanations of REST principles, resource modelling, and HTTP status code usage.</li>
+										<li class="blg-li"><strong>System Design Interview (Vol. 1)</strong> — Alex Xu — Uses APIs as the contract layer in nearly every system design walkthrough.</li>
+										<li class="blg-li"><strong>OAuth 2.0 &amp; JWT — RFC 6749 and RFC 7519</strong> — The official specifications behind modern token-based API authentication.</li>
+										<li class="blg-li"><strong>Cloudflare Learning Center — What is an API?</strong> — Beginner-friendly, visual explanations of APIs, REST, and authentication.</li>
+									</ul>
+								</div>
+							</div>
+
+						</div><!-- end #blogContainer -->
+					</div><!-- end .blog-detail-main -->
+				</div><!-- end .blog-detail-layout -->
+
+				<div class="related-posts-section">
+					<div class="blog-title-bar">
+						<img src="../img/others/blog.png" alt="blog post" style="width: 24px; height: auto;">
+						<h2>Related Blog Posts</h2>
+					</div>
+					<div class="related-posts-wrapper">
+						<div class="related-posts-swiper-area">
+							<div class="swiper" id="postContainer">
+								<div class="swiper-wrapper"></div>
+							</div>
+							<div class="swiper-button-prev"></div>
+							<div class="swiper-button-next"></div>
+						</div>
+						<div class="blg-slide-counter">
+							<div class="slide-progress-bar">
+								<div class="slide-progress-fill" id="slideProgressFill"></div>
+							</div>
+							<div class="slide-counter-label">
+								<span id="currentSlide">1</span> / <span id="totalSlides">1</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</section>
+		<div id="site-footer"></div>
+	</div>
+
+	<script src="../js/bootstrap.bundle.min.js"></script>
+	<script src="../js/components.js"></script>
+	<script src="../js/site.js"></script>
+	<script src="../js/swiper-bundle.min.js"></script>
+	<script src="../js/prism.js" data-manual></script>
+	<script src="../js/code-highlight.js"></script>
+	<script src="../js/detail.js"></script>
+	<script src="../js/mermaid.min.js"></script>
+	<script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+</body>
+</html>
